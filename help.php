@@ -5,7 +5,7 @@ include 'includes/header.php';
 <div class="container">
 <div class="row">
     <div class="col-12 mb-4">
-        <h2 class="text-white fw-bold">Napověda a tipy</h2>
+        <h2 class="text-white fw-bold">Nápověda a tipy</h2>
         <p class="text-white-50">Jak pracovat se snippety a Markdownem v DevBase.</p>
     </div>
 
