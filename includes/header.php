@@ -17,12 +17,20 @@
 </head>
 <body>
 
+<div id="bgcircle-pruple"></div>
+<div id="bgcircle-primary"></div>
+
 <nav class="navbar navbar-expand-lg navbar-dark navbar-glass sticky-top">
     <div class="container-fluid">
         <button class="btn border-0 text-white me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand fw-bold" href="index.php">DevBase</a>
+        <a class="navbar-brand fw-bold" href="index.php">
+            <span>    
+                <img src="./assets/logo.webp" alt="DevBase Logo"  class="d-inline-block align-text-top logo" >
+            </span>
+            <span>DevBase</span>
+        </a>
         
         <div class="ms-auto d-flex align-items-center">
             <div class="form-check form-switch mb-0">

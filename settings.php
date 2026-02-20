@@ -5,7 +5,8 @@ require_once 'includes/functions.php';
 if (isset($_POST['action'])) {
     if ($_POST['action'] == 'save_tag') {
         $id = !empty($_POST['id']) ? $_POST['id'] : null;
-        saveTag($_POST['name'], $id);
+        $color = !empty($_POST['color']) ? $_POST['color'] : null;
+        saveTag($_POST['name'], $color, $id);
     } elseif ($_POST['action'] == 'delete_tag') {
         deleteTag($_POST['id']);
     } elseif ($_POST['action'] == 'save_language') {
@@ -42,6 +43,8 @@ include 'includes/header.php';
                 <input type="hidden" name="action" value="save_tag">
                 <input type="hidden" name="id" id="tagId" value="">
                 <div class="input-group">
+                    <input type="color" id="tagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Choose color or leave empty">
+                    <input type="text" name="color" id="tagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex (empty is none)" style="max-width: 180px;">
                     <input type="text" name="name" id="tagName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Tag Name" required>
                     <button class="btn btn-outline-light" type="submit" id="tagSubmitBtn">Add Tag</button>
                 </div>
@@ -50,7 +53,15 @@ include 'includes/header.php';
             <div class="list-group list-group-flush bg-transparent">
                 <?php foreach ($tags as $tag): ?>
                     <div class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-light border-opacity-10 px-0">
-                        <span><?php echo htmlspecialchars($tag['name']); ?></span>
+                        <span>
+                            <?php if (!empty($tag['color'])): ?>
+                                <span class="badge" style="background-color: <?php echo htmlspecialchars($tag['color']); ?>; color: #fff;">
+                            <?php else: ?>
+                                <span>
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($tag['name']); ?>
+                            <?php if (!empty($tag['color'])): ?></span><?php else: ?></span><?php endif; ?>
+                        </span>
                         <div class="d-flex gap-2">
                             <button class="btn btn-sm btn-link text-white-50 p-0 text-decoration-none" onclick='editTag(<?php echo json_encode($tag); ?>)'>
                                 <i class="bi bi-pencil"></i> Edit

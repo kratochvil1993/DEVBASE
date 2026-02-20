@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const title = card.querySelector('.card-title').textContent.toLowerCase();
             const description = card.querySelector('.card-text').textContent.toLowerCase();
             const code = card.querySelector('.snippet-code-wrapper pre').textContent.toLowerCase();
-            const tags = Array.from(card.querySelectorAll('.tag-badge')).map(b => b.textContent.toLowerCase());
+            const tags = Array.from(card.querySelectorAll('.tag-badge')).map(b => b.textContent.trim().toLowerCase());
             
             const matchesSearch = title.includes(currentSearch) || 
                                  description.includes(currentSearch) || 
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Handle tags
         const tagCheckboxes = snippetForm.querySelectorAll('input[name="tags[]"]');
         tagCheckboxes.forEach(cb => {
-            cb.checked = snippet.tags.includes(cb.nextElementSibling.textContent.trim());
+            cb.checked = snippet.tags.some(tag => tag.name === cb.nextElementSibling.textContent.trim());
         });
 
         const modal = new bootstrap.Modal(document.getElementById('addSnippetModal'));
@@ -118,9 +118,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Settings Editing Logic
+    const tagColorPicker = document.getElementById('tagColorPicker');
+    const tagColorInput = document.getElementById('tagColor');
+    if (tagColorPicker && tagColorInput) {
+        tagColorPicker.addEventListener('input', (e) => {
+            tagColorInput.value = e.target.value;
+        });
+        tagColorInput.addEventListener('input', (e) => {
+            if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+                tagColorPicker.value = e.target.value;
+            }
+        });
+    }
+
     window.editTag = (tag) => {
         document.getElementById('tagId').value = tag.id;
         document.getElementById('tagName').value = tag.name;
+        
+        if (tagColorInput) tagColorInput.value = tag.color || '';
+        if (tagColorPicker) {
+            if (tag.color && /^#[0-9A-F]{6}$/i.test(tag.color)) {
+                tagColorPicker.value = tag.color;
+            } else {
+                tagColorPicker.value = '#000000';
+            }
+        }
+        
         document.getElementById('tagSubmitBtn').textContent = 'Update Tag';
         document.getElementById('tagName').focus();
     };
@@ -131,5 +154,32 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('langClass').value = lang.prism_class;
         document.getElementById('langSubmitBtn').textContent = 'Update Language';
         document.getElementById('langName').focus();
+    };
+
+    window.editTerminalCommand = (cmd) => {
+        document.getElementById('termId').value = cmd.id;
+        document.getElementById('termTitle').value = cmd.title;
+        document.getElementById('termCommand').value = cmd.command;
+        document.getElementById('termDescription').value = cmd.description;
+        document.getElementById('termSubmitBtn').textContent = 'Update Command';
+        document.getElementById('termTitle').focus();
+    };
+
+    // View Modal Logic
+    const viewModalTitle = document.getElementById('viewModalTitle');
+    const viewModalCode = document.getElementById('viewModalCode');
+
+    window.openViewModal = (snippet) => {
+        if (viewModalTitle) viewModalTitle.textContent = snippet.title;
+        if (viewModalCode) {
+            viewModalCode.textContent = snippet.code;
+            viewModalCode.className = 'language-' + (snippet.prism_class || 'none');
+            // Re-apply Prism.js syntax highlighting if loaded
+            if (window.Prism) {
+                Prism.highlightElement(viewModalCode);
+            }
+        }
+        const modal = new bootstrap.Modal(document.getElementById('viewSnippetModal'));
+        modal.show();
     };
 });

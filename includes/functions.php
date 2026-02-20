@@ -26,13 +26,13 @@ function getAllSnippets($search = '') {
 function getSnippetTags($snippet_id) {
     global $conn;
     $snippet_id = (int)$snippet_id;
-    $sql = "SELECT t.name FROM tags t 
+    $sql = "SELECT t.name, t.color FROM tags t 
             JOIN snippet_tags st ON t.id = st.tag_id 
             WHERE st.snippet_id = $snippet_id";
     $result = $conn->query($sql);
     $tags = [];
     while ($row = $result->fetch_assoc()) {
-        $tags[] = $row['name'];
+        $tags[] = $row;
     }
     return $tags;
 }
@@ -59,14 +59,15 @@ function getAllLanguages() {
     return $languages;
 }
 
-function saveTag($name, $id = null) {
+function saveTag($name, $color, $id = null) {
     global $conn;
     $name = $conn->real_escape_string($name);
+    $color = !empty($color) ? "'" . $conn->real_escape_string($color) . "'" : "NULL";
     if ($id) {
         $id = (int)$id;
-        $sql = "UPDATE tags SET name = '$name' WHERE id = $id";
+        $sql = "UPDATE tags SET name = '$name', color = $color WHERE id = $id";
     } else {
-        $sql = "INSERT INTO tags (name) VALUES ('$name')";
+        $sql = "INSERT INTO tags (name, color) VALUES ('$name', $color)";
     }
     return $conn->query($sql);
 }
