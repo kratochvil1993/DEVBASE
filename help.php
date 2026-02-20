@@ -20,7 +20,7 @@ include 'includes/header.php';
                 
                 <div class="snippet-code-wrapper mb-3 position-relative">
                     <button class="btn btn-sm btn-outline-light copy-btn position-absolute top-0 end-0 m-2" onclick="copyToClipboard(this, 'help-md-1')">
-                        Kopírovat
+                        copy
                     </button>
                     <pre><code id="help-md-1" class="language-markdown"># Nadpis
 Tady je HTML:
@@ -41,7 +41,7 @@ console.log('Hello World');
                 <h6 class="text-white-50 mb-2">Základní formátování</h6>
                 <div class="snippet-code-wrapper mb-3 position-relative">
                     <button class="btn btn-sm btn-outline-light copy-btn position-absolute top-0 end-0 m-2" onclick="copyToClipboard(this, 'help-md-2')">
-                        Kopírovat
+                        copy
                     </button>
                     <pre><code id="help-md-2" class="language-markdown">**Tučné písmo**
 *Kurzíva*
@@ -59,7 +59,7 @@ console.log('Hello World');
                 <p class="text-white small mb-3">Skvělé pro dokumentaci API nebo konfigurací:</p>
                 <div class="snippet-code-wrapper mb-3 position-relative">
                     <button class="btn btn-sm btn-outline-light copy-btn position-absolute top-0 end-0 m-2" onclick="copyToClipboard(this, 'help-md-table')">
-                        Kopírovat
+                        copy
                     </button>
                     <pre><code id="help-md-table" class="language-markdown">| Parametr | Typ | Popis |
 | :--- | :--- | :--- |

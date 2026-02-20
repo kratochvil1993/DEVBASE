@@ -124,10 +124,11 @@ include 'includes/header.php';
             </div>
             <div class="modal-body p-0">
                 <div class="snippet-code-wrapper position-relative m-3">
-                    <button class="btn btn-sm btn-outline-light copy-btn" onclick="copyToClipboard(this, 'viewModalCode')">
-                        Kopírovat
+                    <button class="btn btn-sm btn-outline-light copy-btn shadow-sm z-3" onclick="copyToClipboard(this, 'viewModalCode')" style="position: absolute; right: 10px; top: 10px; z-index: 10;">
+                        copy
                     </button>
-                    <pre><code id="viewModalCode" class=""></code></pre>
+                    <div id="viewModalMarkdown" class="p-3 text-white markdown-preview" style="display: none; overflow-x: auto;"></div>
+                    <pre id="viewModalPre" class="m-0"><code id="viewModalCode" class=""></code></pre>
                 </div>
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
@@ -176,7 +177,7 @@ include 'includes/header.php';
                         
                         <div class="snippet-code-wrapper mb-3 flex-grow-1">
                             <button class="btn btn-sm btn-outline-light copy-btn" onclick="event.stopPropagation(); copyToClipboard(this, 'snippet-<?php echo $index; ?>')">
-                                Kopírovat
+                                copy
                             </button>
                             <pre><code id="snippet-<?php echo $index; ?>" class="language-<?php echo htmlspecialchars($snippet['prism_class'] ?? 'none'); ?>"><?php echo htmlspecialchars($snippet['code']); ?></code></pre>
                         </div>

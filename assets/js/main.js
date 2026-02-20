@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         navigator.clipboard.writeText(text).then(() => {
             const originalText = btn.innerHTML;
-            btn.innerHTML = 'Zkopírováno!';
+            btn.innerHTML = 'copied!';
             btn.classList.replace('btn-outline-light', 'btn-success');
             
             setTimeout(() => {
@@ -207,12 +207,58 @@ document.addEventListener('DOMContentLoaded', () => {
         if (viewModalCode) {
             viewModalCode.textContent = snippet.code;
             viewModalCode.className = 'language-' + (snippet.prism_class || 'none');
-            // Re-apply Prism.js syntax highlighting if loaded
-            if (window.Prism) {
-                Prism.highlightElement(viewModalCode);
+            
+            const viewModalPre = document.getElementById('viewModalPre');
+            const viewModalMarkdown = document.getElementById('viewModalMarkdown');
+            
+            if (snippet.prism_class === 'markdown' && window.marked) {
+                if (viewModalPre) viewModalPre.style.display = 'none';
+                if (viewModalMarkdown) {
+                    viewModalMarkdown.style.display = 'block';
+                    viewModalMarkdown.innerHTML = marked.parse(snippet.code);
+                    if (window.Prism) {
+                        viewModalMarkdown.querySelectorAll('pre code').forEach((block) => {
+                            Prism.highlightElement(block);
+                        });
+                    }
+                }
+            } else {
+                if (viewModalMarkdown) viewModalMarkdown.style.display = 'none';
+                if (viewModalPre) viewModalPre.style.display = 'block';
+                // Re-apply Prism.js syntax highlighting if loaded
+                if (window.Prism) {
+                    Prism.highlightElement(viewModalCode);
+                }
             }
         }
         const modal = new bootstrap.Modal(document.getElementById('viewSnippetModal'));
         modal.show();
     };
+
+    // Render markdown snippets directly in the grid preview
+    const renderMarkdownSnippets = () => {
+        if (!window.marked) return;
+        document.querySelectorAll('.snippet-card').forEach(card => {
+            const codeContainer = card.querySelector('pre code');
+            if (codeContainer && codeContainer.classList.contains('language-markdown')) {
+                const preElement = codeContainer.parentElement;
+                
+                if (!preElement.nextElementSibling?.classList.contains('markdown-preview')) {
+                    const markdownDiv = document.createElement('div');
+                    markdownDiv.className = 'markdown-preview overflow-hidden h-100 p-2';
+                    markdownDiv.innerHTML = marked.parse(codeContainer.textContent);
+                    
+                    if (window.Prism) {
+                        markdownDiv.querySelectorAll('pre code').forEach((block) => {
+                            Prism.highlightElement(block);
+                        });
+                    }
+                    
+                    preElement.style.display = 'none';
+                    preElement.parentElement.appendChild(markdownDiv);
+                }
+            }
+        });
+    };
+    renderMarkdownSnippets();
 });

@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevBase - The OneNote Killer</title>
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/fav/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/fav/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favfavicon-16x16.png">
+    <link rel="manifest" href="./assets/fav/site.webmanifest">
+    <link rel="mask-icon" href="./assets/fav/safari-pinned-tab.svg?v=1" color="#222">
+    <link rel="shortcut icon" href="./assets/fav/favicon.ico">
+    <meta name="msapplication-TileColor" content="#fff">
+    <meta name="msapplication-config" content="./assets/fav/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    
     <!-- Bootstrap 5.3 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -50,13 +62,17 @@
     </div>
     <div class="offcanvas-body" style="position: relative; z-index: 1;">
         <div class="d-grid gap-2">
-            <a href="index.php" class="sidebar-link active">
+<?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
+            <a href="index.php" class="sidebar-link <?php echo $currentPage == 'index.php' ? 'active' : ''; ?>">
                 <i class="bi bi-house-door me-2"></i> Snipety
             </a>
-            <a href="settings.php" class="sidebar-link">
+            <a href="manage.php" class="sidebar-link <?php echo $currentPage == 'manage.php' ? 'active' : ''; ?>">
+                <i class="bi bi-list-task me-2"></i> Správa
+            </a>
+            <a href="settings.php" class="sidebar-link <?php echo $currentPage == 'settings.php' ? 'active' : ''; ?>">
                 <i class="bi bi-gear me-2"></i> Nastavení
             </a>
-            <a href="help.php" class="sidebar-link">
+            <a href="help.php" class="sidebar-link <?php echo $currentPage == 'help.php' ? 'active' : ''; ?>">
                 <i class="bi bi-question-circle me-2"></i> Nápověda
             </a>
 
