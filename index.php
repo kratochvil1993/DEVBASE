@@ -130,7 +130,8 @@ include 'includes/header.php';
                     <pre><code id="viewModalCode" class=""></code></pre>
                 </div>
             </div>
-            <div class="modal-footer border-top border-light border-opacity-10">
+            <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
+                <div id="viewModalTags" class="snippet-tags m-0"></div>
                 <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -147,7 +148,9 @@ include 'includes/header.php';
     <?php else: ?>
         <?php foreach ($snippets as $index => $snippet): ?>
             <div class="col-md-6 col-lg-4 col-xl-3 snippet-card-wrapper">
-                <div class="card glass-card h-100 snippet-card" onclick="openViewModal(<?php echo htmlspecialchars(json_encode($snippet), ENT_QUOTES, 'UTF-8'); ?>)">
+                <div class="card glass-card h-100 snippet-card" 
+                     data-tags="<?php echo htmlspecialchars(implode(',', array_column($snippet['tags'], 'name'))); ?>" 
+                     onclick="openViewModal(<?php echo htmlspecialchars(json_encode($snippet), ENT_QUOTES, 'UTF-8'); ?>)">
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h5 class="card-title text-white mb-0"><?php echo htmlspecialchars($snippet['title']); ?></h5>

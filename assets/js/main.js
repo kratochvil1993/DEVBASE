@@ -26,11 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const filterSnippets = () => {
         const cards = document.querySelectorAll('.snippet-card');
+        let delay = 0;
+        
         cards.forEach(card => {
             const title = card.querySelector('.card-title').textContent.toLowerCase();
             const description = card.querySelector('.card-text').textContent.toLowerCase();
             const code = card.querySelector('.snippet-code-wrapper pre').textContent.toLowerCase();
-            const tags = Array.from(card.querySelectorAll('.tag-badge')).map(b => b.textContent.trim().toLowerCase());
+            const tagsAttr = card.getAttribute('data-tags');
+            const tags = tagsAttr ? tagsAttr.toLowerCase().split(',') : [];
             
             const matchesSearch = title.includes(currentSearch) || 
                                  description.includes(currentSearch) || 
@@ -39,10 +42,17 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const matchesTag = currentTag === 'all' || tags.includes(currentTag.toLowerCase());
 
+            const wrapper = card.parentElement;
+
             if (matchesSearch && matchesTag) {
-                card.parentElement.style.display = 'block';
+                wrapper.style.display = 'block';
+                wrapper.style.animation = 'none';
+                wrapper.offsetHeight; /* trigger reflow */
+                wrapper.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
+                delay += 40; // Stagger effect
             } else {
-                card.parentElement.style.display = 'none';
+                wrapper.style.display = 'none';
+                wrapper.style.animation = 'none';
             }
         });
     };
@@ -168,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // View Modal Logic
     const viewModalTitle = document.getElementById('viewModalTitle');
     const viewModalCode = document.getElementById('viewModalCode');
+    const viewModalTags = document.getElementById('viewModalTags');
 
     window.openViewModal = (snippet) => {
         if (viewModalTitle) viewModalTitle.textContent = snippet.title;
@@ -175,6 +186,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const viewModalLanguage = document.getElementById('viewModalLanguage');
         if (viewModalLanguage) {
             viewModalLanguage.textContent = snippet.language_name || 'Plain Text';
+        }
+
+        if (viewModalTags) {
+            viewModalTags.innerHTML = '';
+            if (snippet.tags && snippet.tags.length > 0) {
+                snippet.tags.forEach(tag => {
+                    const span = document.createElement('span');
+                    span.className = 'badge tag-badge me-1';
+                    if (tag.color) {
+                        span.style.setProperty('background-color', tag.color, 'important');
+                        span.style.color = '#fff';
+                    }
+                    span.textContent = tag.name;
+                    viewModalTags.appendChild(span);
+                });
+            }
         }
 
         if (viewModalCode) {
