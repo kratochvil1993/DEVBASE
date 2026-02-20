@@ -24,10 +24,34 @@ include 'includes/header.php';
 <div class="row align-items-center mb-4">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center">
-            <h2 class="text-white mb-0"><i class="bi bi-list-task me-2"></i>Správa snipetů</h2>
+            <h2 class="text-white mb-0">Správa snipetů</h2>
             <button class="btn btn-light rounded px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#addSnippetModal" title="Nový snipet">
                 <i class="bi bi-plus-lg me-1"></i> Nový snipet
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- Search & Tag Filters -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="glass-card p-3 d-flex flex-wrap gap-3 align-items-center">
+            <div class="input-group flex-grow-1" style="max-width: 400px;">
+                <span class="input-group-text bg-transparent border-0 text-white">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="manageSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat snipety...">
+            </div>
+            <div class="d-flex flex-wrap gap-2" id="manageTagFilters">
+                <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all">Vše</button>
+                <?php foreach ($tags as $tag): ?>
+                    <button class="btn btn-sm rounded-pill px-3 <?php echo empty($tag['color']) ? 'btn-outline-light' : ''; ?>"
+                            data-tag="<?php echo htmlspecialchars($tag['name']); ?>"
+                            <?php if (!empty($tag['color'])) echo 'style="background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';"'; ?>>
+                        <?php echo htmlspecialchars($tag['name']); ?>
+                    </button>
+                <?php endforeach; ?>
+            </div>
         </div>
     </div>
 </div>
@@ -56,7 +80,10 @@ include 'includes/header.php';
                             </tr>
                         <?php else: ?>
                             <?php foreach ($snippets as $index => $snippet): ?>
-                                <tr class="border-bottom border-light border-opacity-10">
+                                <tr class="border-bottom border-light border-opacity-10 manage-row"
+                                    data-title="<?php echo strtolower(htmlspecialchars($snippet['title'])); ?>"
+                                    data-desc="<?php echo strtolower(htmlspecialchars($snippet['description'] ?? '')); ?>"
+                                    data-tags="<?php echo strtolower(htmlspecialchars(implode(',', array_column($snippet['tags'], 'name')))); ?>">
                                     <td class="px-4 py-3"><span class="text-white-50 small">#<?php echo $snippet['id']; ?></span></td>
                                     <td class="px-4 py-3 fw-medium">
                                         <?php echo htmlspecialchars($snippet['title']); ?>
@@ -117,6 +144,47 @@ include 'includes/header.php';
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('manageSearch');
+    const tagButtons  = document.querySelectorAll('#manageTagFilters .btn');
+    let currentSearch = '';
+    let currentTag    = 'all';
+
+    const filterRows = () => {
+        document.querySelectorAll('.manage-row').forEach(row => {
+            const title = row.dataset.title || '';
+            const desc  = row.dataset.desc  || '';
+            const tags  = row.dataset.tags  ? row.dataset.tags.split(',') : [];
+
+            const matchSearch = title.includes(currentSearch) ||
+                                desc.includes(currentSearch)  ||
+                                tags.some(t => t.includes(currentSearch));
+
+            const matchTag = currentTag === 'all' || tags.includes(currentTag.toLowerCase());
+
+            row.style.display = (matchSearch && matchTag) ? '' : 'none';
+        });
+    };
+
+    if (searchInput) {
+        searchInput.addEventListener('input', e => {
+            currentSearch = e.target.value.toLowerCase();
+            filterRows();
+        });
+    }
+
+    tagButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tagButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTag = btn.getAttribute('data-tag');
+            filterRows();
+        });
+    });
+});
+</script>
 
 <!-- Add Snippet Modal -->
 <div class="modal fade" id="addSnippetModal" tabindex="-1" aria-hidden="true">
