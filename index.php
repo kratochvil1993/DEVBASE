@@ -37,7 +37,7 @@ include 'includes/header.php';
                 </span>
                 <input type="text" id="snippetSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat snipety...">
             </div>
-            <button class="btn btn-light rounded px-3" data-bs-toggle="modal" data-bs-target="#addSnippetModal" title="Nový snipet">
+            <button class="btn btn-add-snipet rounded px-3" data-bs-toggle="modal" data-bs-target="#addSnippetModal" title="Nový snipet">
                 <i class="bi bi-plus-lg"></i>
             </button>
         </div>
@@ -106,7 +106,7 @@ include 'includes/header.php';
                 </div>
                 <div class="modal-footer border-top border-light border-opacity-10">
                     <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zrušit</button>
-                    <button type="submit" class="btn btn-light px-4" id="submitBtn">Uložit snipet</button>
+                    <button type="submit" class="btn btn-add-snipet px-4" id="submitBtn">Uložit snipet</button>
                 </div>
             </form>
         </div>

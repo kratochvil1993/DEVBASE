@@ -25,7 +25,7 @@ include 'includes/header.php';
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center">
             <h2 class="text-white mb-0">Správa snipetů</h2>
-            <button class="btn btn-light rounded px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#addSnippetModal" title="Nový snipet">
+            <button class="btn btn-add-snipet rounded px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#addSnippetModal" title="Nový snipet">
                 <i class="bi bi-plus-lg me-1"></i> Nový snipet
             </button>
         </div>
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="modal-footer border-top border-light border-opacity-10">
                     <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zrušit</button>
-                    <button type="submit" class="btn btn-light px-4" id="submitBtn">Uložit snipet</button>
+                    <button type="submit" class="btn btn-add-snipet px-4" id="submitBtn">Uložit snipet</button>
                 </div>
             </form>
         </div>

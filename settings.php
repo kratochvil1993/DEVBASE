@@ -46,7 +46,7 @@ include 'includes/header.php';
                     <input type="color" id="tagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Vyberte barvu nebo nechte prázdné">
                     <input type="text" name="color" id="tagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex (prázdné je bez barvy)" style="max-width: 180px;">
                     <input type="text" name="name" id="tagName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Název štítku" required>
-                    <button class="btn btn-outline-light" type="submit" id="tagSubmitBtn">Přidat štítek</button>
+                    <button class="btn btn-add-snipet" type="submit" id="tagSubmitBtn">Přidat štítek</button>
                 </div>
             </form>
 
@@ -92,7 +92,7 @@ include 'includes/header.php';
                     <input type="text" name="name" id="langName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none mb-2" placeholder="Název jazyka" required>
                     <input type="text" name="prism_class" id="langClass" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Třída Prism" required>
                 </div>
-                <button class="btn btn-outline-light w-100" type="submit" id="langSubmitBtn">Přidat jazyk</button>
+                <button class="btn btn-add-snipet w-100" type="submit" id="langSubmitBtn">Přidat jazyk</button>
             </form>
 
             <div class="list-group list-group-flush bg-transparent">
