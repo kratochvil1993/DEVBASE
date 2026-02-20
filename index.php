@@ -35,9 +35,9 @@ include 'includes/header.php';
                 <span class="input-group-text bg-transparent border-0 text-white">
                     <i class="bi bi-search"></i>
                 </span>
-                <input type="text" id="snippetSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Search snippets...">
+                <input type="text" id="snippetSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat snipety...">
             </div>
-            <button class="btn btn-light rounded px-3" data-bs-toggle="modal" data-bs-target="#addSnippetModal" title="New Snippet">
+            <button class="btn btn-light rounded px-3" data-bs-toggle="modal" data-bs-target="#addSnippetModal" title="Nový snipet">
                 <i class="bi bi-plus-lg"></i>
             </button>
         </div>
@@ -46,7 +46,7 @@ include 'includes/header.php';
 
 <div class="row mb-5">
     <div class="col-md-8 mx-auto d-flex flex-wrap gap-2 justify-content-center" id="tagFilters">
-        <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all">All</button>
+        <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all">Vše</button>
         <?php foreach ($tags as $tag): ?>
             <button class="btn btn-sm rounded-pill px-3 <?php echo empty($tag['color']) ? 'btn-outline-light' : ''; ?>" 
                     data-tag="<?php echo htmlspecialchars($tag['name']); ?>"
@@ -62,7 +62,7 @@ include 'includes/header.php';
     <div class="modal-dialog modal-xl">
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
-                <h5 class="modal-title text-white" id="modalTitle">Add New Snippet</h5>
+                <h5 class="modal-title text-white" id="modalTitle">Přidat nový snipet</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" id="snippetForm">
@@ -70,25 +70,25 @@ include 'includes/header.php';
                     <input type="hidden" name="action" value="add_snippet">
                     <input type="hidden" name="snippet_id" id="snippetId" value="">
                     <div class="mb-3">
-                        <label class="form-label text-white-50 small">Title</label>
+                        <label class="form-label text-white-50 small">Název</label>
                         <input type="text" name="title" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-white-50 small">Description</label>
+                        <label class="form-label text-white-50 small">Popis</label>
                         <textarea name="description" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="2"></textarea>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label text-white-50 small">Language</label>
+                            <label class="form-label text-white-50 small">Jazyk</label>
                             <select name="language_id" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
-                                <option value="" class="text-dark">Select Language</option>
+                                <option value="" class="text-dark">Vybrat jazyk</option>
                                 <?php foreach ($languages as $lang): ?>
                                     <option value="<?php echo $lang['id']; ?>" class="text-dark"><?php echo htmlspecialchars($lang['name']); ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label text-white-50 small">Tags</label>
+                            <label class="form-label text-white-50 small">Štítky</label>
                             <div class="d-flex flex-wrap gap-2 pt-1">
                                 <?php foreach ($tags as $tag): ?>
                                     <div class="form-check form-check-inline">
@@ -100,13 +100,13 @@ include 'includes/header.php';
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-white-50 small">Code</label>
+                        <label class="form-label text-white-50 small">Kód</label>
                         <textarea name="code" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none font-monospace" rows="10" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-top border-light border-opacity-10">
-                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-light px-4" id="submitBtn">Save Snippet</button>
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zrušit</button>
+                    <button type="submit" class="btn btn-light px-4" id="submitBtn">Uložit snipet</button>
                 </div>
             </form>
         </div>
@@ -118,21 +118,21 @@ include 'includes/header.php';
     <div class="modal-dialog modal-xl">
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
-                <h5 class="modal-title text-white mb-0" id="viewModalTitle">View Snippet</h5>
+                <h5 class="modal-title text-white mb-0" id="viewModalTitle">Zobrazit snipet</h5>
                 <span class="badge tag-badge ms-3" id="viewModalLanguage"></span>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
                 <div class="snippet-code-wrapper position-relative m-3">
                     <button class="btn btn-sm btn-outline-light copy-btn" onclick="copyToClipboard(this, 'viewModalCode')">
-                        Copy
+                        Kopírovat
                     </button>
                     <pre><code id="viewModalCode" class=""></code></pre>
                 </div>
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
                 <div id="viewModalTags" class="snippet-tags m-0"></div>
-                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zavřít</button>
             </div>
         </div>
     </div>
@@ -141,9 +141,9 @@ include 'includes/header.php';
 <div class="row g-4" id="snippetsGrid">
     <?php if (empty($snippets)): ?>
         <div class="col-12 text-center text-white-50 py-5">
-            <h3>No snippets found.</h3>
-            <p>Start by adding some code snippets!</p>
-            <a href="settings.php" class="btn btn-outline-light">Manage Tags & Languages</a>
+            <h3>Nebyly nalezeny žádné snipety.</h3>
+            <p>Začněte přidáním nějakých snipetů!</p>
+            <a href="settings.php" class="btn btn-outline-light">Spravovat štítky a jazyky</a>
         </div>
     <?php else: ?>
         <?php foreach ($snippets as $index => $snippet): ?>
@@ -157,13 +157,13 @@ include 'includes/header.php';
                             <div class="d-flex gap-2" onclick="event.stopPropagation()">
                                 <button class="btn btn-sm btn-link text-white-50 p-0" 
                                         onclick="openEditModal(<?php echo htmlspecialchars(json_encode($snippet), ENT_QUOTES, 'UTF-8'); ?>)"
-                                        title="Edit">
+                                        title="Upravit">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
-                                <form method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this snippet?');">
+                                <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento snipet smazat?');">
                                     <input type="hidden" name="action" value="delete_snippet">
                                     <input type="hidden" name="snippet_id" value="<?php echo $snippet['id']; ?>">
-                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Delete">
+                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Smazat">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -176,7 +176,7 @@ include 'includes/header.php';
                         
                         <div class="snippet-code-wrapper mb-3 flex-grow-1">
                             <button class="btn btn-sm btn-outline-light copy-btn" onclick="event.stopPropagation(); copyToClipboard(this, 'snippet-<?php echo $index; ?>')">
-                                Copy
+                                Kopírovat
                             </button>
                             <pre><code id="snippet-<?php echo $index; ?>" class="language-<?php echo htmlspecialchars($snippet['prism_class'] ?? 'none'); ?>"><?php echo htmlspecialchars($snippet['code']); ?></code></pre>
                         </div>

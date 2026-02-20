@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         navigator.clipboard.writeText(text).then(() => {
             const originalText = btn.innerHTML;
-            btn.innerHTML = 'Copied!';
+            btn.innerHTML = 'Zkopírováno!';
             btn.classList.replace('btn-outline-light', 'btn-success');
             
             setTimeout(() => {
@@ -97,8 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const snippetIdInput = document.getElementById('snippetId');
 
     window.openEditModal = (snippet) => {
-        modalTitle.textContent = 'Edit Snippet';
-        submitBtn.textContent = 'Update Snippet';
+        modalTitle.textContent = 'Upravit snipet';
+        submitBtn.textContent = 'Aktualizovat snipet';
         snippetIdInput.value = snippet.id;
 
         snippetForm.title.value = snippet.title;
@@ -120,8 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const addSnippetModal = document.getElementById('addSnippetModal');
     if (addSnippetModal) {
         addSnippetModal.addEventListener('hidden.bs.modal', () => {
-            modalTitle.textContent = 'Add New Snippet';
-            submitBtn.textContent = 'Save Snippet';
+            modalTitle.textContent = 'Přidat nový snipet';
+            submitBtn.textContent = 'Uložit snipet';
             snippetIdInput.value = '';
             snippetForm.reset();
         });
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        document.getElementById('tagSubmitBtn').textContent = 'Update Tag';
+        document.getElementById('tagSubmitBtn').textContent = 'Aktualizovat štítek';
         document.getElementById('tagName').focus();
     };
 
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('langId').value = lang.id;
         document.getElementById('langName').value = lang.name;
         document.getElementById('langClass').value = lang.prism_class;
-        document.getElementById('langSubmitBtn').textContent = 'Update Language';
+        document.getElementById('langSubmitBtn').textContent = 'Aktualizovat jazyk';
         document.getElementById('langName').focus();
     };
 
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('termTitle').value = cmd.title;
         document.getElementById('termCommand').value = cmd.command;
         document.getElementById('termDescription').value = cmd.description;
-        document.getElementById('termSubmitBtn').textContent = 'Update Command';
+        document.getElementById('termSubmitBtn').textContent = 'Aktualizovat příkaz';
         document.getElementById('termTitle').focus();
     };
 
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const viewModalLanguage = document.getElementById('viewModalLanguage');
         if (viewModalLanguage) {
-            viewModalLanguage.textContent = snippet.language_name || 'Plain Text';
+            viewModalLanguage.textContent = snippet.language_name || 'Prostý text';
         }
 
         if (viewModalTags) {

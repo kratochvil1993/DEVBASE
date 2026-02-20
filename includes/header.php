@@ -35,32 +35,31 @@
         <div class="ms-auto d-flex align-items-center">
             <div class="form-check form-switch mb-0">
                 <input class="form-check-input" type="checkbox" id="themeToggle">
-                <label class="form-check-label text-white small" for="themeToggle">Dark Mode</label>
+                <label class="form-check-label text-white small" for="themeToggle">Tmavý režim</label>
             </div>
         </div>
     </div>
 </nav>
 
-<div class="offcanvas offcanvas-start offcanvas-glass text-white" tabindex="-1" id="offcanvasNavbar">
-    <div class="offcanvas-header border-bottom border-light border-opacity-25">
+<div class="offcanvas offcanvas-start offcanvas-glass text-white" tabindex="-1" id="offcanvasNavbar" style="overflow: hidden;">
+    <div id="bgcircle-primary"></div>
+    <div id="bgcircle-pruple"></div>
+    <div class="offcanvas-header border-bottom border-light border-opacity-25" style="position: relative; z-index: 1;">
         <h5 class="offcanvas-title fw-bold" id="offcanvasNavbarLabel">Menu</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="offcanvas-body">
+    <div class="offcanvas-body" style="position: relative; z-index: 1;">
         <div class="d-grid gap-2">
             <a href="index.php" class="sidebar-link active">
-                <i class="bi bi-house-door me-2"></i> Dashboard (Úvod)
+                <i class="bi bi-house-door me-2"></i> Snipety
             </a>
             <a href="settings.php" class="sidebar-link">
-                <i class="bi bi-gear me-2"></i> Settings (Nastavení)
+                <i class="bi bi-gear me-2"></i> Nastavení
             </a>
             <a href="help.php" class="sidebar-link">
-                <i class="bi bi-question-circle me-2"></i> Help (Napověda)
+                <i class="bi bi-question-circle me-2"></i> Nápověda
             </a>
-            <div class="mt-4 px-3">
-                <h6 class="text-uppercase small opacity-50">Tags</h6>
-                <!-- Tags will be populated here if needed -->
-            </div>
+
         </div>
     </div>
 </div>

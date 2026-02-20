@@ -30,23 +30,23 @@ include 'includes/header.php';
 
 <div class="row">
     <div class="col-12 mb-4">
-        <h2 class="text-white fw-bold">Settings</h2>
-        <p class="text-white-50">Manage your snippet categories and languages.</p>
+        <h2 class="text-white fw-bold">Nastavení</h2>
+        <p class="text-white-50">Spravujte své kategorie snipetů a jazyky.</p>
     </div>
 
     <!-- Tag Management -->
     <div class="col-md-6 mb-4">
         <div class="glass-card p-4 h-100">
-            <h4 class="text-white mb-4">Tag Management</h4>
+            <h4 class="text-white mb-4">Správa štítků</h4>
             
             <form method="POST" class="mb-4" id="tagForm">
                 <input type="hidden" name="action" value="save_tag">
                 <input type="hidden" name="id" id="tagId" value="">
                 <div class="input-group">
-                    <input type="color" id="tagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Choose color or leave empty">
-                    <input type="text" name="color" id="tagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex (empty is none)" style="max-width: 180px;">
-                    <input type="text" name="name" id="tagName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Tag Name" required>
-                    <button class="btn btn-outline-light" type="submit" id="tagSubmitBtn">Add Tag</button>
+                    <input type="color" id="tagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Vyberte barvu nebo nechte prázdné">
+                    <input type="text" name="color" id="tagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex (prázdné je bez barvy)" style="max-width: 180px;">
+                    <input type="text" name="name" id="tagName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Název štítku" required>
+                    <button class="btn btn-outline-light" type="submit" id="tagSubmitBtn">Přidat štítek</button>
                 </div>
             </form>
 
@@ -64,13 +64,13 @@ include 'includes/header.php';
                         </span>
                         <div class="d-flex gap-2">
                             <button class="btn btn-sm btn-link text-white-50 p-0 text-decoration-none" onclick='editTag(<?php echo json_encode($tag); ?>)'>
-                                <i class="bi bi-pencil"></i> Edit
+                                <i class="bi bi-pencil"></i> Upravit
                             </button>
-                            <form method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this tag?');">
+                            <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento štítek smazat?');">
                                 <input type="hidden" name="action" value="delete_tag">
                                 <input type="hidden" name="id" value="<?php echo $tag['id']; ?>">
                                 <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
-                                    <i class="bi bi-trash"></i> Delete
+                                    <i class="bi bi-trash"></i> Smazat
                                 </button>
                             </form>
                         </div>
@@ -83,16 +83,16 @@ include 'includes/header.php';
     <!-- Language Management -->
     <div class="col-md-6 mb-4">
         <div class="glass-card p-4 h-100">
-            <h4 class="text-white mb-4">Language Management</h4>
+            <h4 class="text-white mb-4">Správa jazyků</h4>
             
             <form method="POST" class="mb-4" id="langForm">
                 <input type="hidden" name="action" value="save_language">
                 <input type="hidden" name="id" id="langId" value="">
                 <div class="mb-3">
-                    <input type="text" name="name" id="langName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none mb-2" placeholder="Language Name" required>
-                    <input type="text" name="prism_class" id="langClass" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Prism Class" required>
+                    <input type="text" name="name" id="langName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none mb-2" placeholder="Název jazyka" required>
+                    <input type="text" name="prism_class" id="langClass" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Třída Prism" required>
                 </div>
-                <button class="btn btn-outline-light w-100" type="submit" id="langSubmitBtn">Add Language</button>
+                <button class="btn btn-outline-light w-100" type="submit" id="langSubmitBtn">Přidat jazyk</button>
             </form>
 
             <div class="list-group list-group-flush bg-transparent">
@@ -104,13 +104,13 @@ include 'includes/header.php';
                         </div>
                         <div class="d-flex gap-2">
                             <button class="btn btn-sm btn-link text-white-50 p-0 text-decoration-none" onclick='editLanguage(<?php echo json_encode($lang); ?>)'>
-                                <i class="bi bi-pencil"></i> Edit
+                                <i class="bi bi-pencil"></i> Upravit
                             </button>
-                            <form method="POST" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                            <form method="POST" class="d-inline" onsubmit="return confirm('Jste si jisti?');">
                                 <input type="hidden" name="action" value="delete_language">
                                 <input type="hidden" name="id" value="<?php echo $lang['id']; ?>">
                                 <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
-                                    <i class="bi bi-trash"></i> Delete
+                                    <i class="bi bi-trash"></i> Smazat
                                 </button>
                             </form>
                         </div>
