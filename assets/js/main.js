@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const htmlElement = document.documentElement;
     
     // Load saved theme
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedTheme = localStorage.getItem('theme') || 'dark';
     htmlElement.setAttribute('data-bs-theme', savedTheme);
     if (themeToggle) {
         themeToggle.checked = savedTheme === 'dark';
@@ -171,6 +171,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.openViewModal = (snippet) => {
         if (viewModalTitle) viewModalTitle.textContent = snippet.title;
+        
+        const viewModalLanguage = document.getElementById('viewModalLanguage');
+        if (viewModalLanguage) {
+            viewModalLanguage.textContent = snippet.language_name || 'Plain Text';
+        }
+
         if (viewModalCode) {
             viewModalCode.textContent = snippet.code;
             viewModalCode.className = 'language-' + (snippet.prism_class || 'none');

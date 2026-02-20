@@ -118,7 +118,8 @@ include 'includes/header.php';
     <div class="modal-dialog modal-xl">
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
-                <h5 class="modal-title text-white" id="viewModalTitle">View Snippet</h5>
+                <h5 class="modal-title text-white mb-0" id="viewModalTitle">View Snippet</h5>
+                <span class="badge tag-badge ms-3" id="viewModalLanguage"></span>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
@@ -163,7 +164,6 @@ include 'includes/header.php';
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
-                                <span class="badge tag-badge"><?php echo htmlspecialchars($snippet['language_name'] ?? 'Plain Text'); ?></span>
                             </div>
                         </div>
                         
@@ -178,13 +178,7 @@ include 'includes/header.php';
                             <pre><code id="snippet-<?php echo $index; ?>" class="language-<?php echo htmlspecialchars($snippet['prism_class'] ?? 'none'); ?>"><?php echo htmlspecialchars($snippet['code']); ?></code></pre>
                         </div>
                         
-                        <div class="snippet-tags mt-auto">
-                            <?php foreach ($snippet['tags'] as $tag): ?>
-                                <span class="badge tag-badge" <?php if (!empty($tag['color'])) echo 'style="background-color: ' . htmlspecialchars($tag['color']) . ' !important; color: #fff;"'; ?>>
-                                    <?php echo htmlspecialchars($tag['name']); ?>
-                                </span>
-                            <?php endforeach; ?>
-                        </div>
+
                     </div>
                 </div>
             </div>

@@ -1,25 +1,35 @@
 :root {
-    --glass-bg: rgba(255, 255, 255, 0.2);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-blur: blur(10px);
-    --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    /* More transparent white for sharper glass effect */
+    --glass-bg: rgba(255, 255, 255, 0.12);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-blur: blur(14px);
+    /* Softer, cleaner shadow for light mode */
+    --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+
+    /* Vibrant, premium background gradient for light mode */
+    --bg-gradient: linear-gradient(135deg, #4776E6 0%, #8E54E9 100%);
+    
+    /* Brighter, glowing circles to eliminate the washed-out look */
+    --circle-purple: rgba(255, 59, 255, 0.4); /* Magenta glow */
+    --circle-primary: rgba(59, 217, 255, 0.5); /* Cyan glow */
 }
 
 [data-bs-theme="dark"] {
     --glass-bg: rgba(0, 0, 0, 0.4);
     --glass-border: rgba(255, 255, 255, 0.1);
     --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+
+    /* Original dark mode preserved */
+    --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --circle-purple: rgba(69, 22, 105, 0.6);
+    --circle-primary: rgba(0, 229, 130, 0.35);
 }
 
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--bg-gradient);
     min-height: 100vh;
     font-family: 'Inter', sans-serif;
     transition: background 0.5s ease;
-}
-
-[data-bs-theme="dark"] body {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
 }
 
 nav .logo {
@@ -123,11 +133,12 @@ pre[class*="language-"] {
     filter: blur(150px);
     width: 500px;
     height: 500px;
-    background-color: rgba(69, 22, 105, 0.6); /* Softened purple */
+    background-color: var(--circle-purple);
     -webkit-animation: purpleGradient 30s ease-in-out alternate infinite;
     animation: purpleGradient 30s ease-in-out alternate infinite;
     top: 10%;
     left: 20%;
+    transition: background-color 0.5s ease;
 }
 
 @-webkit-keyframes purpleGradient {
@@ -162,11 +173,12 @@ pre[class*="language-"] {
     filter: blur(150px);
     width: 300px;
     height: 300px;
-    background-color: rgba(0, 229, 130, 0.35); /* Softened #00E582 green */
+    background-color: var(--circle-primary);
     -webkit-animation: primaryGradient 45s ease-in-out alternate infinite;
     animation: primaryGradient 45s ease-in-out alternate infinite;
     bottom: 10%;
     right: 15%;
+    transition: background-color 0.5s ease;
 }
 
 @-webkit-keyframes primaryGradient {
