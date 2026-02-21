@@ -1,3 +1,4 @@
+<?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
@@ -43,11 +44,24 @@
             </span>
             <span>DevBase</span>
         </a>
+
+        <?php if (getSetting('notes_enabled', '1') == '1'): ?>
+        <div class="d-none d-lg-flex position-absolute start-50 translate-middle-x">
+            <div class="nav-toggle-group">
+                <a href="index.php" class="nav-toggle-btn <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?>">
+                    <i class="bi bi-code-slash me-2"></i> Snippets
+                </a>
+                <a href="notes.php" class="nav-toggle-btn <?php echo $currentPage == 'notes.php' ? 'active' : ''; ?>">
+                    <i class="bi bi-journal-text me-2"></i> Notes
+                </a>
+            </div>
+        </div>
+        <?php endif; ?>
         
         <div class="ms-auto d-flex align-items-center">
             <div class="form-check form-switch mb-0">
                 <input class="form-check-input" type="checkbox" id="themeToggle">
-                <label class="form-check-label text-white small" for="themeToggle">Tmavý režim</label>
+                <label class="form-check-label text-white small" for="themeToggle">Dark</label>
             </div>
         </div>
     </div>
@@ -62,17 +76,16 @@
     </div>
     <div class="offcanvas-body" style="position: relative; z-index: 1;">
         <div class="d-grid gap-2">
-<?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
             <a href="index.php" class="sidebar-link <?php echo $currentPage == 'index.php' ? 'active' : ''; ?>">
-                <i class="bi bi-house-door me-2"></i> Snipety
+                <i class="bi bi-code-slash me-2"></i> Snippets
             </a>
             <?php if (getSetting('notes_enabled', '1') == '1'): ?>
             <a href="notes.php" class="sidebar-link <?php echo $currentPage == 'notes.php' ? 'active' : ''; ?>">
-                <i class="bi bi-journal-text me-2"></i> Poznámky
+                <i class="bi bi-journal-text me-2"></i> Notes
             </a>
             <?php endif; ?>
             <a href="manage.php" class="sidebar-link <?php echo $currentPage == 'manage.php' ? 'active' : ''; ?>">
-                <i class="bi bi-list-task me-2"></i> Správa
+                <i class="bi bi-list-task me-2"></i> Správa snippetů
             </a>
             <a href="settings.php" class="sidebar-link <?php echo $currentPage == 'settings.php' ? 'active' : ''; ?>">
                 <i class="bi bi-gear me-2"></i> Nastavení

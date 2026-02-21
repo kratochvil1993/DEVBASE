@@ -30,12 +30,12 @@ include 'includes/header.php';
 
 <div class="row mb-5 align-items-center">
     <div class="col-md-10 mx-auto text-center">
-        <h1 class="text-white fw-bold mb-4">Moje Poznámky</h1>
+        <!-- <h1 class="text-white fw-bold mb-4">Moje Poznámky</h1> -->
         <div class="d-flex justify-content-center flex-wrap gap-2">
             <button class="btn btn-add-snipet rounded-pill px-4 py-2" id="newNoteBtn" data-bs-toggle="modal" data-bs-target="#noteModal" onclick="openAddNoteModal()">
                 <i class="bi bi-plus-lg me-2"></i> Nová poznámka
             </button>
-            <button class="btn btn-outline-primary rounded-pill px-4 py-2" id="editOrderBtn" onclick="toggleSortingMode()">
+            <button class="btn btn-edit-order rounded-pill px-4 py-2" id="editOrderBtn" onclick="toggleSortingMode()">
                 <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
             </button>
             <button class="btn btn-success rounded-pill px-4 py-2 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">

@@ -30,7 +30,7 @@ include 'includes/header.php';
 
 <div class="row mb-3 align-items-center">
     <div class="col-md-8 mx-auto">
-        <div class="glass-card p-3 d-flex gap-3">
+        <div class="glass-card p-2 d-flex gap-3">
             <div class="input-group flex-grow-1">
                 <span class="input-group-text bg-transparent border-0 text-white">
                     <i class="bi bi-search"></i>
@@ -142,6 +142,7 @@ include 'includes/header.php';
 <div class="row g-4" id="snippetsGrid">
     <?php if (empty($snippets)): ?>
         <div class="col-12 text-center text-white-50 py-5">
+            <i class="bi bi-code-slash display-1 mb-3 d-block"></i>
             <h3>Nebyly nalezeny žádné snipety.</h3>
             <p>Začněte přidáním nějakých snipetů!</p>
             <a href="settings.php" class="btn btn-outline-light">Spravovat štítky a jazyky</a>
