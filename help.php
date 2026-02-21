@@ -183,8 +183,7 @@ console.log('Hello World');
                 </li>
             </ul>
         </div>
-            </ul>
-        </div>
+
         <div class="glass-card p-4 mt-4">
             <h4 class="text-white mb-4"><i class="bi bi-shield-lock me-2"></i> Zabezpečení a Soukromí</h4>
             <ul class="text-white-50 small list-unstyled">
@@ -207,7 +206,6 @@ console.log('Hello World');
             </ul>
         </div>
     </div>
-
 </div>
 </div>
 
