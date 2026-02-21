@@ -368,4 +368,60 @@ function deleteTodo($id) {
     $sql = "DELETE FROM todos WHERE id = $id";
     return $conn->query($sql);
 }
+
+function getGlobalStats() {
+    global $conn;
+    
+    $stats = [
+        'total_snippets' => 0,
+        'total_notes' => 0,
+        'total_todos' => 0,
+        'last_added' => null,
+        'top_tags' => []
+    ];
+    
+    // Total Snippets
+    $res = $conn->query("SELECT COUNT(*) as count FROM snippets");
+    if ($res) $stats['total_snippets'] = $res->fetch_assoc()['count'];
+    
+    // Total Notes
+    $res = $conn->query("SELECT COUNT(*) as count FROM notes");
+    if ($res) $stats['total_notes'] = $res->fetch_assoc()['count'];
+
+    // Total Todos (active)
+    $res = $conn->query("SELECT COUNT(*) as count FROM todos WHERE is_archived = 0");
+    if ($res) $stats['total_todos'] = $res->fetch_assoc()['count'];
+    
+    // Last Added
+    $res = $conn->query("SELECT title, created_at FROM (
+        SELECT title, created_at FROM snippets
+        UNION ALL
+        SELECT title, created_at FROM notes
+    ) as combined ORDER BY created_at DESC LIMIT 1");
+    if ($res) $stats['last_added'] = $res->fetch_assoc();
+    
+    // Top Tags
+    $res = $conn->query("SELECT t.name, t.color, (
+        (SELECT COUNT(*) FROM snippet_tags st WHERE st.tag_id = t.id) +
+        (SELECT COUNT(*) FROM note_tags nt WHERE nt.tag_id = t.id) +
+        (SELECT COUNT(*) FROM todo_tags tt WHERE tt.tag_id = t.id)
+    ) as usage_count
+    FROM tags t
+    WHERE (
+        (SELECT COUNT(*) FROM snippet_tags st WHERE st.tag_id = t.id) +
+        (SELECT COUNT(*) FROM note_tags nt WHERE nt.tag_id = t.id) +
+        (SELECT COUNT(*) FROM todo_tags tt WHERE tt.tag_id = t.id)
+    ) > 0
+    ORDER BY usage_count DESC
+    LIMIT 4");
+    
+    if ($res) {
+        while ($row = $res->fetch_assoc()) {
+            $stats['top_tags'][] = $row;
+        }
+    }
+    
+    return $stats;
+}
+
 ?>

@@ -121,7 +121,35 @@
             </a>
 
         </div>
+
+        <?php $stats = getGlobalStats(); ?>
+        <div class="mt-4 pt-4 border-top border-light border-opacity-10">
+            <h6 class="text-white-50 small text-uppercase fw-bold mb-3 px-2" style="font-size: 0.7rem; letter-spacing: 1px;">Statistiky</h6>
+            
+            <div class="row g-2 px-1">
+                <div class="col-4">
+                    <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
+                        <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Snippetů</div>
+                        <div class="h6 fw-bold text-white mb-0"><?php echo $stats['total_snippets']; ?></div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
+                        <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Poznámek</div>
+                        <div class="h6 fw-bold text-white mb-0"><?php echo $stats['total_notes']; ?></div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
+                        <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Úkolů</div>
+                        <div class="h6 fw-bold text-white mb-0"><?php echo $stats['total_todos']; ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
+
 
 <main class="container-fluid py-4">
