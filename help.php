@@ -84,6 +84,10 @@ console.log('Hello World');
                     Vyber tag (např. `React`) a pak začni psát. Filtr se aplikuje na už vyfiltrované výsledky.
                 </li>
                 <li class="mb-3">
+                    <strong class="text-white d-block">Hledání v poznámkách:</strong>
+                    Stejně jako u snipetů, i v sekci **Poznámky** najdete vyhledávací pole, které filtruje karty v reálném čase podle názvu i obsahu.
+                </li>
+                <li class="mb-3">
                     <strong class="text-white d-block">Detailní náhled:</strong>
                     Kliknutím na kartu snipetu (mimo tlačítka) otevřete **detailní náhled** v modálním okně, který je ideální pro čtení dlouhých kódů.
                 </li>
@@ -95,7 +99,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Barvy štítků:</strong>
-                    V **Nastavení** můžete každému štítku přiřadit barvu. Štítky jsou pak barevně odlišeny v přehledu i při filtrování.
+                    V **Nastavení** můžete každému štítku přiřadit barvu. Barva musí být ve formátu HEX (např. `#ff0000`). Štítky jsou pak barevně odlišeny v přehledu i při filtrování.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Více tagů najednou:</strong>

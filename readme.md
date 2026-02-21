@@ -4,10 +4,10 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 
 ## Vlastnosti a funkce
 
-- **Barevné štítky**: Každému štítku můžete přiřadit vlastní barvu pro okamžitou vizuální identifikaci typu kódu či projektu.
-- **Sekce Poznámky**: Samostatný prostor pro vaše nápady, úkoly nebo SQL s podporou zvýraznění syntaxe a vlastním řazením.
+- **Barevné štítky**: Každému štítku můžete přiřadit vlastní barvu pomocí validního HEX kódu pro okamžitou vizuální identifikaci typu kódu či projektu.
+- **Sekce Poznámky**: Samostatný prostor pro vaše nápady, úkoly nebo SQL s podporou zvýraznění syntaxe, vyhledáváním a vlastním řazením.
 - **Vlastní řazení (Drag & Drop)**: V sekci poznámek si můžete libovolně měnit pořadí karet jednoduchým přetažením v režimu úprav.
-- **Rychlé vyhledávání**: Fulltextové vyhledávání napříč názvy, popisy i samotným kódem a rychlé filtrování přes štítky.
+- **Rychlé vyhledávání**: Inteligentní vyhledávání v reálném čase napříč oběma sekcemi (snipety i poznámky), které prohledává názvy i obsah.
 - **Detailní náhled**: Snipety lze otevřít ve velkém modálním okně pro pohodlné čtení dlouhých bloků kódu.
 - **Tmavý / Světlý režim**: Možnost hladkého přepínání témat přímo v side-baru s automatickým ukládáním volby.
 - **Kopírování v jednom kroku**: Tlačítka pro okamžité uložení bloku zdrojového kódu do schránky (clipboard).
