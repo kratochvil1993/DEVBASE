@@ -18,6 +18,8 @@
 </script>
 <!-- Marked.js pro Markdown Rendering -->
 <script src="assets/vendor/marked/marked.min.js"></script>
+<!-- Quill.js core -->
+<script src="assets/vendor/quill/quill.js"></script>
 <!-- Custom JS -->
 <script src="assets/js/main.js"></script>
 </body>

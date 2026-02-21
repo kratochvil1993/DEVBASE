@@ -11,9 +11,8 @@ if (getSetting('notes_enabled', '1') == '0') {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_note') {
         $id = !empty($_POST['note_id']) ? $_POST['note_id'] : null;
-        $lang_id = !empty($_POST['language_id']) ? $_POST['language_id'] : null;
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
-        saveNote($_POST['title'], $_POST['content'], $lang_id, $tags, $id);
+        saveNote($_POST['title'], $_POST['content'], null, $tags, $id);
     } elseif ($_POST['action'] == 'delete_note') {
         deleteNote($_POST['note_id']);
     }
@@ -146,9 +145,9 @@ include 'includes/header.php';
                                 </form>
                             </div>
                         </div>
-                        <p class="card-text text-white-50 small mb-0" style="display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; font-family: var(--bs-font-monospace);">
-                            <?php echo nl2br(htmlspecialchars($note['content'])); ?>
-                        </p>
+                        <div class="card-text text-white-50 small mb-0 quill-preview" style="display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;">
+                            <?php echo $note['content']; ?>
+                        </div>
                     </div>
                     <div class="card-footer bg-transparent border-0 pt-0">
                         <small class="text-white-25" style="font-size: 0.65rem;">
@@ -179,13 +178,12 @@ include 'includes/header.php';
                     <button class="btn btn-sm btn-outline-light copy-btn shadow-sm z-3" onclick="copyNoteContent(this)" style="position: absolute; right: 10px; top: 10px; z-index: 10;">
                         copy
                     </button>
-                    <pre class="m-0 border-0 bg-transparent rounded-0" style="max-height: 70vh;"><code id="viewNoteContent" class="language-none"></code></pre>
+                    <div id="viewNoteContent" class="p-3" style="max-height: 70vh; overflow-y: auto;"></div>
                 </div>
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     <small id="viewNoteDate" class="text-white-25 m-0"></small>
-                    <span id="viewNoteLang" class="badge tag-badge m-0"></span>
                 </div>
                 <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zavřít</button>
             </div>
@@ -206,24 +204,14 @@ include 'includes/header.php';
                     <input type="hidden" name="action" value="add_note">
                     <input type="hidden" name="note_id" id="noteId" value="">
                     <div class="row g-3">
-                        <div class="col-md-8">
+                        <div class="col-12">
                             <label class="form-label text-white-50 small">Název</label>
                             <input type="text" name="title" id="noteTitleInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required placeholder="Napište název...">
                         </div>
-                        <div class="col-md-4">
-                            <label class="form-label text-white-50 small">Jazyk (volitelně)</label>
-                            <select name="language_id" id="noteLanguageInput" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
-                                <option value="" class="bg-dark">Bez formátování</option>
-                                <?php foreach ($languages as $lang): ?>
-                                    <option value="<?php echo $lang['id']; ?>" class="bg-dark" data-prism="<?php echo $lang['prism_class']; ?>">
-                                        <?php echo htmlspecialchars($lang['name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
                         <div class="col-12">
                             <label class="form-label text-white-50 small">Obsah</label>
-                            <textarea name="content" id="noteContentInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="10" required placeholder="Napište vaši poznámku..."></textarea>
+                            <div id="quillEditor" style="height: 300px; background: transparent; color: white;"></div>
+                            <input type="hidden" name="content" id="noteContentInput">
                         </div>
                         <div class="col-12">
                             <label class="form-label text-white-50 small d-block">Štítky</label>
@@ -261,6 +249,30 @@ include 'includes/header.php';
 <script>
 let sortable = null;
 let isSortingMode = false;
+
+let quill;
+
+document.addEventListener('DOMContentLoaded', function() {
+    quill = new Quill('#quillEditor', {
+        theme: 'snow',
+        placeholder: 'Napište vaši poznámku...',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'clean']
+            ]
+        }
+    });
+
+    document.getElementById('noteForm').addEventListener('submit', function() {
+        if (quill) {
+            document.getElementById('noteContentInput').value = quill.root.innerHTML;
+        }
+    });
+});
 
 function toggleSortingMode() {
     isSortingMode = !isSortingMode;
@@ -336,17 +348,14 @@ function openViewNoteModal(note) {
     const titleEl = document.getElementById('viewNoteModalTitle');
     const contentEl = document.getElementById('viewNoteContent');
     const dateEl = document.getElementById('viewNoteDate');
-    const langEl = document.getElementById('viewNoteLang');
     const tagsWrapper = document.getElementById('viewNoteTags');
     
     titleEl.innerText = note.title;
-    contentEl.textContent = note.content;
+    contentEl.innerHTML = note.content;
     dateEl.innerText = 'Vytvořeno: ' + new Date(note.created_at).toLocaleString('cs-CZ');
     
-    // Set language class for Prism
-    contentEl.className = note.prism_class ? 'language-' + note.prism_class : 'language-none';
-    langEl.innerText = note.language_name || 'Bez formátování';
-    langEl.style.display = note.language_name ? 'inline-block' : 'none';
+    // Set class for styling
+    contentEl.className = 'p-3';
 
     // Tags
     if (tagsWrapper) {
@@ -365,7 +374,8 @@ function openViewNoteModal(note) {
     
     // Highlight
     if (typeof Prism !== 'undefined') {
-        Prism.highlightElement(contentEl);
+        const codeBlocks = contentEl.querySelectorAll('pre');
+        codeBlocks.forEach(block => Prism.highlightElement(block));
     }
     
     var myModal = new bootstrap.Modal(document.getElementById('viewNoteModal'));
@@ -373,7 +383,7 @@ function openViewNoteModal(note) {
 }
 
 function copyNoteContent(btn) {
-    const content = document.getElementById('viewNoteContent').textContent;
+    const content = document.getElementById('viewNoteContent').innerText;
     navigator.clipboard.writeText(content).then(() => {
         const originalText = btn.innerHTML;
         btn.innerHTML = 'copied!';
@@ -390,7 +400,7 @@ function openAddNoteModal() {
     document.getElementById('noteId').value = '';
     document.getElementById('noteTitleInput').value = '';
     document.getElementById('noteContentInput').value = '';
-    document.getElementById('noteLanguageInput').value = '';
+    quill.root.innerHTML = '';
     document.getElementById('noteSubmitBtn').innerText = 'Uložit poznámku';
 
     // Reset tags
@@ -403,7 +413,7 @@ function openEditNoteModal(note) {
     document.getElementById('noteId').value = note.id;
     document.getElementById('noteTitleInput').value = note.title;
     document.getElementById('noteContentInput').value = note.content;
-    document.getElementById('noteLanguageInput').value = note.language_id || '';
+    quill.root.innerHTML = note.content;
     document.getElementById('noteSubmitBtn').innerText = 'Uložit změny';
 
     // Set tags

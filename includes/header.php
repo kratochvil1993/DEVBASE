@@ -25,6 +25,8 @@
     <link href="assets/vendor/inter/css/inter.css" rel="stylesheet">
     <!-- Prism.js Syntax Highlighting (Tomorrow Night theme) -->
     <link href="assets/vendor/prism/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <!-- Quill.js CSS -->
+    <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="assets/css/style.css" rel="stylesheet">
 </head>

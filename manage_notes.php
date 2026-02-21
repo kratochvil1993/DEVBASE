@@ -12,8 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_note') {
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
         $id = !empty($_POST['note_id']) ? $_POST['note_id'] : null;
-        $language_id = !empty($_POST['language_id']) ? $_POST['language_id'] : null;
-        saveNote($_POST['title'], $_POST['content'], $language_id, $tags, $id);
+        saveNote($_POST['title'], $_POST['content'], null, $tags, $id);
     } elseif ($_POST['action'] == 'delete_note') {
         deleteNote($_POST['note_id']);
     }
@@ -84,16 +83,15 @@ include 'includes/header.php';
                     <thead class="border-bottom border-light border-opacity-25" style="background: rgba(255,255,255,0.05);">
                         <tr>
                             <th scope="col" class="py-3 px-4 fw-normal text-white-50" style="width: 5%;">ID</th>
-                            <th scope="col" class="py-3 px-4 fw-normal text-white-50">Název</th>
-                            <th scope="col" class="py-3 px-4 fw-normal text-white-50" style="width: 15%;">Jazyk</th>
-                            <th scope="col" class="py-3 px-4 fw-normal text-white-50" style="width: 30%;">Štítky</th>
+                            <th scope="col" class="py-3 px-4 fw-normal text-white-50" style="width: 45%;">Název</th>
+                            <th scope="col" class="py-3 px-4 fw-normal text-white-50" style="width: 35%;">Štítky</th>
                             <th scope="col" class="py-3 px-4 fw-normal text-white-50 text-end" style="width: 15%;">Akce</th>
                         </tr>
                     </thead>
                     <tbody id="manageNotesGrid">
                         <?php if (empty($notes)): ?>
                             <tr>
-                                <td colspan="5" class="text-center text-white-50 py-5">
+                                <td colspan="4" class="text-center text-white-50 py-5">
                                     <i class="bi bi-journal-x fs-2 mb-3 d-block"></i>
                                     Zatím nemáte žádné poznámky
                                 </td>
@@ -109,17 +107,8 @@ include 'includes/header.php';
                                     <td class="px-4 py-3 fw-medium">
                                         <?php echo htmlspecialchars($note['title']); ?>
                                         <div class="small text-white-50 fw-light mt-1 text-truncate" style="max-width: 350px;">
-                                            <?php echo htmlspecialchars(substr($note['content'], 0, 100)) . (strlen($note['content']) > 100 ? '...' : ''); ?>
+                                            <?php echo htmlspecialchars(substr(strip_tags($note['content']), 0, 100)) . (strlen(strip_tags($note['content'])) > 100 ? '...' : ''); ?>
                                         </div>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <?php if (!empty($note['language_name'])): ?>
-                                            <span class="badge border border-light border-opacity-25 text-white fw-normal font-monospace">
-                                                <?php echo htmlspecialchars($note['language_name']); ?>
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="text-white-50 small fst-italic">Bez formátování</span>
-                                        <?php endif; ?>
                                     </td>
                                     <td class="px-4 py-3">
                                         <div class="d-flex flex-wrap gap-1">
@@ -211,7 +200,9 @@ function openAddNoteManageModal() {
     document.getElementById('noteId').value = '';
     document.getElementById('noteTitleInput').value = '';
     document.getElementById('noteContentInput').value = '';
-    document.getElementById('noteLanguageInput').value = '';
+    if (typeof quillManager !== 'undefined') {
+        quillManager.root.innerHTML = '';
+    }
     document.getElementById('noteSubmitBtn').innerText = 'Uložit poznámku';
 
     const tagCheckboxes = document.querySelectorAll('#noteForm input[name="tags[]"]');
@@ -223,7 +214,9 @@ function openEditNoteManageModal(note) {
     document.getElementById('noteId').value = note.id;
     document.getElementById('noteTitleInput').value = note.title;
     document.getElementById('noteContentInput').value = note.content;
-    document.getElementById('noteLanguageInput').value = note.language_id || '';
+    if (typeof quillManager !== 'undefined') {
+        quillManager.root.innerHTML = note.content;
+    }
     document.getElementById('noteSubmitBtn').innerText = 'Uložit změny';
 
     const tagCheckboxes = document.querySelectorAll('#noteForm input[name="tags[]"]');
@@ -237,12 +230,10 @@ function openEditNoteManageModal(note) {
 
 function openViewNoteManageModal(note) {
     document.getElementById('viewNoteModalTitle').innerText = note.title;
-    document.getElementById('viewNoteLanguage').innerText = note.language_name || 'Bez formátování';
-    document.getElementById('viewNoteLanguage').style.display = note.language_name ? 'inline-block' : 'none';
     
     const contentEl = document.getElementById('viewNoteContent');
-    contentEl.textContent = note.content;
-    contentEl.className = note.prism_class ? 'language-' + note.prism_class : 'language-none';
+    contentEl.innerHTML = note.content;
+    contentEl.className = 'p-3';
     
     const tagsWrapper = document.getElementById('viewNoteTags');
     tagsWrapper.innerHTML = '';
@@ -257,26 +248,26 @@ function openViewNoteManageModal(note) {
         });
     }
 
-    if (note.prism_class === 'markdown' && window.marked) {
-        document.getElementById('viewNotePre').style.display = 'none';
-        const markdownDiv = document.getElementById('viewNoteMarkdown');
-        markdownDiv.style.display = 'block';
-        markdownDiv.innerHTML = marked.parse(note.content);
-        if (window.Prism) {
-            markdownDiv.querySelectorAll('pre code').forEach((block) => {
-                Prism.highlightElement(block);
-            });
-        }
-    } else {
-        document.getElementById('viewNoteMarkdown').style.display = 'none';
-        document.getElementById('viewNotePre').style.display = 'block';
-        if (typeof Prism !== 'undefined') {
-            Prism.highlightElement(contentEl);
-        }
+    if (typeof Prism !== 'undefined') {
+        const codeBlocks = contentEl.querySelectorAll('pre');
+        codeBlocks.forEach(block => Prism.highlightElement(block));
     }
     
     var myModal = new bootstrap.Modal(document.getElementById('viewNoteModal'));
     myModal.show();
+}
+
+function copyNoteContent(btn) {
+    const content = document.getElementById('viewNoteContent').innerText;
+    navigator.clipboard.writeText(content).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = 'copied!';
+        btn.classList.replace('btn-outline-light', 'btn-success');
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.replace('btn-success', 'btn-outline-light');
+        }, 2000);
+    });
 }
 
 </script>
@@ -298,18 +289,9 @@ function openViewNoteManageModal(note) {
                         <input type="text" id="noteTitleInput" name="title" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label text-white-50 small">Jazyk</label>
-                            <select id="noteLanguageInput" name="language_id" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
-                                <option value="" class="text-dark">Bez formátování</option>
-                                <?php foreach ($languages as $lang): ?>
-                                    <option value="<?php echo $lang['id']; ?>" class="text-dark"><?php echo htmlspecialchars($lang['name']); ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <label class="form-label text-white-50 small">Štítky</label>
-                            <div class="d-flex flex-wrap gap-2 pt-1">
+                            <div class="d-flex flex-wrap gap-2 pt-1 border border-light border-opacity-10 rounded p-3 bg-dark bg-opacity-25">
                                 <?php foreach ($tags as $tag): ?>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="tags[]" value="<?php echo $tag['id']; ?>" id="tag-<?php echo $tag['id']; ?>">
@@ -321,7 +303,8 @@ function openViewNoteManageModal(note) {
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-white-50 small">Obsah</label>
-                        <textarea id="noteContentInput" name="content" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none font-monospace" rows="10" required></textarea>
+                        <div id="quillEditor" style="height: 300px; background: transparent; color: white;"></div>
+                        <input type="hidden" name="content" id="noteContentInput">
                     </div>
                 </div>
                 <div class="modal-footer border-top border-light border-opacity-10">
@@ -339,16 +322,14 @@ function openViewNoteManageModal(note) {
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <h5 class="modal-title text-white mb-0" id="viewNoteModalTitle">Zobrazit poznámku</h5>
-                <span class="badge tag-badge ms-3" id="viewNoteLanguage"></span>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
-                <div class="snippet-code-wrapper position-relative m-3">
-                    <button class="btn btn-sm btn-outline-light copy-btn shadow-sm z-3" onclick="copyToClipboard(this, 'viewNoteContent')" style="position: absolute; right: 10px; top: 10px; z-index: 10;">
+                <div class="position-relative">
+                    <button class="btn btn-sm btn-outline-light copy-btn shadow-sm z-3" onclick="copyNoteContent(this)" style="position: absolute; right: 10px; top: 10px; z-index: 10;">
                         copy
                     </button>
-                    <div id="viewNoteMarkdown" class="p-3 text-white markdown-preview" style="display: none; overflow-x: auto;"></div>
-                    <pre id="viewNotePre" class="m-0"><code id="viewNoteContent" class=""></code></pre>
+                    <div id="viewNoteContent" class="p-3" style="max-height: 70vh; overflow-y: auto;"></div>
                 </div>
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
@@ -365,6 +346,30 @@ function openViewNoteManageModal(note) {
 <script>
 let sortable = null;
 let isSortingMode = false;
+
+let quillManager;
+
+document.addEventListener('DOMContentLoaded', function() {
+    quillManager = new Quill('#quillEditor', {
+        theme: 'snow',
+        placeholder: 'Napište vaši poznámku...',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'clean']
+            ]
+        }
+    });
+    
+    document.getElementById('noteForm').addEventListener('submit', function() {
+        if (quillManager) {
+            document.getElementById('noteContentInput').value = quillManager.root.innerHTML;
+        }
+    });
+});
 
 function toggleSortingMode() {
     isSortingMode = !isSortingMode;
