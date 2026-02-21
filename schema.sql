@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS settings (
 
 -- Seed initial data
 INSERT IGNORE INTO settings (setting_key, setting_value) VALUES 
+('snippets_enabled', '1'),
 ('notes_enabled', '1'),
 ('todos_enabled', '1');
 

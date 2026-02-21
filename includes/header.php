@@ -49,7 +49,7 @@
 
         <div class="d-none d-lg-flex position-absolute start-50 translate-middle-x">
             <div class="nav-toggle-group">
-                <?php if (getSetting('notes_enabled', '1') == '1' || getSetting('todos_enabled', '1') == '1'): ?>
+                <?php if (getSetting('snippets_enabled', '1') == '1'): ?>
                 <a href="index.php" class="nav-toggle-btn <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?>">
                     <i class="bi bi-code-slash me-2"></i> Snippets
                 </a>
@@ -95,9 +95,11 @@
             </a>
             <?php endif; ?>
             -->
+            <?php if (getSetting('snippets_enabled', '1') == '1'): ?>
             <a href="manage.php" class="sidebar-link <?php echo $currentPage == 'manage.php' ? 'active' : ''; ?>">
                 <i class="bi bi-list-task me-2"></i> Správa snippetů
             </a>
+            <?php endif; ?>
             <?php if (getSetting('notes_enabled', '1') == '1'): ?>
             <a href="manage_notes.php" class="sidebar-link <?php echo $currentPage == 'manage_notes.php' ? 'active' : ''; ?>">
                 <i class="bi bi-list-task me-2"></i> Správa poznámek

@@ -15,6 +15,9 @@ if (isset($_POST['action'])) {
         saveLanguage($_POST['name'], $_POST['prism_class'], $id);
     } elseif ($_POST['action'] == 'delete_language') {
         deleteLanguage($_POST['id']);
+    } elseif ($_POST['action'] == 'toggle_snippets') {
+        $enabled = isset($_POST['snippets_enabled']) ? '1' : '0';
+        updateSetting('snippets_enabled', $enabled);
     } elseif ($_POST['action'] == 'toggle_notes') {
         $enabled = isset($_POST['notes_enabled']) ? '1' : '0';
         updateSetting('notes_enabled', $enabled);
@@ -26,6 +29,7 @@ if (isset($_POST['action'])) {
     exit;
 }
 
+$snippetsEnabled = getSetting('snippets_enabled', '1');
 $notesEnabled = getSetting('notes_enabled', '1');
 $todosEnabled = getSetting('todos_enabled', '1');
 $snippetTags = getAllTags('snippet');
@@ -49,6 +53,19 @@ include 'includes/header.php';
     <div class="col-12 mb-4">
         <div class="glass-card p-4">
             <h4 class="text-white mb-3">Obecné nastavení</h4>
+            <form method="POST" id="settingsFormSnippets" class="mb-3">
+                <input type="hidden" name="action" value="toggle_snippets">
+                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
+                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="snippets_enabled" id="snippetsEnabledToggle" 
+                           <?php echo $snippetsEnabled == '1' ? 'checked' : ''; ?>
+                           onchange="this.form.submit()">
+                    <label class="form-check-label text-white" for="snippetsEnabledToggle">
+                        <span class="d-block fw-bold">Povolit sekci Snippety</span>
+                        <small class="text-white-50">Pokud je vypnuto, sekce Snippety se nezobrazí v menu ani nebude přístupná.</small>
+                    </label>
+                </div>
+            </form>
+
             <form method="POST" id="settingsFormNotes" class="mb-3">
                 <input type="hidden" name="action" value="toggle_notes">
                 <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">

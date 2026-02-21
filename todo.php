@@ -73,7 +73,7 @@ include 'includes/header.php';
         
         <?php if (!empty($usedTags)): ?>
         <div class="row mt-3 mb-5">
-            <div class="col-12 d-flex flex-wrap gap-2 justify-content-end" id="tagFilters">
+            <div class="col-12 d-flex flex-wrap gap-2 justify-content-center" id="tagFilters">
                 <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all" style="--tag-color: #fff;">Vše</button>
                 <?php foreach ($usedTags as $tag): ?>
                     <button class="btn btn-sm rounded-pill px-3 <?php echo empty($tag['color']) ? 'btn-outline-light' : ''; ?>" 
