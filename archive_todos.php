@@ -40,6 +40,39 @@ include 'includes/header.php';
             <?php endif; ?>
         </div>
 
+        <?php
+        $allTags = getAllTags('todo');
+        $usedTags = [];
+        foreach ($todos as $todo) {
+            if (!empty($todo['tags'])) {
+                foreach ($todo['tags'] as $tag) {
+                    $usedTags[$tag['name']] = $tag;
+                }
+            }
+        }
+        uasort($usedTags, function($a, $b) {
+            if ($a['sort_order'] == $b['sort_order']) {
+                return strcmp($a['name'], $b['name']);
+            }
+            return $a['sort_order'] <=> $b['sort_order'];
+        });
+        ?>
+
+        <?php if (!empty($usedTags)): ?>
+        <div class="row mt-3 mb-4">
+            <div class="col-12 d-flex flex-wrap gap-2 justify-content-center" id="tagFilters">
+                <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all" style="--tag-color: #fff;">Vše</button>
+                <?php foreach ($usedTags as $tag): ?>
+                    <button class="btn btn-sm rounded-pill px-3 <?php echo empty($tag['color']) ? 'btn-outline-light' : ''; ?>" 
+                            data-tag="<?php echo htmlspecialchars($tag['name']); ?>"
+                            style="--tag-color: <?php echo !empty($tag['color']) ? htmlspecialchars($tag['color']) : '#fff'; ?>; <?php if (!empty($tag['color'])) echo 'background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';'; ?>">
+                        <?php echo htmlspecialchars($tag['name']); ?>
+                    </button>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <div class="d-flex flex-column gap-3" id="todosList">
             <?php if (empty($todos)): ?>
                 <div class="text-center text-white-50 py-5 glass-card mt-3">
@@ -49,24 +82,39 @@ include 'includes/header.php';
                 </div>
             <?php else: ?>
                 <?php foreach ($todos as $todo): ?>
-                    <div class="card glass-card todo-item" data-id="<?php echo $todo['id']; ?>">
-                        <div class="card-body d-flex justify-content-between align-items-center p-3">
-                            <div class="d-flex align-items-center overflow-hidden flex-grow-1 text-white-50 text-decoration-line-through">
-                                <form method="POST" class="me-3 mb-0 d-flex align-items-center" id="form_unarchive_<?php echo $todo['id']; ?>" title="Obnovit jako aktivní">
-                                    <input type="hidden" name="action" value="unarchive_todo">
-                                    <input type="hidden" name="todo_id" value="<?php echo $todo['id']; ?>">
-                                    <input class="form-check-input m-0 fs-5 flex-shrink-0" type="checkbox" onclick="document.getElementById('form_unarchive_<?php echo $todo['id']; ?>').submit()" style="cursor: pointer;" checked>
-                                </form>
-                                <span class="fs-5 text-truncate"><?php echo htmlspecialchars($todo['text']); ?></span>
-                            </div>
-                            <div class="d-flex gap-2 action-btns">
-                                <form method="POST" class="mb-0" onsubmit="return confirm('Opravdu chcete tento úkol smazat?');">
-                                    <input type="hidden" name="action" value="delete_todo">
-                                    <input type="hidden" name="todo_id" value="<?php echo $todo['id']; ?>">
-                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Smazat navždy">
-                                        <i class="bi bi-trash fs-5"></i>
-                                    </button>
-                                </form>
+                    <div class="card glass-card todo-item" 
+                         data-id="<?php echo $todo['id']; ?>"
+                         data-tags="<?php echo htmlspecialchars(implode(',', array_column($todo['tags'], 'name'))); ?>">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center overflow-hidden flex-grow-1 text-white-50 text-decoration-line-through">
+                                    <form method="POST" class="me-3 mb-0 d-flex align-items-center" id="form_unarchive_<?php echo $todo['id']; ?>" title="Obnovit jako aktivní">
+                                        <input type="hidden" name="action" value="unarchive_todo">
+                                        <input type="hidden" name="todo_id" value="<?php echo $todo['id']; ?>">
+                                        <input class="form-check-input m-0 fs-5 flex-shrink-0" type="checkbox" onclick="document.getElementById('form_unarchive_<?php echo $todo['id']; ?>').submit()" style="cursor: pointer;" checked>
+                                    </form>
+                                    <div class="d-flex flex-column overflow-hidden flex-grow-1">
+                                        <span class="fs-5 text-truncate"><?php echo htmlspecialchars($todo['text']); ?></span>
+                                        <?php if (!empty($todo['tags'])): ?>
+                                            <div class="d-flex flex-wrap gap-1 mt-1">
+                                                <?php foreach ($todo['tags'] as $tag): ?>
+                                                    <span class="badge opacity-75" style="background-color: <?php echo htmlspecialchars($tag['color'] ?? '#6c757d'); ?>; color: #fff; font-size: 0.7em;">
+                                                        <?php echo htmlspecialchars($tag['name']); ?>
+                                                    </span>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 action-btns flex-shrink-0 ms-3">
+                                    <form method="POST" class="mb-0" onsubmit="return confirm('Opravdu chcete tento úkol smazat?');">
+                                        <input type="hidden" name="action" value="delete_todo">
+                                        <input type="hidden" name="todo_id" value="<?php echo $todo['id']; ?>">
+                                        <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Smazat navždy">
+                                            <i class="bi bi-trash fs-5"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -79,5 +127,43 @@ include 'includes/header.php';
         </div> -->
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const tagButtons = document.querySelectorAll('#tagFilters .btn');
+    let currentTag = 'all';
+
+    const filterTodos = () => {
+        const items = document.querySelectorAll('.todo-item');
+        let delay = 0;
+        
+        items.forEach(item => {
+            const tagsAttr = item.getAttribute('data-tags');
+            const tags = tagsAttr ? tagsAttr.toLowerCase().split(',') : [];
+            const matchesTag = currentTag === 'all' || tags.includes(currentTag.toLowerCase());
+
+            if (matchesTag) {
+                item.style.display = 'block';
+                item.style.animation = 'none';
+                item.offsetHeight; /* trigger reflow */
+                item.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
+                delay += 40;
+            } else {
+                item.style.display = 'none';
+                item.style.animation = 'none';
+            }
+        });
+    };
+
+    tagButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tagButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTag = btn.getAttribute('data-tag');
+            filterTodos();
+        });
+    });
+});
+</script>
 
 <?php include 'includes/footer.php'; ?>

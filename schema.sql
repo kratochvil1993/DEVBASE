@@ -38,7 +38,32 @@ CREATE TABLE IF NOT EXISTS notes (
     sort_order INT DEFAULT 0,
     language_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_archived TINYINT(1) DEFAULT 0,
     FOREIGN KEY (language_id) REFERENCES languages(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS note_tags (
+    note_id INT,
+    tag_id INT,
+    PRIMARY KEY (note_id, tag_id),
+    FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS todos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    text VARCHAR(500) NOT NULL,
+    is_archived TINYINT(1) DEFAULT 0,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS todo_tags (
+    todo_id INT,
+    tag_id INT,
+    PRIMARY KEY (todo_id, tag_id),
+    FOREIGN KEY (todo_id) REFERENCES todos(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS settings (
@@ -47,7 +72,9 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 
 -- Seed initial data
-INSERT IGNORE INTO settings (setting_key, setting_value) VALUES ('notes_enabled', '1');
+INSERT IGNORE INTO settings (setting_key, setting_value) VALUES 
+('notes_enabled', '1'),
+('todos_enabled', '1');
 
 -- Seed initial data
 INSERT IGNORE INTO languages (name, prism_class) VALUES 

@@ -53,6 +53,23 @@ function getNoteTags($note_id) {
     return $tags;
 }
 
+function getTodoTags($todo_id) {
+    global $conn;
+    $todo_id = (int)$todo_id;
+    $sql = "SELECT t.id, t.name, t.color, t.sort_order FROM tags t 
+            JOIN todo_tags tt ON t.id = tt.tag_id 
+            WHERE tt.todo_id = $todo_id
+            ORDER BY t.sort_order ASC, t.name ASC";
+    $result = $conn->query($sql);
+    $tags = [];
+    if($result) {
+        while ($row = $result->fetch_assoc()) {
+            $tags[] = $row;
+        }
+    }
+    return $tags;
+}
+
 function getAllTags($type = 'snippet') {
     global $conn;
     @$conn->query("ALTER TABLE tags ADD COLUMN sort_order INT DEFAULT 0"); // add if missing
@@ -276,6 +293,11 @@ function initTodosTable() {
         sort_order INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
+    $conn->query("CREATE TABLE IF NOT EXISTS todo_tags (
+        todo_id INT NOT NULL,
+        tag_id INT NOT NULL,
+        PRIMARY KEY (todo_id, tag_id)
+    )");
 }
 
 function getAllTodos($archive_status = 0) {
@@ -287,13 +309,14 @@ function getAllTodos($archive_status = 0) {
     $todos = [];
     if($result) {
         while ($row = $result->fetch_assoc()) {
+            $row['tags'] = getTodoTags($row['id']);
             $todos[] = $row;
         }
     }
     return $todos;
 }
 
-function saveTodo($text, $id = null) {
+function saveTodo($text, $tags = [], $id = null) {
     global $conn;
     initTodosTable();
     $text = $conn->real_escape_string($text);
@@ -307,7 +330,20 @@ function saveTodo($text, $id = null) {
         $next_sort = (int)($row['max_sort'] ?? 0) + 1;
         $sql = "INSERT INTO todos (text, sort_order) VALUES ('$text', $next_sort)";
     }
-    return $conn->query($sql);
+    
+    if ($conn->query($sql)) {
+        $todo_id = $id ? $id : $conn->insert_id;
+        
+        $conn->query("DELETE FROM todo_tags WHERE todo_id = $todo_id");
+        if (is_array($tags)) {
+            foreach ($tags as $tag_id) {
+                $tag_id = (int)$tag_id;
+                $conn->query("INSERT INTO todo_tags (todo_id, tag_id) VALUES ($todo_id, $tag_id)");
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 function archiveTodo($id, $status = 1) {
