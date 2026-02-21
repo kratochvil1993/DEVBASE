@@ -108,7 +108,7 @@ console.log('Hello World');
                 <li class="mb-3">
                     <strong class="text-white d-block">Oddělené tagy pro vše:</strong>
                     Systém tagů je oddělený pro tři hlavní kategorie. V Nastavení jasně vidíte a spravujete, které tagy patří k programátorským snipetům, které k poznámkám a které k vašim úkolům (TODO).
-                    </li>
+                </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Vlastní řazení tagů:</strong>
                     V **Nastavení** si můžete tagy libovolně seřadit ve všech kategoriích pomocí funkce **Drag & Drop**. Toto pořadí se pak promítne i do filtrů a výběrů v aplikaci. Při aktivaci řazení se prvky jemně rozvibrují pro lepší vizuální odezvu.
