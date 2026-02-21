@@ -10,7 +10,7 @@ include 'includes/header.php';
     </div>
 
     <!-- Markdown Overview -->
-    <div class="col-lg-8 mb-4">
+    <div class="col-lg-12 mb-4">
         <div class="glass-card p-4">
             <h4 class="text-white mb-4"><i class="bi bi-markdown me-2"></i> Markdown Tahák</h4>
             
@@ -71,7 +71,7 @@ console.log('Hello World');
     </div>
 
     <!-- Tips Sidebar -->
-    <div class="col-lg-4">
+    <div class="col-lg-12">
         <div class="glass-card p-4 mb-4">
             <h4 class="text-white mb-4"><i class="bi bi-lightbulb me-2"></i> Tipy pro vyhledávání</h4>
             <ul class="text-white-50 small list-unstyled">
