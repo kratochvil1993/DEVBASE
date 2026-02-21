@@ -179,6 +179,23 @@ console.log('Hello World');
                 </li>
             </ul>
         </div>
+        <div class="glass-card p-4 mt-4">
+            <h4 class="text-white mb-4"><i class="bi bi-layout-sidebar me-2"></i> Navigace a Statistiky</h4>
+            <ul class="text-white-50 small list-unstyled">
+                <li class="mb-3">
+                    <strong class="text-white d-block">Přehled o datech:</strong>
+                    V bočním menu (vlevo nahoře) najdete pod hlavními odkazy sekci <strong>Statistiky</strong>. Zde se v reálném čase zobrazuje celkový počet vašich snippetů, uložených poznámek a aktuálních (nearchivovaných) úkolů v elegantních minikartách.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Rychlé přepínání:</strong>
+                    V horní liště aplikace (uprostřed) najdete přepínače pro hlavní sekce (Snippety, Poznámky, TODO), které jsou povoleny. Pokud některou sekci v Nastavení vypnete, tlačítko z navigace automaticky zmizí.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Adaptivní menu:</strong>
+                    Boční vysouvací menu obsahuje odkazy na správu štítků a archivů, které jsou specifické pro jednotlivé moduly aplikace.
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 </div>

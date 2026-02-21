@@ -16,8 +16,8 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Kopírování v jednom kroku**: Tlačítka pro okamžité uložení bloku zdrojového kódu do schránky (clipboard).
 - **Integrovaný Markdown**: Snipety lze zapisovat formou Markdownu pro kombinaci více jazyků či tabulek.
 - **Flexibilní navigace**: Rychlé přepínání mezi snipety, poznámkami a úkoly přímo v hlavičce (dle aktuálního nastavení).
-- **Správa funkcí**: V administraci (Nastavení) můžete vypnout/zapnout celé sekce Snippety, Poznámky či TODO podle vaší aktuální potřeby. Aplikace se tak přizpůsobí vašemu workflow.
-- **Propracované UI**: Elegantní rozhraní postavené na Bootstrap 5, oživené plovoucími barevnými prvky, blur efekty, micro-animacemi a moderní vizí.
+- **Rychlé statistiky**: Přehledný panel v bočním menu (offcanvas), který okamžitě zobrazuje aktuální počty vašich snippetů, poznámek a aktivních úkolů v elegantních minikartách.
+- **Propracované UI**: Elegantní rozhraní postavené na Bootstrap 5, oživené plovoucími barevnými prvky, blur efekty, micro-animacemi a moderní vizí glassmorphismu.
 
 ## Instalace a Spuštění
 
