@@ -24,6 +24,23 @@ if (isset($_POST['action'])) {
     } elseif ($_POST['action'] == 'toggle_todos') {
         $enabled = isset($_POST['todos_enabled']) ? '1' : '0';
         updateSetting('todos_enabled', $enabled);
+    } elseif ($_POST['action'] == 'save_security') {
+        $enabled = isset($_POST['security_enabled']) ? '1' : '0';
+        $currentPassword = getSetting('app_password');
+        $newPassword = $_POST['app_password'];
+
+        // Only allow enabling if there is an existing password OR a new one is being set
+        if ($enabled == '1' && empty($currentPassword) && empty($newPassword)) {
+            // Do nothing, or could set a flag for an error message
+            $enabled = '0';
+        }
+
+        updateSetting('security_enabled', $enabled);
+        
+        if (!empty($newPassword)) {
+            $hashed_password = password_hash($newPassword, PASSWORD_DEFAULT);
+            updateSetting('app_password', $hashed_password);
+        }
     }
     header('Location: settings.php');
     exit;
@@ -32,6 +49,7 @@ if (isset($_POST['action'])) {
 $snippetsEnabled = getSetting('snippets_enabled', '1');
 $notesEnabled = getSetting('notes_enabled', '1');
 $todosEnabled = getSetting('todos_enabled', '1');
+$securityEnabled = getSetting('security_enabled', '0');
 $snippetTags = getAllTags('snippet');
 $noteTags = getAllTags('note');
 $todoTags = getAllTags('todo');
@@ -50,8 +68,8 @@ include 'includes/header.php';
     </div>
 
     <!-- General Settings -->
-    <div class="col-12 mb-4">
-        <div class="glass-card p-4">
+    <div class="col-md-6 mb-4">
+        <div class="glass-card p-4 h-100">
             <h4 class="text-white mb-3">Obecné nastavení</h4>
             <form method="POST" id="settingsFormSnippets" class="mb-3">
                 <input type="hidden" name="action" value="toggle_snippets">
@@ -61,7 +79,7 @@ include 'includes/header.php';
                            onchange="this.form.submit()">
                     <label class="form-check-label text-white" for="snippetsEnabledToggle">
                         <span class="d-block fw-bold">Povolit sekci Snippety</span>
-                        <small class="text-white-50">Pokud je vypnuto, sekce Snippety se nezobrazí v menu ani nebude přístupná.</small>
+                        <small class="text-white-50">Zobrazit nebo skrýt sekci se snipety kódu.</small>
                     </label>
                 </div>
             </form>
@@ -74,7 +92,7 @@ include 'includes/header.php';
                            onchange="this.form.submit()">
                     <label class="form-check-label text-white" for="notesEnabledToggle">
                         <span class="d-block fw-bold">Povolit sekci Notes</span>
-                        <small class="text-white-50">Pokud je vypnuto, sekce Notes se nezobrazí v menu ani nebude přístupná.</small>
+                        <small class="text-white-50">Zobrazit nebo skrýt sekci s poznámkami.</small>
                     </label>
                 </div>
             </form>
@@ -87,8 +105,48 @@ include 'includes/header.php';
                            onchange="this.form.submit()">
                     <label class="form-check-label text-white" for="todosEnabledToggle">
                         <span class="d-block fw-bold">Povolit sekci TODO</span>
-                        <small class="text-white-50">Pokud je vypnuto, sekce TODO se nezobrazí v menu ani nebude přístupná.</small>
+                        <small class="text-white-50">Zobrazit nebo skrýt sekci s úkoly.</small>
                     </label>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Security Settings -->
+    <div class="col-md-6 mb-4">
+        <div class="glass-card p-4 h-100">
+            <h4 class="text-white mb-3"><i class="bi bi-shield-lock me-2 text-primary"></i>Zabezpečení</h4>
+            <form method="POST">
+                <input type="hidden" name="action" value="save_security">
+                
+                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0 mb-4">
+                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="security_enabled" id="securityEnabledToggle" 
+                           <?php echo $securityEnabled == '1' ? 'checked' : ''; ?>>
+                    <label class="form-check-label text-white" for="securityEnabledToggle">
+                        <span class="d-block fw-bold">Povolit zámek aplikace</span>
+                        <small class="text-white-50">Po aktivaci bude aplikace vyžadovat heslo při každém vstupu.</small>
+                    </label>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-white-50 small fw-bold">Změnit heslo</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
+                            <i class="bi bi-key-fill"></i>
+                        </span>
+                        <input type="password" name="app_password" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                               placeholder="Zadejte nové heslo...">
+                        <button class="btn btn-primary px-4" type="submit">Uložit</button>
+                    </div>
+                    <?php if (getSetting('app_password')): ?>
+                        <div class="mt-2 small text-success">
+                            <i class="bi bi-check-circle-fill me-1"></i> Heslo je nastaveno
+                        </div>
+                    <?php else: ?>
+                        <div class="mt-2 small text-warning">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Heslo zatím není nastaveno!
+                        </div>
+                    <?php endif; ?>
                 </div>
             </form>
         </div>

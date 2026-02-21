@@ -1,4 +1,25 @@
-<?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
+<?php 
+require_once 'includes/functions.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$currentPage = basename($_SERVER['PHP_SELF']); 
+
+// Manual Lock
+if (isset($_GET['lock']) && $_GET['lock'] == '1') {
+    $_SESSION['app_unlocked'] = false;
+    unset($_SESSION['app_unlocked']);
+    header('Location: lock.php');
+    exit;
+}
+
+// Security Check
+if ($currentPage !== 'lock.php' && isAppLocked()) {
+    header('Location: lock.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
@@ -67,11 +88,18 @@
             </div>
         </div>
         
-        <div class="ms-auto d-flex align-items-center">
-            <div class="form-check form-switch mb-0">
+        <div class="ms-auto d-flex align-items-center gap-3">
+        <div class="form-check form-switch mb-0">
                 <input class="form-check-input" type="checkbox" id="themeToggle">
                 <label class="form-check-label text-white small" for="themeToggle">Dark</label>
-            </div>
+            </div>    
+        <?php if (getSetting('security_enabled', '0') == '1'): ?>
+                <a href="?lock=1" class="btn btn-sm btn-link text-white-50 p-0" title="Lock App">
+                    <i class="bi bi-lock-fill fs-5"></i>
+                </a>            
+            <?php endif; ?>
+            
+            
         </div>
     </div>
 </nav>

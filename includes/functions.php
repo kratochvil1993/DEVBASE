@@ -424,4 +424,40 @@ function getGlobalStats() {
     return $stats;
 }
 
+function isAppLocked() {
+    $security_enabled = getSetting('security_enabled', '0');
+    if ($security_enabled !== '1') {
+        return false;
+    }
+    
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    return !isset($_SESSION['app_unlocked']) || $_SESSION['app_unlocked'] !== true;
+}
+
+function checkApiSecurity() {
+    if (isAppLocked()) {
+        header('Content-Type: application/json');
+        http_response_code(403);
+        echo json_encode(['error' => 'Application locked']);
+        exit;
+    }
+}
+
+function verifyAppPassword($password) {
+    if (empty($password)) return false;
+    $hashed_password = getSetting('app_password');
+    if (!$hashed_password) return false;
+    
+    if (password_verify($password, $hashed_password)) {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION['app_unlocked'] = true;
+        return true;
+    }
+    return false;
+}
 ?>

@@ -1,5 +1,7 @@
 <?php
 require_once '../includes/functions.php';
+checkApiSecurity();
+
 
 header('Content-Type: application/json');
 
