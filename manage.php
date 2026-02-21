@@ -24,7 +24,7 @@ include 'includes/header.php';
 <div class="row align-items-center mb-4">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center">
-            <h2 class="text-white mb-0">Správa snipetů</h2>
+            <h2 class="text-white mb-0">Správa snippetů</h2>
             <button class="btn btn-add-snipet rounded px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#addSnippetModal" title="Nový snipet">
                 <i class="bi bi-plus-lg me-1"></i> Nový snipet
             </button>
