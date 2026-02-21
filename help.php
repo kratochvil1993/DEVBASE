@@ -149,7 +149,29 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Rychlé přepínání:</strong>
-                    V hlavičce aplikace najdete tlačítko pro rychlé přepnutí mezi **Snipety** a **Poznámkami** (pokud jsou poznámky povoleny).
+                    V hlavičce aplikace najdete tlačítko pro rychlé přepnutí mezi hlavními sekcemi jako jsou **Snipety**, **Poznámky** a **TODO** (viditelné, pokud jsou povoleny v Nastavení).
+                </li>
+            </ul>
+        </div>
+
+        <div class="glass-card p-4 mt-4">
+            <h4 class="text-white mb-4"><i class="bi bi-check2-square me-2"></i> Správa úkolů (TODO)</h4>
+            <ul class="text-white-50 small list-unstyled">
+                <li class="mb-3">
+                    <strong class="text-white d-block">Přidávání úkolů:</strong>
+                    Jednoduše napište co potřebujete udělat a stiskněte Enter nebo tlačítko pro přidání. Systém je navržen pro bleskové zaznamenání povinností.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Odškrtnutí a Archivace:</strong>
+                    Kliknutím na prázdný čtvereček u úkolu se označí jako splněný a automaticky přesune do sekce <strong>Archiv TODO</strong>. Nepřekáží tak mezi aktivními úkoly, ale máte k němu stále přístup, můžete ho obnovit nebo trvale smazat.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Trvalé smazání:</strong>
+                    Aktivní nebo dříve archivovaný úkol lze okamžitě a nenávratně odstranit kliknutím na ikonu koše.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Řazení podle priorit (Drag & Drop):</strong>
+                    Pořadí úkolů můžete libovolně měnit. Stačí odemknout řazení přes tlačítko **Upravit pořadí**, seřadit úkoly myší posouváním celých bloků a potvrdit kliknutím na **Hotovo**.
                 </li>
             </ul>
         </div>

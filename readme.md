@@ -6,7 +6,8 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 
 - **Barevné štítky (Tagy)**: Systém štítků je plně podporován jak pro Snipety, tak i pro Poznámky. Každému štítku můžete přiřadit vlastní barvu (s validací HEX kódu) pro okamžitou vizuální identifikaci.
 - **Sekce Poznámky**: Samostatný prostor pro vaše nápady, úkoly nebo SQL s podporou zvýraznění syntaxe, vyhledávání, vlastního řazení a přiřazování štítků. Tvorba poznámek v plnohodnotném **WYSIWYG editoru (Quill.js)** pro jednoduší a moderní zápis textu.
-- **Archiv poznámek**: Praktický jednoklikový odklízeč pro uložení splněných či neaktuálních poznámek. Pracovní prostor zůstane čistý, a přesto nepřijdete o provedenou práci – archivované kousky lze později snadno obnovit či nevratně smazat.
+- **Sekce TODO (Úkoly)**: Jednoduchý nástroj pro správu denních priorit s možností odškrtnutí (okamžitá archivace), trvalého odstranění a řazení pomocí Drag & Drop.
+- **Archivy**: Praktický jednoklikový odklízeč pro uložení splněných či neaktuálních poznámek. Odškrtnuté úkoly (TODO) i staré poznámky putují do svých vyhrazených archivů, odkud je můžete později snadno obnovit či trvale smazat. Pracovní prostor tak zůstane neustále čistý.
 - **Vlastní řazení (Drag & Drop)**: Pořadí poznámek, ale i samotných štítků v Nastavení, si můžete libovolně měnit jednoduchým přetažením myší (Drag & Drop).
 - **Konzistentní správa**: Sjednocené rozhraní pro správu snipetů i poznámek s intuitivním filtrováním podle tagů a rychlým fulltextovým vyhledáváním.
 - **Rychlé vyhledávání**: Inteligentní vyhledávání v reálném čase napříč oběma sekcemi (snipety i poznámky), které prohledává názvy i obsah.
@@ -15,7 +16,7 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Kopírování v jednom kroku**: Tlačítka pro okamžité uložení bloku zdrojového kódu do schránky (clipboard).
 - **Integrovaný Markdown**: Snipety lze zapisovat formou Markdownu pro kombinaci více jazyků či tabulek.
 - **Flexibilní navigace**: Rychlé přepínání mezi snipety a poznámkami přímo v hlavičce (pokud jsou poznámky povoleny).
-- **Správa funkcí**: V administraci můžete vypnout/zapnout celou sekci Poznámky podle aktuální potřeby.
+- **Správa funkcí**: V administraci (Nastavení) můžete vypnout/zapnout celé sekce Poznámky či TODO podle vaší aktuální potřeby. Aplikace se tak přizpůsobí vašemu workflow.
 - **Propracované UI**: Elegantní rozhraní postavené na Bootstrap 5, oživené plovoucími barevnými prvky, blur efekty, micro-animacemi a moderní vizí.
 
 ## Instalace a Spuštění
@@ -49,6 +50,7 @@ Pokud se chcete k databázi přes Docker připojit přes nástroje jakým je nap
 
 - **Backend:** Nativní PHP, bez těžkých frameworků.
 - **Frontend / UX:** HTML5, Bootstrap 5.3 a čistý JavaScript
+- **Zpracování úkolů:** Interaktivní odškrtávání a řazení bez nutnosti obnovování stránky (SortableJS)
 - **Formátování & Editor:** WYSIWYG editor Quill.js (pro poznámky)
 - **Zvýraznění kódu:** Prism.js (autoloader s podporou témat)
 - **Databáze:** Relační databáze spravovaná pomocí MySQL
