@@ -99,6 +99,24 @@ console.log('Hello World');
                 </li>
             </ul>
         </div>
+
+        <div class="glass-card p-4 mt-4">
+            <h4 class="text-white mb-4"><i class="bi bi-journal-text me-2"></i> Práce s Poznámkami</h4>
+            <ul class="text-white-50 small list-unstyled">
+                <li class="mb-3">
+                    <strong class="text-white d-block">Vlastní řazení:</strong>
+                    V sekci Poznámky klikni na **Upravit pořadí**. Karty se jemně rozvibrují a ty je můžeš myší přetahovat. Pořadí se ukládá automaticky.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Zvýraznění kódu:</strong>
+                    I poznámkám můžeš přiřadit jazyk. V detailu pak uvidíš kód krásně obarvený a připravený ke kopírování.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Nastavení:</strong>
+                    Pokud poznámky nepoužíváš, můžeš je v **Nastavení** úplně skrýt, aby nepřekážely v menu.
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 </div>

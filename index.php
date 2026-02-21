@@ -46,11 +46,11 @@ include 'includes/header.php';
 
 <div class="row mb-5">
     <div class="col-md-8 mx-auto d-flex flex-wrap gap-2 justify-content-center" id="tagFilters">
-        <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all">Vše</button>
+        <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all" style="--tag-color: #fff;">Vše</button>
         <?php foreach ($tags as $tag): ?>
             <button class="btn btn-sm rounded-pill px-3 <?php echo empty($tag['color']) ? 'btn-outline-light' : ''; ?>" 
                     data-tag="<?php echo htmlspecialchars($tag['name']); ?>"
-                    <?php if (!empty($tag['color'])) echo 'style="background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';"'; ?>>
+                    style="--tag-color: <?php echo !empty($tag['color']) ? htmlspecialchars($tag['color']) : '#fff'; ?>; <?php if (!empty($tag['color'])) echo 'background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';'; ?>">
                 <?php echo htmlspecialchars($tag['name']); ?>
             </button>
         <?php endforeach; ?>
@@ -159,7 +159,7 @@ include 'includes/header.php';
                                 <button class="btn btn-sm btn-link text-white-50 p-0" 
                                         onclick="openEditModal(<?php echo htmlspecialchars(json_encode($snippet), ENT_QUOTES, 'UTF-8'); ?>)"
                                         title="Upravit">
-                                    <i class="bi bi-pencil-square"></i>
+                                    <i class="bi bi-pencil"></i>
                                 </button>
                                 <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento snipet smazat?');">
                                     <input type="hidden" name="action" value="delete_snippet">

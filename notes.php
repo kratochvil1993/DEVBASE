@@ -87,7 +87,7 @@ include 'includes/header.php';
                                 <button class="btn btn-sm btn-link text-white-50 p-0 edit-icon" 
                                         onclick="openEditNoteModal(<?php echo htmlspecialchars(json_encode($note), ENT_QUOTES, 'UTF-8'); ?>)"
                                         title="Upravit">
-                                    <i class="bi bi-pencil-square"></i>
+                                    <i class="bi bi-pencil"></i>
                                 </button>
                                 <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tuto poznámku smazat?');">
                                     <input type="hidden" name="action" value="delete_note">

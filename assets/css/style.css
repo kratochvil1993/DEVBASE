@@ -252,6 +252,27 @@ pre[class*="language-"] {
     transform: translateY(0);
 }
 
+#tagFilters .btn.active {
+    position: relative;
+}
+
+#tagFilters .btn-outline-light.active {
+    background-color: transparent !important;
+    color: #fff !important;
+}
+
+#tagFilters .btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: var(--tag-color, #fff);
+  border-radius: 2px;
+  opacity: 0.9;
+}
+
 .note-card {
     cursor: pointer;
     min-height: 180px;

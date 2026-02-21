@@ -125,7 +125,7 @@ include 'includes/header.php';
                                         <button class="btn btn-sm btn-outline-light border-0 px-2" 
                                                 onclick='openEditModal(<?php echo htmlspecialchars(json_encode($snippet), ENT_QUOTES, 'UTF-8'); ?>)'
                                                 title="Upravit">
-                                            <i class="bi bi-pencil-square"></i>
+                                            <i class="bi bi-pencil"></i>
                                         </button>
                                         <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento snipet smazat?');">
                                             <input type="hidden" name="action" value="delete_snippet">

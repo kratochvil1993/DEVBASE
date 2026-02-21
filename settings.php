@@ -38,25 +38,7 @@ include 'includes/header.php';
         <p class="text-white-50">Spravujte nastavení aplikace, štítky a jazyky.</p>
     </div>
 
-    <!-- General Settings -->
-    <div class="col-12 mb-4">
-        <div class="glass-card p-4">
-            <h4 class="text-white mb-3">Obecné nastavení</h4>
-            <form method="POST" id="settingsForm">
-                <input type="hidden" name="action" value="toggle_notes">
-                <div class="form-check form-switch d-flex align-items-center gap-3">
-                    <input class="form-check-input fs-4" type="checkbox" name="notes_enabled" id="notesEnabledToggle" 
-                           <?php echo $notesEnabled == '1' ? 'checked' : ''; ?>
-                           onchange="this.form.submit()">
-                    <label class="form-check-label text-white" for="notesEnabledToggle">
-                        <span class="d-block fw-bold">Povolit sekci Poznámky</span>
-                        <small class="text-white-50">Pokud je vypnuto, sekce Poznámky se nezobrazí v menu ani nebude přístupná.</small>
-                    </label>
-                </div>
-            </form>
-        </div>
-    </div>
-
+    
     <!-- Tag Management -->
     <div class="col-md-6 mb-4">
         <div class="glass-card p-4 h-100">
@@ -87,13 +69,13 @@ include 'includes/header.php';
                         </span>
                         <div class="d-flex gap-2">
                             <button class="btn btn-sm btn-link text-white-50 p-0 text-decoration-none" onclick='editTag(<?php echo json_encode($tag); ?>)'>
-                                <i class="bi bi-pencil"></i> Upravit
+                                <i class="bi bi-pencil"></i> 
                             </button>
                             <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento štítek smazat?');">
                                 <input type="hidden" name="action" value="delete_tag">
                                 <input type="hidden" name="id" value="<?php echo $tag['id']; ?>">
                                 <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
-                                    <i class="bi bi-trash"></i> Smazat
+                                    <i class="bi bi-trash"></i> 
                                 </button>
                             </form>
                         </div>
@@ -127,13 +109,13 @@ include 'includes/header.php';
                         </div>
                         <div class="d-flex gap-2">
                             <button class="btn btn-sm btn-link text-white-50 p-0 text-decoration-none" onclick='editLanguage(<?php echo json_encode($lang); ?>)'>
-                                <i class="bi bi-pencil"></i> Upravit
+                                <i class="bi bi-pencil"></i> 
                             </button>
                             <form method="POST" class="d-inline" onsubmit="return confirm('Jste si jisti?');">
                                 <input type="hidden" name="action" value="delete_language">
                                 <input type="hidden" name="id" value="<?php echo $lang['id']; ?>">
                                 <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
-                                    <i class="bi bi-trash"></i> Smazat
+                                    <i class="bi bi-trash"></i> 
                                 </button>
                             </form>
                         </div>
@@ -142,6 +124,25 @@ include 'includes/header.php';
             </div>
         </div>
     </div>
+    <!-- General Settings -->
+    <div class="col-12 mb-4">
+        <div class="glass-card p-4">
+            <h4 class="text-white mb-3">Obecné nastavení</h4>
+            <form method="POST" id="settingsForm">
+                <input type="hidden" name="action" value="toggle_notes">
+                <div class="form-check form-switch d-flex align-items-center gap-3">
+                    <input class="form-check-input fs-4" type="checkbox" name="notes_enabled" id="notesEnabledToggle" 
+                           <?php echo $notesEnabled == '1' ? 'checked' : ''; ?>
+                           onchange="this.form.submit()">
+                    <label class="form-check-label text-white" for="notesEnabledToggle">
+                        <span class="d-block fw-bold">Povolit sekci Poznámky</span>
+                        <small class="text-white-50">Pokud je vypnuto, sekce Poznámky se nezobrazí v menu ani nebude přístupná.</small>
+                    </label>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </div>
 </div>
 
