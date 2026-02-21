@@ -102,12 +102,12 @@ console.log('Hello World');
                     V **Nastavení** můžete každému štítku přiřadit barvu. Barva je automaticky validována a musí být ve formátu HEX (např. `#ff0000`). Štítky jsou pak barevně odlišeny v přehledu i při filtrování.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Oddělené tagy pro Snipety a Poznámky:</strong>
-                    Systém tagů je oddělený. V Nastavení jasně vidíte a spravujete, které tagy patří k programátorským snipetům a které k vašim osobním poznámkám.
-                </li>
+                    <strong class="text-white d-block">Oddělené tagy pro vše:</strong>
+                    Systém tagů je oddělený pro tři hlavní kategorie. V Nastavení jasně vidíte a spravujete, které tagy patří k programátorským snipetům, které k poznámkám a které k vašim úkolům (TODO).
+                    </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Vlastní řazení tagů:</strong>
-                    V **Nastavení** si můžete tagy libovolně seřadit (pro snipety i poznámky) pomocí funkce **Drag & Drop** (táhni a pusť). Toto pořadí se pak promítne i do filtrů a výběrů v aplikaci.
+                    V **Nastavení** si můžete tagy libovolně seřadit ve všech kategoriích pomocí funkce **Drag & Drop**. Toto pořadí se pak promítne i do filtrů a výběrů v aplikaci. Při aktivaci řazení se prvky jemně rozvibrují pro lepší vizuální odezvu.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Více tagů najednou:</strong>
@@ -162,6 +162,10 @@ console.log('Hello World');
                     Jednoduše napište co potřebujete udělat a stiskněte Enter nebo tlačítko pro přidání. Systém je navržen pro bleskové zaznamenání povinností.
                 </li>
                 <li class="mb-3">
+                    <strong class="text-white d-block">Štítkování úkolů:</strong>
+                    Úkolům můžete přiřazovat barevné štítky. Buď při rychlém přidání (jeden štítek), nebo přes ikonu tužky (neomezeně štítků). Nad seznamem úkolů pak najdete filtry, které vám umožní zobrazit jen úkoly s konkrétním tématem.
+                </li>
+                <li class="mb-3">
                     <strong class="text-white d-block">Odškrtnutí a Archivace:</strong>
                     Kliknutím na prázdný čtvereček u úkolu se označí jako splněný a automaticky přesune do sekce <strong>Archiv TODO</strong>. Nepřekáží tak mezi aktivními úkoly, ale máte k němu stále přístup, můžete ho obnovit nebo trvale smazat.
                 </li>
@@ -171,7 +175,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Řazení podle priorit (Drag & Drop):</strong>
-                    Pořadí úkolů můžete libovolně měnit. Stačí odemknout řazení přes tlačítko **Upravit pořadí**, seřadit úkoly myší posouváním celých bloků a potvrdit kliknutím na **Hotovo**.
+                    Pořadí úkolů můžete libovolně měnit. Stačí odemknout řazení přes tlačítko **Upravit pořadí**. Karty se jemně rozvibrují a vy je můžete myší přetahovat. Pořadí se ukládá automaticky.
                 </li>
             </ul>
         </div>
