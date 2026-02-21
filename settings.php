@@ -62,7 +62,17 @@ include 'includes/header.php';
     <!-- Snippet Tag Management -->
     <div class="col-md-6 mb-4">
         <div class="glass-card p-4 h-100">
-            <h4 class="text-white mb-4">Štítky kódů</h4>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="text-white mb-0">Štítky kódů</h4>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-edit-order rounded px-3" id="editSnippetTagsOrderBtn" onclick="toggleSnippetTagsSorting()">
+                        <i class="bi bi-arrows-move me-1"></i> Upravit pořadí
+                    </button>
+                    <button class="btn btn-sm btn-success rounded px-3 d-none" id="saveSnippetTagsOrderBtn" onclick="toggleSnippetTagsSorting()">
+                        <i class="bi bi-check-lg me-1"></i> Hotovo
+                    </button>
+                </div>
+            </div>
             
             <form method="POST" class="mb-4" id="tagForm">
                 <input type="hidden" name="action" value="save_tag">
@@ -76,9 +86,9 @@ include 'includes/header.php';
                 </div>
             </form>
 
-            <div class="list-group list-group-flush bg-transparent" style="max-height: 400px; overflow-y: auto;">
+            <div class="list-group list-group-flush bg-transparent" style="max-height: 400px; overflow-y: auto;" id="snippetTagsList">
                 <?php foreach ($snippetTags as $tag): ?>
-                    <div class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-light border-opacity-10 px-0">
+                    <div class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-light border-opacity-10 px-0 snippet-tag-row" data-id="<?php echo $tag['id']; ?>">
                         <span>
                             <?php if (!empty($tag['color'])): ?>
                                 <span class="badge" style="background-color: <?php echo htmlspecialchars($tag['color']); ?>; color: #fff;">
@@ -109,7 +119,17 @@ include 'includes/header.php';
     <!-- Note Tag Management -->
     <div class="col-md-6 mb-4">
         <div class="glass-card p-4 h-100">
-            <h4 class="text-white mb-4">Štítky poznámek</h4>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="text-white mb-0">Štítky poznámek</h4>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-edit-order rounded px-3" id="editNoteTagsOrderBtn" onclick="toggleNoteTagsSorting()">
+                        <i class="bi bi-arrows-move me-1"></i> Upravit pořadí
+                    </button>
+                    <button class="btn btn-sm btn-success rounded px-3 d-none" id="saveNoteTagsOrderBtn" onclick="toggleNoteTagsSorting()">
+                        <i class="bi bi-check-lg me-1"></i> Hotovo
+                    </button>
+                </div>
+            </div>
             
             <form method="POST" class="mb-4" id="noteTagForm">
                 <input type="hidden" name="action" value="save_tag">
@@ -123,9 +143,9 @@ include 'includes/header.php';
                 </div>
             </form>
 
-            <div class="list-group list-group-flush bg-transparent" style="max-height: 400px; overflow-y: auto;">
+            <div class="list-group list-group-flush bg-transparent" style="max-height: 400px; overflow-y: auto;" id="noteTagsList">
                 <?php foreach ($noteTags as $tag): ?>
-                    <div class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-light border-opacity-10 px-0">
+                    <div class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-light border-opacity-10 px-0 note-tag-row" data-id="<?php echo $tag['id']; ?>">
                         <span>
                             <?php if (!empty($tag['color'])): ?>
                                 <span class="badge" style="background-color: <?php echo htmlspecialchars($tag['color']); ?>; color: #fff;">
@@ -196,5 +216,116 @@ include 'includes/header.php';
 
 </div>
 </div>
+
+<!-- SortableJS -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+<script>
+let snippetSortable = null;
+let isSnippetSortingMode = false;
+
+function toggleSnippetTagsSorting() {
+    isSnippetSortingMode = !isSnippetSortingMode;
+    const list = document.getElementById('snippetTagsList');
+    const editBtn = document.getElementById('editSnippetTagsOrderBtn');
+    const saveBtn = document.getElementById('saveSnippetTagsOrderBtn');
+    const form = document.getElementById('tagForm');
+    const actionButtons = list.querySelectorAll('.d-flex.gap-2'); // edit / delete buttons wrapper
+
+    if (isSnippetSortingMode) {
+        list.classList.add('sorting-mode');
+        editBtn.classList.add('d-none');
+        saveBtn.classList.remove('d-none');
+        form.classList.add('opacity-50', 'pe-none');
+        
+        actionButtons.forEach(btn => btn.classList.add('opacity-0', 'pe-none'));
+
+        snippetSortable = new Sortable(list, {
+            animation: 150,
+            ghostClass: 'glass-card-moving',
+            onEnd: function() {
+                saveTagsOrder('snippetTagsList', '.snippet-tag-row');
+            }
+        });
+    } else {
+        list.classList.remove('sorting-mode');
+        editBtn.classList.remove('d-none');
+        saveBtn.classList.add('d-none');
+        form.classList.remove('opacity-50', 'pe-none');
+        
+        actionButtons.forEach(btn => btn.classList.remove('opacity-0', 'pe-none'));
+
+        if (snippetSortable) {
+            snippetSortable.destroy();
+            snippetSortable = null;
+        }
+    }
+}
+
+let noteSortable = null;
+let isNoteSortingMode = false;
+
+function toggleNoteTagsSorting() {
+    isNoteSortingMode = !isNoteSortingMode;
+    const list = document.getElementById('noteTagsList');
+    const editBtn = document.getElementById('editNoteTagsOrderBtn');
+    const saveBtn = document.getElementById('saveNoteTagsOrderBtn');
+    const form = document.getElementById('noteTagForm');
+    const actionButtons = list.querySelectorAll('.d-flex.gap-2'); // edit / delete buttons wrapper
+
+    if (isNoteSortingMode) {
+        list.classList.add('sorting-mode');
+        editBtn.classList.add('d-none');
+        saveBtn.classList.remove('d-none');
+        form.classList.add('opacity-50', 'pe-none');
+        
+        actionButtons.forEach(btn => btn.classList.add('opacity-0', 'pe-none'));
+
+        noteSortable = new Sortable(list, {
+            animation: 150,
+            ghostClass: 'glass-card-moving',
+            onEnd: function() {
+                saveTagsOrder('noteTagsList', '.note-tag-row');
+            }
+        });
+    } else {
+        list.classList.remove('sorting-mode');
+        editBtn.classList.remove('d-none');
+        saveBtn.classList.add('d-none');
+        form.classList.remove('opacity-50', 'pe-none');
+        
+        actionButtons.forEach(btn => btn.classList.remove('opacity-0', 'pe-none'));
+
+        if (noteSortable) {
+            noteSortable.destroy();
+            noteSortable = null;
+        }
+    }
+}
+
+function saveTagsOrder(listId, rowSelector) {
+    const list = document.getElementById(listId);
+    const items = list.querySelectorAll(rowSelector);
+    const order = [];
+    items.forEach((item, index) => {
+        order.push({
+            id: item.dataset.id,
+            order: index
+        });
+    });
+    
+    fetch('api_tags_order.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ order: order }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(listId + ' order saved:', data);
+    });
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>

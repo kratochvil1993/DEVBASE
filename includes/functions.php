@@ -26,9 +26,10 @@ function getAllSnippets($search = '') {
 function getSnippetTags($snippet_id) {
     global $conn;
     $snippet_id = (int)$snippet_id;
-    $sql = "SELECT t.id, t.name, t.color FROM tags t 
+    $sql = "SELECT t.id, t.name, t.color, t.sort_order FROM tags t 
             JOIN snippet_tags st ON t.id = st.tag_id 
-            WHERE st.snippet_id = $snippet_id";
+            WHERE st.snippet_id = $snippet_id 
+            ORDER BY t.sort_order ASC, t.name ASC";
     $result = $conn->query($sql);
     $tags = [];
     while ($row = $result->fetch_assoc()) {
@@ -40,9 +41,10 @@ function getSnippetTags($snippet_id) {
 function getNoteTags($note_id) {
     global $conn;
     $note_id = (int)$note_id;
-    $sql = "SELECT t.id, t.name, t.color FROM tags t 
+    $sql = "SELECT t.id, t.name, t.color, t.sort_order FROM tags t 
             JOIN note_tags nt ON t.id = nt.tag_id 
-            WHERE nt.note_id = $note_id";
+            WHERE nt.note_id = $note_id
+            ORDER BY t.sort_order ASC, t.name ASC";
     $result = $conn->query($sql);
     $tags = [];
     while ($row = $result->fetch_assoc()) {
@@ -53,8 +55,9 @@ function getNoteTags($note_id) {
 
 function getAllTags($type = 'snippet') {
     global $conn;
+    @$conn->query("ALTER TABLE tags ADD COLUMN sort_order INT DEFAULT 0"); // add if missing
     $type = $conn->real_escape_string($type);
-    $sql = "SELECT * FROM tags WHERE type = '$type' ORDER BY name ASC";
+    $sql = "SELECT * FROM tags WHERE type = '$type' ORDER BY sort_order ASC, name ASC";
     $result = $conn->query($sql);
     $tags = [];
     while ($row = $result->fetch_assoc()) {

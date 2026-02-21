@@ -36,7 +36,12 @@ foreach ($notes as $note) {
         }
     }
 }
-uasort($usedTags, function($a, $b) { return strcmp($a['name'], $b['name']); });
+uasort($usedTags, function($a, $b) {
+    if ($a['sort_order'] == $b['sort_order']) {
+        return strcmp($a['name'], $b['name']);
+    }
+    return $a['sort_order'] <=> $b['sort_order'];
+});
 
 include 'includes/header.php';
 ?>
