@@ -31,6 +31,13 @@ CREATE TABLE IF NOT EXISTS snippet_tags (
     FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS notes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Seed initial data
 INSERT IGNORE INTO languages (name, prism_class) VALUES 
 ('PHP', 'php'),

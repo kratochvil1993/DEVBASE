@@ -133,4 +133,35 @@ function deleteSnippet($id) {
     $sql = "DELETE FROM snippets WHERE id = $id";
     return $conn->query($sql);
 }
+
+function getAllNotes() {
+    global $conn;
+    $sql = "SELECT * FROM notes ORDER BY created_at DESC";
+    $result = $conn->query($sql);
+    $notes = [];
+    while ($row = $result->fetch_assoc()) {
+        $notes[] = $row;
+    }
+    return $notes;
+}
+
+function saveNote($title, $content, $id = null) {
+    global $conn;
+    $title = $conn->real_escape_string($title);
+    $content = $conn->real_escape_string($content);
+    if ($id) {
+        $id = (int)$id;
+        $sql = "UPDATE notes SET title = '$title', content = '$content' WHERE id = $id";
+    } else {
+        $sql = "INSERT INTO notes (title, content) VALUES ('$title', '$content')";
+    }
+    return $conn->query($sql);
+}
+
+function deleteNote($id) {
+    global $conn;
+    $id = (int)$id;
+    $sql = "DELETE FROM notes WHERE id = $id";
+    return $conn->query($sql);
+}
 ?>

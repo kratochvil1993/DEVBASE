@@ -66,6 +66,9 @@
             <a href="index.php" class="sidebar-link <?php echo $currentPage == 'index.php' ? 'active' : ''; ?>">
                 <i class="bi bi-house-door me-2"></i> Snipety
             </a>
+            <a href="notes.php" class="sidebar-link <?php echo $currentPage == 'notes.php' ? 'active' : ''; ?>">
+                <i class="bi bi-journal-text me-2"></i> Poznámky
+            </a>
             <a href="manage.php" class="sidebar-link <?php echo $currentPage == 'manage.php' ? 'active' : ''; ?>">
                 <i class="bi bi-list-task me-2"></i> Správa
             </a>

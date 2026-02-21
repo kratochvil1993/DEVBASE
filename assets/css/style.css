@@ -251,3 +251,20 @@ pre[class*="language-"] {
 .btn-add-snipet:active {
     transform: translateY(0);
 }
+
+.note-card {
+    cursor: pointer;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+}
+
+.note-card:hover {
+    border-color: rgba(var(--bs-primary-rgb), 0.5);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-bs-theme="dark"] .note-card:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
