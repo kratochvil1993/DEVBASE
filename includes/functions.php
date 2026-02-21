@@ -384,8 +384,8 @@ function getGlobalStats() {
     $res = $conn->query("SELECT COUNT(*) as count FROM snippets");
     if ($res) $stats['total_snippets'] = $res->fetch_assoc()['count'];
     
-    // Total Notes
-    $res = $conn->query("SELECT COUNT(*) as count FROM notes");
+    // Total Notes (active)
+    $res = $conn->query("SELECT COUNT(*) as count FROM notes WHERE is_archived = 0");
     if ($res) $stats['total_notes'] = $res->fetch_assoc()['count'];
 
     // Total Todos (active)

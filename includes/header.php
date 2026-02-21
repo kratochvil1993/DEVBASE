@@ -135,13 +135,13 @@
                 </div>
                 <div class="col-4">
                     <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
-                        <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Poznámek</div>
+                        <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Notes</div>
                         <div class="h6 fw-bold text-white mb-0"><?php echo $stats['total_notes']; ?></div>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
-                        <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Úkolů</div>
+                        <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Úkoly</div>
                         <div class="h6 fw-bold text-white mb-0"><?php echo $stats['total_todos']; ?></div>
                     </div>
                 </div>
