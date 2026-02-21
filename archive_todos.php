@@ -74,9 +74,9 @@ include 'includes/header.php';
             <?php endif; ?>
         </div>
         
-        <div class="text-start mt-3">
+        <!-- <div class="text-start mt-3">
             <a href="todo.php" class="text-white btn btn-sm btn-outline-light"><i class="bi bi-arrow-left me-1"></i> Zpět na aktivní úkoly</a>
-        </div>
+        </div> -->
     </div>
 </div>
 
