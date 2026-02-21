@@ -168,6 +168,10 @@ include 'includes/header.php';
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
+<div class="text-end mt-3">
+    <a href="archive_notes.php" class="text-white-50 text-decoration-none small"><i class="bi bi-archive me-1"></i> Zobrazit archivované poznámky</a>
+</div>
+
 
 <!-- View Note Modal -->
 <div class="modal fade" id="viewNoteModal" tabindex="-1" aria-hidden="true">
