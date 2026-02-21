@@ -153,8 +153,9 @@ function deleteSnippet($id) {
     return $conn->query($sql);
 }
 
-function getAllNotes($sort = 'custom') {
+function getAllNotes($sort = 'custom', $archive_status = 0) {
     global $conn;
+    @$conn->query("ALTER TABLE notes ADD COLUMN is_archived TINYINT(1) DEFAULT 0"); // add if missing
     $orderBy = "n.sort_order ASC, n.created_at DESC";
     
     switch ($sort) {
@@ -175,9 +176,16 @@ function getAllNotes($sort = 'custom') {
             break;
     }
     
+    $whereClause = "";
+    if ($archive_status !== 2) {
+        $archive_status = (int)$archive_status;
+        $whereClause = "WHERE n.is_archived = $archive_status";
+    }
+
     $sql = "SELECT n.*, l.name as language_name, l.prism_class 
             FROM notes n
             LEFT JOIN languages l ON n.language_id = l.id
+            $whereClause
             ORDER BY $orderBy";
     $result = $conn->query($sql);
     $notes = [];
@@ -186,6 +194,14 @@ function getAllNotes($sort = 'custom') {
         $notes[] = $row;
     }
     return $notes;
+}
+
+function archiveNote($id, $status = 1) {
+    global $conn;
+    $id = (int)$id;
+    $status = (int)$status;
+    $sql = "UPDATE notes SET is_archived = $status WHERE id = $id";
+    return $conn->query($sql);
 }
 
 function saveNote($title, $content, $language_id = null, $tags = [], $id = null) {

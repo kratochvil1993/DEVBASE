@@ -15,16 +15,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         saveNote($_POST['title'], $_POST['content'], null, $tags, $id);
     } elseif ($_POST['action'] == 'delete_note') {
         deleteNote($_POST['note_id']);
-    } elseif ($_POST['action'] == 'archive_note') {
-        archiveNote($_POST['note_id'], 1);
+    } elseif ($_POST['action'] == 'unarchive_note') {
+        archiveNote($_POST['note_id'], 0);
     }
     $sortParam = isset($_GET['sort']) ? '?sort=' . $_GET['sort'] : '';
-    header('Location: notes.php' . $sortParam);
+    header('Location: archive_notes.php' . $sortParam);
     exit;
 }
 
 $currentSort = isset($_GET['sort']) ? $_GET['sort'] : 'custom';
-$notes = getAllNotes($currentSort);
+$notes = getAllNotes($currentSort, 1);
 $languages = getAllLanguages();
 $allNoteTags = getAllTags('note');
 
@@ -47,23 +47,24 @@ uasort($usedTags, function($a, $b) {
 include 'includes/header.php';
 ?>
 
-<div class="row mb-3 align-items-center">
+<div class="row mb-5 align-items-center">
     <div class="col-lg-8 mx-auto">
+        <h2 class="text-white mb-3">Archiv poznámek</h2>
         <div class="glass-card p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between">
             <div class="flex-grow-1" style="max-width: 400px;">
                 <div class="input-group">
                     <span class="input-group-text bg-transparent border-0 text-white">
                         <i class="bi bi-search"></i>
                     </span>
-                    <input type="text" id="noteSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat v poznámkách...">
+                    <input type="text" id="noteSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat v archivu...">
                 </div>
             </div>
 
-            <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-add-snipet rounded Xrounded-pill px-4" id="newNoteBtn" data-bs-toggle="modal" data-bs-target="#noteModal" onclick="openAddNoteModal()">
+            <div class="d-flex flex-wrap  gap-2">
+                <button class="btn btn-add-snipet rounded Xrounded-pill px-4 d-none" id="newNoteBtn" data-bs-toggle="modal" data-bs-target="#noteModal" onclick="openAddNoteModal()">
                     <i class="bi bi-plus-lg"></i>
                 </button>
-                <button class="btn btn-edit-order rounded Xrounded-pill px-4" id="editOrderBtn" onclick="toggleSortingMode()">
+                <button class="btn btn-edit-order rounded Xrounded-pill px-4 d-none" id="editOrderBtn" onclick="toggleSortingMode()">
                     <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
                 </button>
                 <button class="btn btn-success rounded Xrounded-pill px-4 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
@@ -116,9 +117,8 @@ include 'includes/header.php';
 <div class="row g-4" id="notesGrid">
     <?php if (empty($notes)): ?>
         <div class="col-12 text-center text-white-50 py-5">
-            <i class="bi bi-journal-x display-1 mb-3 d-block"></i>
-            <h3>Zatím nemáte žádné poznámky.</h3>
-            <p>Klikněte na tlačítko výše a vytvořte si první!</p>
+            <i class="bi bi-archive display-1 mb-3 d-block"></i>
+            <h3>Žádné poznámky v archivu.</h3>
         </div>
     <?php else: ?>
         <?php foreach ($notes as $note): 
@@ -138,11 +138,11 @@ include 'includes/header.php';
                                         title="Upravit">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <form method="POST" class="d-inline" title="Archivovat">
-                                    <input type="hidden" name="action" value="archive_note">
+                                <form method="POST" class="d-inline" title="Obnovit z archivu">
+                                    <input type="hidden" name="action" value="unarchive_note">
                                     <input type="hidden" name="note_id" value="<?php echo $note['id']; ?>">
-                                    <button type="submit" class="btn btn-sm btn-link text-warning p-0">
-                                        <i class="bi bi-archive"></i>
+                                    <button type="submit" class="btn btn-sm btn-link text-success p-0">
+                                        <i class="bi bi-arrow-counterclockwise"></i>
                                     </button>
                                 </form>
                                 <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tuto poznámku smazat?');">

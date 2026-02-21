@@ -95,6 +95,9 @@
             <a href="manage_notes.php" class="sidebar-link <?php echo $currentPage == 'manage_notes.php' ? 'active' : ''; ?>">
                 <i class="bi bi-list-task me-2"></i> Správa poznámek
             </a>
+            <a href="archive_notes.php" class="sidebar-link <?php echo $currentPage == 'archive_notes.php' ? 'active' : ''; ?>">
+                <i class="bi bi-archive me-2"></i> Archiv poznámek
+            </a>
             <?php endif; ?>
             <a href="settings.php" class="sidebar-link <?php echo $currentPage == 'settings.php' ? 'active' : ''; ?>">
                 <i class="bi bi-gear me-2"></i> Nastavení
