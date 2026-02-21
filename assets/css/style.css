@@ -1,17 +1,19 @@
 :root {
-    /* More transparent white for sharper glass effect */
+    /* Slightly more refined Glass for the darker background */
     --glass-bg: rgba(255, 255, 255, 0.12);
-    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.35);
     --glass-blur: blur(14px);
-    /* Softer, cleaner shadow for light mode */
-    --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 
-    /* Vibrant, premium background gradient for light mode */
-    --bg-gradient: linear-gradient(135deg, #4776E6 0%, #8E54E9 100%);
+    /* Darker Slate & Charcoal palette - more "midnight" feel for Light Mode */
+    --bg-gradient: linear-gradient(135deg, #475569 0%, #1e293b 100%);
     
-    /* Brighter, glowing circles to eliminate the washed-out look */
-    --circle-purple: rgba(255, 59, 255, 0.4); /* Magenta glow */
-    --circle-primary: rgba(59, 217, 255, 0.5); /* Cyan glow */
+    /* Very subtle, dark-gray glows */
+    --circle-purple: rgba(71, 85, 105, 0.25); 
+    --circle-primary: rgba(51, 65, 85, 0.2);
+
+    /* Code snippet background for Light Mode - Darker */
+    --code-bg: rgba(0, 0, 0, 0.5);
 }
 
 [data-bs-theme="dark"] {
@@ -23,6 +25,9 @@
     --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     --circle-purple: rgba(69, 22, 105, 0.6);
     --circle-primary: rgba(0, 229, 130, 0.35);
+
+    /* Code snippet background for Dark Mode */
+    --code-bg: rgba(0, 0, 0, 0.3);
 }
 
 body {
@@ -137,7 +142,7 @@ nav .logo {
 
 /* Syntax Highlighting Tweaks */
 pre[class*="language-"] {
-    background: rgba(0, 0, 0, 0.3) !important;
+    background: var(--code-bg) !important;
     margin: 0 !important;
     border-radius: 0 !important;
     overflow: hidden !important;
