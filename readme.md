@@ -17,7 +17,9 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Integrovaný Markdown**: Snipety lze zapisovat formou Markdownu pro kombinaci více jazyků či tabulek.
 - **Flexibilní navigace**: Rychlé přepínání mezi snipety, poznámkami a úkoly přímo v hlavičce (dle aktuálního nastavení).
 - **Rychlé statistiky**: Přehledný panel v bočním menu (offcanvas), který okamžitě zobrazuje aktuální počty vašich snippetů, poznámek a aktivních úkolů v elegantních minikartách.
+- **Zabezpečení (App Lock)**: Možnost uzamknout celou aplikaci pod heslo. Funkci lze aktivovat v Nastavení a následně aplikaci kdykoliv "zacvaknout" pomocí ikony zámku v hlavičce. Systém využívá bezpečné hashování hesla.
 - **Propracované UI**: Elegantní rozhraní postavené na Bootstrap 5, oživené plovoucími barevnými prvky, blur efekty, micro-animacemi a moderní vizí glassmorphismu.
+- **Plně lokální běh**: Všechny knihovny, ikony a fonty jsou uloženy lokálně v projektu. Aplikace nevyžaduje přístup k internetu pro své fungování (ideální pro bezpečné interní prostředí).
 
 ## Instalace a Spuštění
 
@@ -49,7 +51,7 @@ Pokud se chcete k databázi přes Docker připojit přes nástroje jakým je nap
 ## Technologie pod kapotou
 
 - **Backend:** Nativní PHP, bez těžkých frameworků.
-- **Frontend / UX:** HTML5, Bootstrap 5.3 a čistý JavaScript
+- **Frontend / UX:** HTML5, Bootstrap 5.3 a čistý JavaScript (vše linkováno lokálně z `/assets`).
 - **Zpracování úkolů:** Interaktivní odškrtávání a řazení bez nutnosti obnovování stránky (SortableJS)
 - **Formátování & Editor:** WYSIWYG editor Quill.js (pro poznámky)
 - **Zvýraznění kódu:** Prism.js (autoloader s podporou témat)

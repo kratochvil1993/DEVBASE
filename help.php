@@ -179,24 +179,31 @@ console.log('Hello World');
                 </li>
             </ul>
         </div>
+            </ul>
+        </div>
         <div class="glass-card p-4 mt-4">
-            <h4 class="text-white mb-4"><i class="bi bi-layout-sidebar me-2"></i> Navigace a Statistiky</h4>
+            <h4 class="text-white mb-4"><i class="bi bi-shield-lock me-2"></i> Zabezpečení a Soukromí</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
-                    <strong class="text-white d-block">Přehled o datech:</strong>
-                    V bočním menu (vlevo nahoře) najdete pod hlavními odkazy sekci <strong>Statistiky</strong>. Zde se v reálném čase zobrazuje celkový počet vašich snippetů, uložených poznámek a aktuálních (nearchivovaných) úkolů v elegantních minikartách.
+                    <strong class="text-white d-block">Zámek aplikace:</strong>
+                    V **Nastavení** můžete zapnout ochranu heslem. Po aktivaci bude aplikace při každém novém otevření (nebo vypršení session) vyžadovat heslo.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Rychlé přepínání:</strong>
-                    V horní liště aplikace (uprostřed) najdete přepínače pro hlavní sekce (Snippety, Poznámky, TODO), které jsou povoleny. Pokud některou sekci v Nastavení vypnete, tlačítko z navigace automaticky zmizí.
+                    <strong class="text-white d-block">Ruční uzamčení:</strong>
+                    Pokud máte zámek aktivní, v horní liště vedle Dark Mode přepínače uvidíte ikonu **zámku**. Kliknutím na ni se aplikace okamžitě uzamkne a přesměruje vás na zamykací obrazovku. Ideální, když odcházíte od počítače.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Adaptivní menu:</strong>
-                    Boční vysouvací menu obsahuje odkazy na správu štítků a archivů, které jsou specifické pro jednotlivé moduly aplikace.
+                    <strong class="text-white d-block">Bezpečnost hesla:</strong>
+                    Hesla jsou v databázi uložena jako bezpečné hashe. Pokud heslo zapomenete, lze jej resetovat přímo v databázi (tabulka `settings`, klíč `security_enabled` na `0`).
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Offline bezpečnost:</strong>
+                    DevBase je navržena tak, aby nepotřebovala internet. Žádná vaše data ani hesla neopouštějí váš lokální stroj/Docker kontejner.
                 </li>
             </ul>
         </div>
     </div>
+
 </div>
 </div>
 
