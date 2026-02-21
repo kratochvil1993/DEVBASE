@@ -91,6 +91,10 @@ console.log('Hello World');
                     <strong class="text-white d-block">Detailní náhled:</strong>
                     Kliknutím na kartu snipetu (mimo tlačítka) otevřete **detailní náhled** v modálním okně, který je ideální pro čtení dlouhých kódů.
                 </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Statistiky v menu:</strong>
+                    V bočním panelu najdete bleskový přehled počtu snippetů, poznámek a **aktivních** úkolů. Grafika karet je nyní statická pro nerušené čtení.
+                </li>
             </ul>
         </div>
 
@@ -159,7 +163,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Přidávání úkolů:</strong>
-                    Jednoduše napište co potřebujete udělat a stiskněte Enter nebo tlačítko pro přidání. Systém je navržen pro bleskové zaznamenání povinností.
+                    V horní části najdete panel, který je vizuálně sjednocen s vyhledávacím barem. Jednoduše napište co potřebujete udělat a stiskněte Enter nebo tlačítko pro přidání.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Štítkování úkolů:</strong>
@@ -186,7 +190,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Zámek aplikace:</strong>
-                    V **Nastavení** můžete zapnout ochranu heslem. Po aktivaci bude aplikace při každém novém otevření (nebo vypršení session) vyžadovat heslo.
+                    V **Nastavení** můžete zapnout ochranu heslem. Před první aktivací je nutné heslo nastavit a potvrdit (pro vyloučení překlepů). Pokud již máte heslo nastaveno, můžete funkci zámku libovolně vypínat a zapínat.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Ruční uzamčení:</strong>
