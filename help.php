@@ -128,6 +128,14 @@ console.log('Hello World');
                     Stejně jako u snipetů, i poznámkám nyní můžete přiřadit vlastní barevné tagy pro mnohem lepší organizaci a následné filtrování.
                 </li>
                 <li class="mb-3">
+                    <strong class="text-white d-block">Zápis s podporou Quill Editoru:</strong>
+                    Tvorba a úprava poznámek probíhá v moderním WYSIWYG editoru, který umožňuje snadné formátování textu (nadpisy, stylování textu, seznamy) přímo v grafickém rozhraní.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Archivace:</strong>
+                    Méně aktuální nebo splněné poznámky můžete 1 kliknutím přesunout do <strong>Archivu poznámek</strong> (oranžová ikonka krabice) a udržet tak hlavní výpis přehledný. Z archivu je lze kdykoliv obnovit nebo trvale smazat.
+                </li>
+                <li class="mb-3">
                     <strong class="text-white d-block">Vlastní řazení:</strong>
                     V sekci Poznámky klikni na **Upravit pořadí**. Karty se jemně rozvibrují a ty je můžeš myší přetahovat. Pořadí se ukládá automaticky.
                 </li>
