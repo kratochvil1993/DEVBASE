@@ -23,35 +23,42 @@ include 'includes/header.php';
 <div class="container">
 <div class="row align-items-center mb-4">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <h2 class="text-white mb-0">Správa snippetů</h2>
-            <button class="btn btn-add-snipet rounded px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#addSnippetModal" title="Nový snipet">
-                <i class="bi bi-plus-lg me-1"></i> Nový snipet
-            </button>
-        </div>
+        <h2 class="text-white mb-0">Správa snippetů</h2>
     </div>
 </div>
 
-<!-- Search & Tag Filters -->
-<div class="row mb-3">
+<!-- Controls (Search, Buttons, Filters) -->
+<div class="row mb-4">
     <div class="col-12">
-        <div class="glass-card p-3 d-flex flex-wrap gap-3 align-items-center">
-            <div class="input-group flex-grow-1" style="max-width: 400px;">
-                <span class="input-group-text bg-transparent border-0 text-white">
-                    <i class="bi bi-search"></i>
-                </span>
-                <input type="text" id="manageSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat snipety...">
-            </div>
-            <div class="d-flex flex-wrap gap-2" id="manageTagFilters">
-                <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all">Vše</button>
-                <?php foreach ($tags as $tag): ?>
-                    <button class="btn btn-sm rounded-pill px-3 <?php echo empty($tag['color']) ? 'btn-outline-light' : ''; ?>"
-                            data-tag="<?php echo htmlspecialchars($tag['name']); ?>"
-                            <?php if (!empty($tag['color'])) echo 'style="background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';"'; ?>>
-                        <?php echo htmlspecialchars($tag['name']); ?>
+        <div class="glass-card p-3 mb-3">
+            <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
+                <!-- Search Input -->
+                <div class="input-group flex-grow-1" style="max-width: 400px;">
+                    <span class="input-group-text bg-transparent border-0 text-white">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" id="manageSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat snipety...">
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2">
+                    <button class="btn btn-add-snipet rounded px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#addSnippetModal" title="Nový snipet">
+                        <i class="bi bi-plus-lg"></i>
                     </button>
-                <?php endforeach; ?>
+                </div>
             </div>
+        </div>
+        
+        <!-- Tag Filters (Below) -->
+        <div class="d-flex flex-wrap justify-content-end gap-2" id="manageTagFilters">
+            <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all">Vše</button>
+            <?php foreach ($tags as $tag): ?>
+                <button class="btn btn-sm rounded-pill px-3 <?php echo empty($tag['color']) ? 'btn-outline-light' : ''; ?>"
+                        data-tag="<?php echo htmlspecialchars($tag['name']); ?>"
+                        <?php if (!empty($tag['color'])) echo 'style="background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';"'; ?>>
+                    <?php echo htmlspecialchars($tag['name']); ?>
+                </button>
+            <?php endforeach; ?>
         </div>
     </div>
 </div>

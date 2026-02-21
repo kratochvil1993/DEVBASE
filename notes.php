@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_note') {
         $id = !empty($_POST['note_id']) ? $_POST['note_id'] : null;
         $lang_id = !empty($_POST['language_id']) ? $_POST['language_id'] : null;
-        saveNote($_POST['title'], $_POST['content'], $lang_id, $id);
+        $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
+        saveNote($_POST['title'], $_POST['content'], $lang_id, $tags, $id);
     } elseif ($_POST['action'] == 'delete_note') {
         deleteNote($_POST['note_id']);
     }
@@ -24,6 +25,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 $currentSort = isset($_GET['sort']) ? $_GET['sort'] : 'custom';
 $notes = getAllNotes($currentSort);
 $languages = getAllLanguages();
+$allNoteTags = getAllTags('note');
+
+// Identify used tags for filtering
+$usedTags = [];
+foreach ($notes as $note) {
+    if (!empty($note['tags'])) {
+        foreach ($note['tags'] as $tag) {
+            $usedTags[$tag['id']] = $tag;
+        }
+    }
+}
+uasort($usedTags, function($a, $b) { return strcmp($a['name'], $b['name']); });
 
 include 'includes/header.php';
 ?>
@@ -77,6 +90,23 @@ include 'includes/header.php';
     </div>
 </div>
 
+<?php if (!empty($usedTags)): ?>
+<div class="row mb-4">
+    <div class="col-lg-8 mx-auto">
+        <div id="noteTagFilters" class="d-flex flex-wrap gap-2 justify-content-center">
+            <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all">Vše</button>
+            <?php foreach ($usedTags as $tag): ?>
+                <button class="btn btn-sm btn-outline-light rounded-pill px-3" 
+                        data-tag="<?php echo htmlspecialchars($tag['name']); ?>"
+                        style="--tag-color: <?php echo $tag['color'] ? $tag['color'] : 'rgba(255,255,255,0.2)'; ?>">
+                    <?php echo htmlspecialchars($tag['name']); ?>
+                </button>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <div class="row g-4" id="notesGrid">
     <?php if (empty($notes)): ?>
         <div class="col-12 text-center text-white-50 py-5">
@@ -85,8 +115,11 @@ include 'includes/header.php';
             <p>Klikněte na tlačítko výše a vytvořte si první!</p>
         </div>
     <?php else: ?>
-        <?php foreach ($notes as $note): ?>
-            <div class="col-md-4 col-lg-6 note-item" data-id="<?php echo $note['id']; ?>">
+        <?php foreach ($notes as $note): 
+            $tagNames = array_map(function($t) { return $t['name']; }, $note['tags']);
+            $tagData = implode(',', $tagNames);
+        ?>
+            <div class="col-md-4 col-lg-6 note-item" data-id="<?php echo $note['id']; ?>" data-tags="<?php echo htmlspecialchars($tagData); ?>">
                 <div class="card glass-card h-100 note-card" onclick="handleNoteClick(event, <?php echo htmlspecialchars(json_encode($note), ENT_QUOTES, 'UTF-8'); ?>)">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
@@ -128,9 +161,12 @@ include 'includes/header.php';
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
-                <h5 class="modal-title text-white d-flex align-items-center gap-2" id="viewNoteModalTitle">
-                    Prohlížení poznámky
-                </h5>
+                <div class="d-flex align-items-center gap-3">
+                    <h5 class="modal-title text-white" id="viewNoteModalTitle">
+                        Prohlížení poznámky
+                    </h5>
+                    <div id="viewNoteTags" class="d-flex gap-1 flex-wrap"></div>
+                </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
@@ -142,7 +178,7 @@ include 'includes/header.php';
                 </div>
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
                     <small id="viewNoteDate" class="text-white-25 m-0"></small>
                     <span id="viewNoteLang" class="badge tag-badge m-0"></span>
                 </div>
@@ -182,7 +218,26 @@ include 'includes/header.php';
                         </div>
                         <div class="col-12">
                             <label class="form-label text-white-50 small">Obsah</label>
-                            <textarea name="content" id="noteContentInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="12" required placeholder="Napište vaši poznámku..."></textarea>
+                            <textarea name="content" id="noteContentInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="10" required placeholder="Napište vaši poznámku..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-white-50 small d-block">Štítky</label>
+                            <div class="d-flex flex-wrap gap-2 p-3 rounded border border-light border-opacity-10">
+                                <?php if (empty($allNoteTags)): ?>
+                                    <p class="text-white-50 small mb-0 w-100 text-center">Žádné štítky nejsou definovány. Přidejte je v nastavení.</p>
+                                <?php else: ?>
+                                    <?php foreach ($allNoteTags as $tag): ?>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="tags[]" value="<?php echo $tag['id']; ?>" id="noteTag<?php echo $tag['id']; ?>">
+                                            <label class="form-check-label text-white-50 small" for="noteTag<?php echo $tag['id']; ?>">
+                                                <span class="badge" style="background-color: <?php echo $tag['color'] ? htmlspecialchars($tag['color']) : '#6c757d'; ?>">
+                                                    <?php echo htmlspecialchars($tag['name']); ?>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -277,6 +332,7 @@ function openViewNoteModal(note) {
     const contentEl = document.getElementById('viewNoteContent');
     const dateEl = document.getElementById('viewNoteDate');
     const langEl = document.getElementById('viewNoteLang');
+    const tagsWrapper = document.getElementById('viewNoteTags');
     
     titleEl.innerText = note.title;
     contentEl.textContent = note.content;
@@ -286,6 +342,21 @@ function openViewNoteModal(note) {
     contentEl.className = note.prism_class ? 'language-' + note.prism_class : 'language-none';
     langEl.innerText = note.language_name || 'Bez formátování';
     langEl.style.display = note.language_name ? 'inline-block' : 'none';
+
+    // Tags
+    if (tagsWrapper) {
+        tagsWrapper.innerHTML = '';
+        if (note.tags && note.tags.length > 0) {
+            note.tags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = 'badge';
+                span.style.backgroundColor = tag.color || '#6c757d';
+                span.style.fontSize = '0.7rem';
+                span.textContent = tag.name;
+                tagsWrapper.appendChild(span);
+            });
+        }
+    }
     
     // Highlight
     if (typeof Prism !== 'undefined') {
@@ -316,6 +387,10 @@ function openAddNoteModal() {
     document.getElementById('noteContentInput').value = '';
     document.getElementById('noteLanguageInput').value = '';
     document.getElementById('noteSubmitBtn').innerText = 'Uložit poznámku';
+
+    // Reset tags
+    const tagCheckboxes = document.querySelectorAll('#noteForm input[name="tags[]"]');
+    tagCheckboxes.forEach(cb => cb.checked = false);
 }
 
 function openEditNoteModal(note) {
@@ -325,22 +400,40 @@ function openEditNoteModal(note) {
     document.getElementById('noteContentInput').value = note.content;
     document.getElementById('noteLanguageInput').value = note.language_id || '';
     document.getElementById('noteSubmitBtn').innerText = 'Uložit změny';
+
+    // Set tags
+    const tagCheckboxes = document.querySelectorAll('#noteForm input[name="tags[]"]');
+    tagCheckboxes.forEach(cb => {
+        cb.checked = note.tags.some(t => t.id == cb.value);
+    });
     
     var myModal = new bootstrap.Modal(document.getElementById('noteModal'));
     myModal.show();
 }
 
-// Search filtering for notes
-document.getElementById('noteSearch').addEventListener('input', function(e) {
-    const search = e.target.value.toLowerCase();
+// Search and Tag filtering for notes
+const noteSearchInput = document.getElementById('noteSearch');
+const noteTagButtons = document.querySelectorAll('#noteTagFilters .btn');
+let currentNoteSearch = '';
+let currentNoteTag = 'all';
+
+const filterNotes = () => {
     const notes = document.querySelectorAll('.note-item');
     let delay = 0;
     
     notes.forEach(note => {
         const title = note.querySelector('.card-title').textContent.toLowerCase();
         const content = note.querySelector('.card-text').textContent.toLowerCase();
+        const tagsAttr = note.getAttribute('data-tags');
+        const tags = tagsAttr ? tagsAttr.toLowerCase().split(',') : [];
         
-        if (title.includes(search) || content.includes(search)) {
+        const matchesSearch = title.includes(currentNoteSearch) || 
+                             content.includes(currentNoteSearch) ||
+                             tags.some(t => t.includes(currentNoteSearch));
+        
+        const matchesTag = currentNoteTag === 'all' || tags.includes(currentNoteTag.toLowerCase());
+
+        if (matchesSearch && matchesTag) {
             note.style.display = 'block';
             note.style.animation = 'none';
             note.offsetHeight; /* trigger reflow */
@@ -350,6 +443,22 @@ document.getElementById('noteSearch').addEventListener('input', function(e) {
             note.style.display = 'none';
             note.style.animation = 'none';
         }
+    });
+};
+
+if (noteSearchInput) {
+    noteSearchInput.addEventListener('input', function(e) {
+        currentNoteSearch = e.target.value.toLowerCase();
+        filterNotes();
+    });
+}
+
+noteTagButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        noteTagButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentNoteTag = btn.getAttribute('data-tag');
+        filterNotes();
     });
 });
 </script>

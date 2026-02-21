@@ -168,8 +168,52 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        document.getElementById('tagSubmitBtn').textContent = 'Aktualizovat štítek';
+        document.getElementById('tagSubmitBtn').textContent = 'Aktualizovat';
         document.getElementById('tagName').focus();
+    };
+
+    // Note Tag Settings Logic
+    const noteTagForm = document.getElementById('noteTagForm');
+    const noteTagColorPicker = document.getElementById('noteTagColorPicker');
+    const noteTagColorInput = document.getElementById('noteTagColor');
+
+    if (noteTagForm && noteTagColorInput) {
+        noteTagForm.addEventListener('submit', (e) => {
+            const colorValue = noteTagColorInput.value.trim();
+            if (colorValue !== '' && !/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/i.test(colorValue)) {
+                e.preventDefault();
+                alert('Barva musí začínat symbolem # a být v platném hexadecimálním formátu.');
+                noteTagColorInput.focus();
+            }
+        });
+    }
+
+    if (noteTagColorPicker && noteTagColorInput) {
+        noteTagColorPicker.addEventListener('input', (e) => {
+            noteTagColorInput.value = e.target.value;
+        });
+        noteTagColorInput.addEventListener('input', (e) => {
+            if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
+                noteTagColorPicker.value = e.target.value;
+            }
+        });
+    }
+
+    window.editNoteTag = (tag) => {
+        document.getElementById('noteTagId').value = tag.id;
+        document.getElementById('noteTagName').value = tag.name;
+        
+        if (noteTagColorInput) noteTagColorInput.value = tag.color || '';
+        if (noteTagColorPicker) {
+            if (tag.color && /^#[0-9A-F]{6}$/i.test(tag.color)) {
+                noteTagColorPicker.value = tag.color;
+            } else {
+                noteTagColorPicker.value = '#000000';
+            }
+        }
+        
+        document.getElementById('noteTagSubmitBtn').textContent = 'Aktualizovat';
+        document.getElementById('noteTagName').focus();
     };
 
     window.editLanguage = (lang) => {

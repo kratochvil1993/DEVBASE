@@ -87,6 +87,11 @@
             <a href="manage.php" class="sidebar-link <?php echo $currentPage == 'manage.php' ? 'active' : ''; ?>">
                 <i class="bi bi-list-task me-2"></i> Správa snippetů
             </a>
+            <?php if (getSetting('notes_enabled', '1') == '1'): ?>
+            <a href="manage_notes.php" class="sidebar-link <?php echo $currentPage == 'manage_notes.php' ? 'active' : ''; ?>">
+                <i class="bi bi-list-task me-2"></i> Správa poznámek
+            </a>
+            <?php endif; ?>
             <a href="settings.php" class="sidebar-link <?php echo $currentPage == 'settings.php' ? 'active' : ''; ?>">
                 <i class="bi bi-gear me-2"></i> Nastavení
             </a>

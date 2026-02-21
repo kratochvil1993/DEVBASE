@@ -22,8 +22,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 }
 
 $snippets = getAllSnippets();
-$tags = getAllTags();
+$allTags = getAllTags(); // For the modal
 $languages = getAllLanguages();
+
+// Identify used tags for filtering
+$usedTags = [];
+foreach ($snippets as $snippet) {
+    if (!empty($snippet['tags'])) {
+        foreach ($snippet['tags'] as $tag) {
+            $usedTags[$tag['name']] = $tag; // Use name as key for uniqueness and sort
+        }
+    }
+}
+uasort($usedTags, function($a, $b) { return strcmp($a['name'], $b['name']); });
 
 include 'includes/header.php';
 ?>
@@ -44,10 +55,11 @@ include 'includes/header.php';
     </div>
 </div>
 
+<?php if (!empty($usedTags)): ?>
 <div class="row mb-5">
     <div class="col-md-8 mx-auto d-flex flex-wrap gap-2 justify-content-center" id="tagFilters">
         <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all" style="--tag-color: #fff;">Vše</button>
-        <?php foreach ($tags as $tag): ?>
+        <?php foreach ($usedTags as $tag): ?>
             <button class="btn btn-sm rounded-pill px-3 <?php echo empty($tag['color']) ? 'btn-outline-light' : ''; ?>" 
                     data-tag="<?php echo htmlspecialchars($tag['name']); ?>"
                     style="--tag-color: <?php echo !empty($tag['color']) ? htmlspecialchars($tag['color']) : '#fff'; ?>; <?php if (!empty($tag['color'])) echo 'background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';'; ?>">
@@ -56,6 +68,7 @@ include 'includes/header.php';
         <?php endforeach; ?>
     </div>
 </div>
+<?php endif; ?>
 
 <!-- Add Snippet Modal -->
 <div class="modal fade" id="addSnippetModal" tabindex="-1" aria-hidden="true">
@@ -90,7 +103,7 @@ include 'includes/header.php';
                         <div class="col-md-6">
                             <label class="form-label text-white-50 small">Štítky</label>
                             <div class="d-flex flex-wrap gap-2 pt-1">
-                                <?php foreach ($tags as $tag): ?>
+                                <?php foreach ($allTags as $tag): ?>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="tags[]" value="<?php echo $tag['id']; ?>" id="tag-<?php echo $tag['id']; ?>">
                                         <label class="form-check-label text-white small" for="tag-<?php echo $tag['id']; ?>"><?php echo htmlspecialchars($tag['name']); ?></label>

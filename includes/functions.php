@@ -26,7 +26,7 @@ function getAllSnippets($search = '') {
 function getSnippetTags($snippet_id) {
     global $conn;
     $snippet_id = (int)$snippet_id;
-    $sql = "SELECT t.name, t.color FROM tags t 
+    $sql = "SELECT t.id, t.name, t.color FROM tags t 
             JOIN snippet_tags st ON t.id = st.tag_id 
             WHERE st.snippet_id = $snippet_id";
     $result = $conn->query($sql);
@@ -37,9 +37,24 @@ function getSnippetTags($snippet_id) {
     return $tags;
 }
 
-function getAllTags() {
+function getNoteTags($note_id) {
     global $conn;
-    $sql = "SELECT * FROM tags ORDER BY name ASC";
+    $note_id = (int)$note_id;
+    $sql = "SELECT t.id, t.name, t.color FROM tags t 
+            JOIN note_tags nt ON t.id = nt.tag_id 
+            WHERE nt.note_id = $note_id";
+    $result = $conn->query($sql);
+    $tags = [];
+    while ($row = $result->fetch_assoc()) {
+        $tags[] = $row;
+    }
+    return $tags;
+}
+
+function getAllTags($type = 'snippet') {
+    global $conn;
+    $type = $conn->real_escape_string($type);
+    $sql = "SELECT * FROM tags WHERE type = '$type' ORDER BY name ASC";
     $result = $conn->query($sql);
     $tags = [];
     while ($row = $result->fetch_assoc()) {
@@ -59,15 +74,16 @@ function getAllLanguages() {
     return $languages;
 }
 
-function saveTag($name, $color, $id = null) {
+function saveTag($name, $color, $type = 'snippet', $id = null) {
     global $conn;
     $name = $conn->real_escape_string($name);
+    $type = $conn->real_escape_string($type);
     $color = !empty($color) ? "'" . $conn->real_escape_string($color) . "'" : "NULL";
     if ($id) {
         $id = (int)$id;
-        $sql = "UPDATE tags SET name = '$name', color = $color WHERE id = $id";
+        $sql = "UPDATE tags SET name = '$name', color = $color, type = '$type' WHERE id = $id";
     } else {
-        $sql = "INSERT INTO tags (name, color) VALUES ('$name', $color)";
+        $sql = "INSERT INTO tags (name, color, type) VALUES ('$name', $color, '$type')";
     }
     return $conn->query($sql);
 }
@@ -163,12 +179,13 @@ function getAllNotes($sort = 'custom') {
     $result = $conn->query($sql);
     $notes = [];
     while ($row = $result->fetch_assoc()) {
+        $row['tags'] = getNoteTags($row['id']);
         $notes[] = $row;
     }
     return $notes;
 }
 
-function saveNote($title, $content, $language_id = null, $id = null) {
+function saveNote($title, $content, $language_id = null, $tags = [], $id = null) {
     global $conn;
     $title = $conn->real_escape_string($title);
     $content = $conn->real_escape_string($content);
@@ -184,7 +201,19 @@ function saveNote($title, $content, $language_id = null, $id = null) {
         $next_sort = (int)($row['max_sort'] ?? 0) + 1;
         $sql = "INSERT INTO notes (title, content, sort_order, language_id) VALUES ('$title', '$content', $next_sort, $language_id)";
     }
-    return $conn->query($sql);
+
+    if ($conn->query($sql)) {
+        $note_id = $id ? $id : $conn->insert_id;
+        
+        // Handle tags
+        $conn->query("DELETE FROM note_tags WHERE note_id = $note_id");
+        foreach ($tags as $tag_id) {
+            $tag_id = (int)$tag_id;
+            $conn->query("INSERT INTO note_tags (note_id, tag_id) VALUES ($note_id, $tag_id)");
+        }
+        return true;
+    }
+    return false;
 }
 
 function updateNoteOrder($id, $order) {

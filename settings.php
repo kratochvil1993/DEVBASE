@@ -6,7 +6,8 @@ if (isset($_POST['action'])) {
     if ($_POST['action'] == 'save_tag') {
         $id = !empty($_POST['id']) ? $_POST['id'] : null;
         $color = !empty($_POST['color']) ? $_POST['color'] : null;
-        saveTag($_POST['name'], $color, $id);
+        $type = !empty($_POST['type']) ? $_POST['type'] : 'snippet';
+        saveTag($_POST['name'], $color, $type, $id);
     } elseif ($_POST['action'] == 'delete_tag') {
         deleteTag($_POST['id']);
     } elseif ($_POST['action'] == 'save_language') {
@@ -23,7 +24,8 @@ if (isset($_POST['action'])) {
 }
 
 $notesEnabled = getSetting('notes_enabled', '1');
-$tags = getAllTags();
+$snippetTags = getAllTags('snippet');
+$noteTags = getAllTags('note');
 $languages = getAllLanguages();
 
 include 'includes/header.php';
@@ -38,37 +40,103 @@ include 'includes/header.php';
         <p class="text-white-50">Spravujte nastavení aplikace, štítky a jazyky.</p>
     </div>
 
+     <!-- General Settings -->
+    <div class="col-12 mb-4">
+        <div class="glass-card p-4">
+            <h4 class="text-white mb-3">Obecné nastavení</h4>
+            <form method="POST" id="settingsForm">
+                <input type="hidden" name="action" value="toggle_notes">
+                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
+                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="notes_enabled" id="notesEnabledToggle" 
+                           <?php echo $notesEnabled == '1' ? 'checked' : ''; ?>
+                           onchange="this.form.submit()">
+                    <label class="form-check-label text-white" for="notesEnabledToggle">
+                        <span class="d-block fw-bold">Povolit sekci Notes</span>
+                        <small class="text-white-50">Pokud je vypnuto, sekce Notes se nezobrazí v menu ani nebude přístupná.</small>
+                    </label>
+                </div>
+            </form>
+        </div>
+    </div>
     
-    <!-- Tag Management -->
+    <!-- Snippet Tag Management -->
     <div class="col-md-6 mb-4">
         <div class="glass-card p-4 h-100">
-            <h4 class="text-white mb-4">Správa štítků</h4>
+            <h4 class="text-white mb-4">Štítky kódů</h4>
             
             <form method="POST" class="mb-4" id="tagForm">
                 <input type="hidden" name="action" value="save_tag">
+                <input type="hidden" name="type" value="snippet">
                 <input type="hidden" name="id" id="tagId" value="">
                 <div class="input-group">
                     <input type="color" id="tagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Vyberte barvu nebo nechte prázdné">
-                    <input type="text" name="color" id="tagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex (prázdné je bez barvy)" style="max-width: 180px;" pattern="^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$" title="Barva musí začínat # a mít 3 nebo 6 hexadecimálních znaků (např. #fff nebo #ffcc00)">
-                    <input type="text" name="name" id="tagName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Název štítku" required>
-                    <button class="btn btn-add-snipet" type="submit" id="tagSubmitBtn">Přidat štítek</button>
+                    <input type="text" name="color" id="tagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex" style="max-width: 150px;" pattern="^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$">
+                    <input type="text" name="name" id="tagName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Název" required>
+                    <button class="btn btn-add-snipet" type="submit" id="tagSubmitBtn">Přidat</button>
                 </div>
             </form>
 
-            <div class="list-group list-group-flush bg-transparent">
-                <?php foreach ($tags as $tag): ?>
+            <div class="list-group list-group-flush bg-transparent" style="max-height: 400px; overflow-y: auto;">
+                <?php foreach ($snippetTags as $tag): ?>
                     <div class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-light border-opacity-10 px-0">
                         <span>
                             <?php if (!empty($tag['color'])): ?>
                                 <span class="badge" style="background-color: <?php echo htmlspecialchars($tag['color']); ?>; color: #fff;">
                             <?php else: ?>
-                                <span>
+                                <span class="badge bg-secondary">
                             <?php endif; ?>
                             <?php echo htmlspecialchars($tag['name']); ?>
-                            <?php if (!empty($tag['color'])): ?></span><?php else: ?></span><?php endif; ?>
+                            </span>
                         </span>
                         <div class="d-flex gap-2">
                             <button class="btn btn-sm btn-link text-white-50 p-0 text-decoration-none" onclick='editTag(<?php echo json_encode($tag); ?>)'>
+                                <i class="bi bi-pencil"></i> 
+                            </button>
+                            <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento štítek smazat?');">
+                                <input type="hidden" name="action" value="delete_tag">
+                                <input type="hidden" name="id" value="<?php echo $tag['id']; ?>">
+                                <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
+                                    <i class="bi bi-trash"></i> 
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- Note Tag Management -->
+    <div class="col-md-6 mb-4">
+        <div class="glass-card p-4 h-100">
+            <h4 class="text-white mb-4">Štítky poznámek</h4>
+            
+            <form method="POST" class="mb-4" id="noteTagForm">
+                <input type="hidden" name="action" value="save_tag">
+                <input type="hidden" name="type" value="note">
+                <input type="hidden" name="id" id="noteTagId" value="">
+                <div class="input-group">
+                    <input type="color" id="noteTagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Vyberte barvu nebo nechte prázdné">
+                    <input type="text" name="color" id="noteTagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex" style="max-width: 150px;" pattern="^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$">
+                    <input type="text" name="name" id="noteTagName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Název" required>
+                    <button class="btn btn-add-snipet" type="submit" id="noteTagSubmitBtn">Přidat</button>
+                </div>
+            </form>
+
+            <div class="list-group list-group-flush bg-transparent" style="max-height: 400px; overflow-y: auto;">
+                <?php foreach ($noteTags as $tag): ?>
+                    <div class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-light border-opacity-10 px-0">
+                        <span>
+                            <?php if (!empty($tag['color'])): ?>
+                                <span class="badge" style="background-color: <?php echo htmlspecialchars($tag['color']); ?>; color: #fff;">
+                            <?php else: ?>
+                                <span class="badge bg-secondary">
+                            <?php endif; ?>
+                            <?php echo htmlspecialchars($tag['name']); ?>
+                            </span>
+                        </span>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-link text-white-50 p-0 text-decoration-none" onclick='editNoteTag(<?php echo json_encode($tag); ?>)'>
                                 <i class="bi bi-pencil"></i> 
                             </button>
                             <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento štítek smazat?');">
@@ -124,24 +192,7 @@ include 'includes/header.php';
             </div>
         </div>
     </div>
-    <!-- General Settings -->
-    <div class="col-12 mb-4">
-        <div class="glass-card p-4">
-            <h4 class="text-white mb-3">Obecné nastavení</h4>
-            <form method="POST" id="settingsForm">
-                <input type="hidden" name="action" value="toggle_notes">
-                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
-                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="notes_enabled" id="notesEnabledToggle" 
-                           <?php echo $notesEnabled == '1' ? 'checked' : ''; ?>
-                           onchange="this.form.submit()">
-                    <label class="form-check-label text-white" for="notesEnabledToggle">
-                        <span class="d-block fw-bold">Povolit sekci Notes</span>
-                        <small class="text-white-50">Pokud je vypnuto, sekce Notes se nezobrazí v menu ani nebude přístupná.</small>
-                    </label>
-                </div>
-            </form>
-        </div>
-    </div>
+   
 
 </div>
 </div>
