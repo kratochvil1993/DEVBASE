@@ -231,10 +231,10 @@ function saveNote($title, $content, $language_id = null, $tags = [], $id = null)
         $id = (int)$id;
         $sql = "UPDATE notes SET title = '$title', content = '$content', language_id = $language_id WHERE id = $id";
     } else {
-        // Get max sort_order
-        $result = $conn->query("SELECT MAX(sort_order) as max_sort FROM notes");
+        // Get min sort_order
+        $result = $conn->query("SELECT MIN(sort_order) as min_sort FROM notes");
         $row = $result->fetch_assoc();
-        $next_sort = (int)($row['max_sort'] ?? 0) + 1;
+        $next_sort = $row['min_sort'] !== null ? (int)$row['min_sort'] - 1 : 0;
         $sql = "INSERT INTO notes (title, content, sort_order, language_id) VALUES ('$title', '$content', $next_sort, $language_id)";
     }
 
@@ -325,9 +325,9 @@ function saveTodo($text, $tags = [], $id = null) {
         $id = (int)$id;
         $sql = "UPDATE todos SET text = '$text' WHERE id = $id";
     } else {
-        $result = $conn->query("SELECT MAX(sort_order) as max_sort FROM todos");
+        $result = $conn->query("SELECT MIN(sort_order) as min_sort FROM todos");
         $row = $result ? $result->fetch_assoc() : null;
-        $next_sort = (int)($row['max_sort'] ?? 0) + 1;
+        $next_sort = $row['min_sort'] !== null ? (int)$row['min_sort'] - 1 : 0;
         $sql = "INSERT INTO todos (text, sort_order) VALUES ('$text', $next_sort)";
     }
     
