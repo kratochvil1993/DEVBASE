@@ -18,12 +18,16 @@ if (isset($_POST['action'])) {
     } elseif ($_POST['action'] == 'toggle_notes') {
         $enabled = isset($_POST['notes_enabled']) ? '1' : '0';
         updateSetting('notes_enabled', $enabled);
+    } elseif ($_POST['action'] == 'toggle_todos') {
+        $enabled = isset($_POST['todos_enabled']) ? '1' : '0';
+        updateSetting('todos_enabled', $enabled);
     }
     header('Location: settings.php');
     exit;
 }
 
 $notesEnabled = getSetting('notes_enabled', '1');
+$todosEnabled = getSetting('todos_enabled', '1');
 $snippetTags = getAllTags('snippet');
 $noteTags = getAllTags('note');
 $languages = getAllLanguages();
@@ -40,11 +44,11 @@ include 'includes/header.php';
         <p class="text-white-50">Spravujte nastavení aplikace, štítky a jazyky.</p>
     </div>
 
-     <!-- General Settings -->
+    <!-- General Settings -->
     <div class="col-12 mb-4">
         <div class="glass-card p-4">
             <h4 class="text-white mb-3">Obecné nastavení</h4>
-            <form method="POST" id="settingsForm">
+            <form method="POST" id="settingsFormNotes" class="mb-3">
                 <input type="hidden" name="action" value="toggle_notes">
                 <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
                     <input class="form-check-input fs-4 ms-0" type="checkbox" name="notes_enabled" id="notesEnabledToggle" 
@@ -53,6 +57,19 @@ include 'includes/header.php';
                     <label class="form-check-label text-white" for="notesEnabledToggle">
                         <span class="d-block fw-bold">Povolit sekci Notes</span>
                         <small class="text-white-50">Pokud je vypnuto, sekce Notes se nezobrazí v menu ani nebude přístupná.</small>
+                    </label>
+                </div>
+            </form>
+
+            <form method="POST" id="settingsFormTodos">
+                <input type="hidden" name="action" value="toggle_todos">
+                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
+                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="todos_enabled" id="todosEnabledToggle" 
+                           <?php echo $todosEnabled == '1' ? 'checked' : ''; ?>
+                           onchange="this.form.submit()">
+                    <label class="form-check-label text-white" for="todosEnabledToggle">
+                        <span class="d-block fw-bold">Povolit sekci TODO</span>
+                        <small class="text-white-50">Pokud je vypnuto, sekce TODO se nezobrazí v menu ani nebude přístupná.</small>
                     </label>
                 </div>
             </form>

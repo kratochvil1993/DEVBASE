@@ -47,18 +47,25 @@
             <span>DevBase</span>
         </a>
 
-        <?php if (getSetting('notes_enabled', '1') == '1'): ?>
         <div class="d-none d-lg-flex position-absolute start-50 translate-middle-x">
             <div class="nav-toggle-group">
+                <?php if (getSetting('notes_enabled', '1') == '1' || getSetting('todos_enabled', '1') == '1'): ?>
                 <a href="index.php" class="nav-toggle-btn <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?>">
                     <i class="bi bi-code-slash me-2"></i> Snippets
                 </a>
+                <?php endif; ?>
+                <?php if (getSetting('notes_enabled', '1') == '1'): ?>
                 <a href="notes.php" class="nav-toggle-btn <?php echo $currentPage == 'notes.php' ? 'active' : ''; ?>">
                     <i class="bi bi-journal-text me-2"></i> Notes
                 </a>
+                <?php endif; ?>
+                <?php if (getSetting('todos_enabled', '1') == '1'): ?>
+                <a href="todo.php" class="nav-toggle-btn <?php echo $currentPage == 'todo.php' ? 'active' : ''; ?>">
+                    <i class="bi bi-check2-square me-2"></i> TODO
+                </a>
+                <?php endif; ?>
             </div>
         </div>
-        <?php endif; ?>
         
         <div class="ms-auto d-flex align-items-center">
             <div class="form-check form-switch mb-0">
@@ -97,6 +104,11 @@
             </a>
             <a href="archive_notes.php" class="sidebar-link <?php echo $currentPage == 'archive_notes.php' ? 'active' : ''; ?>">
                 <i class="bi bi-archive me-2"></i> Archiv poznámek
+            </a>
+            <?php endif; ?>
+            <?php if (getSetting('todos_enabled', '1') == '1'): ?>            
+            <a href="archive_todos.php" class="sidebar-link <?php echo $currentPage == 'archive_todos.php' ? 'active' : ''; ?>">
+                <i class="bi bi-archive me-2"></i> Archiv TODO
             </a>
             <?php endif; ?>
             <a href="settings.php" class="sidebar-link <?php echo $currentPage == 'settings.php' ? 'active' : ''; ?>">

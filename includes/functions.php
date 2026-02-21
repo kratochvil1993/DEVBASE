@@ -266,4 +266,70 @@ function updateSetting($key, $value) {
     $value = $conn->real_escape_string($value);
     return $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('$key', '$value') ON DUPLICATE KEY UPDATE setting_value = '$value'");
 }
+
+function initTodosTable() {
+    global $conn;
+    $conn->query("CREATE TABLE IF NOT EXISTS todos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        text VARCHAR(500) NOT NULL,
+        is_archived TINYINT(1) DEFAULT 0,
+        sort_order INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+}
+
+function getAllTodos($archive_status = 0) {
+    global $conn;
+    initTodosTable();
+    $archive_status = (int)$archive_status;
+    $sql = "SELECT * FROM todos WHERE is_archived = $archive_status ORDER BY sort_order ASC, created_at DESC";
+    $result = $conn->query($sql);
+    $todos = [];
+    if($result) {
+        while ($row = $result->fetch_assoc()) {
+            $todos[] = $row;
+        }
+    }
+    return $todos;
+}
+
+function saveTodo($text, $id = null) {
+    global $conn;
+    initTodosTable();
+    $text = $conn->real_escape_string($text);
+    
+    if ($id) {
+        $id = (int)$id;
+        $sql = "UPDATE todos SET text = '$text' WHERE id = $id";
+    } else {
+        $result = $conn->query("SELECT MAX(sort_order) as max_sort FROM todos");
+        $row = $result ? $result->fetch_assoc() : null;
+        $next_sort = (int)($row['max_sort'] ?? 0) + 1;
+        $sql = "INSERT INTO todos (text, sort_order) VALUES ('$text', $next_sort)";
+    }
+    return $conn->query($sql);
+}
+
+function archiveTodo($id, $status = 1) {
+    global $conn;
+    $id = (int)$id;
+    $status = (int)$status;
+    $sql = "UPDATE todos SET is_archived = $status WHERE id = $id";
+    return $conn->query($sql);
+}
+
+function updateTodoOrder($id, $order) {
+    global $conn;
+    $id = (int)$id;
+    $order = (int)$order;
+    $sql = "UPDATE todos SET sort_order = $order WHERE id = $id";
+    return $conn->query($sql);
+}
+
+function deleteTodo($id) {
+    global $conn;
+    $id = (int)$id;
+    $sql = "DELETE FROM todos WHERE id = $id";
+    return $conn->query($sql);
+}
 ?>

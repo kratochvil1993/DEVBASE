@@ -60,6 +60,11 @@ nav .logo {
   box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
 }
 
+.todo-item.glass-card:hover {
+  transform: none;
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
+}
+
 .navbar-glass {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
@@ -513,9 +518,10 @@ pre[class*="language-"] {
 
 /* Settings Tags Sorting Mode */
 .sorting-mode .snippet-tag-row,
-.sorting-mode .note-tag-row {
-  cursor: grab;
-  animation: floatUpDown 1.2s ease-in-out infinite;
+.sorting-mode .note-tag-row,
+.sorting-mode .todo-item {
+  cursor: grab !important;
+  animation: floatUpDown 1.2s ease-in-out infinite !important;
   user-select: none;
   background: rgba(255, 255, 255, 0.05) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -526,23 +532,26 @@ pre[class*="language-"] {
 }
 
 .sorting-mode .snippet-tag-row:nth-child(2n),
-.sorting-mode .note-tag-row:nth-child(2n) {
-  animation-duration: 1.1s;
-  animation-delay: 0.1s;
+.sorting-mode .note-tag-row:nth-child(2n),
+.sorting-mode .todo-item:nth-child(2n) {
+  animation-duration: 1.1s !important;
+  animation-delay: 0.1s !important;
 }
 
 .sorting-mode .snippet-tag-row:nth-child(3n),
-.sorting-mode .note-tag-row:nth-child(3n) {
-  animation-duration: 1.3s;
-  animation-delay: -0.15s;
+.sorting-mode .note-tag-row:nth-child(3n),
+.sorting-mode .todo-item:nth-child(3n) {
+  animation-duration: 1.3s !important;
+  animation-delay: -0.15s !important;
 }
 
 .sorting-mode .snippet-tag-row:active,
-.sorting-mode .note-tag-row:active {
-  cursor: grabbing;
+.sorting-mode .note-tag-row:active,
+.sorting-mode .todo-item:active {
+  cursor: grabbing !important;
   animation: none !important;
   transform: scale(1.02) !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
   z-index: 100;
 }
 
