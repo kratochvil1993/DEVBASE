@@ -27,20 +27,21 @@ if (isset($_POST['action'])) {
     } elseif ($_POST['action'] == 'save_security') {
         $enabled = isset($_POST['security_enabled']) ? '1' : '0';
         $currentPassword = getSetting('app_password');
-        $newPassword = $_POST['app_password'];
+        $newPassword = $_POST['app_password'] ?? '';
+        $confirmPassword = $_POST['app_password_confirm'] ?? '';
 
-        // Only allow enabling if there is an existing password OR a new one is being set
-        if ($enabled == '1' && empty($currentPassword) && empty($newPassword)) {
-            // Do nothing, or could set a flag for an error message
-            $enabled = '0';
-        }
-
-        updateSetting('security_enabled', $enabled);
-        
-        if (!empty($newPassword)) {
+        if (!empty($newPassword) && $newPassword === $confirmPassword) {
+            // Setting new password - always enable security as well
             $hashed_password = password_hash($newPassword, PASSWORD_DEFAULT);
             updateSetting('app_password', $hashed_password);
+            updateSetting('security_enabled', '1');
+        } elseif (!empty($currentPassword)) {
+            // Password already set, just toggle enable state
+            updateSetting('security_enabled', $enabled);
         }
+    } elseif ($_POST['action'] == 'reset_password') {
+        updateSetting('app_password', '');
+        updateSetting('security_enabled', '0');
     }
     header('Location: settings.php');
     exit;
@@ -116,39 +117,66 @@ include 'includes/header.php';
     <div class="col-md-6 mb-4">
         <div class="glass-card p-4 h-100">
             <h4 class="text-white mb-3"><i class="bi bi-shield-lock me-2 text-primary"></i>Zabezpečení</h4>
-            <form method="POST">
-                <input type="hidden" name="action" value="save_security">
-                
-                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0 mb-4">
-                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="security_enabled" id="securityEnabledToggle" 
-                           <?php echo $securityEnabled == '1' ? 'checked' : ''; ?>>
-                    <label class="form-check-label text-white" for="securityEnabledToggle">
-                        <span class="d-block fw-bold">Povolit zámek aplikace</span>
-                        <small class="text-white-50">Po aktivaci bude aplikace vyžadovat heslo při každém vstupu.</small>
-                    </label>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label text-white-50 small fw-bold">Změnit heslo</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
-                            <i class="bi bi-key-fill"></i>
-                        </span>
-                        <input type="password" name="app_password" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
-                               placeholder="Zadejte nové heslo...">
-                        <button class="btn btn-primary px-4" type="submit">Uložit</button>
+            <?php $hasPassword = !empty(getSetting('app_password')); ?>
+            <div class="security-settings-container">
+                <form method="POST" class="mb-0">
+                    <input type="hidden" name="action" value="save_security">
+                    
+                    <div class="form-check form-switch d-flex align-items-center gap-3 ps-0 mb-4">
+                        <input class="form-check-input fs-4 ms-0" type="checkbox" name="security_enabled" id="securityEnabledToggle" 
+                               <?php echo $securityEnabled == '1' ? 'checked' : ''; ?>
+                               <?php echo !$hasPassword ? 'disabled' : 'onchange="this.form.submit()"'; ?>>
+                        <label class="form-check-label text-white" for="securityEnabledToggle">
+                            <span class="d-block fw-bold">Povolit zámek aplikace</span>
+                            <small class="text-white-50">Po aktivaci bude aplikace vyžadovat heslo při každém vstupu.</small>
+                        </label>
                     </div>
-                    <?php if (getSetting('app_password')): ?>
-                        <div class="mt-2 small text-success">
-                            <i class="bi bi-check-circle-fill me-1"></i> Heslo je nastaveno
-                        </div>
-                    <?php else: ?>
-                        <div class="mt-2 small text-warning">
-                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Heslo zatím není nastaveno!
+
+                    <?php if (!$hasPassword): ?>
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small fw-bold">Nastavit heslo</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
+                                    <i class="bi bi-key-fill"></i>
+                                </span>
+                                <input type="password" name="app_password" id="app_password" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                       placeholder="Nové heslo..." required>
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
+                                    <i class="bi bi-shield-check"></i>
+                                </span>
+                                <input type="password" name="app_password_confirm" id="app_password_confirm" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                       placeholder="Kontrola hesla..." required>
+                            </div>
+                            
+                            <button class="btn btn-primary w-100 mb-3" type="submit" id="saveSecurityBtn">
+                                <i class="bi bi-shield-lock-fill me-2"></i>Uložit heslo a aktivovat zámek
+                            </button>
+
+                            <div id="passwordMatchMessage" class="small mb-2 d-none"></div>
+                            
+                            <div class="small text-warning mt-3">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i> Heslo zatím není nastaveno!
+                            </div>
                         </div>
                     <?php endif; ?>
-                </div>
-            </form>
+                </form>
+
+                <?php if ($hasPassword): ?>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="small text-success">
+                            <i class="bi bi-check-circle-fill me-1"></i> Heslo je nastaveno
+                        </div>
+                        <form method="POST" onsubmit="return confirm('Opravdu chcete smazat heslo a vypnout zámek?');" class="d-inline">
+                            <input type="hidden" name="action" value="reset_password">
+                            <button type="submit" class="btn btn-sm btn-outline-danger border-0 py-0 shadow-none">
+                                <i class="bi bi-trash me-1"></i> Resetovat heslo
+                            </button>
+                        </form>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
     
@@ -517,6 +545,43 @@ function saveTagsOrder(listId, rowSelector) {
         console.log(listId + ' order saved:', data);
     });
 }
+
+// Password confirmation validation
+document.addEventListener('DOMContentLoaded', function() {
+    const password = document.getElementById('app_password');
+    const confirm = document.getElementById('app_password_confirm');
+    const message = document.getElementById('passwordMatchMessage');
+    const submitBtn = document.getElementById('saveSecurityBtn');
+
+    if (password && confirm) {
+        function validatePassword() {
+            if (password.value === '' && confirm.value === '') {
+                message.classList.add('d-none');
+                submitBtn.disabled = false;
+                return;
+            }
+
+            message.classList.remove('d-none');
+            if (password.value === confirm.value) {
+                message.textContent = 'Hesla se shodují';
+                message.className = 'small mb-2 text-success';
+                submitBtn.disabled = false;
+            } else {
+                message.textContent = 'Hesla se neshodují!';
+                message.className = 'small mb-2 text-danger';
+                // Only disable if we are actually trying to set a new password
+                if (password.value !== '') {
+                    submitBtn.disabled = true;
+                } else {
+                    submitBtn.disabled = false;
+                }
+            }
+        }
+
+        password.addEventListener('input', validatePassword);
+        confirm.addEventListener('input', validatePassword);
+    }
+});
 </script>
 
 <?php include 'includes/footer.php'; ?>
