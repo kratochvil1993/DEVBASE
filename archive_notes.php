@@ -335,7 +335,7 @@ function saveOrder() {
         });
     });
     
-    fetch('api_notes_order.php', {
+    fetch('api/api_notes_order.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

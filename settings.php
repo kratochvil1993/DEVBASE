@@ -447,7 +447,7 @@ function saveTagsOrder(listId, rowSelector) {
         });
     });
     
-    fetch('api_tags_order.php', {
+    fetch('api/api_tags_order.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

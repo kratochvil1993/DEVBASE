@@ -244,7 +244,7 @@ function saveTodosOrder() {
         });
     });
     
-    fetch('api_todos_order.php', {
+    fetch('api/api_todos_order.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
