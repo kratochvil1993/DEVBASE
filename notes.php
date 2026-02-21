@@ -41,9 +41,9 @@ uasort($usedTags, function($a, $b) { return strcmp($a['name'], $b['name']); });
 include 'includes/header.php';
 ?>
 
-<div class="row mb-5 align-items-center">
+<div class="row mb-3 align-items-center">
     <div class="col-lg-8 mx-auto">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 glass-card p-2 px-3">
+        <div class="glass-card p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between">
             <div class="flex-grow-1" style="max-width: 400px;">
                 <div class="input-group">
                     <span class="input-group-text bg-transparent border-0 text-white">
@@ -54,17 +54,17 @@ include 'includes/header.php';
             </div>
 
             <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-add-snipet rounded-pill px-4 py-2" id="newNoteBtn" data-bs-toggle="modal" data-bs-target="#noteModal" onclick="openAddNoteModal()">
-                    <i class="bi bi-plus-lg me-2"></i> Nová poznámka
+                <button class="btn btn-add-snipet rounded Xrounded-pill px-4" id="newNoteBtn" data-bs-toggle="modal" data-bs-target="#noteModal" onclick="openAddNoteModal()">
+                    <i class="bi bi-plus-lg"></i>
                 </button>
-                <button class="btn btn-edit-order rounded-pill px-4 py-2" id="editOrderBtn" onclick="toggleSortingMode()">
+                <button class="btn btn-edit-order rounded Xrounded-pill px-4" id="editOrderBtn" onclick="toggleSortingMode()">
                     <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
                 </button>
-                <button class="btn btn-success rounded-pill px-4 py-2 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
+                <button class="btn btn-success rounded Xrounded-pill px-4 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
                     <i class="bi bi-check-lg me-2"></i> Hotovo
                 </button>
                 <div class="dropdown" id="sortDropdownContainer">
-                    <button class="btn btn-outline-light rounded-pill px-3 py-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-outline-light rounded Xrounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-sort-down me-1"></i> 
                         <?php 
                             switch($currentSort) {
@@ -91,14 +91,14 @@ include 'includes/header.php';
 </div>
 
 <?php if (!empty($usedTags)): ?>
-<div class="row mb-4">
+<div class="row mb-5">
     <div class="col-lg-8 mx-auto">
         <div id="noteTagFilters" class="d-flex flex-wrap gap-2 justify-content-center">
-            <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all">Vše</button>
+            <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all" style="--tag-color: #fff;">Vše</button>
             <?php foreach ($usedTags as $tag): ?>
-                <button class="btn btn-sm btn-outline-light rounded-pill px-3" 
+                <button class="btn btn-sm rounded-pill px-3 <?php echo empty($tag['color']) ? 'btn-outline-light' : ''; ?>" 
                         data-tag="<?php echo htmlspecialchars($tag['name']); ?>"
-                        style="--tag-color: <?php echo $tag['color'] ? $tag['color'] : 'rgba(255,255,255,0.2)'; ?>">
+                        style="--tag-color: <?php echo !empty($tag['color']) ? htmlspecialchars($tag['color']) : '#fff'; ?>; <?php if (!empty($tag['color'])) echo 'background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';'; ?>">
                     <?php echo htmlspecialchars($tag['name']); ?>
                 </button>
             <?php endforeach; ?>

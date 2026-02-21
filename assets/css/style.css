@@ -295,17 +295,25 @@ pre[class*="language-"] {
     transform: translateY(0);
 }
 
-#tagFilters .btn.active {
+#tagFilters .btn.active,
+#noteTagFilters .btn.active,
+#manageTagFilters .btn.active,
+#manageNotesTagFilters .btn.active {
     position: relative;
 }
 
-#tagFilters .btn-outline-light.active {
+#tagFilters .btn-outline-light.active,
+#noteTagFilters .btn-outline-light.active,
+#manageTagFilters .btn-outline-light.active,
+#manageNotesTagFilters .btn-outline-light.active {
     background-color: transparent !important;
     color: #fff !important;
 }
 
 #tagFilters .btn.active::after,
-#noteTagFilters .btn.active::after {
+#noteTagFilters .btn.active::after,
+#manageTagFilters .btn.active::after,
+#manageNotesTagFilters .btn.active::after {
   content: '';
   position: absolute;
   bottom: -9px;

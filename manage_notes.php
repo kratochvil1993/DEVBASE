@@ -37,7 +37,7 @@ include 'includes/header.php';
     <!-- Controls (Search, Buttons, Filters) -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="glass-card p-3 mb-3">
+            <div class="glass-card p-2 mb-3">
                 <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
                     <!-- Search Input -->
                     <div class="input-group flex-grow-1" style="max-width: 400px;">
@@ -64,11 +64,11 @@ include 'includes/header.php';
             
             <!-- Tag Filters (Below) -->
             <div class="d-flex flex-wrap justify-content-end gap-2" id="manageNotesTagFilters">
-                <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all">Vše</button>
+                <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all" style="--tag-color: #fff;">Vše</button>
                 <?php foreach ($tags as $tag): ?>
                     <button class="btn btn-sm rounded-pill px-3 <?php echo empty($tag['color']) ? 'btn-outline-light' : ''; ?>"
                             data-tag="<?php echo htmlspecialchars($tag['name']); ?>"
-                            <?php if (!empty($tag['color'])) echo 'style="background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';"'; ?>>
+                            style="--tag-color: <?php echo !empty($tag['color']) ? htmlspecialchars($tag['color']) : '#fff'; ?>; <?php if (!empty($tag['color'])) echo 'background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';'; ?>">
                         <?php echo htmlspecialchars($tag['name']); ?>
                     </button>
                 <?php endforeach; ?>
