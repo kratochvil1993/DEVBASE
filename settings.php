@@ -49,7 +49,7 @@ include 'includes/header.php';
                 <input type="hidden" name="id" id="tagId" value="">
                 <div class="input-group">
                     <input type="color" id="tagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Vyberte barvu nebo nechte prázdné">
-                    <input type="text" name="color" id="tagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex (prázdné je bez barvy)" style="max-width: 180px;">
+                    <input type="text" name="color" id="tagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex (prázdné je bez barvy)" style="max-width: 180px;" pattern="^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$" title="Barva musí začínat # a mít 3 nebo 6 hexadecimálních znaků (např. #fff nebo #ffcc00)">
                     <input type="text" name="name" id="tagName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Název štítku" required>
                     <button class="btn btn-add-snipet" type="submit" id="tagSubmitBtn">Přidat štítek</button>
                 </div>
@@ -130,13 +130,13 @@ include 'includes/header.php';
             <h4 class="text-white mb-3">Obecné nastavení</h4>
             <form method="POST" id="settingsForm">
                 <input type="hidden" name="action" value="toggle_notes">
-                <div class="form-check form-switch d-flex align-items-center gap-3">
-                    <input class="form-check-input fs-4" type="checkbox" name="notes_enabled" id="notesEnabledToggle" 
+                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
+                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="notes_enabled" id="notesEnabledToggle" 
                            <?php echo $notesEnabled == '1' ? 'checked' : ''; ?>
                            onchange="this.form.submit()">
                     <label class="form-check-label text-white" for="notesEnabledToggle">
-                        <span class="d-block fw-bold">Povolit sekci Poznámky</span>
-                        <small class="text-white-50">Pokud je vypnuto, sekce Poznámky se nezobrazí v menu ani nebude přístupná.</small>
+                        <span class="d-block fw-bold">Povolit sekci Notes</span>
+                        <small class="text-white-50">Pokud je vypnuto, sekce Notes se nezobrazí v menu ani nebude přístupná.</small>
                     </label>
                 </div>
             </form>

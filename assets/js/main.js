@@ -128,13 +128,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Settings Editing Logic
+    const tagForm = document.getElementById('tagForm');
     const tagColorPicker = document.getElementById('tagColorPicker');
     const tagColorInput = document.getElementById('tagColor');
+
+    if (tagForm && tagColorInput) {
+        tagForm.addEventListener('submit', (e) => {
+            const colorValue = tagColorInput.value.trim();
+            if (colorValue !== '' && !/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/i.test(colorValue)) {
+                e.preventDefault();
+                alert('Barva musí začínat symbolem # a být v platném hexadecimálním formátu (např. #FF5733 nebo #F00).');
+                tagColorInput.focus();
+            }
+        });
+    }
+
     if (tagColorPicker && tagColorInput) {
         tagColorPicker.addEventListener('input', (e) => {
             tagColorInput.value = e.target.value;
         });
         tagColorInput.addEventListener('input', (e) => {
+            // Update picker only for valid 6-digit hex
             if (/^#[0-9A-F]{6}$/i.test(e.target.value)) {
                 tagColorPicker.value = e.target.value;
             }
