@@ -98,8 +98,16 @@ console.log('Hello World');
             <h4 class="text-white mb-4"><i class="bi bi-tags me-2"></i> Strategie tagování</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
-                    <strong class="text-white d-block">Barvy štítků:</strong>
-                    V **Nastavení** můžete každému štítku přiřadit barvu. Barva musí být ve formátu HEX (např. `#ff0000`). Štítky jsou pak barevně odlišeny v přehledu i při filtrování.
+                    <strong class="text-white d-block">Barvy a validace štítků:</strong>
+                    V **Nastavení** můžete každému štítku přiřadit barvu. Barva je automaticky validována a musí být ve formátu HEX (např. `#ff0000`). Štítky jsou pak barevně odlišeny v přehledu i při filtrování.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Oddělené tagy pro Snipety a Poznámky:</strong>
+                    Systém tagů je oddělený. V Nastavení jasně vidíte a spravujete, které tagy patří k programátorským snipetům a které k vašim osobním poznámkám.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Vlastní řazení tagů:</strong>
+                    V **Nastavení** si můžete tagy libovolně seřadit (pro snipety i poznámky) pomocí funkce **Drag & Drop** (táhni a pusť). Toto pořadí se pak promítne i do filtrů a výběrů v aplikaci.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Více tagů najednou:</strong>
@@ -115,6 +123,10 @@ console.log('Hello World');
         <div class="glass-card p-4 mt-4">
             <h4 class="text-white mb-4"><i class="bi bi-journal-text me-2"></i> Práce s Poznámkami</h4>
             <ul class="text-white-50 small list-unstyled">
+                <li class="mb-3">
+                    <strong class="text-white d-block">Štítkování poznámek:</strong>
+                    Stejně jako u snipetů, i poznámkám nyní můžete přiřadit vlastní barevné tagy pro mnohem lepší organizaci a následné filtrování.
+                </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Vlastní řazení:</strong>
                     V sekci Poznámky klikni na **Upravit pořadí**. Karty se jemně rozvibrují a ty je můžeš myší přetahovat. Pořadí se ukládá automaticky.

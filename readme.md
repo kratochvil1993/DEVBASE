@@ -4,9 +4,10 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 
 ## Vlastnosti a funkce
 
-- **Barevné štítky**: Každému štítku můžete přiřadit vlastní barvu pomocí validního HEX kódu pro okamžitou vizuální identifikaci typu kódu či projektu.
-- **Sekce Poznámky**: Samostatný prostor pro vaše nápady, úkoly nebo SQL s podporou zvýraznění syntaxe, vyhledáváním a vlastním řazením.
-- **Vlastní řazení (Drag & Drop)**: V sekci poznámek si můžete libovolně měnit pořadí karet jednoduchým přetažením v režimu úprav.
+- **Barevné štítky (Tagy)**: Systém štítků je plně podporován jak pro Snipety, tak i pro Poznámky. Každému štítku můžete přiřadit vlastní barvu (s validací HEX kódu) pro okamžitou vizuální identifikaci.
+- **Sekce Poznámky**: Samostatný prostor pro vaše nápady, úkoly nebo SQL s podporou zvýraznění syntaxe, vyhledávání, vlastního řazení a přiřazování štítků.
+- **Vlastní řazení (Drag & Drop)**: Pořadí poznámek, ale i samotných štítků v Nastavení, si můžete libovolně měnit jednoduchým přetažením myší (Drag & Drop).
+- **Konzistentní správa**: Sjednocené rozhraní pro správu snipetů i poznámek s intuitivním filtrováním podle tagů a rychlým fulltextovým vyhledáváním.
 - **Rychlé vyhledávání**: Inteligentní vyhledávání v reálném čase napříč oběma sekcemi (snipety i poznámky), které prohledává názvy i obsah.
 - **Detailní náhled**: Snipety lze otevřít ve velkém modálním okně pro pohodlné čtení dlouhých bloků kódu.
 - **Tmavý / Světlý režim**: Možnost hladkého přepínání témat přímo v side-baru s automatickým ukládáním volby.

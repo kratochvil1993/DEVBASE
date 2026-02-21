@@ -76,6 +76,7 @@
     </div>
     <div class="offcanvas-body" style="position: relative; z-index: 1;">
         <div class="d-grid gap-2">
+            <!--
             <a href="index.php" class="sidebar-link <?php echo $currentPage == 'index.php' ? 'active' : ''; ?>">
                 <i class="bi bi-code-slash me-2"></i> Snippets
             </a>
@@ -84,6 +85,7 @@
                 <i class="bi bi-journal-text me-2"></i> Notes
             </a>
             <?php endif; ?>
+            -->
             <a href="manage.php" class="sidebar-link <?php echo $currentPage == 'manage.php' ? 'active' : ''; ?>">
                 <i class="bi bi-list-task me-2"></i> Správa snippetů
             </a>
