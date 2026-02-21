@@ -519,7 +519,7 @@ pre[class*="language-"] {
 /* Settings Tags Sorting Mode */
 .sorting-mode .snippet-tag-row,
 .sorting-mode .note-tag-row,
-.sorting-mode .todo-item {
+.sorting-mode .todo-tag-row {
   cursor: grab !important;
   animation: floatUpDown 1.2s ease-in-out infinite !important;
   user-select: none;
@@ -533,21 +533,21 @@ pre[class*="language-"] {
 
 .sorting-mode .snippet-tag-row:nth-child(2n),
 .sorting-mode .note-tag-row:nth-child(2n),
-.sorting-mode .todo-item:nth-child(2n) {
+.sorting-mode .todo-tag-row:nth-child(2n) {
   animation-duration: 1.1s !important;
   animation-delay: 0.1s !important;
 }
 
 .sorting-mode .snippet-tag-row:nth-child(3n),
 .sorting-mode .note-tag-row:nth-child(3n),
-.sorting-mode .todo-item:nth-child(3n) {
+.sorting-mode .todo-tag-row:nth-child(3n) {
   animation-duration: 1.3s !important;
   animation-delay: -0.15s !important;
 }
 
 .sorting-mode .snippet-tag-row:active,
 .sorting-mode .note-tag-row:active,
-.sorting-mode .todo-item:active {
+.sorting-mode .todo-tag-row:active {
   cursor: grabbing !important;
   animation: none !important;
   transform: scale(1.02) !important;

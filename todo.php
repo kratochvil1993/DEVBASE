@@ -10,7 +10,8 @@ if (getSetting('todos_enabled', '1') == '0') {
 // Handle Todo addition, order save, edit or archive
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_todo') {
-        saveTodo($_POST['text']);
+        $tags = isset($_POST['tags']) ? (array)$_POST['tags'] : [];
+        saveTodo($_POST['text'], $tags);
     } elseif ($_POST['action'] == 'edit_todo') {
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
         saveTodo($_POST['text'], $tags, $_POST['todo_id']);
@@ -48,13 +49,19 @@ include 'includes/header.php';
 <div class="row mb-3 align-items-center">
     <div class="col-lg-8 mx-auto">
         <div class="glass-card p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between mb-0">
-            <form method="POST" id="addTodoForm" class="flex-grow-1" style="max-width: 400px; margin: 0;">
+            <form method="POST" id="addTodoForm" class="flex-grow-1" style="max-width: 600px; margin: 0;">
                 <input type="hidden" name="action" value="add_todo">
                 <div class="input-group">
                     <span class="input-group-text bg-transparent border-0 text-white">
                         <i class="bi bi-check2-square"></i>
                     </span>
                     <input type="text" name="text" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Co je potřeba udělat?" required autocomplete="off">
+                    <select name="tags[]" class="form-select bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" style="max-width: 140px; cursor: pointer;">
+                        <option value="" style="background: #2b3035;">Bez štítku</option>
+                        <?php foreach ($allTags as $tag): ?>
+                            <option value="<?php echo $tag['id']; ?>" style="background: #2b3035;"><?php echo htmlspecialchars($tag['name']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
             </form>
 
