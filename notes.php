@@ -29,39 +29,49 @@ include 'includes/header.php';
 ?>
 
 <div class="row mb-5 align-items-center">
-    <div class="col-md-10 mx-auto text-center">
-        <!-- <h1 class="text-white fw-bold mb-4">Moje Poznámky</h1> -->
-        <div class="d-flex justify-content-center flex-wrap gap-2">
-            <button class="btn btn-add-snipet rounded-pill px-4 py-2" id="newNoteBtn" data-bs-toggle="modal" data-bs-target="#noteModal" onclick="openAddNoteModal()">
-                <i class="bi bi-plus-lg me-2"></i> Nová poznámka
-            </button>
-            <button class="btn btn-edit-order rounded-pill px-4 py-2" id="editOrderBtn" onclick="toggleSortingMode()">
-                <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
-            </button>
-            <button class="btn btn-success rounded-pill px-4 py-2 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
-                <i class="bi bi-check-lg me-2"></i> Hotovo
-            </button>
-            <div class="dropdown" id="sortDropdownContainer">
-                <button class="btn btn-outline-light rounded-pill px-3 py-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-sort-down me-1"></i> 
-                    <?php 
-                        switch($currentSort) {
-                            case 'oldest': echo 'Nejstarší'; break;
-                            case 'alpha_asc': echo 'Abecedně A-Z'; break;
-                            case 'alpha_desc': echo 'Abecedně Z-A'; break;
-                            case 'custom': echo 'Vlastní řazení'; break;
-                            default: echo 'Nejnovější';
-                        }
-                    ?>
+    <div class="col-lg-8 mx-auto">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 glass-card p-2 px-3">
+            <div class="flex-grow-1" style="max-width: 400px;">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-0 text-white">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" id="noteSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat v poznámkách...">
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-add-snipet rounded-pill px-4 py-2" id="newNoteBtn" data-bs-toggle="modal" data-bs-target="#noteModal" onclick="openAddNoteModal()">
+                    <i class="bi bi-plus-lg me-2"></i> Nová poznámka
                 </button>
-                <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10">
-                    <li><a class="dropdown-item <?php echo $currentSort == 'custom' ? 'active' : ''; ?>" href="notes.php?sort=custom">Vlastní řazení</a></li>
-                    <li><a class="dropdown-item <?php echo $currentSort == 'newest' ? 'active' : ''; ?>" href="notes.php?sort=newest">Nejnovější</a></li>
-                    <li><a class="dropdown-item <?php echo $currentSort == 'oldest' ? 'active' : ''; ?>" href="notes.php?sort=oldest">Nejstarší</a></li>
-                    <li><hr class="dropdown-divider border-light border-opacity-10"></li>
-                    <li><a class="dropdown-item <?php echo $currentSort == 'alpha_asc' ? 'active' : ''; ?>" href="notes.php?sort=alpha_asc">Abecedně A-Z</a></li>
-                    <li><a class="dropdown-item <?php echo $currentSort == 'alpha_desc' ? 'active' : ''; ?>" href="notes.php?sort=alpha_desc">Abecedně Z-A</a></li>
-                </ul>
+                <button class="btn btn-edit-order rounded-pill px-4 py-2" id="editOrderBtn" onclick="toggleSortingMode()">
+                    <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
+                </button>
+                <button class="btn btn-success rounded-pill px-4 py-2 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
+                    <i class="bi bi-check-lg me-2"></i> Hotovo
+                </button>
+                <div class="dropdown" id="sortDropdownContainer">
+                    <button class="btn btn-outline-light rounded-pill px-3 py-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-sort-down me-1"></i> 
+                        <?php 
+                            switch($currentSort) {
+                                case 'oldest': echo 'Nejstarší'; break;
+                                case 'alpha_asc': echo 'Abecedně A-Z'; break;
+                                case 'alpha_desc': echo 'Abecedně Z-A'; break;
+                                case 'custom': echo 'Vlastní řazení'; break;
+                                default: echo 'Nejnovější';
+                            }
+                        ?>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10">
+                        <li><a class="dropdown-item <?php echo $currentSort == 'custom' ? 'active' : ''; ?>" href="notes.php?sort=custom">Vlastní řazení</a></li>
+                        <li><a class="dropdown-item <?php echo $currentSort == 'newest' ? 'active' : ''; ?>" href="notes.php?sort=newest">Nejnovější</a></li>
+                        <li><a class="dropdown-item <?php echo $currentSort == 'oldest' ? 'active' : ''; ?>" href="notes.php?sort=oldest">Nejstarší</a></li>
+                        <li><hr class="dropdown-divider border-light border-opacity-10"></li>
+                        <li><a class="dropdown-item <?php echo $currentSort == 'alpha_asc' ? 'active' : ''; ?>" href="notes.php?sort=alpha_asc">Abecedně A-Z</a></li>
+                        <li><a class="dropdown-item <?php echo $currentSort == 'alpha_desc' ? 'active' : ''; ?>" href="notes.php?sort=alpha_desc">Abecedně Z-A</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -319,6 +329,29 @@ function openEditNoteModal(note) {
     var myModal = new bootstrap.Modal(document.getElementById('noteModal'));
     myModal.show();
 }
+
+// Search filtering for notes
+document.getElementById('noteSearch').addEventListener('input', function(e) {
+    const search = e.target.value.toLowerCase();
+    const notes = document.querySelectorAll('.note-item');
+    let delay = 0;
+    
+    notes.forEach(note => {
+        const title = note.querySelector('.card-title').textContent.toLowerCase();
+        const content = note.querySelector('.card-text').textContent.toLowerCase();
+        
+        if (title.includes(search) || content.includes(search)) {
+            note.style.display = 'block';
+            note.style.animation = 'none';
+            note.offsetHeight; /* trigger reflow */
+            note.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
+            delay += 40;
+        } else {
+            note.style.display = 'none';
+            note.style.animation = 'none';
+        }
+    });
+});
 </script>
 
 <?php include 'includes/footer.php'; ?>
