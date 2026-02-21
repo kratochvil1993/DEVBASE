@@ -83,12 +83,20 @@ console.log('Hello World');
                     <strong class="text-white d-block">Kombinované filtry:</strong>
                     Vyber tag (např. `React`) a pak začni psát. Filtr se aplikuje na už vyfiltrované výsledky.
                 </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Detailní náhled:</strong>
+                    Kliknutím na kartu snipetu (mimo tlačítka) otevřete **detailní náhled** v modálním okně, který je ideální pro čtení dlouhých kódů.
+                </li>
             </ul>
         </div>
 
         <div class="glass-card p-4">
             <h4 class="text-white mb-4"><i class="bi bi-tags me-2"></i> Strategie tagování</h4>
             <ul class="text-white-50 small list-unstyled">
+                <li class="mb-3">
+                    <strong class="text-white d-block">Barvy štítků:</strong>
+                    V **Nastavení** můžete každému štítku přiřadit barvu. Štítky jsou pak barevně odlišeny v přehledu i při filtrování.
+                </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Více tagů najednou:</strong>
                     Snippetu můžeš dát neomezeně tagů. Doporučujeme kombinovat **technologii** (např. `PHP`) a **účel** (např. `Utility`, `Database`).
@@ -114,6 +122,10 @@ console.log('Hello World');
                 <li class="mb-3">
                     <strong class="text-white d-block">Nastavení:</strong>
                     Pokud poznámky nepoužíváš, můžeš je v **Nastavení** úplně skrýt, aby nepřekážely v menu.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Rychlé přepínání:</strong>
+                    V hlavičce aplikace najdete tlačítko pro rychlé přepnutí mezi **Snipety** a **Poznámkami** (pokud jsou poznámky povoleny).
                 </li>
             </ul>
         </div>

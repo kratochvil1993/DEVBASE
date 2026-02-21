@@ -4,14 +4,16 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 
 ## Vlastnosti a funkce
 
-- **Snadná organizace**: Snipety si můžete sdružovat pomocí barevných štítků a přiřazovat jim primární programovací jazyk (PHP, HTML, JavaScript atd.).
-- **Sekce Poznámky**: Samostatný prostor pro vaše nápady, úkoly nebo SQL query s podporou zvýraznění syntaxe a možností kopírování.
-- **Vlastní řazení (Drag & Drop)**: V sekci poznámek si můžete libovolně měnit pořadí karet jednoduchým přetažením. Režim úprav doprovází decentní vizuální efekt.
-- **Rychlé vyhledávání**: K dispozici je fulltextové vyhledávání napříč názvy, popisy i samotným zdrojovým kódem a tlačítkové filtrování přes štítky.
-- **Tmavý / Světlý režim**: Možnost hladkého přepínání témat přímo v side-baru, aplikace si také poslední volbu pamatuje do lokální paměti prohlížeče.
+- **Barevné štítky**: Každému štítku můžete přiřadit vlastní barvu pro okamžitou vizuální identifikaci typu kódu či projektu.
+- **Sekce Poznámky**: Samostatný prostor pro vaše nápady, úkoly nebo SQL s podporou zvýraznění syntaxe a vlastním řazením.
+- **Vlastní řazení (Drag & Drop)**: V sekci poznámek si můžete libovolně měnit pořadí karet jednoduchým přetažením v režimu úprav.
+- **Rychlé vyhledávání**: Fulltextové vyhledávání napříč názvy, popisy i samotným kódem a rychlé filtrování přes štítky.
+- **Detailní náhled**: Snipety lze otevřít ve velkém modálním okně pro pohodlné čtení dlouhých bloků kódu.
+- **Tmavý / Světlý režim**: Možnost hladkého přepínání témat přímo v side-baru s automatickým ukládáním volby.
 - **Kopírování v jednom kroku**: Tlačítka pro okamžité uložení bloku zdrojového kódu do schránky (clipboard).
-- **Integrovaný Markdown**: Snipety lze zapisovat formou Markdownu pro kombinaci více jazyků či tabulek (skvělé pro tutoriály či složité poznámky).
-- **Správa funkcí**: V administraci můžete vypnout/zapnout celou sekci Poznámky podle toho, zda ji aktuálně potřebujete.
+- **Integrovaný Markdown**: Snipety lze zapisovat formou Markdownu pro kombinaci více jazyků či tabulek.
+- **Flexibilní navigace**: Rychlé přepínání mezi snipety a poznámkami přímo v hlavičce (pokud jsou poznámky povoleny).
+- **Správa funkcí**: V administraci můžete vypnout/zapnout celou sekci Poznámky podle aktuální potřeby.
 - **Propracované UI**: Elegantní rozhraní postavené na Bootstrap 5, oživené plovoucími barevnými prvky, blur efekty, micro-animacemi a moderní vizí.
 
 ## Instalace a Spuštění
