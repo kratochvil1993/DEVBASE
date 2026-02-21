@@ -259,12 +259,40 @@ pre[class*="language-"] {
     flex-direction: column;
 }
 
-.note-card:hover {
-    border-color: rgba(var(--bs-primary-rgb), 0.5);
-    background: rgba(255, 255, 255, 0.05);
+/* Sorting Mode */
+.sorting-mode .note-card {
+    cursor: grab;
+    animation: jiggle 0.5s ease-in-out infinite;
+    user-select: none;
 }
 
-[data-bs-theme="dark"] .note-card:hover {
-    background: rgba(255, 255, 255, 0.02);
+.sorting-mode .note-item:nth-child(2n) .note-card {
+    animation-duration: 0.45s;
+    animation-delay: 0.05s;
 }
+
+.sorting-mode .note-item:nth-child(3n) .note-card {
+    animation-duration: 0.55s;
+    animation-delay: -0.1s;
+}
+
+.sorting-mode .note-card:active {
+    cursor: grabbing;
+    animation: none !important;
+    transform: scale(1.02) !important;
+    z-index: 100;
+}
+
+@keyframes jiggle {
+    0% { transform: rotate(-0.3deg); }
+    50% { transform: rotate(0.3deg); }
+    100% { transform: rotate(-0.3deg); }
+}
+
+.glass-card-moving {
+    opacity: 0.5;
+    background: rgba(var(--bs-primary-rgb), 0.1) !important;
+    transform: scale(1.05) !important;
+}
+
 

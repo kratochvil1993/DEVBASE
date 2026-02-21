@@ -134,9 +134,32 @@ function deleteSnippet($id) {
     return $conn->query($sql);
 }
 
-function getAllNotes() {
+function getAllNotes($sort = 'custom') {
     global $conn;
-    $sql = "SELECT * FROM notes ORDER BY created_at DESC";
+    $orderBy = "n.sort_order ASC, n.created_at DESC";
+    
+    switch ($sort) {
+        case 'oldest':
+            $orderBy = "n.created_at ASC";
+            break;
+        case 'newest':
+            $orderBy = "n.created_at DESC";
+            break;
+        case 'alpha_asc':
+            $orderBy = "n.title ASC";
+            break;
+        case 'alpha_desc':
+            $orderBy = "n.title DESC";
+            break;
+        case 'custom':
+            $orderBy = "n.sort_order ASC, n.created_at DESC";
+            break;
+    }
+    
+    $sql = "SELECT n.*, l.name as language_name, l.prism_class 
+            FROM notes n
+            LEFT JOIN languages l ON n.language_id = l.id
+            ORDER BY $orderBy";
     $result = $conn->query($sql);
     $notes = [];
     while ($row = $result->fetch_assoc()) {
@@ -145,16 +168,30 @@ function getAllNotes() {
     return $notes;
 }
 
-function saveNote($title, $content, $id = null) {
+function saveNote($title, $content, $language_id = null, $id = null) {
     global $conn;
     $title = $conn->real_escape_string($title);
     $content = $conn->real_escape_string($content);
+    $language_id = $language_id ? (int)$language_id : 'NULL';
+
     if ($id) {
         $id = (int)$id;
-        $sql = "UPDATE notes SET title = '$title', content = '$content' WHERE id = $id";
+        $sql = "UPDATE notes SET title = '$title', content = '$content', language_id = $language_id WHERE id = $id";
     } else {
-        $sql = "INSERT INTO notes (title, content) VALUES ('$title', '$content')";
+        // Get max sort_order
+        $result = $conn->query("SELECT MAX(sort_order) as max_sort FROM notes");
+        $row = $result->fetch_assoc();
+        $next_sort = (int)($row['max_sort'] ?? 0) + 1;
+        $sql = "INSERT INTO notes (title, content, sort_order, language_id) VALUES ('$title', '$content', $next_sort, $language_id)";
     }
+    return $conn->query($sql);
+}
+
+function updateNoteOrder($id, $order) {
+    global $conn;
+    $id = (int)$id;
+    $order = (int)$order;
+    $sql = "UPDATE notes SET sort_order = $order WHERE id = $id";
     return $conn->query($sql);
 }
 
@@ -163,5 +200,22 @@ function deleteNote($id) {
     $id = (int)$id;
     $sql = "DELETE FROM notes WHERE id = $id";
     return $conn->query($sql);
+}
+
+function getSetting($key, $default = null) {
+    global $conn;
+    $key = $conn->real_escape_string($key);
+    $result = $conn->query("SELECT setting_value FROM settings WHERE setting_key = '$key'");
+    if ($row = $result->fetch_assoc()) {
+        return $row['setting_value'];
+    }
+    return $default;
+}
+
+function updateSetting($key, $value) {
+    global $conn;
+    $key = $conn->real_escape_string($key);
+    $value = $conn->real_escape_string($value);
+    return $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('$key', '$value') ON DUPLICATE KEY UPDATE setting_value = '$value'");
 }
 ?>

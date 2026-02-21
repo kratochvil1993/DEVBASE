@@ -14,11 +14,15 @@ if (isset($_POST['action'])) {
         saveLanguage($_POST['name'], $_POST['prism_class'], $id);
     } elseif ($_POST['action'] == 'delete_language') {
         deleteLanguage($_POST['id']);
+    } elseif ($_POST['action'] == 'toggle_notes') {
+        $enabled = isset($_POST['notes_enabled']) ? '1' : '0';
+        updateSetting('notes_enabled', $enabled);
     }
     header('Location: settings.php');
     exit;
 }
 
+$notesEnabled = getSetting('notes_enabled', '1');
 $tags = getAllTags();
 $languages = getAllLanguages();
 
@@ -31,7 +35,26 @@ include 'includes/header.php';
 <div class="row">
     <div class="col-12 mb-4">
         <h2 class="text-white fw-bold">Nastavení</h2>
-        <p class="text-white-50">Spravujte své kategorie snipetů a jazyky.</p>
+        <p class="text-white-50">Spravujte nastavení aplikace, štítky a jazyky.</p>
+    </div>
+
+    <!-- General Settings -->
+    <div class="col-12 mb-4">
+        <div class="glass-card p-4">
+            <h4 class="text-white mb-3">Obecné nastavení</h4>
+            <form method="POST" id="settingsForm">
+                <input type="hidden" name="action" value="toggle_notes">
+                <div class="form-check form-switch d-flex align-items-center gap-3">
+                    <input class="form-check-input fs-4" type="checkbox" name="notes_enabled" id="notesEnabledToggle" 
+                           <?php echo $notesEnabled == '1' ? 'checked' : ''; ?>
+                           onchange="this.form.submit()">
+                    <label class="form-check-label text-white" for="notesEnabledToggle">
+                        <span class="d-block fw-bold">Povolit sekci Poznámky</span>
+                        <small class="text-white-50">Pokud je vypnuto, sekce Poznámky se nezobrazí v menu ani nebude přístupná.</small>
+                    </label>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Tag Management -->

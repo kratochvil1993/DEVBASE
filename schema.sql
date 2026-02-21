@@ -35,8 +35,19 @@ CREATE TABLE IF NOT EXISTS notes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    sort_order INT DEFAULT 0,
+    language_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (language_id) REFERENCES languages(id) ON DELETE SET NULL
 );
+
+CREATE TABLE IF NOT EXISTS settings (
+    setting_key VARCHAR(50) PRIMARY KEY,
+    setting_value VARCHAR(255)
+);
+
+-- Seed initial data
+INSERT IGNORE INTO settings (setting_key, setting_value) VALUES ('notes_enabled', '1');
 
 -- Seed initial data
 INSERT IGNORE INTO languages (name, prism_class) VALUES 
