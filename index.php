@@ -165,7 +165,12 @@ include 'includes/header.php';
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
                 <div id="viewModalTags" class="snippet-tags m-0"></div>
-                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zavřít</button>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-add-snipet px-3" id="editSnippetFromViewBtn">
+                        <i class="bi bi-pencil me-1"></i> Upravit
+                    </button>
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zavřít</button>
+                </div>
             </div>
         </div>
     </div>

@@ -375,6 +375,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
+
+    // Edit button integration
+    const editBtn = document.getElementById("editSnippetFromViewBtn");
+    if (editBtn) {
+      editBtn.onclick = () => {
+        const viewModalEl = document.getElementById("viewSnippetModal");
+        const viewModal = bootstrap.Modal.getInstance(viewModalEl);
+        if (viewModal) viewModal.hide();
+        openEditModal(snippet);
+      };
+    }
+
     const modal = new bootstrap.Modal(
       document.getElementById("viewSnippetModal"),
     );
