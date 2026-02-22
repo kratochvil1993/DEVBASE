@@ -1,9 +1,9 @@
 <?php
 require_once 'includes/functions.php';
 
-// I will check footer.php first.s and tables are created
-$check = $conn->query("SHOW TABLES LIKE 'snippets'");
-if ($check->num_rows == 0) {
+// Check if database and tables are created
+$check = @$conn->query("SHOW TABLES LIKE 'snippets'");
+if (!$check || $check->num_rows == 0) {
     header('Location: includes/init_db.php');
     exit;
 }
