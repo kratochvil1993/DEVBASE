@@ -24,6 +24,9 @@ if (isset($_POST['action'])) {
     } elseif ($_POST['action'] == 'toggle_todos') {
         $enabled = isset($_POST['todos_enabled']) ? '1' : '0';
         updateSetting('todos_enabled', $enabled);
+    } elseif ($_POST['action'] == 'toggle_todo_badge') {
+        $enabled = isset($_POST['todo_badge_enabled']) ? '1' : '0';
+        updateSetting('todo_badge_enabled', $enabled);
     } elseif ($_POST['action'] == 'save_security') {
         $enabled = isset($_POST['security_enabled']) ? '1' : '0';
         $currentPassword = getSetting('app_password');
@@ -106,7 +109,6 @@ include 'includes/header.php';
                     </label>
                 </div>
             </form>
-
             <form method="POST" id="settingsFormNotes" class="mb-3">
                 <input type="hidden" name="action" value="toggle_notes">
                 <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
@@ -120,7 +122,7 @@ include 'includes/header.php';
                 </div>
             </form>
 
-            <form method="POST" id="settingsFormTodos">
+            <form method="POST" id="settingsFormTodos" class="mb-3">
                 <input type="hidden" name="action" value="toggle_todos">
                 <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
                     <input class="form-check-input fs-4 ms-0" type="checkbox" name="todos_enabled" id="todosEnabledToggle" 
@@ -129,6 +131,19 @@ include 'includes/header.php';
                     <label class="form-check-label text-white" for="todosEnabledToggle">
                         <span class="d-block fw-bold">Povolit sekci TODO</span>
                         <small class="text-white-50">Zobrazit nebo skrýt sekci s úkoly.</small>
+                    </label>
+                </div>
+            </form>
+
+            <form method="POST" id="settingsFormTodoBadge">
+                <input type="hidden" name="action" value="toggle_todo_badge">
+                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
+                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="todo_badge_enabled" id="todoBadgeEnabledToggle" 
+                           <?php echo getSetting('todo_badge_enabled', '1') == '1' ? 'checked' : ''; ?>
+                           onchange="this.form.submit()">
+                    <label class="form-check-label text-white" for="todoBadgeEnabledToggle">
+                        <span class="d-block fw-bold">Zobrazovat badge u TODO</span>
+                        <small class="text-white-50">Zobrazit počet aktivních úkolů v hlavní navigaci.</small>
                     </label>
                 </div>
             </form>

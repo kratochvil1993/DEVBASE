@@ -288,6 +288,23 @@ pre[class*="language-"] {
   transform: translateY(0);
 }
 
+.badge-todo {
+  background: rgba(0, 229, 130, 0.15);
+  border: 1px solid rgba(0, 229, 130, 0.3);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.65rem;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  line-height: 1;
+  padding: 0;
+}
+
 .btn-edit-order {
   background: rgba(71, 118, 230, 0.15);
   border: 1px solid rgba(71, 118, 230, 0.4);

@@ -19,6 +19,8 @@ if ($currentPage !== 'lock.php' && isAppLocked()) {
     header('Location: lock.php');
     exit;
 }
+
+$stats = getGlobalStats();
 ?>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
@@ -81,8 +83,13 @@ if ($currentPage !== 'lock.php' && isAppLocked()) {
                 </a>
                 <?php endif; ?>
                 <?php if (getSetting('todos_enabled', '1') == '1'): ?>
-                <a href="todo.php" class="nav-toggle-btn <?php echo $currentPage == 'todo.php' ? 'active' : ''; ?>">
+                <a href="todo.php" class="nav-toggle-btn <?php echo $currentPage == 'todo.php' ? 'active' : ''; ?> d-flex align-items-center">
                     <i class="bi bi-check2-square me-2"></i> TODO
+                    <?php 
+                    if (getSetting('todo_badge_enabled', '1') == '1' && $stats['total_todos'] > 0) {
+                        echo '<span class="badge badge-todo ms-2">' . $stats['total_todos'] . '</span>';
+                    }
+                    ?>
                 </a>
                 <?php endif; ?>
             </div>
@@ -150,7 +157,6 @@ if ($currentPage !== 'lock.php' && isAppLocked()) {
 
         </div>
 
-        <?php $stats = getGlobalStats(); ?>
         <div class="mt-4 pt-4 border-top border-light border-opacity-10">
             <h6 class="text-white-50 small text-uppercase fw-bold mb-3 px-2" style="font-size: 0.7rem; letter-spacing: 1px;">Statistiky</h6>
             

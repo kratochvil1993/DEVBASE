@@ -75,7 +75,8 @@ CREATE TABLE IF NOT EXISTS settings (
 INSERT IGNORE INTO settings (setting_key, setting_value) VALUES 
 ('snippets_enabled', '1'),
 ('notes_enabled', '1'),
-('todos_enabled', '1');
+('todos_enabled', '1'),
+('todo_badge_enabled', '1');
 
 -- Seed initial data
 INSERT IGNORE INTO languages (name, prism_class) VALUES 
