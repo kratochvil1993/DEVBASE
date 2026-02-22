@@ -173,23 +173,24 @@ function deleteSnippet($id) {
 function getAllNotes($sort = 'custom', $archive_status = 0) {
     global $conn;
     @$conn->query("ALTER TABLE notes ADD COLUMN is_archived TINYINT(1) DEFAULT 0"); // add if missing
-    $orderBy = "n.sort_order ASC, n.created_at DESC";
+    @$conn->query("ALTER TABLE notes ADD COLUMN is_pinned TINYINT(1) DEFAULT 0"); // add if missing
+    $orderBy = "n.is_pinned DESC, n.sort_order ASC, n.created_at DESC";
     
     switch ($sort) {
         case 'oldest':
-            $orderBy = "n.created_at ASC";
+            $orderBy = "n.is_pinned DESC, n.created_at ASC";
             break;
         case 'newest':
-            $orderBy = "n.created_at DESC";
+            $orderBy = "n.is_pinned DESC, n.created_at DESC";
             break;
         case 'alpha_asc':
-            $orderBy = "n.title ASC";
+            $orderBy = "n.is_pinned DESC, n.title ASC";
             break;
         case 'alpha_desc':
-            $orderBy = "n.title DESC";
+            $orderBy = "n.is_pinned DESC, n.title DESC";
             break;
         case 'custom':
-            $orderBy = "n.sort_order ASC, n.created_at DESC";
+            $orderBy = "n.is_pinned DESC, n.sort_order ASC, n.created_at DESC";
             break;
     }
     
@@ -218,6 +219,13 @@ function archiveNote($id, $status = 1) {
     $id = (int)$id;
     $status = (int)$status;
     $sql = "UPDATE notes SET is_archived = $status WHERE id = $id";
+    return $conn->query($sql);
+}
+
+function toggleNotePin($id) {
+    global $conn;
+    $id = (int)$id;
+    $sql = "UPDATE notes SET is_pinned = 1 - is_pinned WHERE id = $id";
     return $conn->query($sql);
 }
 

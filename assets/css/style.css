@@ -467,7 +467,9 @@ h6 i.bi-pin-angle-fill {
 }
 
 #pinnedTodosList.sorting-mode,
-#othersTodosList.sorting-mode {
+#othersTodosList.sorting-mode,
+#pinnedNotesGrid.sorting-mode,
+#othersNotesGrid.sorting-mode {
   min-height: 50px;
   border: 1px dashed rgba(255, 255, 255, 0.1);
   border-radius: 10px;

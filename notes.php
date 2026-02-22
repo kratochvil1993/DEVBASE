@@ -17,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         deleteNote($_POST['note_id']);
     } elseif ($_POST['action'] == 'archive_note') {
         archiveNote($_POST['note_id'], 1);
+    } elseif ($_POST['action'] == 'toggle_pin') {
+        toggleNotePin($_POST['note_id']);
     }
     $sortParam = isset($_GET['sort']) ? '?sort=' . $_GET['sort'] : '';
     header('Location: notes.php' . $sortParam);
@@ -25,6 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 
 $currentSort = isset($_GET['sort']) ? $_GET['sort'] : 'custom';
 $notes = getAllNotes($currentSort);
+$pinnedNotes = array_filter($notes, function($n) { return $n['is_pinned'] == 1; });
+$otherNotes = array_filter($notes, function($n) { return $n['is_pinned'] == 0; });
 $languages = getAllLanguages();
 $allNoteTags = getAllTags('note');
 
@@ -113,60 +117,40 @@ include 'includes/header.php';
 </div>
 <?php endif; ?>
 
-<div class="row g-4" id="notesGrid">
-    <?php if (empty($notes)): ?>
-        <div class="col-12 text-center text-white-50 py-5">
-            <i class="bi bi-journal-x display-1 mb-3 d-block"></i>
-            <h3>Zatím nemáte žádné poznámky.</h3>
-            <p>Klikněte na tlačítko výše a vytvořte si první!</p>
-        </div>
-    <?php else: ?>
-        <?php foreach ($notes as $note): 
+<div id="pinnedNotesContainer" class="<?php echo empty($pinnedNotes) ? 'd-none' : ''; ?>">
+    <div class="col-12 mb-3">
+        <h6 class="text-white-50 px-1"><i class="bi bi-pin-angle-fill me-2"></i> PŘIPNUTÉ</h6>
+    </div>
+    <div class="row g-4 mb-5" id="pinnedNotesGrid">
+        <?php foreach ($pinnedNotes as $note): 
             $tagNames = array_map(function($t) { return $t['name']; }, $note['tags']);
             $tagData = implode(',', $tagNames);
         ?>
-            <div class="col-md-4 col-lg-6 note-item" data-id="<?php echo $note['id']; ?>" data-tags="<?php echo htmlspecialchars($tagData); ?>">
-                <div class="card glass-card h-100 note-card" onclick="handleNoteClick(event, <?php echo htmlspecialchars(json_encode($note), ENT_QUOTES, 'UTF-8'); ?>)">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title text-white mb-0 text-truncate">
-                                <?php echo htmlspecialchars($note['title']); ?>
-                            </h5>
-                            <div class="d-flex gap-2 delete-btn-wrapper" onclick="event.stopPropagation()">
-                                <button class="btn btn-sm btn-link text-white-50 p-0 edit-icon" 
-                                        onclick="openEditNoteModal(<?php echo htmlspecialchars(json_encode($note), ENT_QUOTES, 'UTF-8'); ?>)"
-                                        title="Upravit">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <form method="POST" class="d-inline" title="Archivovat">
-                                    <input type="hidden" name="action" value="archive_note">
-                                    <input type="hidden" name="note_id" value="<?php echo $note['id']; ?>">
-                                    <button type="submit" class="btn btn-sm btn-link text-warning p-0">
-                                        <i class="bi bi-archive"></i>
-                                    </button>
-                                </form>
-                                <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tuto poznámku smazat?');">
-                                    <input type="hidden" name="action" value="delete_note">
-                                    <input type="hidden" name="note_id" value="<?php echo $note['id']; ?>">
-                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Smazat">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="card-text text-white-50 small mb-0 quill-preview" style="display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;">
-                            <?php echo $note['content']; ?>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 pt-0">
-                        <small class="text-white-25" style="font-size: 0.65rem;">
-                            <?php echo date('d.m.Y H:i', strtotime($note['created_at'])); ?>
-                        </small>
-                    </div>
-                </div>
-            </div>
+            <?php include 'includes/note_item_template.php'; ?>
         <?php endforeach; ?>
-    <?php endif; ?>
+    </div>
+</div>
+
+<div id="othersNotesContainer">
+    <div class="col-12 mb-3 <?php echo empty($pinnedNotes) ? 'd-none' : ''; ?>" id="othersHeader">
+        <h6 class="text-white-50 px-1">OSTATNÍ</h6>
+    </div>
+    <div class="row g-4" id="othersNotesGrid">
+        <?php if (empty($notes)): ?>
+            <div class="col-12 text-center text-white-50 py-5">
+                <i class="bi bi-journal-x display-1 mb-3 d-block"></i>
+                <h3>Zatím nemáte žádné poznámky.</h3>
+                <p>Klikněte na tlačítko výše a vytvořte si první!</p>
+            </div>
+        <?php else: ?>
+            <?php foreach ($otherNotes as $note): 
+                $tagNames = array_map(function($t) { return $t['name']; }, $note['tags']);
+                $tagData = implode(',', $tagNames);
+            ?>
+                <?php include 'includes/note_item_template.php'; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
 </div>
 <div class="text-end mt-3">
     <a href="archive_notes.php" class="text-white-50 text-decoration-none small"><i class="bi bi-archive me-1"></i> Zobrazit archivované poznámky</a>
@@ -260,7 +244,8 @@ include 'includes/header.php';
 <script src="assets/vendor/sortablejs/Sortable.min.js"></script>
 
 <script>
-let sortable = null;
+let sortablePinned = null;
+let sortableOthers = null;
 let isSortingMode = false;
 
 let quill;
@@ -289,7 +274,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function toggleSortingMode() {
     isSortingMode = !isSortingMode;
-    const grid = document.getElementById('notesGrid');
+    const pinnedGrid = document.getElementById('pinnedNotesGrid');
+    const othersGrid = document.getElementById('othersNotesGrid');
     const editBtn = document.getElementById('editOrderBtn');
     const saveBtn = document.getElementById('saveOrderBtn');
     const newNoteBtn = document.getElementById('newNoteBtn');
@@ -297,31 +283,41 @@ function toggleSortingMode() {
     const deleteBtnWrappers = document.querySelectorAll('.delete-btn-wrapper');
 
     if (isSortingMode) {
-        grid.classList.add('sorting-mode');
+        if (pinnedGrid) pinnedGrid.classList.add('sorting-mode');
+        if (othersGrid) othersGrid.classList.add('sorting-mode');
         editBtn.classList.add('d-none');
         saveBtn.classList.remove('d-none');
         newNoteBtn.classList.add('opacity-50', 'pe-none');
         sortDropdown.classList.add('opacity-50', 'pe-none');
         deleteBtnWrappers.forEach(el => el.classList.add('d-none'));
 
-        sortable = new Sortable(grid, {
+        const sortableConfig = {
             animation: 150,
             ghostClass: 'glass-card-moving',
             onEnd: function() {
                 saveOrder();
             }
-        });
+        };
+
+        if (pinnedGrid) sortablePinned = new Sortable(pinnedGrid, sortableConfig);
+        if (othersGrid) sortableOthers = new Sortable(othersGrid, sortableConfig);
+        
     } else {
-        grid.classList.remove('sorting-mode');
+        if (pinnedGrid) pinnedGrid.classList.remove('sorting-mode');
+        if (othersGrid) othersGrid.classList.remove('sorting-mode');
         editBtn.classList.remove('d-none');
         saveBtn.classList.add('d-none');
         newNoteBtn.classList.remove('opacity-50', 'pe-none');
         sortDropdown.classList.remove('opacity-50', 'pe-none');
         deleteBtnWrappers.forEach(el => el.classList.remove('d-none'));
 
-        if (sortable) {
-            sortable.destroy();
-            sortable = null;
+        if (sortablePinned) {
+            sortablePinned.destroy();
+            sortablePinned = null;
+        }
+        if (sortableOthers) {
+            sortableOthers.destroy();
+            sortableOthers = null;
         }
         
         window.location.href = 'notes.php?sort=custom';
@@ -329,13 +325,24 @@ function toggleSortingMode() {
 }
 
 function saveOrder() {
-    const grid = document.getElementById('notesGrid');
-    const items = grid.querySelectorAll('.note-item');
     const order = [];
-    items.forEach((item, index) => {
+    let currentIndex = 0;
+
+    // Process pinned first
+    const pinnedItems = document.querySelectorAll('#pinnedNotesGrid .note-item');
+    pinnedItems.forEach((item) => {
         order.push({
             id: item.dataset.id,
-            order: index
+            order: currentIndex++
+        });
+    });
+
+    // Then others
+    const otherItems = document.querySelectorAll('#othersNotesGrid .note-item');
+    otherItems.forEach((item) => {
+        order.push({
+            id: item.dataset.id,
+            order: currentIndex++
         });
     });
     
@@ -467,11 +474,24 @@ const filterNotes = () => {
             note.offsetHeight; /* trigger reflow */
             note.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
             delay += 40;
+            if (note.classList.contains('pinned')) pinnedVisible++;
+            else othersVisible++;
         } else {
             note.style.display = 'none';
             note.style.animation = 'none';
         }
     });
+
+    // Toggle headers
+    const pinnedContainer = document.getElementById('pinnedNotesContainer');
+    const othersHeader = document.getElementById('othersHeader');
+    
+    if (pinnedContainer) {
+        pinnedContainer.classList.toggle('d-none', pinnedVisible === 0);
+    }
+    if (othersHeader) {
+        othersHeader.classList.toggle('d-none', pinnedVisible === 0 || othersVisible === 0);
+    }
 };
 
 if (noteSearchInput) {
