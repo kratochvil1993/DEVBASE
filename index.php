@@ -1,7 +1,7 @@
 <?php
 require_once 'includes/functions.php';
 
-// Simple check if database exists and tables are created
+// I will check footer.php first.s and tables are created
 $check = $conn->query("SHOW TABLES LIKE 'snippets'");
 if ($check->num_rows == 0) {
     header('Location: includes/init_db.php');
@@ -16,12 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         saveSnippet($_POST['title'], $_POST['description'], $_POST['code'], $_POST['language_id'], $tags, $id);
     } elseif ($_POST['action'] == 'delete_snippet') {
         deleteSnippet($_POST['snippet_id']);
+    } elseif ($_POST['action'] == 'toggle_pin') {
+        toggleSnippetPin($_POST['snippet_id']);
     }
     header('Location: index.php');
     exit;
 }
 
 $snippets = getAllSnippets();
+$pinnedSnippets = array_filter($snippets, function($s) { return ($s['is_pinned'] ?? 0) == 1; });
+$otherSnippets = array_filter($snippets, function($s) { return ($s['is_pinned'] ?? 0) == 0; });
 $allTags = getAllTags(); // For the modal
 $languages = getAllLanguages();
 
@@ -53,8 +57,14 @@ include 'includes/header.php';
                 </span>
                 <input type="text" id="snippetSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat snipety...">
             </div>
-            <button class="btn btn-add-snipet rounded px-3" data-bs-toggle="modal" data-bs-target="#addSnippetModal" title="Nový snipet">
+            <button class="btn btn-add-snipet rounded px-3" data-bs-toggle="modal" data-bs-target="#addSnippetModal" id="newSnippetBtn" title="Nový snipet">
                 <i class="bi bi-plus-lg"></i>
+            </button>
+            <button class="btn btn-edit-order rounded px-4" id="editOrderBtn" onclick="toggleSortingMode()" style="text-wrap: nowrap;">
+                <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
+            </button>
+            <button class="btn btn-success rounded px-4 d-none" id="saveOrderBtn" onclick="toggleSortingMode()" style="text-wrap: nowrap;">
+                <i class="bi bi-check-lg me-2"></i> Hotovo
             </button>
         </div>
     </div>
@@ -157,7 +167,22 @@ include 'includes/header.php';
     </div>
 </div>
 
-<div class="row g-4" id="snippetsGrid">
+<div id="pinnedSnippetsContainer" class="<?php echo empty($pinnedSnippets) ? 'd-none' : ''; ?>">
+    <div class="col-12 mb-3">
+        <h6 class="text-white-50 px-1"><i class="bi bi-pin-angle-fill me-2"></i> PŘIPNUTÉ</h6>
+    </div>
+    <div class="row g-4 mb-5" id="pinnedSnippetsGrid">
+        <?php foreach ($pinnedSnippets as $index => $snippet): ?>
+            <?php include 'includes/snippet_item_template.php'; ?>
+        <?php endforeach; ?>
+    </div>
+</div>
+
+<div id="othersSnippetsContainer">
+    <div class="col-12 mb-3 <?php echo empty($pinnedSnippets) ? 'd-none' : ''; ?>" id="othersHeader">
+        <h6 class="text-white-50 px-1">OSTATNÍ</h6>
+    </div>
+    <div class="row g-4" id="othersSnippetsGrid">
     <?php if (empty($snippets)): ?>
         <div class="col-12 text-center text-white-50 py-5">
             <i class="bi bi-code-slash display-1 mb-3 d-block"></i>
@@ -166,47 +191,100 @@ include 'includes/header.php';
             <a href="settings.php" class="btn btn-outline-light">Spravovat štítky a jazyky</a>
         </div>
     <?php else: ?>
-        <?php foreach ($snippets as $index => $snippet): ?>
-            <div class="col-md-6 col-lg-4 col-xl-3 snippet-card-wrapper">
-                <div class="card glass-card h-100 snippet-card" 
-                     data-tags="<?php echo htmlspecialchars(implode(',', array_column($snippet['tags'], 'name'))); ?>" 
-                     onclick="openViewModal(<?php echo htmlspecialchars(json_encode($snippet), ENT_QUOTES, 'UTF-8'); ?>)">
-                    <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title text-white mb-0"><?php echo htmlspecialchars($snippet['title']); ?></h5>
-                            <div class="d-flex gap-2" onclick="event.stopPropagation()">
-                                <button class="btn btn-sm btn-link text-white-50 p-0" 
-                                        onclick="openEditModal(<?php echo htmlspecialchars(json_encode($snippet), ENT_QUOTES, 'UTF-8'); ?>)"
-                                        title="Upravit">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento snipet smazat?');">
-                                    <input type="hidden" name="action" value="delete_snippet">
-                                    <input type="hidden" name="snippet_id" value="<?php echo $snippet['id']; ?>">
-                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Smazat">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                        
-                        <p class="card-text text-white-50 small mb-3">
-                            <?php echo htmlspecialchars($snippet['description']); ?>
-                        </p>
-                        
-                        <div class="snippet-code-wrapper mb-3 flex-grow-1">
-                            <button class="btn btn-sm btn-outline-light copy-btn" onclick="event.stopPropagation(); copyToClipboard(this, 'snippet-<?php echo $index; ?>')">
-                                copy
-                            </button>
-                            <pre><code id="snippet-<?php echo $index; ?>" class="language-<?php echo htmlspecialchars($snippet['prism_class'] ?? 'none'); ?>"><?php echo htmlspecialchars($snippet['code']); ?></code></pre>
-                        </div>
-                        
-
-                    </div>
-                </div>
-            </div>
+        <?php foreach ($otherSnippets as $index => $snippet): ?>
+            <?php include 'includes/snippet_item_template.php'; ?>
         <?php endforeach; ?>
     <?php endif; ?>
+    </div>
 </div>
 
+<!-- SortableJS -->
+<script src="assets/vendor/sortablejs/Sortable.min.js"></script>
+<script>
+let sortablePinned = null;
+let sortableOthers = null;
+let isSortingMode = false;
+
+function toggleSortingMode() {
+    isSortingMode = !isSortingMode;
+    const pinnedGrid = document.getElementById('pinnedSnippetsGrid');
+    const othersGrid = document.getElementById('othersSnippetsGrid');
+    const editBtn = document.getElementById('editOrderBtn');
+    const saveBtn = document.getElementById('saveOrderBtn');
+    const newSnippetBtn = document.getElementById('newSnippetBtn');
+    const actionBtns = document.querySelectorAll('.action-btns-wrapper');
+
+    if (isSortingMode) {
+        if (pinnedGrid) pinnedGrid.classList.add('sorting-mode');
+        if (othersGrid) othersGrid.classList.add('sorting-mode');
+        editBtn.classList.add('d-none');
+        saveBtn.classList.remove('d-none');
+        newSnippetBtn.classList.add('opacity-50', 'pe-none');
+        actionBtns.forEach(el => el.classList.add('d-none'));
+
+        const sortableConfig = {
+            animation: 150,
+            ghostClass: 'glass-card-moving',
+            onEnd: function() {
+                saveOrder();
+            }
+        };
+
+        if (pinnedGrid) sortablePinned = new Sortable(pinnedGrid, sortableConfig);
+        if (othersGrid) sortableOthers = new Sortable(othersGrid, sortableConfig);
+        
+    } else {
+        if (pinnedGrid) pinnedGrid.classList.remove('sorting-mode');
+        if (othersGrid) othersGrid.classList.remove('sorting-mode');
+        editBtn.classList.remove('d-none');
+        saveBtn.classList.add('d-none');
+        newSnippetBtn.classList.remove('opacity-50', 'pe-none');
+        actionBtns.forEach(el => el.classList.remove('d-none'));
+
+        if (sortablePinned) {
+            sortablePinned.destroy();
+            sortablePinned = null;
+        }
+        if (sortableOthers) {
+            sortableOthers.destroy();
+            sortableOthers = null;
+        }
+    }
+}
+
+function saveOrder() {
+    const order = [];
+    let currentIndex = 0;
+
+    // Process pinned first
+    const pinnedItems = document.querySelectorAll('#pinnedSnippetsGrid .snippet-card-wrapper');
+    pinnedItems.forEach((item) => {
+        order.push({
+            id: item.dataset.id,
+            order: currentIndex++
+        });
+    });
+
+    // Then others
+    const otherItems = document.querySelectorAll('#othersSnippetsGrid .snippet-card-wrapper');
+    otherItems.forEach((item) => {
+        order.push({
+            id: item.dataset.id,
+            order: currentIndex++
+        });
+    });
+    
+    fetch('api/api_snippets_order.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ order: order }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Order saved:', data);
+    });
+}
+</script>
 <?php include 'includes/footer.php'; ?>

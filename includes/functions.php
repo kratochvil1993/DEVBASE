@@ -7,12 +7,15 @@ function getAllSnippets($search = '') {
             FROM snippets s 
             LEFT JOIN languages l ON s.language_id = l.id";
     
+    @$conn->query("ALTER TABLE snippets ADD COLUMN is_pinned TINYINT(1) DEFAULT 0"); // add if missing
+    @$conn->query("ALTER TABLE snippets ADD COLUMN sort_order INT DEFAULT 0"); // add if missing
+    
     if (!empty($search)) {
         $search = $conn->real_escape_string($search);
         $sql .= " WHERE s.title LIKE '%$search%' OR s.code LIKE '%$search%' OR s.description LIKE '%$search%'";
     }
     
-    $sql .= " ORDER BY s.created_at DESC";
+    $sql .= " ORDER BY s.is_pinned DESC, s.sort_order ASC, s.created_at DESC";
     $result = $conn->query($sql);
     
     $snippets = [];
@@ -146,7 +149,10 @@ function saveSnippet($title, $description, $code, $language_id, $tags = [], $id 
         $id = (int)$id;
         $sql = "UPDATE snippets SET title = '$title', description = '$description', code = '$code', language_id = $language_id WHERE id = $id";
     } else {
-        $sql = "INSERT INTO snippets (title, description, code, language_id) VALUES ('$title', '$description', '$code', $language_id)";
+        $result = $conn->query("SELECT MIN(sort_order) as min_sort FROM snippets");
+        $row = $result ? $result->fetch_assoc() : null;
+        $next_sort = $row['min_sort'] !== null ? (int)$row['min_sort'] - 1 : 0;
+        $sql = "INSERT INTO snippets (title, description, code, language_id, sort_order) VALUES ('$title', '$description', '$code', $language_id, $next_sort)";
     }
 
     if ($conn->query($sql)) {
@@ -167,6 +173,21 @@ function deleteSnippet($id) {
     global $conn;
     $id = (int)$id;
     $sql = "DELETE FROM snippets WHERE id = $id";
+    return $conn->query($sql);
+}
+
+function toggleSnippetPin($id) {
+    global $conn;
+    $id = (int)$id;
+    $sql = "UPDATE snippets SET is_pinned = 1 - is_pinned WHERE id = $id";
+    return $conn->query($sql);
+}
+
+function updateSnippetOrder($id, $order) {
+    global $conn;
+    $id = (int)$id;
+    $order = (int)$order;
+    $sql = "UPDATE snippets SET sort_order = $order WHERE id = $id";
     return $conn->query($sql);
 }
 

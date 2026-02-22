@@ -362,23 +362,27 @@ pre[class*="language-"] {
 }
 
 /* Sorting Mode */
-.sorting-mode .note-card {
+.sorting-mode .note-card,
+.sorting-mode .snippet-card {
   cursor: grab;
   animation: jiggle 0.5s ease-in-out infinite;
   user-select: none;
 }
 
-.sorting-mode .note-item:nth-child(2n) .note-card {
+.sorting-mode .note-item:nth-child(2n) .note-card,
+.sorting-mode .snippet-card-wrapper:nth-child(2n) .snippet-card {
   animation-duration: 0.45s;
   animation-delay: 0.05s;
 }
 
-.sorting-mode .note-item:nth-child(3n) .note-card {
+.sorting-mode .note-item:nth-child(3n) .note-card,
+.sorting-mode .snippet-card-wrapper:nth-child(3n) .snippet-card {
   animation-duration: 0.55s;
   animation-delay: -0.1s;
 }
 
-.sorting-mode .note-card:active {
+.sorting-mode .note-card:active,
+.sorting-mode .snippet-card:active {
   cursor: grabbing;
   animation: none !important;
   transform: scale(1.02) !important;
@@ -469,7 +473,9 @@ h6 i.bi-pin-angle-fill {
 #pinnedTodosList.sorting-mode,
 #othersTodosList.sorting-mode,
 #pinnedNotesGrid.sorting-mode,
-#othersNotesGrid.sorting-mode {
+#othersNotesGrid.sorting-mode,
+#pinnedSnippetsGrid.sorting-mode,
+#othersSnippetsGrid.sorting-mode {
   min-height: 50px;
   border: 1px dashed rgba(255, 255, 255, 0.1);
   border-radius: 10px;

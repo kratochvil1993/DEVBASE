@@ -27,6 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const filterSnippets = () => {
     const cards = document.querySelectorAll(".snippet-card");
     let delay = 0;
+    let pinnedVisible = 0;
+    let othersVisible = 0;
 
     cards.forEach((card) => {
       const title = card.querySelector(".card-title").textContent.toLowerCase();
@@ -56,11 +58,27 @@ document.addEventListener("DOMContentLoaded", () => {
         wrapper.offsetHeight; /* trigger reflow */
         wrapper.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
         delay += 40; // Stagger effect
+        if (wrapper.classList.contains("pinned")) pinnedVisible++;
+        else othersVisible++;
       } else {
         wrapper.style.display = "none";
         wrapper.style.animation = "none";
       }
     });
+
+    // Toggle headers
+    const pinnedContainer = document.getElementById("pinnedSnippetsContainer");
+    const othersHeader = document.getElementById("othersHeader");
+
+    if (pinnedContainer) {
+      pinnedContainer.classList.toggle("d-none", pinnedVisible === 0);
+    }
+    if (othersHeader) {
+      othersHeader.classList.toggle(
+        "d-none",
+        pinnedVisible === 0 || othersVisible === 0,
+      );
+    }
   };
 
   if (searchInput) {

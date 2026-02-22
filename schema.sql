@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS snippets (
     description TEXT,
     code TEXT NOT NULL,
     language_id INT,
+    is_pinned TINYINT(1) DEFAULT 0,
+    sort_order INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (language_id) REFERENCES languages(id) ON DELETE SET NULL
 );
