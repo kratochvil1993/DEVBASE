@@ -201,6 +201,10 @@ console.log('Hello World');
                     <strong class="text-white d-block">Badge s počtem úkolů:</strong>
                     V hlavní navigaci se u odkazu na TODO může zobrazovat počet aktivních (nearchivovaných) úkolů. Tuto funkci lze vypnout v **Nastavení**.
                 </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Termíny splnění (Deadlines):</strong>
+                    U každého úkolu můžete nastavit konkrétní datum splnění. Pokud se termín blíží (dnes nebo zítra), u úkolu se objeví žlutý odznak **Blíží se**. Pokud termín již vypršel, objeví se červený odznak **Po termínu**. Termíny lze zadat při přidávání úkolu nebo dodatečně přes ikonu tužky.
+                </li>
             </ul>
         </div>
 
