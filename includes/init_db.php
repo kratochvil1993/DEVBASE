@@ -26,11 +26,11 @@ if (file_exists($schema_file)) {
                 $result->free();
             }
         } while ($conn->more_results() && $conn->next_result());
+        header("Refresh: 2; URL=../index.php");
         echo "<div style='font-family: sans-serif; text-align: center; margin-top: 50px;'>";
         echo "<h2>Databáze a schéma byly úspěšně inicializovány.</h2>";
         echo "<p>Za okamžik budete přesměrováni na hlavní stránku...</p>";
         echo "</div>";
-        header("Refresh: 2; URL=../index.php");
     } else {
         echo "Error initializing schema: " . $conn->error;
     }
