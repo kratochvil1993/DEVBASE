@@ -133,9 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Handle tags
     const tagCheckboxes = snippetForm.querySelectorAll('input[name="tags[]"]');
     tagCheckboxes.forEach((cb) => {
-      cb.checked = snippet.tags.some(
-        (tag) => tag.name === cb.nextElementSibling.textContent.trim(),
-      );
+      cb.checked = snippet.tags.some((tag) => tag.id == cb.value);
     });
 
     const modal = new bootstrap.Modal(

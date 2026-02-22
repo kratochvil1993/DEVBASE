@@ -121,7 +121,11 @@ include 'includes/header.php';
                                 <?php foreach ($allTags as $tag): ?>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="checkbox" name="tags[]" value="<?php echo $tag['id']; ?>" id="tag-<?php echo $tag['id']; ?>">
-                                        <label class="form-check-label text-white small" for="tag-<?php echo $tag['id']; ?>"><?php echo htmlspecialchars($tag['name']); ?></label>
+                                        <label class="form-check-label text-white-50 small" for="tag-<?php echo $tag['id']; ?>">
+                                            <span class="badge" style="background-color: <?php echo $tag['color'] ? htmlspecialchars($tag['color']) : '#6c757d'; ?>">
+                                                <?php echo htmlspecialchars($tag['name']); ?>
+                                            </span>
+                                        </label>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
