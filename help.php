@@ -88,8 +88,8 @@ console.log('Hello World');
                     Stejně jako u snipetů, i v sekci **Poznámky** najdete vyhledávací pole, které filtruje karty v reálném čase podle názvu i obsahu.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Detailní náhled:</strong>
-                    Kliknutím na kartu snipetu (mimo tlačítka) otevřete **detailní náhled** v modálním okně, který je ideální pro čtení dlouhých kódů.
+                    <strong class="text-white d-block">Detailní náhled a rychlá úprava:</strong>
+                    Kliknutím na kartu snipetu otevřete **detailní náhled** v modálním okně. Pokud potřebujete provést změnu, můžete využít tlačítko **Upravit** přímo v tomto náhledu, které vás okamžitě přepne do editačního režimu.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Připínání (Pinning):</strong>
@@ -115,7 +115,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Barvy a validace štítků:</strong>
-                    V **Nastavení** můžete každému štítku přiřadit barvu. Barva je automaticky validována a musí být ve formátu HEX (např. `#ff0000`). Štítky jsou pak barevně odlišeny v přehledu i při filtrování.
+                    V **Nastavení** můžete každému štítku přiřadit barvu (hexagonální HEX kód). Štítky jsou pak barevně odlišeny v přehledu, při filtrování a nově i přímo v seznamu při výběru štítků v modálních oknech.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Oddělené tagy pro vše:</strong>
