@@ -57,7 +57,7 @@ $stats = getGlobalStats();
 
 <nav class="navbar navbar-expand-lg navbar-dark navbar-glass sticky-top">
     <div class="container-fluid">
-        <button class="btn border-0 text-white me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
+        <button class="btn btn-menu border-0 me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
         <a class="navbar-brand fw-bold" href="index.php">
