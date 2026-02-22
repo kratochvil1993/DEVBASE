@@ -408,7 +408,8 @@ pre[class*="language-"] {
 }
 
 /* Normal view: keep row borders (since we removed them from HTML inline classes) */
-.manage-notes-table {
+.manage-notes-table,
+.manage-snippets-table {
   border-collapse: collapse !important;
 }
 
@@ -425,7 +426,8 @@ pre[class*="language-"] {
 }
 
 /* Manage Notes Table Spacing ONLY in sorting mode */
-.manage-notes-table:has(.sorting-mode) {
+.manage-notes-table:has(.sorting-mode),
+.manage-snippets-table:has(.sorting-mode) {
   border-collapse: separate !important;
   border-spacing: 0 12px !important;
   margin-top: -12px;
@@ -436,24 +438,35 @@ pre[class*="language-"] {
   padding-bottom: 12px;
 }
 
-.manage-notes-table .sorting-mode tr {
+.manage-notes-table .sorting-mode tr,
+.manage-snippets-table .sorting-mode tr {
   background: rgba(255, 255, 255, 0.02);
   border-bottom: none;
 }
 
-.manage-notes-table .sorting-mode tr:hover {
+.manage-notes-table .sorting-mode tr:hover,
+.manage-snippets-table .sorting-mode tr:hover {
   background: rgba(255, 255, 255, 0.06) !important;
 }
 
-.manage-notes-table .sorting-mode td {
+.manage-notes-table .sorting-mode td,
+.manage-snippets-table .sorting-mode td {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.manage-notes-table .sorting-mode td:first-child {
+.manage-notes-table .sorting-mode td:first-child,
+.manage-snippets-table .sorting-mode td:first-child {
   border-left: 1px solid rgba(255, 255, 255, 0.08);
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
+}
+
+.manage-notes-table .sorting-mode td:last-child,
+.manage-snippets-table .sorting-mode td:last-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 /* Todo Pinning */
@@ -500,14 +513,16 @@ h6 i.bi-pin-angle-fill {
   padding: 10px;
 }
 
-.manage-notes-table .sorting-mode td:last-child {
+.manage-notes-table .sorting-mode td:last-child,
+.manage-snippets-table .sorting-mode td:last-child {
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
 }
 
 /* Manage Notes Sorting Mode - Up and Down Animation */
-.sorting-mode .manage-note-row {
+.sorting-mode .manage-note-row,
+.sorting-mode .manage-snippet-row {
   cursor: grab;
   animation: floatUpDown 1.2s ease-in-out infinite;
   user-select: none;
@@ -515,17 +530,20 @@ h6 i.bi-pin-angle-fill {
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
-.sorting-mode .manage-note-row:nth-child(2n) {
+.sorting-mode .manage-note-row:nth-child(2n),
+.sorting-mode .manage-snippet-row:nth-child(2n) {
   animation-duration: 1.1s;
   animation-delay: 0.1s;
 }
 
-.sorting-mode .manage-note-row:nth-child(3n) {
+.sorting-mode .manage-note-row:nth-child(3n),
+.sorting-mode .manage-snippet-row:nth-child(3n) {
   animation-duration: 1.3s;
   animation-delay: -0.15s;
 }
 
-.sorting-mode .manage-note-row:active {
+.sorting-mode .manage-note-row:active,
+.sorting-mode .manage-snippet-row:active {
   cursor: grabbing;
   animation: none !important;
   transform: scale(1.02) !important;

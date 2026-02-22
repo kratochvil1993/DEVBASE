@@ -58,7 +58,7 @@ include 'includes/header.php';
                 </span>
                 <input type="text" id="snippetSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat snipety...">
             </div>
-            <button class="btn btn-add-snipet rounded px-3" data-bs-toggle="modal" data-bs-target="#addSnippetModal" id="newSnippetBtn" title="Nový snipet">
+            <button class="btn btn-add-snipet rounded px-3 ms-auto" data-bs-toggle="modal" data-bs-target="#addSnippetModal" id="newSnippetBtn" title="Nový snipet">
                 <i class="bi bi-plus-lg"></i>
             </button>
             <button class="btn btn-edit-order rounded px-4" id="editOrderBtn" onclick="toggleSortingMode()" style="text-wrap: nowrap;">

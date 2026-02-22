@@ -15,12 +15,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         saveNote($_POST['title'], $_POST['content'], null, $tags, $id);
     } elseif ($_POST['action'] == 'delete_note') {
         deleteNote($_POST['note_id']);
+    } elseif ($_POST['action'] == 'toggle_pin') {
+        toggleNotePin($_POST['note_id']);
     }
     header('Location: manage_notes.php');
     exit;
 }
 
-$notes = getAllNotes('custom');
+$currentSort = 'custom'; // Manage notes usually uses custom order
+$notes = getAllNotes($currentSort);
+$pinnedNotes = array_filter($notes, function($n) { return $n['is_pinned'] == 1; });
+$otherNotes = array_filter($notes, function($n) { return $n['is_pinned'] == 0; });
 $tags = getAllTags('note');
 $languages = getAllLanguages();
 
@@ -83,67 +88,43 @@ include 'includes/header.php';
                     <thead class="border-bottom border-light border-opacity-25" style="background: rgba(255,255,255,0.05);">
                         <tr>
                             <th scope="col" class="py-3 px-4 fw-normal text-white-50" style="width: 5%;">ID</th>
-                            <th scope="col" class="py-3 px-4 fw-normal text-white-50" style="width: 45%;">Název</th>
+                            <th scope="col" class="py-3 px-4 fw-normal text-white-50" style="width: 5%;"><i class="bi bi-pin-angle" title="Připnuto"></i></th>
+                            <th scope="col" class="py-3 px-4 fw-normal text-white-50" style="width: 40%;">Název</th>
                             <th scope="col" class="py-3 px-4 fw-normal text-white-50" style="width: 35%;">Štítky</th>
                             <th scope="col" class="py-3 px-4 fw-normal text-white-50 text-end" style="width: 15%;">Akce</th>
                         </tr>
                     </thead>
+                    <tbody id="manageNotesPinnedGrid">
+                        <?php if (!empty($pinnedNotes)): ?>
+                            <tr class="section-header-row" data-section="pinned" style="background: rgba(255,193,7,0.05);">
+                                <td colspan="5" class="px-4 py-2 border-bottom border-light border-opacity-10">
+                                    <span class="text-warning small fw-bold"><i class="bi bi-pin-angle-fill me-2"></i>PŘIPNUTÉ</span>
+                                </td>
+                            </tr>
+                            <?php foreach ($pinnedNotes as $note): ?>
+                                <?php include 'includes/manage_note_row.php'; ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
                     <tbody id="manageNotesGrid">
+                        <?php if (!empty($pinnedNotes) && !empty($otherNotes)): ?>
+                            <tr class="section-header-row" data-section="others" style="background: rgba(255,255,255,0.03);">
+                                <td colspan="5" class="px-4 py-2 border-bottom border-light border-opacity-10">
+                                    <span class="text-white-50 small fw-bold">OSTATNÍ</span>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+
                         <?php if (empty($notes)): ?>
                             <tr>
-                                <td colspan="4" class="text-center text-white-50 py-5">
+                                <td colspan="5" class="text-center text-white-50 py-5">
                                     <i class="bi bi-journal-x fs-2 mb-3 d-block"></i>
                                     Zatím nemáte žádné poznámky
                                 </td>
                             </tr>
                         <?php else: ?>
-                            <?php foreach ($notes as $index => $note): ?>
-                                <tr class="manage-note-row"
-                                    data-id="<?php echo $note['id']; ?>"
-                                    data-title="<?php echo strtolower(htmlspecialchars($note['title'])); ?>"
-                                    data-content="<?php echo strtolower(htmlspecialchars($note['content'])); ?>"
-                                    data-tags="<?php echo strtolower(htmlspecialchars(implode(',', array_column($note['tags'], 'name')))); ?>">
-                                    <td class="px-4 py-3"><span class="text-white-50 small">#<?php echo $note['id']; ?></span></td>
-                                    <td class="px-4 py-3 fw-medium">
-                                        <?php echo htmlspecialchars($note['title']); ?>
-                                        <div class="small text-white-50 fw-light mt-1 text-truncate" style="max-width: 350px;">
-                                            <?php echo htmlspecialchars(substr(strip_tags($note['content']), 0, 100)) . (strlen(strip_tags($note['content'])) > 100 ? '...' : ''); ?>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <?php if (empty($note['tags'])): ?>
-                                                <span class="text-white-50 small fst-italic">Bez štítku</span>
-                                            <?php else: ?>
-                                                <?php foreach ($note['tags'] as $tag): ?>
-                                                    <span class="badge tag-badge fw-normal"
-                                                          <?php if (!empty($tag['color'])) echo 'style="background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';"'; ?>>
-                                                        <?php echo htmlspecialchars($tag['name']); ?>
-                                                    </span>
-                                                <?php endforeach; ?>
-                                            <?php endif; ?>
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-3 text-end text-nowrap">
-                                        <button class="btn btn-sm btn-outline-light border-0 px-2" 
-                                                onclick='openViewNoteManageModal(<?php echo htmlspecialchars(json_encode($note), ENT_QUOTES, 'UTF-8'); ?>)'
-                                                title="Zobrazit poznámku">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-light border-0 px-2" 
-                                                onclick='openEditNoteManageModal(<?php echo htmlspecialchars(json_encode($note), ENT_QUOTES, 'UTF-8'); ?>)'
-                                                title="Upravit">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tuto poznámku smazat?');">
-                                            <input type="hidden" name="action" value="delete_note">
-                                            <input type="hidden" name="note_id" value="<?php echo $note['id']; ?>">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger border-0 px-2" title="Smazat">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
+                            <?php foreach ($otherNotes as $note): ?>
+                                <?php include 'includes/manage_note_row.php'; ?>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>
@@ -164,6 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentTag    = 'all';
 
     const filterRows = () => {
+        let pinnedVisible = 0;
+        let othersVisible = 0;
+
         document.querySelectorAll('.manage-note-row').forEach(row => {
             const title = row.dataset.title || '';
             const content = row.dataset.content || '';
@@ -175,8 +159,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const matchTag = currentTag === 'all' || tags.includes(currentTag.toLowerCase());
 
-            row.style.display = (matchSearch && matchTag) ? '' : 'none';
+            const isVisible = matchSearch && matchTag;
+            row.style.display = isVisible ? '' : 'none';
+
+            if (isVisible) {
+                if (row.closest('#manageNotesPinnedGrid')) pinnedVisible++;
+                else othersVisible++;
+            }
         });
+
+        // Toggle section headers
+        const pinnedHeader = document.querySelector('.section-header-row[data-section="pinned"]');
+        const othersHeader = document.querySelector('.section-header-row[data-section="others"]');
+        
+        if (pinnedHeader) pinnedHeader.style.display = pinnedVisible > 0 ? '' : 'none';
+        if (othersHeader) othersHeader.style.display = othersVisible > 0 ? '' : 'none';
+        
+        // Hide/show pinned grid completely if empty
+        const pinnedGrid = document.getElementById('manageNotesPinnedGrid');
+        if (pinnedGrid) pinnedGrid.style.display = pinnedVisible > 0 ? '' : 'none';
     };
 
     if (searchInput) {
@@ -395,35 +396,49 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function toggleSortingMode() {
     isSortingMode = !isSortingMode;
+    const pinnedGrid = document.getElementById('manageNotesPinnedGrid');
     const grid = document.getElementById('manageNotesGrid');
     const editBtn = document.getElementById('editOrderBtn');
     const saveBtn = document.getElementById('saveOrderBtn');
     const newNoteBtn = document.getElementById('newNoteBtn');
     const actionButtons = document.querySelectorAll('.manage-note-row td:last-child button, .manage-note-row td:last-child form');
+    const sectionHeaders = document.querySelectorAll('.section-header-row');
 
     if (isSortingMode) {
+        if (pinnedGrid) pinnedGrid.classList.add('sorting-mode');
         grid.classList.add('sorting-mode');
         editBtn.classList.add('d-none');
         saveBtn.classList.remove('d-none');
         newNoteBtn.classList.add('opacity-50', 'pe-none');
+        sectionHeaders.forEach(h => h.classList.add('opacity-50'));
         
         actionButtons.forEach(btn => btn.classList.add('opacity-0', 'pe-none'));
 
-        sortable = new Sortable(grid, {
+        const sortableConfig = {
             animation: 150,
             ghostClass: 'glass-card-moving',
+            filter: '.section-header-row',
             onEnd: function() {
                 saveOrder();
             }
-        });
+        };
+
+        if (pinnedGrid) sortablePinned = new Sortable(pinnedGrid, sortableConfig);
+        sortable = new Sortable(grid, sortableConfig);
     } else {
+        if (pinnedGrid) pinnedGrid.classList.remove('sorting-mode');
         grid.classList.remove('sorting-mode');
         editBtn.classList.remove('d-none');
         saveBtn.classList.add('d-none');
         newNoteBtn.classList.remove('opacity-50', 'pe-none');
+        sectionHeaders.forEach(h => h.classList.remove('opacity-50'));
         
         actionButtons.forEach(btn => btn.classList.remove('opacity-0', 'pe-none'));
 
+        if (sortablePinned) {
+            sortablePinned.destroy();
+            sortablePinned = null;
+        }
         if (sortable) {
             sortable.destroy();
             sortable = null;
@@ -432,13 +447,22 @@ function toggleSortingMode() {
 }
 
 function saveOrder() {
-    const grid = document.getElementById('manageNotesGrid');
-    const items = grid.querySelectorAll('.manage-note-row');
     const order = [];
-    items.forEach((item, index) => {
+    let currentIndex = 0;
+
+    // Pinned items
+    document.querySelectorAll('#manageNotesPinnedGrid .manage-note-row').forEach(item => {
         order.push({
             id: item.dataset.id,
-            order: index
+            order: currentIndex++
+        });
+    });
+
+    // Other items
+    document.querySelectorAll('#manageNotesGrid .manage-note-row').forEach(item => {
+        order.push({
+            id: item.dataset.id,
+            order: currentIndex++
         });
     });
     
