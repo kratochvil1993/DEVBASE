@@ -40,7 +40,7 @@ body {
 nav .logo {
   width: 25px;
   height: auto;
-  filter: brightness(5) invert(0);
+  /* filter: brightness(5) invert(0); */
 }
 
 .glass-card {

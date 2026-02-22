@@ -30,15 +30,12 @@ $stats = getGlobalStats();
     <title>DevBase - The OneNote Killer</title>
 
     <!-- Favicons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="./assets/fav/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./assets/fav/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favfavicon-16x16.png">
-    <link rel="manifest" href="./assets/fav/site.webmanifest">
-    <link rel="mask-icon" href="./assets/fav/safari-pinned-tab.svg?v=1" color="#222">
-    <link rel="shortcut icon" href="./assets/fav/favicon.ico">
-    <meta name="msapplication-TileColor" content="#fff">
-    <meta name="msapplication-config" content="./assets/fav/browserconfig.xml">
-    <meta name="theme-color" content="#ffffff">
+    <link rel="icon" type="image/png" href="/./assets/fav/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/./assets/fav/favicon.svg" />
+<link rel="shortcut icon" href="/./assets/fav/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/./assets/fav/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="DevBase" />
+<link rel="manifest" href="/./assets/fav/site.webmanifest" />
     
     <!-- Bootstrap 5.3 -->
     <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -65,7 +62,7 @@ $stats = getGlobalStats();
         </button>
         <a class="navbar-brand fw-bold" href="index.php">
             <span>    
-                <img src="./assets/logo.webp" alt="DevBase Logo"  class="d-inline-block align-text-top logo" >
+                <img src="./assets/logoAlt.png" alt="DevBase Logo"  class="d-inline-block align-text-top logo" >
             </span>
             <span>DevBase</span>
         </a>
