@@ -95,6 +95,10 @@ console.log('Hello World');
                     <strong class="text-white d-block">Statistiky v menu:</strong>
                     V bočním panelu najdete bleskový přehled počtu snippetů, poznámek a **aktivních** úkolů. Grafika karet je nyní statická pro nerušené čtení.
                 </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Persistence vzhledu:</strong>
+                    Vaše volba mezi tmavým a světlým režimem je bezpečně uložena v databázi. Při příštím přihlášení nebo na jiném zařízení se vám aplikace zobrazí přesně tak, jak jste ji naposledy zanechali.
+                </li>
             </ul>
         </div>
 
@@ -153,7 +157,11 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Rychlé přepínání:</strong>
-                    V hlavičce aplikace najdete tlačítko pro rychlé přepnutí mezi hlavními sekcemi jako jsou **Snipety**, **Poznámky** a **TODO** (viditelné, pokud jsou povoleny v Nastavení).
+                    V hlavičce aplikace najdete tlačítko pro rychlé přepnutí mezi hlavními sekcemi jako jsou **Snipety**, **Poznámky** a **TODO** (viditelné, pokud jsou povoleny v Nastavení). U sekce TODO můžete také vidět počet aktivních úkolů v barevném kolečku (badge).
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Nastavení viditelnosti:</strong>
+                    V **Nastavení** můžete kromě sekcí skrýt i samotný přepínač **Dark modu** nebo právě zmíněný **badge** u TODO úkolů, aby rozhraní zůstalo přesně takové, jaké ho chcete.
                 </li>
             </ul>
         </div>
@@ -180,6 +188,10 @@ console.log('Hello World');
                 <li class="mb-3">
                     <strong class="text-white d-block">Řazení podle priorit (Drag & Drop):</strong>
                     Pořadí úkolů můžete libovolně měnit. Stačí odemknout řazení přes tlačítko **Upravit pořadí**. Karty se jemně rozvibrují a vy je můžete myší přetahovat. Pořadí se ukládá automaticky.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Badge s počtem úkolů:</strong>
+                    V hlavní navigaci se u odkazu na TODO může zobrazovat počet aktivních (nearchivovaných) úkolů. Tuto funkci lze vypnout v **Nastavení**.
                 </li>
             </ul>
         </div>

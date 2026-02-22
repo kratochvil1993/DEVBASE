@@ -12,10 +12,10 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Konzistentní správa**: Sjednocené rozhraní pro správu všech sekcí s intuitivním filtrováním podle tagů a rychlým fulltextovým vyhledáváním.
 - **Rychlé vyhledávání**: Inteligentní vyhledávání v reálném čase napříč sekcemi, které prohledává názvy i obsah.
 - **Detailní náhled**: Snipety lze otevřít ve velkém modálním okně pro pohodlné čtení dlouhých bloků kódu.
-- **Tmavý / Světlý režim**: Možnost hladkého přepínání témat přímo v side-baru s automatickým ukládáním volby.
+- **Tmavý / Světlý režim**: Možnost hladkého přepínání témat přímo v side-baru s automatickým ukládáním volby. Tento přepínač lze v Nastavení také zcela skrýt.
 - **Kopírování v jednom kroku**: Tlačítka pro okamžité uložení bloku zdrojového kódu do schránky (clipboard).
 - **Integrovaný Markdown**: Snipety lze zapisovat formou Markdownu pro kombinaci více jazyků či tabulek.
-- **Flexibilní navigace**: Rychlé přepínání mezi snipety, poznámkami a úkoly přímo v hlavičce (dle aktuálního nastavení).
+- **Flexibilní navigace**: Rychlé přepínání mezi snipety, poznámkami a úkoly přímo v hlavičce (dle aktuálního nastavení). U sekce TODO se navíc může zobrazovat "badge" s počtem aktivních úkolů.
 - **Rychlé statistiky**: Přehledný panel v bočním menu (offcanvas), který okamžitě zobrazuje aktuální počty vašich snippetů, poznámek a **aktivních** úkolů v elegantních minikartách.
 - **Zabezpečení (App Lock)**: Možnost uzamknout celou aplikaci pod heslo. Funkci lze aktivovat v Nastavení po zadání a potvrzení hesla. Následně lze aplikaci kdykoliv "zacvaknout" pomocí ikony zámku v hlavičce. Systém využívá bezpečné hashování hesla.
 - **Záloha a Přenos dat (Export/Import)**: Kompletní správa vašich dat. Celou databázi (snippety, poznámky, úkoly, tagy i nastavení) lze jedním kliknutím exportovat do JSON souboru a následně jej importovat zpět – buď formou přidání k existujícím datům, nebo kompletním přepsáním.
