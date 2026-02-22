@@ -148,8 +148,8 @@ console.log('Hello World');
                     Tvorba a úprava poznámek probíhá v moderním WYSIWYG editoru, který umožňuje snadné formátování textu (nadpisy, stylování textu, seznamy) přímo v grafickém rozhraní.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Archivace:</strong>
-                    Méně aktuální nebo splněné poznámky můžete 1 kliknutím přesunout do <strong>Archivu poznámek</strong> (oranžová ikonka krabice) a udržet tak hlavní výpis přehledný. Z archivu je lze kdykoliv obnovit nebo trvale smazat.
+                    <strong class="text-white d-block">Archivace a vyhledávání:</strong>
+                    Méně aktuální nebo splněné poznámky můžete 1 kliknutím přesunout do <strong>Archivu poznámek</strong> (oranžová ikonka krabice) a udržet tak hlavní výpis přehledný. V archivu můžete poznámky **filtrovat podle štítků** nebo v nich **fulltextově vyhledávat**. Z archivu je lze kdykoliv obnovit nebo trvale smazat.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Vlastní řazení a připínání:</strong>
@@ -187,7 +187,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Odškrtnutí a Archivace:</strong>
-                    Kliknutím na prázdný čtvereček u úkolu se označí jako splněný a automaticky přesune do sekce <strong>Archiv TODO</strong>. Nepřekáží tak mezi aktivními úkoly, ale máte k němu stále přístup, můžete ho obnovit nebo trvale smazat.
+                    Kliknutím na prázdný čtvereček u úkolu se označí jako splněný a automaticky přesune do sekce <strong>Archiv TODO</strong>. V archivu můžete úkoly **filtrovat podle použitých štítků** (např. abyste viděli jen splněné úkoly z konkrétního projektu). Celý archiv lze také vymazat jedním kliknutím na tlačítko **Vysypat archiv**. Splněné úkoly lze z archivu kdykoliv obnovit zpět mezi aktivní.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Trvalé smazání:</strong>
