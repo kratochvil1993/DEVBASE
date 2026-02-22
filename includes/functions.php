@@ -460,4 +460,202 @@ function verifyAppPassword($password) {
     }
     return false;
 }
+
+function exportAllData() {
+    global $conn;
+    
+    $data = [
+        'version' => '1.0',
+        'export_date' => date('c'),
+        'settings' => [],
+        'languages' => [],
+        'tags' => [],
+        'snippets' => [],
+        'notes' => [],
+        'todos' => []
+    ];
+
+    // Settings
+    $res = $conn->query("SELECT * FROM settings");
+    while ($row = $res->fetch_assoc()) {
+        $data['settings'][$row['setting_key']] = $row['setting_value'];
+    }
+
+    // Languages
+    $res = $conn->query("SELECT * FROM languages");
+    while ($row = $res->fetch_assoc()) {
+        $data['languages'][] = $row;
+    }
+
+    // Tags
+    $res = $conn->query("SELECT * FROM tags");
+    while ($row = $res->fetch_assoc()) {
+        $data['tags'][] = $row;
+    }
+
+    // Snippets with tags
+    $res = $conn->query("SELECT * FROM snippets");
+    while ($row = $res->fetch_assoc()) {
+        $row['tags'] = [];
+        $tags_res = $conn->query("SELECT tag_id FROM snippet_tags WHERE snippet_id = " . $row['id']);
+        while ($t = $tags_res->fetch_assoc()) {
+            $row['tags'][] = $t['tag_id'];
+        }
+        $data['snippets'][] = $row;
+    }
+
+    // Notes with tags
+    $res = $conn->query("SELECT * FROM notes");
+    while ($row = $res->fetch_assoc()) {
+        $row['tags'] = [];
+        $tags_res = $conn->query("SELECT tag_id FROM note_tags WHERE note_id = " . $row['id']);
+        while ($t = $tags_res->fetch_assoc()) {
+            $row['tags'][] = $t['tag_id'];
+        }
+        $data['notes'][] = $row;
+    }
+
+    // Todos with tags
+    $res = $conn->query("SELECT * FROM todos");
+    while ($row = $res->fetch_assoc()) {
+        $row['tags'] = [];
+        $tags_res = $conn->query("SELECT tag_id FROM todo_tags WHERE todo_id = " . $row['id']);
+        while ($t = $tags_res->fetch_assoc()) {
+            $row['tags'][] = $t['tag_id'];
+        }
+        $data['todos'][] = $row;
+    }
+
+    return $data;
+}
+
+function importAllData($data, $mode = 'append') {
+    global $conn;
+
+    if ($mode === 'overwrite') {
+        $conn->query("DELETE FROM snippet_tags");
+        $conn->query("DELETE FROM note_tags");
+        $conn->query("DELETE FROM todo_tags");
+        $conn->query("DELETE FROM snippets");
+        $conn->query("DELETE FROM notes");
+        $conn->query("DELETE FROM todos");
+        $conn->query("DELETE FROM tags");
+        $conn->query("DELETE FROM languages");
+        // We don't delete all settings to avoid breaking security unless user wants that
+        // But we could overwrite them.
+    }
+
+    // Import Settings
+    if (!empty($data['settings'])) {
+        foreach ($data['settings'] as $key => $value) {
+            updateSetting($key, $value);
+        }
+    }
+
+    // Helper to map old IDs to new IDs
+    $langMap = [];
+    $tagMap = [];
+
+    // Import Languages
+    if (!empty($data['languages'])) {
+        foreach ($data['languages'] as $lang) {
+            $name = $conn->real_escape_string($lang['name']);
+            $prism = $conn->real_escape_string($lang['prism_class']);
+            
+            $check = $conn->query("SELECT id FROM languages WHERE name = '$name'");
+            if ($row = $check->fetch_assoc()) {
+                $langMap[$lang['id']] = $row['id'];
+            } else {
+                $conn->query("INSERT INTO languages (name, prism_class) VALUES ('$name', '$prism')");
+                $langMap[$lang['id']] = $conn->insert_id;
+            }
+        }
+    }
+
+    // Import Tags
+    if (!empty($data['tags'])) {
+        foreach ($data['tags'] as $tag) {
+            $name = $conn->real_escape_string($tag['name']);
+            $color = !empty($tag['color']) ? "'" . $conn->real_escape_string($tag['color']) . "'" : "NULL";
+            $type = $conn->real_escape_string($tag['type'] ?? 'snippet');
+            $sort = (int)($tag['sort_order'] ?? 0);
+
+            $check = $conn->query("SELECT id FROM tags WHERE name = '$name' AND type = '$type'");
+            if ($row = $check->fetch_assoc()) {
+                $tagMap[$tag['id']] = $row['id'];
+            } else {
+                $conn->query("INSERT INTO tags (name, color, type, sort_order) VALUES ('$name', $color, '$type', $sort)");
+                $tagMap[$tag['id']] = $conn->insert_id;
+            }
+        }
+    }
+
+    // Import Snippets
+    if (!empty($data['snippets'])) {
+        foreach ($data['snippets'] as $snip) {
+            $title = $conn->real_escape_string($snip['title']);
+            $desc = $conn->real_escape_string($snip['description']);
+            $code = $conn->real_escape_string($snip['code']);
+            $lang_id = isset($langMap[$snip['language_id']]) ? $langMap[$snip['language_id']] : 'NULL';
+            
+            $conn->query("INSERT INTO snippets (title, description, code, language_id) VALUES ('$title', '$desc', '$code', $lang_id)");
+            $new_id = $conn->insert_id;
+
+            if (!empty($snip['tags'])) {
+                foreach ($snip['tags'] as $old_tag_id) {
+                    if (isset($tagMap[$old_tag_id])) {
+                        $new_tag_id = $tagMap[$old_tag_id];
+                        $conn->query("INSERT INTO snippet_tags (snippet_id, tag_id) VALUES ($new_id, $new_tag_id)");
+                    }
+                }
+            }
+        }
+    }
+
+    // Import Notes
+    if (!empty($data['notes'])) {
+        foreach ($data['notes'] as $note) {
+            $title = $conn->real_escape_string($note['title']);
+            $content = $conn->real_escape_string($note['content']);
+            $sort = (int)($note['sort_order'] ?? 0);
+            $archived = (int)($note['is_archived'] ?? 0);
+            $lang_id = isset($langMap[$note['language_id']]) ? $langMap[$note['language_id']] : 'NULL';
+
+            $conn->query("INSERT INTO notes (title, content, sort_order, language_id, is_archived) VALUES ('$title', '$content', $sort, $lang_id, $archived)");
+            $new_id = $conn->insert_id;
+
+            if (!empty($note['tags'])) {
+                foreach ($note['tags'] as $old_tag_id) {
+                    if (isset($tagMap[$old_tag_id])) {
+                        $new_tag_id = $tagMap[$old_tag_id];
+                        $conn->query("INSERT INTO note_tags (note_id, tag_id) VALUES ($new_id, $new_tag_id)");
+                    }
+                }
+            }
+        }
+    }
+
+    // Import Todos
+    if (!empty($data['todos'])) {
+        foreach ($data['todos'] as $todo) {
+            $text = $conn->real_escape_string($todo['text']);
+            $archived = (int)($todo['is_archived'] ?? 0);
+            $sort = (int)($todo['sort_order'] ?? 0);
+
+            $conn->query("INSERT INTO todos (text, is_archived, sort_order) VALUES ('$text', $archived, $sort)");
+            $new_id = $conn->insert_id;
+
+            if (!empty($todo['tags'])) {
+                foreach ($todo['tags'] as $old_tag_id) {
+                    if (isset($tagMap[$old_tag_id])) {
+                        $new_tag_id = $tagMap[$old_tag_id];
+                        $conn->query("INSERT INTO todo_tags (todo_id, tag_id) VALUES ($new_id, $new_tag_id)");
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
 ?>

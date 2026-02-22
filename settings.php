@@ -42,6 +42,28 @@ if (isset($_POST['action'])) {
     } elseif ($_POST['action'] == 'reset_password') {
         updateSetting('app_password', '');
         updateSetting('security_enabled', '0');
+    } elseif ($_POST['action'] == 'export_data') {
+        $data = exportAllData();
+        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $filename = 'devbase_export_' . date('Y-m-d') . '.json';
+        
+        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Disposition: attachment; filename=' . $filename);
+        echo $json;
+        exit;
+    } elseif ($_POST['action'] == 'import_data') {
+        if (isset($_FILES['import_file']) && $_FILES['import_file']['error'] == 0) {
+            $json = file_get_contents($_FILES['import_file']['tmp_name']);
+            $data = json_decode($json, true);
+            $mode = $_POST['import_mode'] ?? 'append';
+            if ($data) {
+                importAllData($data, $mode);
+                header('Location: settings.php?import=success');
+                exit;
+            }
+        }
+        header('Location: settings.php?import=error');
+        exit;
     }
     header('Location: settings.php');
     exit;
@@ -391,6 +413,66 @@ include 'includes/header.php';
         </div>
     </div>
    
+
+    <!-- Backup and Restore -->
+    <div class="col-12 mb-4">
+        <div class="glass-card p-4">
+            <h4 class="text-white mb-4"><i class="bi bi-cloud-arrow-down me-2 text-primary"></i>Záloha a obnovení dat</h4>
+            
+            <?php if (isset($_GET['import'])): ?>
+                <?php if ($_GET['import'] == 'success'): ?>
+                    <div class="alert alert-success bg-success bg-opacity-10 border-success border-opacity-25 text-success mb-4">
+                        <i class="bi bi-check-circle-fill me-2"></i> Data byla úspěšně importována.
+                    </div>
+                <?php else: ?>
+                    <div class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger mb-4">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Při importu dat došlo k chybě. Zkontrolujte formát souboru.
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
+
+            <div class="row">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-white-50 small fw-bold mb-3 text-uppercase">Export dat</h5>
+                    <p class="text-white-50 small mb-4">Stáhněte si všechna svá data (snippety, poznámky, úkoly, štítky i nastavení) v jednom JSON souboru pro účely zálohy nebo přenosu.</p>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="export_data">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-download me-2"></i>Exportovat do JSON
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="col-md-6 border-start border-light border-opacity-10">
+                    <h5 class="text-white-50 small fw-bold mb-3 text-uppercase">Import dat</h5>
+                    <p class="text-white-50 small mb-4">Nahrajte data ze záložního JSON souboru. Vyberte, zda chcete data přidat k existujícím nebo vše přepsat.</p>
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="action" value="import_data">
+                        
+                        <div class="mb-3">
+                            <input type="file" name="import_file" id="importFile" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" accept=".json" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="import_mode" id="modeAppend" value="append" checked>
+                                <label class="form-check-label text-white-50 small" for="modeAppend">Přidat k existujícím</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="import_mode" id="modeOverwrite" value="overwrite">
+                                <label class="form-check-label text-white-50 small" for="modeOverwrite">Přepsat vše (smazat stávající)</label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-outline-primary px-4" onclick="return confirm('Jste si jisti? Import může změnit nebo přepsat vaše stávající data.')">
+                            <i class="bi bi-upload me-2"></i>Importovat data
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
 </div>
