@@ -92,6 +92,14 @@ console.log('Hello World');
                     Kliknutím na kartu snipetu (mimo tlačítka) otevřete **detailní náhled** v modálním okně, který je ideální pro čtení dlouhých kódů.
                 </li>
                 <li class="mb-3">
+                    <strong class="text-white d-block">Připínání (Pinning):</strong>
+                    Důležité snipety si můžete připnout ikonou špendlíku. Zůstanou pak v samostatné sekci **PŘIPNUTÉ** vždy na začátku seznamu, bez ohledu na ostatní filtry.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Vlastní řazení snipetů:</strong>
+                    Kliknutím na **Upravit pořadí** můžete snipety libovolně přetahovat. Řazení funguje nezávisle pro připnuté a pro ostatní snipety. Při aktivaci se karty rozvibrují pro jasnou vizuální odezvu.
+                </li>
+                <li class="mb-3">
                     <strong class="text-white d-block">Statistiky v menu:</strong>
                     V bočním panelu najdete bleskový přehled počtu snippetů, poznámek a **aktivních** úkolů. Grafika karet je nyní statická pro nerušené čtení.
                 </li>
@@ -144,8 +152,8 @@ console.log('Hello World');
                     Méně aktuální nebo splněné poznámky můžete 1 kliknutím přesunout do <strong>Archivu poznámek</strong> (oranžová ikonka krabice) a udržet tak hlavní výpis přehledný. Z archivu je lze kdykoliv obnovit nebo trvale smazat.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Vlastní řazení:</strong>
-                    V sekci Poznámky klikni na **Upravit pořadí**. Karty se jemně rozvibrují a ty je můžeš myší přetahovat. Pořadí se ukládá automaticky.
+                    <strong class="text-white d-block">Vlastní řazení a připínání:</strong>
+                    Poznámky lze připnout špendlíkem nahoru. Přes tlačítko **Upravit pořadí** pak můžete měnit jejich posloupnost (zvlášť v připnutých a zvlášť v ostatních). Karty se při tom jemně rozvibrují.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Zvýraznění kódu:</strong>
@@ -186,8 +194,8 @@ console.log('Hello World');
                     Aktivní nebo dříve archivovaný úkol lze okamžitě a nenávratně odstranit kliknutím na ikonu koše.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Řazení podle priorit (Drag & Drop):</strong>
-                    Pořadí úkolů můžete libovolně měnit. Stačí odemknout řazení přes tlačítko **Upravit pořadí**. Karty se jemně rozvibrují a vy je můžete myší přetahovat. Pořadí se ukládá automaticky.
+                    <strong class="text-white d-block">Připínání a řazení podle priorit:</strong>
+                    Důležité úkoly si připněte pomocí špendlíku. Pořadí úkolů můžete libovolně měnit přes tlačítko **Upravit pořadí**. Úkoly se v režimu úprav jemně rozvibrují a lze je přetahovat v rámci sekcí "Připnuté" a "Ostatní".
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Badge s počtem úkolů:</strong>

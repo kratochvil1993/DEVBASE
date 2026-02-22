@@ -8,7 +8,7 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Sekce Poznámky**: Samostatný prostor pro vaše nápady, úkoly nebo SQL s podporou zvýraznění syntaxe, vyhledávání, vlastního řazení a přiřazování štítků. Tvorba poznámek v plnohodnotném **WYSIWYG editoru (Quill.js)** pro jednoduší a moderní zápis textu.
 - **Sekce TODO (Úkoly)**: Nástroj pro správu priorit s podporou vlastních štítků, filtrování, odškrtnutí (okamžitá archivace), trvalého odstranění a řazení pomocí Drag & Drop. Panel pro přidávání úkolů je moderně integrován v designu vyhledávacího baru.
 - **Archivy**: Praktický jednoklikový odklízeč pro uložení splněných či neaktuálních poznámek a úkolů. Odškrtnuté úkoly i staré poznámky putují do svých vyhrazených archivů, odkud je můžete později snadno obnovit či trvale smazat.
-- **Vlastní řazení (Drag & Drop)**: Pořadí poznámek, úkolů, ale i samotných štítků v Nastavení, si můžete libovolně měnit jednoduchým přetažením myší. Režim úprav je vizuálně indikován jemným "vibrací" prvků pro lepší orientaci.
+- **Vlastní řazení (Drag & Drop) a Připínání**: Důležité položky si můžete připnout špendlíkem, čímž zůstanou vždy nahoře. Pořadí poznámek, úkolů i snipetů si pak můžete měnit jednoduchým přetažením myší v rámci sekcí (Připnuté / Ostatní). Režim úprav je vizuálně indikován jemným vibrováním prvků pro lepší orientaci.
 - **Konzistentní správa**: Sjednocené rozhraní pro správu všech sekcí s intuitivním filtrováním podle tagů a rychlým fulltextovým vyhledáváním.
 - **Rychlé vyhledávání**: Inteligentní vyhledávání v reálném čase napříč sekcemi, které prohledává názvy i obsah.
 - **Detailní náhled**: Snipety lze otevřít ve velkém modálním okně pro pohodlné čtení dlouhých bloků kódu.
