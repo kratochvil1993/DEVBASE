@@ -318,11 +318,14 @@ function initTodosTable() {
     $conn->query("CREATE TABLE IF NOT EXISTS todos (
         id INT AUTO_INCREMENT PRIMARY KEY,
         text VARCHAR(500) NOT NULL,
+        deadline DATE DEFAULT NULL,
         is_archived TINYINT(1) DEFAULT 0,
         is_pinned TINYINT(1) DEFAULT 0,
         sort_order INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
+    @$conn->query("ALTER TABLE todos ADD COLUMN deadline DATE DEFAULT NULL AFTER text");
+
     $conn->query("CREATE TABLE IF NOT EXISTS todo_tags (
         todo_id INT NOT NULL,
         tag_id INT NOT NULL,
@@ -350,15 +353,16 @@ function saveTodo($text, $tags = [], $id = null) {
     global $conn;
     initTodosTable();
     $text = $conn->real_escape_string($text);
+    $deadline = !empty($_POST['deadline']) ? "'" . $conn->real_escape_string($_POST['deadline']) . "'" : "NULL";
     
     if ($id) {
         $id = (int)$id;
-        $sql = "UPDATE todos SET text = '$text' WHERE id = $id";
+        $sql = "UPDATE todos SET text = '$text', deadline = $deadline WHERE id = $id";
     } else {
         $result = $conn->query("SELECT MIN(sort_order) as min_sort FROM todos");
         $row = $result ? $result->fetch_assoc() : null;
         $next_sort = $row['min_sort'] !== null ? (int)$row['min_sort'] - 1 : 0;
-        $sql = "INSERT INTO todos (text, sort_order) VALUES ('$text', $next_sort)";
+        $sql = "INSERT INTO todos (text, deadline, sort_order) VALUES ('$text', $deadline, $next_sort)";
     }
     
     if ($conn->query($sql)) {

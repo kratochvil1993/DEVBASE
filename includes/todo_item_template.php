@@ -1,6 +1,25 @@
-<div class="card glass-card todo-item <?php echo $todo['is_pinned'] ? 'pinned' : ''; ?>" 
+<?php
+$deadlineStatus = '';
+$deadlineDateFormatted = '';
+if (!empty($todo['deadline'])) {
+    $today = new DateTime('today');
+    $deadline = new DateTime($todo['deadline']);
+    $deadlineDateFormatted = $deadline->format('j. n. Y');
+    $diff = $today->diff($deadline);
+    $days = (int)$diff->format('%r%a');
+    
+    if ($days < 0) {
+        $deadlineStatus = 'deadline-passed';
+    } elseif ($days <= 1) {
+        $deadlineStatus = 'deadline-approaching';
+    }
+}
+?>
+<div class="card glass-card todo-item <?php echo $todo['is_pinned'] ? 'pinned' : ''; ?> <?php echo $deadlineStatus; ?>" 
      data-id="<?php echo $todo['id']; ?>"
+     data-deadline="<?php echo htmlspecialchars($todo['deadline'] ?? ''); ?>"
      data-tags="<?php echo htmlspecialchars(implode(',', array_column($todo['tags'] ?? [], 'name'))); ?>">
+
     <div class="card-body p-3">
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center overflow-hidden flex-grow-1">
@@ -20,6 +39,17 @@
                         </div>
                     <?php endif; ?>
                     <span class="fs-5 text-truncate text-white"><?php echo htmlspecialchars($todo['text']); ?></span>
+                    <?php if ($deadlineDateFormatted): ?>
+                        <small class="text-white-50 mt-1">
+                            <i class="bi bi-calendar-event me-1"></i>
+                            Termín: <?php echo $deadlineDateFormatted; ?>
+                            <?php if ($deadlineStatus == 'deadline-passed'): ?>
+                                <span class="badge bg-danger ms-1" style="font-size: 0.7em;">Po termínu</span>
+                            <?php elseif ($deadlineStatus == 'deadline-approaching'): ?>
+                                <span class="badge bg-warning text-dark ms-1" style="font-size: 0.7em;">Blíží se</span>
+                            <?php endif; ?>
+                        </small>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="d-flex gap-2 action-btns flex-shrink-0 ms-3">

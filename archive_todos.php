@@ -104,8 +104,15 @@ include 'includes/header.php';
                                             </div>
                                         <?php endif; ?>
                                         <span class="fs-5 text-truncate"><?php echo htmlspecialchars($todo['text']); ?></span>
+                                        <?php if (!empty($todo['deadline'])): ?>
+                                            <small class="text-white-50 mt-1">
+                                                <i class="bi bi-calendar-event me-1"></i>
+                                                Termín: <?php echo date('j. n. Y', strtotime($todo['deadline'])); ?>
+                                            </small>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
+
                                 <div class="d-flex gap-2 action-btns flex-shrink-0 ms-3">
                                     <form method="POST" class="mb-0" onsubmit="return confirm('Opravdu chcete tento úkol smazat?');">
                                         <input type="hidden" name="action" value="delete_todo">

@@ -466,6 +466,24 @@ pre[class*="language-"] {
   background: rgba(255, 193, 7, 0.1);
 }
 
+.todo-item.deadline-approaching {
+  border-left: 3px solid #fd7e14;
+  background: rgba(253, 126, 20, 0.05);
+}
+
+.todo-item.deadline-approaching:hover {
+  background: rgba(253, 126, 20, 0.1);
+}
+
+.todo-item.deadline-passed {
+  border-left: 3px solid #dc3545;
+  background: rgba(220, 53, 69, 0.05);
+}
+
+.todo-item.deadline-passed:hover {
+  background: rgba(220, 53, 69, 0.1);
+}
+
 h6 i.bi-pin-angle-fill {
   color: #ffc107;
 }

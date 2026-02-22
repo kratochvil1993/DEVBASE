@@ -56,11 +56,13 @@ CREATE TABLE IF NOT EXISTS note_tags (
 CREATE TABLE IF NOT EXISTS todos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     text VARCHAR(500) NOT NULL,
+    deadline DATE DEFAULT NULL,
     is_archived TINYINT(1) DEFAULT 0,
     is_pinned TINYINT(1) DEFAULT 0,
     sort_order INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 CREATE TABLE IF NOT EXISTS todo_tags (
     todo_id INT,

@@ -66,7 +66,9 @@ include 'includes/header.php';
                             <option value="<?php echo $tag['id']; ?>" style="background: #2b3035;"><?php echo htmlspecialchars($tag['name']); ?></option>
                         <?php endforeach; ?>
                     </select>
+                    <input type="date" name="deadline" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Termín splnění" style="max-width: 160px; cursor: pointer;">
                 </div>
+
             </form>
 
             <div class="d-flex flex-wrap gap-2">
@@ -151,6 +153,12 @@ include 'includes/header.php';
                         <label class="form-label text-white-50 small">Text úkolu</label>
                         <input type="text" name="text" id="editTodoText" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-white-50 small">Termín splnění (Deadline)</label>
+                        <input type="date" name="deadline" id="editTodoDeadline" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none">
+                    </div>
+
 
                     <div class="mb-3">
                         <label class="form-label text-white-50 small">Štítky</label>
@@ -267,6 +275,8 @@ function saveTodosOrder() {
 function openEditTodoModal(todo) {
     document.getElementById('editTodoId').value = todo.id;
     document.getElementById('editTodoText').value = todo.text;
+    document.getElementById('editTodoDeadline').value = todo.deadline || '';
+
     
     // Check checkboxes
     const checkboxes = document.querySelectorAll('.todo-tag-checkbox');

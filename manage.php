@@ -33,7 +33,7 @@ include 'includes/header.php';
         <div class="glass-card p-2 mb-3">
             <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
                 <!-- Search Input -->
-                <div class="input-group flex-grow-1" style="max-width: 400px;">
+                <div class="input-group flex-grow-1" style="max-width: 161px;">
                     <span class="input-group-text bg-transparent border-0 text-white">
                         <i class="bi bi-search"></i>
                     </span>
