@@ -7,8 +7,8 @@ function getAllSnippets($search = '') {
             FROM snippets s 
             LEFT JOIN languages l ON s.language_id = l.id";
     
-    @$conn->query("ALTER TABLE snippets ADD COLUMN is_pinned TINYINT(1) DEFAULT 0"); // add if missing
-    @$conn->query("ALTER TABLE snippets ADD COLUMN sort_order INT DEFAULT 0"); // add if missing
+    // Column is_pinned and sort_order are now in schema.sql
+
     
     if (!empty($search)) {
         $search = $conn->real_escape_string($search);
@@ -75,7 +75,8 @@ function getTodoTags($todo_id) {
 
 function getAllTags($type = 'snippet') {
     global $conn;
-    @$conn->query("ALTER TABLE tags ADD COLUMN sort_order INT DEFAULT 0"); // add if missing
+    // Column sort_order and type are now in schema.sql
+
     $type = $conn->real_escape_string($type);
     $sql = "SELECT * FROM tags WHERE type = '$type' ORDER BY sort_order ASC, name ASC";
     $result = $conn->query($sql);
@@ -193,8 +194,8 @@ function updateSnippetOrder($id, $order) {
 
 function getAllNotes($sort = 'custom', $archive_status = 0) {
     global $conn;
-    @$conn->query("ALTER TABLE notes ADD COLUMN is_archived TINYINT(1) DEFAULT 0"); // add if missing
-    @$conn->query("ALTER TABLE notes ADD COLUMN is_pinned TINYINT(1) DEFAULT 0"); // add if missing
+    // Columns is_archived and is_pinned are now in schema.sql
+
     $orderBy = "n.is_pinned DESC, n.sort_order ASC, n.created_at DESC";
     
     switch ($sort) {
@@ -313,30 +314,13 @@ function updateSetting($key, $value) {
     return $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('$key', '$value') ON DUPLICATE KEY UPDATE setting_value = '$value'");
 }
 
-function initTodosTable() {
-    global $conn;
-    $conn->query("CREATE TABLE IF NOT EXISTS todos (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        text VARCHAR(500) NOT NULL,
-        deadline DATE DEFAULT NULL,
-        is_archived TINYINT(1) DEFAULT 0,
-        is_pinned TINYINT(1) DEFAULT 0,
-        sort_order INT DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )");
-    @$conn->query("ALTER TABLE todos ADD COLUMN deadline DATE DEFAULT NULL AFTER text");
+// Table structure is now handled by schema.sql
 
-    $conn->query("CREATE TABLE IF NOT EXISTS todo_tags (
-        todo_id INT NOT NULL,
-        tag_id INT NOT NULL,
-        PRIMARY KEY (todo_id, tag_id)
-    )");
-}
 
 function getAllTodos($archive_status = 0) {
     global $conn;
-    initTodosTable();
     $archive_status = (int)$archive_status;
+
     $sql = "SELECT * FROM todos WHERE is_archived = $archive_status ORDER BY is_pinned DESC, sort_order ASC, created_at DESC";
     $result = $conn->query($sql);
     $todos = [];
@@ -351,8 +335,8 @@ function getAllTodos($archive_status = 0) {
 
 function saveTodo($text, $tags = [], $id = null) {
     global $conn;
-    initTodosTable();
     $text = $conn->real_escape_string($text);
+
     $deadline = !empty($_POST['deadline']) ? "'" . $conn->real_escape_string($_POST['deadline']) . "'" : "NULL";
     
     if ($id) {
