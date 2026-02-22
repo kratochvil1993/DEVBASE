@@ -27,6 +27,9 @@ if (isset($_POST['action'])) {
     } elseif ($_POST['action'] == 'toggle_todo_badge') {
         $enabled = isset($_POST['todo_badge_enabled']) ? '1' : '0';
         updateSetting('todo_badge_enabled', $enabled);
+    } elseif ($_POST['action'] == 'toggle_theme_toggle') {
+        $enabled = isset($_POST['theme_toggle_enabled']) ? '1' : '0';
+        updateSetting('theme_toggle_enabled', $enabled);
     } elseif ($_POST['action'] == 'save_security') {
         $enabled = isset($_POST['security_enabled']) ? '1' : '0';
         $currentPassword = getSetting('app_password');
@@ -135,7 +138,7 @@ include 'includes/header.php';
                 </div>
             </form>
 
-            <form method="POST" id="settingsFormTodoBadge">
+            <form method="POST" id="settingsFormTodoBadge" class="mb-3">
                 <input type="hidden" name="action" value="toggle_todo_badge">
                 <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
                     <input class="form-check-input fs-4 ms-0" type="checkbox" name="todo_badge_enabled" id="todoBadgeEnabledToggle" 
@@ -144,6 +147,19 @@ include 'includes/header.php';
                     <label class="form-check-label text-white" for="todoBadgeEnabledToggle">
                         <span class="d-block fw-bold">Zobrazovat badge u TODO</span>
                         <small class="text-white-50">Zobrazit počet aktivních úkolů v hlavní navigaci.</small>
+                    </label>
+                </div>
+            </form>
+
+            <form method="POST" id="settingsFormThemeToggle">
+                <input type="hidden" name="action" value="toggle_theme_toggle">
+                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
+                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="theme_toggle_enabled" id="themeToggleEnabledToggle" 
+                           <?php echo getSetting('theme_toggle_enabled', '1') == '1' ? 'checked' : ''; ?>
+                           onchange="this.form.submit()">
+                    <label class="form-check-label text-white" for="themeToggleEnabledToggle">
+                        <span class="d-block fw-bold">Zobrazovat přepínač Dark modu</span>
+                        <small class="text-white-50">Zobrazit nebo skrýt tlačítko pro změnu vzhledu v navigaci.</small>
                     </label>
                 </div>
             </form>

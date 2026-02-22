@@ -96,10 +96,12 @@ $stats = getGlobalStats();
         </div>
         
         <div class="ms-auto d-flex align-items-center gap-3">
+        <?php if (getSetting('theme_toggle_enabled', '1') == '1'): ?>
         <div class="form-check form-switch mb-0">
                 <input class="form-check-input" type="checkbox" id="themeToggle">
                 <label class="form-check-label text-white small" for="themeToggle">Dark</label>
-            </div>    
+        </div>
+        <?php endif; ?>
         <?php if (getSetting('security_enabled', '0') == '1'): ?>
                 <a href="?lock=1" class="btn btn-sm btn-link text-white-50 p-0" title="Lock App">
                     <i class="bi bi-lock-fill fs-5"></i>
