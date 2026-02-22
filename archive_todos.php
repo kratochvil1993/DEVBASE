@@ -94,9 +94,8 @@ include 'includes/header.php';
                                         <input class="form-check-input m-0 fs-5 flex-shrink-0" type="checkbox" onclick="document.getElementById('form_unarchive_<?php echo $todo['id']; ?>').submit()" style="cursor: pointer;" checked>
                                     </form>
                                     <div class="d-flex flex-column overflow-hidden flex-grow-1">
-                                        <span class="fs-5 text-truncate"><?php echo htmlspecialchars($todo['text']); ?></span>
                                         <?php if (!empty($todo['tags'])): ?>
-                                            <div class="d-flex flex-wrap gap-1 mt-1">
+                                            <div class="d-flex flex-wrap gap-1 mb-1">
                                                 <?php foreach ($todo['tags'] as $tag): ?>
                                                     <span class="badge opacity-75" style="background-color: <?php echo htmlspecialchars($tag['color'] ?? '#6c757d'); ?>; color: #fff; font-size: 0.7em;">
                                                         <?php echo htmlspecialchars($tag['name']); ?>
@@ -104,6 +103,7 @@ include 'includes/header.php';
                                                 <?php endforeach; ?>
                                             </div>
                                         <?php endif; ?>
+                                        <span class="fs-5 text-truncate"><?php echo htmlspecialchars($todo['text']); ?></span>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 action-btns flex-shrink-0 ms-3">
