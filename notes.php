@@ -182,7 +182,12 @@ include 'includes/header.php';
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     <small id="viewNoteDate" class="text-white-25 m-0"></small>
                 </div>
-                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zavřít</button>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-add-snipet px-3" id="editNoteFromViewBtn">
+                        <i class="bi bi-pencil me-1"></i> Upravit
+                    </button>
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zavřít</button>
+                </div>
             </div>
         </div>
     </div>
@@ -396,6 +401,17 @@ function openViewNoteModal(note) {
     if (typeof Prism !== 'undefined') {
         const codeBlocks = contentEl.querySelectorAll('pre');
         codeBlocks.forEach(block => Prism.highlightElement(block));
+    }
+
+    // Edit button integration
+    const editBtn = document.getElementById('editNoteFromViewBtn');
+    if (editBtn) {
+        editBtn.onclick = () => {
+            const viewModalEl = document.getElementById('viewNoteModal');
+            const viewModal = bootstrap.Modal.getInstance(viewModalEl);
+            if (viewModal) viewModal.hide();
+            openEditNoteModal(note);
+        };
     }
     
     var myModal = new bootstrap.Modal(document.getElementById('viewNoteModal'));

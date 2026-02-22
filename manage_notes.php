@@ -249,9 +249,21 @@ function openViewNoteManageModal(note) {
         });
     }
 
+    // Highlight
     if (typeof Prism !== 'undefined') {
         const codeBlocks = contentEl.querySelectorAll('pre');
         codeBlocks.forEach(block => Prism.highlightElement(block));
+    }
+
+    // Edit button integration
+    const editBtn = document.getElementById('editNoteFromViewBtn');
+    if (editBtn) {
+        editBtn.onclick = () => {
+            const viewModalEl = document.getElementById('viewNoteModal');
+            const viewModal = bootstrap.Modal.getInstance(viewModalEl);
+            if (viewModal) viewModal.hide();
+            openEditNoteManageModal(note);
+        };
     }
     
     var myModal = new bootstrap.Modal(document.getElementById('viewNoteModal'));
@@ -339,7 +351,12 @@ function copyNoteContent(btn) {
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
                 <div id="viewNoteTags" class="snippet-tags m-0"></div>
-                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zavřít</button>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-add-snipet px-3" id="editNoteFromViewBtn">
+                        <i class="bi bi-pencil me-1"></i> Upravit
+                    </button>
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zavřít</button>
+                </div>
             </div>
         </div>
     </div>
