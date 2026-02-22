@@ -471,6 +471,8 @@ let currentNoteTag = 'all';
 const filterNotes = () => {
     const notes = document.querySelectorAll('.note-item');
     let delay = 0;
+    let pinnedVisible = 0;
+    let othersVisible = 0;
     
     notes.forEach(note => {
         const title = note.querySelector('.card-title').textContent.toLowerCase();
