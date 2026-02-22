@@ -19,12 +19,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         archiveTodo($_POST['todo_id'], 1);
     } elseif ($_POST['action'] == 'delete_todo') {
         deleteTodo($_POST['todo_id']);
+    } elseif ($_POST['action'] == 'toggle_pin') {
+        toggleTodoPin($_POST['todo_id']);
     }
     header('Location: todo.php');
     exit;
 }
 
 $todos = getAllTodos(0); // 0 = active
+$pinnedTodos = array_filter($todos, function($t) { return $t['is_pinned'] == 1; });
+$otherTodos = array_filter($todos, function($t) { return $t['is_pinned'] == 0; });
 $allTags = getAllTags('todo');
 
 // Identify used tags for filtering
@@ -95,7 +99,7 @@ include 'includes/header.php';
             <br>
         <?php endif; ?>
 
-        <div class="d-flex flex-column gap-3" id="todosList">
+        <div class="d-flex flex-column gap-3">
             <?php if (empty($todos)): ?>
                 <div class="text-center text-white-50 py-5 glass-card mt-3">
                     <i class="bi bi-check2-circle display-1 mb-3 d-block"></i>
@@ -103,47 +107,25 @@ include 'includes/header.php';
                     <p>Máte hotovo. Přidejte si další úkol výše.</p>
                 </div>
             <?php else: ?>
-                <?php foreach ($todos as $todo): ?>
-                    <div class="card glass-card todo-item" 
-                         data-id="<?php echo $todo['id']; ?>"
-                         data-tags="<?php echo htmlspecialchars(implode(',', array_column($todo['tags'], 'name'))); ?>">
-                        <div class="card-body p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center overflow-hidden flex-grow-1">
-                                    <form method="POST" class="me-3 mb-0 d-flex align-items-center" id="form_archive_<?php echo $todo['id']; ?>">
-                                        <input type="hidden" name="action" value="archive_todo">
-                                        <input type="hidden" name="todo_id" value="<?php echo $todo['id']; ?>">
-                                        <input class="form-check-input m-0 fs-5 flex-shrink-0" type="checkbox" onclick="document.getElementById('form_archive_<?php echo $todo['id']; ?>').submit()" style="cursor: pointer;">
-                                    </form>
-                                    <div class="d-flex flex-column overflow-hidden flex-grow-1">
-                                        <?php if (!empty($todo['tags'])): ?>
-                                            <div class="d-flex flex-wrap gap-1 mb-1">
-                                                <?php foreach ($todo['tags'] as $tag): ?>
-                                                    <span class="badge" style="background-color: <?php echo htmlspecialchars($tag['color'] ?? '#6c757d'); ?>; color: #fff; font-size: 0.7em;">
-                                                        <?php echo htmlspecialchars($tag['name']); ?>
-                                                    </span>
-                                                    <?php endforeach; ?>
-                                                </div>
-                                                <?php endif; ?>
-                                            <span class="fs-5 text-truncate text-white"><?php echo htmlspecialchars($todo['text']); ?></span>
-                                    </div>
-                                </div>
-                                <div class="d-flex gap-2 action-btns flex-shrink-0 ms-3">
-                                    <button type="button" class="btn btn-sm btn-link text-white-50 p-0" onclick="openEditTodoModal(<?php echo htmlspecialchars(json_encode($todo), ENT_QUOTES, 'UTF-8'); ?>)">
-                                        <i class="bi bi-pencil fs-5"></i>
-                                    </button>
-                                    <form method="POST" class="mb-0" onsubmit="return confirm('Opravdu chcete tento úkol smazat?');">
-                                        <input type="hidden" name="action" value="delete_todo">
-                                        <input type="hidden" name="todo_id" value="<?php echo $todo['id']; ?>">
-                                        <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Smazat navždy">
-                                            <i class="bi bi-trash fs-5"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Pinned Todos -->
+                <div id="pinnedTodosContainer" class="<?php echo empty($pinnedTodos) ? 'd-none' : ''; ?> mb-4">
+                    <h6 class="text-white-50 mb-3 px-1"><i class="bi bi-pin-angle-fill me-2"></i> PŘIPNUTÉ</h6>
+                    <div class="d-flex flex-column gap-3" id="pinnedTodosList">
+                        <?php foreach ($pinnedTodos as $todo): ?>
+                            <?php include 'includes/todo_item_template.php'; ?>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
+                </div>
+
+                <!-- Other Todos -->
+                <div id="othersTodosContainer">
+                    <h6 class="text-white-50 mb-3 px-1 <?php echo empty($pinnedTodos) ? 'd-none' : ''; ?>" id="othersHeader">OSTATNÍ</h6>
+                    <div class="d-flex flex-column gap-3" id="othersTodosList">
+                        <?php foreach ($otherTodos as $todo): ?>
+                            <?php include 'includes/todo_item_template.php'; ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
             <?php endif; ?>
         </div>
         <div class="text-end mt-3">
@@ -194,53 +176,74 @@ include 'includes/header.php';
 <!-- SortableJS -->
 <script src="assets/vendor/sortablejs/Sortable.min.js"></script>
 <script>
-let sortable = null;
+let sortablePinned = null;
+let sortableOthers = null;
 let isSortingMode = false;
 
 function toggleSortingMode() {
     isSortingMode = !isSortingMode;
-    const list = document.getElementById('todosList');
+    const pinnedList = document.getElementById('pinnedTodosList');
+    const othersList = document.getElementById('othersTodosList');
     const editBtn = document.getElementById('editOrderBtn');
     const saveBtn = document.getElementById('saveOrderBtn');
     const actionBtns = document.querySelectorAll('.action-btns');
     const checkboxes = document.querySelectorAll('.form-check-input');
 
     if (isSortingMode) {
-        list.classList.add('sorting-mode');
+        document.querySelectorAll('.d-flex.flex-column.gap-3').forEach(list => list.classList.add('sorting-mode'));
         editBtn.classList.add('d-none');
         saveBtn.classList.remove('d-none');
         actionBtns.forEach(btn => btn.classList.add('d-none'));
         checkboxes.forEach(cb => cb.disabled = true);
 
-        sortable = new Sortable(list, {
+        const sortableConfig = {
             animation: 150,
             ghostClass: 'glass-card-moving',
             onEnd: function() {
                 saveTodosOrder();
             }
-        });
+        };
+
+        if (pinnedList) sortablePinned = new Sortable(pinnedList, sortableConfig);
+        if (othersList) sortableOthers = new Sortable(othersList, sortableConfig);
+        
     } else {
-        list.classList.remove('sorting-mode');
+        document.querySelectorAll('.d-flex.flex-column.gap-3').forEach(list => list.classList.remove('sorting-mode'));
         editBtn.classList.remove('d-none');
         saveBtn.classList.add('d-none');
         actionBtns.forEach(btn => btn.classList.remove('d-none'));
         checkboxes.forEach(cb => cb.disabled = false);
 
-        if (sortable) {
-            sortable.destroy();
-            sortable = null;
+        if (sortablePinned) {
+            sortablePinned.destroy();
+            sortablePinned = null;
+        }
+        if (sortableOthers) {
+            sortableOthers.destroy();
+            sortableOthers = null;
         }
     }
 }
 
 function saveTodosOrder() {
-    const list = document.getElementById('todosList');
-    const items = list.querySelectorAll('.todo-item');
-    const order = [];
-    items.forEach((item, index) => {
-        order.push({
+    const orderItems = [];
+    let currentIndex = 0;
+
+    // Process pinned first
+    const pinnedItems = document.querySelectorAll('#pinnedTodosList .todo-item');
+    pinnedItems.forEach((item) => {
+        orderItems.push({
             id: item.dataset.id,
-            order: index
+            order: currentIndex++
+        });
+    });
+
+    // Then others
+    const otherItems = document.querySelectorAll('#othersTodosList .todo-item');
+    otherItems.forEach((item) => {
+        orderItems.push({
+            id: item.dataset.id,
+            order: currentIndex++
         });
     });
     
@@ -249,7 +252,7 @@ function saveTodosOrder() {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ order: order }),
+        body: JSON.stringify({ order: orderItems }),
     })
     .then(response => response.json())
     .then(data => {
@@ -284,6 +287,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterTodos = () => {
         const items = document.querySelectorAll('.todo-item');
         let delay = 0;
+        let pinnedVisible = 0;
+        let othersVisible = 0;
         
         items.forEach(item => {
             const tagsAttr = item.getAttribute('data-tags');
@@ -296,11 +301,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.offsetHeight; /* trigger reflow */
                 item.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
                 delay += 40;
+                if (item.classList.contains('pinned')) pinnedVisible++;
+                else othersVisible++;
             } else {
                 item.style.display = 'none';
                 item.style.animation = 'none';
             }
         });
+
+        // Toggle headers
+        const pinnedContainer = document.getElementById('pinnedTodosContainer');
+        const othersHeader = document.getElementById('othersHeader');
+        
+        if (pinnedContainer) {
+            pinnedContainer.classList.toggle('d-none', pinnedVisible === 0);
+        }
+        if (othersHeader) {
+            othersHeader.classList.toggle('d-none', pinnedVisible === 0 || othersVisible === 0);
+        }
     };
 
     tagButtons.forEach(btn => {

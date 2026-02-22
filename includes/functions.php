@@ -290,6 +290,7 @@ function initTodosTable() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         text VARCHAR(500) NOT NULL,
         is_archived TINYINT(1) DEFAULT 0,
+        is_pinned TINYINT(1) DEFAULT 0,
         sort_order INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
@@ -304,7 +305,7 @@ function getAllTodos($archive_status = 0) {
     global $conn;
     initTodosTable();
     $archive_status = (int)$archive_status;
-    $sql = "SELECT * FROM todos WHERE is_archived = $archive_status ORDER BY sort_order ASC, created_at DESC";
+    $sql = "SELECT * FROM todos WHERE is_archived = $archive_status ORDER BY is_pinned DESC, sort_order ASC, created_at DESC";
     $result = $conn->query($sql);
     $todos = [];
     if($result) {
@@ -351,6 +352,13 @@ function archiveTodo($id, $status = 1) {
     $id = (int)$id;
     $status = (int)$status;
     $sql = "UPDATE todos SET is_archived = $status WHERE id = $id";
+    return $conn->query($sql);
+}
+
+function toggleTodoPin($id) {
+    global $conn;
+    $id = (int)$id;
+    $sql = "UPDATE todos SET is_pinned = 1 - is_pinned WHERE id = $id";
     return $conn->query($sql);
 }
 

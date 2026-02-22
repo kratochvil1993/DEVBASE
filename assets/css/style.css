@@ -452,6 +452,28 @@ pre[class*="language-"] {
   border-bottom-left-radius: 12px;
 }
 
+/* Todo Pinning */
+.todo-item.pinned {
+  border-left: 3px solid #ffc107;
+  background: rgba(255, 193, 7, 0.05);
+}
+
+.todo-item.pinned:hover {
+  background: rgba(255, 193, 7, 0.1);
+}
+
+h6 i.bi-pin-angle-fill {
+  color: #ffc107;
+}
+
+#pinnedTodosList.sorting-mode,
+#othersTodosList.sorting-mode {
+  min-height: 50px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px;
+}
+
 .manage-notes-table .sorting-mode td:last-child {
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   border-top-right-radius: 12px;
