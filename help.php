@@ -205,6 +205,27 @@ console.log('Hello World');
                 </li>
             </ul>
         </div>
+        <div class="glass-card p-4 mt-4">
+            <h4 class="text-white mb-4"><i class="bi bi-cloud-arrow-down me-2"></i> Záloha a obnovení dat</h4>
+            <ul class="text-white-50 small list-unstyled">
+                <li class="mb-3">
+                    <strong class="text-white d-block">Export do JSON:</strong>
+                    V **Nastavení** můžete vygenerovat kompletní zálohu svých dat (snippety, poznámky, úkoly, tagy a nastavení) do jediného souboru JSON. Tento soubor slouží jako bezpečná offline záloha.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Režimy importu:</strong>
+                    Při nahrávání zálohy máte dvě možnosti:
+                    <ul class="mt-2">
+                        <li><strong>Přidat k existujícím:</strong> Ponechá vaše současná data a pouze k nim přidá obsah ze souboru.</li>
+                        <li><strong>Přepsat vše:</strong> Kompletně smaže stávající databázi a nahradí ji obsahem ze zálohy (včetně nastavení a hesel).</li>
+                    </ul>
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Bezpečnost při importu:</strong>
+                    Při režimu "Přepsat vše" dojde i k přepsání vašeho bezpečnostního hesla tím, které bylo v záloze. Ujistěte se, že toto heslo znáte.
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 </div>
