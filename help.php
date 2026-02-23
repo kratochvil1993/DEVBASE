@@ -206,7 +206,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Přidávání úkolů:</strong>
-                    V horní části najdete panel, který je vizuálně sjednocen s vyhledávacím barem. Jednoduše napište co potřebujete udělat a stiskněte Enter nebo tlačítko pro přidání.
+                    V horní části najdete panel, který je vizuálně sjednocen s vyhledávacím barem. Jednoduše napište co potřebujete udělat a stiskněte Enter nebo tlačítko pro přidání. Pro maximální efektivitu se při vytváření úkolu automaticky předvolí první štítek z vašeho seznamu (pokud existuje).
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Štítkování úkolů:</strong>
