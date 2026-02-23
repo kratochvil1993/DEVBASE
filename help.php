@@ -186,6 +186,10 @@ console.log('Hello World');
             <p class="text-white small mb-3">Tato sekce slouží jako vaše "pískoviště" pro libovolný kód, konfigurační řetězce nebo technické poznámky, které chcete mít neustále po ruce.</p>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
+                    <strong class="text-white d-block">Více draftů (Taby):</strong>
+                    Nově můžete mít v sekci Scratchpad otevřeno **mnoho různých draftů** současně. Mezi nimi přepínáte pomocí tabů nad editorem. Každý draft si můžete **přejmenovat** jednoduše kliknutím na jeho název v horní části.
+                </li>
+                <li class="mb-3">
                     <strong class="text-white d-block">Profesionální funkce:</strong>
                     Editor podporuje automatické doplňování závorek a uvozovek, zavírání HTML tagů a zvýraznění párových značek. Obsahuje také funkci **Folding** (skládání kódu) pomocí šipek u čísel řádků. Celý obsah editoru můžete také jedním kliknutím uložit do schránky pomocí tlačítka **copy**.
                 </li>
