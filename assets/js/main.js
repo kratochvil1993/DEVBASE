@@ -504,4 +504,69 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
+
+  // Help page Submenu Scroll-Spy Logic
+  const helpSubmenu = document.getElementById("helpSubmenu");
+  const helpSections = document.querySelectorAll(".help-section");
+  const currentSectionLabel = document.getElementById("currentSectionLabel");
+
+  if (helpSubmenu && helpSections.length > 0) {
+    const observerOptions = {
+      root: null,
+      rootMargin: "-100px 0px -70% 0px", // Focus on the top part of the viewport
+      threshold: 0,
+    };
+
+    const updateActiveLink = (id) => {
+      const links = helpSubmenu.querySelectorAll(".submenu-link");
+      links.forEach((link) => {
+        const isActive = link.getAttribute("data-section") === id;
+        link.classList.toggle("active", isActive);
+
+        if (isActive && currentSectionLabel) {
+          currentSectionLabel.innerHTML = `<i class="bi bi-list me-2"></i> Sekce: ${link.textContent}`;
+
+          // On mobile, if user scrolls, we might want to auto-collapse the menu if it was open
+          // But usually, only if they clicked. Here we just update the text.
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          updateActiveLink(entry.target.id);
+        }
+      });
+    }, observerOptions);
+
+    helpSections.forEach((section) => observer.observe(section));
+
+    // Smooth scroll for submenu links (optional, scroll-behavior: smooth in CSS is better but this handles mobile collapse)
+    helpSubmenu.querySelectorAll(".submenu-link").forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute("href");
+        const targetElement = document.querySelector(targetId);
+
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 90,
+            behavior: "smooth",
+          });
+
+          // Collapse menu on mobile after click
+          const collapseEl = document.getElementById("helpSubmenuCollapse");
+          if (
+            collapseEl &&
+            window.innerWidth < 768 &&
+            collapseEl.classList.contains("show")
+          ) {
+            const bsCollapse = bootstrap.Collapse.getInstance(collapseEl);
+            if (bsCollapse) bsCollapse.hide();
+          }
+        }
+      });
+    });
+  }
 });

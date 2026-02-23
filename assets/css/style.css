@@ -752,3 +752,107 @@ h6 i.bi-pin-angle-fill {
 .updated-highlight {
   animation: highlight-glow 2s ease-out;
 }
+
+/* Help Submenu Styles */
+.help-section {
+  scroll-margin-top: 130px;
+}
+
+.help-submenu-outer-wrapper {
+  top: 72px; /* Fixed under main navbar */
+  z-index: 900;
+  margin-top: -1rem; /* Pull up to sit tighter */
+  /* padding-top: 1rem; */
+  /* padding-bottom: 1rem; */
+  /* background: linear-gradient(to bottom, var(--bs-body-bg) 70%, transparent); */
+}
+
+.help-submenu-inner {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px !important;
+  transition: none; /* Disable transition to prevent jumpiness on hover */
+}
+
+.help-submenu-inner:hover {
+  transform: none !important; /* Remove the jump effect from glass-card */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+}
+
+.help-submenu-inner .collapse:not(.show) {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .help-submenu-inner .collapse:not(.show) {
+    display: block;
+  }
+}
+
+.submenu-link {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s ease-out;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.submenu-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.submenu-link.active {
+  background: rgba(142, 84, 233, 0.25);
+  color: #fff;
+  box-shadow:
+    0 4px 15px rgba(142, 84, 233, 0.3),
+    inset 0 0 0 1px rgba(142, 84, 233, 0.4);
+  font-weight: 600;
+}
+
+#helpSubmenu.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+#helpSubmenu.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Fix for mobile toggle interaction */
+@media (max-width: 767.98px) {
+  .help-submenu-inner {
+    padding: 0 !important;
+  }
+
+  .submenu-link {
+    padding: 12px 20px;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .submenu-link.active {
+    box-shadow: inset 4px 0 0 rgba(142, 84, 233, 0.8);
+    background: rgba(142, 84, 233, 0.1);
+  }
+
+  .submenu-link:last-child {
+    border-bottom: none;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+
+  #currentSectionLabel {
+    font-weight: 600;
+    color: #fff;
+  }
+}

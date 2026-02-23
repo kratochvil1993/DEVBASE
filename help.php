@@ -9,8 +9,34 @@ include 'includes/header.php';
         <p class="text-white-50">Jak pracovat se snippety a Markdownem v DevBase.</p>
     </div>
 
+    <!-- Sticky Submenu Navigation -->
+    <div class="col-12 sticky-top help-submenu-outer-wrapper mb-4">
+        <div class="help-submenu-inner glass-card p-2">
+            <!-- Mobile Toggle Label (Hidden on Desktop) -->
+            <button class="btn btn-link text-white d-md-none w-100 d-flex justify-content-between align-items-center text-decoration-none px-3 py-2" type="button" data-bs-toggle="collapse" data-bs-target="#helpSubmenuCollapse">
+                <span id="currentSectionLabel"><i class="bi bi-list me-2"></i> Vyberte sekci</span>
+                <i class="bi bi-chevron-down small opacity-50"></i>
+            </button>
+            
+            <!-- Links Container -->
+            <div class="collapse d-md-block " id="helpSubmenuCollapse">
+                <div class="d-flex flex-column flex-md-row justify-content-center gap-1 gap-md-2 p-1 p-md-0 overflow-x-auto no-scrollbar" id="helpSubmenu">
+                    <a href="#markdown" class="submenu-link active" data-section="markdown">Markdown</a>
+                    <a href="#searching" class="submenu-link" data-section="searching">Hledání</a>
+                    <a href="#shortcuts" class="submenu-link" data-section="shortcuts">Zkratky</a>
+                    <a href="#tagging" class="submenu-link" data-section="tagging">Tagy</a>
+                    <a href="#editor" class="submenu-link" data-section="editor">Editor</a>
+                    <a href="#notes" class="submenu-link" data-section="notes">Poznámky</a>
+                    <a href="#todo" class="submenu-link" data-section="todo">TODO</a>
+                    <a href="#security" class="submenu-link" data-section="security">Bezpečnost</a>
+                    <a href="#backup" class="submenu-link" data-section="backup">Záloha</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Markdown Overview -->
-    <div class="col-lg-12 mb-4">
+    <div class="col-lg-12 mb-4 help-section" id="markdown">
         <div class="glass-card p-4">
             <h4 class="text-white mb-4"><i class="bi bi-markdown me-2"></i> Markdown Tahák</h4>
             
@@ -72,7 +98,7 @@ console.log('Hello World');
 
     <!-- Tips Sidebar -->
     <div class="col-lg-12">
-        <div class="glass-card p-4 mb-4">
+        <div class="glass-card p-4 mb-4 help-section" id="searching">
             <h4 class="text-white mb-4"><i class="bi bi-lightbulb me-2"></i> Tipy pro vyhledávání</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
@@ -110,7 +136,7 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card p-4 mb-4">
+        <div class="glass-card p-4 mb-4 help-section" id="shortcuts">
             <h4 class="text-white mb-4"><i class="bi bi-keyboard me-2"></i> Globální klávesové zkratky</h4>
             <p class="text-white-50 small mb-3">Tyto zkratky fungují napříč celou aplikací pro zrychlení vaší práce:</p>
             <ul class="text-white-50 small list-unstyled">
@@ -125,7 +151,7 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card p-4">
+        <div class="glass-card p-4 help-section" id="tagging">
             <h4 class="text-white mb-4"><i class="bi bi-tags me-2"></i> Strategie tagování</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
@@ -151,7 +177,7 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card p-4 mt-4">
+        <div class="glass-card p-4 mt-4 help-section" id="editor">
             <h4 class="text-white mb-4"><i class="bi bi-braces me-2"></i> Práce s Editorem (Code Scratchpad)</h4>
             <p class="text-white small mb-3">Tato sekce slouží jako vaše "pískoviště" pro libovolný kód, konfigurační řetězce nebo technické poznámky, které chcete mít neustále po ruce.</p>
             <ul class="text-white-50 small list-unstyled">
@@ -178,7 +204,7 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card p-4 mt-4">
+        <div class="glass-card p-4 mt-4 help-section" id="notes">
             <h4 class="text-white mb-4"><i class="bi bi-journal-text me-2"></i> Práce s Poznámkami</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
@@ -216,7 +242,7 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card p-4 mt-4">
+        <div class="glass-card p-4 mt-4 help-section" id="todo">
             <h4 class="text-white mb-4"><i class="bi bi-check2-square me-2"></i> Správa úkolů (TODO)</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
@@ -250,7 +276,7 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card p-4 mt-4">
+        <div class="glass-card p-4 mt-4 help-section" id="security">
             <h4 class="text-white mb-4"><i class="bi bi-shield-lock me-2"></i> Zabezpečení a Soukromí</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
@@ -271,7 +297,7 @@ console.log('Hello World');
                 </li>
             </ul>
         </div>
-        <div class="glass-card p-4 mt-4">
+        <div class="glass-card p-4 mt-4 help-section" id="backup">
             <h4 class="text-white mb-4"><i class="bi bi-cloud-arrow-down me-2"></i> Záloha a obnovení dat</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
