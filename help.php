@@ -137,6 +137,33 @@ console.log('Hello World');
         </div>
 
         <div class="glass-card p-4 mt-4">
+            <h4 class="text-white mb-4"><i class="bi bi-braces me-2"></i> Práce s Editorem (Code Scratchpad)</h4>
+            <p class="text-white small mb-3">Tato sekce slouží jako vaše "pískoviště" pro libovolný kód, konfigurační řetězce nebo technické poznámky, které chcete mít neustále po ruce.</p>
+            <ul class="text-white-50 small list-unstyled">
+                <li class="mb-3">
+                    <strong class="text-white d-block">Profesionální funkce:</strong>
+                    Editor podporuje automatické doplňování závorek a uvozovek, zavírání HTML tagů a zvýraznění párových značek. Obsahuje také funkci **Folding** (skládání kódu) pomocí šipek u čísel řádků.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Klávesové zkratky:</strong>
+                    Rychlost je základ, proto můžete v editoru používat tyto zkratky:
+                    <ul class="mt-2 text-white">
+                        <li><span class="badge bg-primary me-2">Ctrl + S</span> <strong>Uložit</strong> (uloží rozpracovaný kód do databáze)</li>
+                        <li><span class="badge bg-primary me-2">Ctrl + Space</span> <strong>Našeptávání</strong> (autocomplete klíčových slov)</li>
+                        <li><span class="badge bg-primary me-2">Ctrl + F</span> <strong>Vyhledávání</strong> přímo uvnitř kódu</li>
+                        <li><span class="badge bg-primary me-2">Alt + F</span> <strong>Nahrazení</strong> textu</li>
+                        <li><span class="badge bg-primary me-2">Ctrl + Q</span> <strong>Sbalit blok</strong> (fold) na aktuálním řádku</li>
+                        <li><span class="badge bg-primary me-2">Alt + G</span> <strong>Skočit na řádek...</strong></li>
+                    </ul>
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Persistence:</strong>
+                    Obsah editoru je uložen v databázi. I když prohlížeč zavřete nebo restartujete počítač, váš kód tam bude na vás čekat přesně tak, jak jste ho naposledy uložili.
+                </li>
+            </ul>
+        </div>
+
+        <div class="glass-card p-4 mt-4">
             <h4 class="text-white mb-4"><i class="bi bi-journal-text me-2"></i> Práce s Poznámkami</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">

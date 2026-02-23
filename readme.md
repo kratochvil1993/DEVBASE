@@ -11,6 +11,7 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Vlastní řazení (Drag & Drop) a Připínání**: Důležité položky si můžete připnout špendlíkem, čímž zůstanou vždy nahoře. Pořadí poznámek, úkolů i snipetů si pak můžete měnit jednoduchým přetažením myší v rámci sekcí (Připnuté / Ostatní). Režim úprav je vizuálně indikován jemným vibrováním prvků pro lepší orientaci. U snipetů je tato funkce dostupná v sekci **Správa snippetů**.
 - **Konzistentní správa**: Sjednocené rozhraní pro správu všech sekcí s intuitivním filtrováním podle tagů a rychlým fulltextovým vyhledáváním.
 - **Rychlé vyhledávání**: Inteligentní vyhledávání v reálném čase napříč sekcemi, které prohledává názvy i obsah.
+- **Code Scratchpad (Pískoviště)**: Speciální prostor pro psaní a ukládání libovolného kódu nebo poznámek. Editor je postaven na profesionální knihovně **CodeMirror 5** a nabízí pokročilé funkce jako chytré doplňování závorek, našeptávání (autocomplete), skládání kódu (folding) a vyhledávání přímo v textu. Vše se ukládá do databáze a je k dispozici při každém přístupu. Sekci lze v nastavení vypnout.
 - **Detailní náhled**: Snipety i poznámky lze otevřít ve velkém modálním okně pro pohodlné čtení. Nově je v náhledu k dispozici tlačítko pro okamžitý přechod do režimu úprav.
 - **Tmavý / Světlý režim**: Možnost hladkého přepínání témat přímo v side-baru s automatickým ukládáním volby. Tento přepínač lze v Nastavení také zcela skrýt.
 - **Kopírování v jednom kroku**: Tlačítka pro okamžité uložení bloku zdrojového kódu do schránky (clipboard).
@@ -54,7 +55,7 @@ Pokud se chcete k databázi přes Docker připojit přes nástroje jakým je nap
 - **Backend:** Nativní PHP, bez těžkých frameworků.
 - **Frontend / UX:** HTML5, Bootstrap 5.3 a čistý JavaScript (vše linkováno lokálně z `/assets`).
 - **Zpracování úkolů:** Interaktivní odškrtávání a řazení bez nutnosti obnovování stránky (SortableJS)
-- **Formátování & Editor:** WYSIWYG editor Quill.js (pro poznámky)
-- **Zvýraznění kódu:** Prism.js (autoloader s podporou témat)
+- **Formátování & Editor:** WYSIWYG editor Quill.js (pro poznámky) a profesionální kódový editor **CodeMirror 5** (pro Scratchpad)
+- **Zvýraznění kódu:** Prism.js (autoloader s podporou témat) a integrované zvýraznění v reálném čase v editoru
 - **Databáze:** Relační databáze spravovaná pomocí MySQL
 - **Nasazení:** Kontejnerizace přes Docker, orchestrace pomocí Docker-Compose
