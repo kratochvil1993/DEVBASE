@@ -62,7 +62,27 @@ include 'includes/header.php';
 <!-- CodeMirror Assets -->
 <link rel="stylesheet" href="assets/vendor/codemirror/lib/codemirror.css">
 <link rel="stylesheet" href="assets/vendor/codemirror/theme/dracula.css">
+<link rel="stylesheet" href="assets/vendor/codemirror/addon/hint/show-hint.css">
+<link rel="stylesheet" href="assets/vendor/codemirror/addon/dialog/dialog.css">
+<link rel="stylesheet" href="assets/vendor/codemirror/addon/fold/foldgutter.css">
 <script src="assets/vendor/codemirror/lib/codemirror.js"></script>
+
+<!-- CodeMirror Addons -->
+<script src="assets/vendor/codemirror/addon/edit/closebrackets.js"></script>
+<script src="assets/vendor/codemirror/addon/edit/closetag.js"></script>
+<script src="assets/vendor/codemirror/addon/hint/show-hint.js"></script>
+<script src="assets/vendor/codemirror/addon/hint/xml-hint.js"></script>
+<script src="assets/vendor/codemirror/addon/hint/javascript-hint.js"></script>
+<script src="assets/vendor/codemirror/addon/hint/html-hint.js"></script>
+<script src="assets/vendor/codemirror/addon/hint/css-hint.js"></script>
+<script src="assets/vendor/codemirror/addon/search/search.js"></script>
+<script src="assets/vendor/codemirror/addon/search/searchcursor.js"></script>
+<script src="assets/vendor/codemirror/addon/search/jump-to-line.js"></script>
+<script src="assets/vendor/codemirror/addon/dialog/dialog.js"></script>
+<script src="assets/vendor/codemirror/addon/fold/foldcode.js"></script>
+<script src="assets/vendor/codemirror/addon/fold/foldgutter.js"></script>
+<script src="assets/vendor/codemirror/addon/fold/brace-fold.js"></script>
+<script src="assets/vendor/codemirror/addon/fold/xml-fold.js"></script>
 
 <!-- CodeMirror Modes -->
 <script src="assets/vendor/codemirror/mode/xml/xml.js"></script>
@@ -85,6 +105,27 @@ include 'includes/header.php';
 .CodeMirror-gutters {
     background: rgba(40, 42, 54, 0.3) !important;
     border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+.CodeMirror-foldgutter {
+    width: 0.7em;
+}
+.CodeMirror-foldgutter-open, .CodeMirror-foldgutter-folded {
+    cursor: pointer;
+    color: #6272a4;
+}
+.CodeMirror-hints {
+    background: #282a36 !important;
+    border: 1px solid #44475a !important;
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.CodeMirror-hint {
+    color: #f8f8f2 !important;
+    padding: 4px 10px !important;
+}
+li.CodeMirror-hint-active {
+    background: #44475a !important;
+    color: #f8f8f2 !important;
 }
 .glass-card {
     background: rgba(255, 255, 255, 0.03);
@@ -112,7 +153,14 @@ document.addEventListener('DOMContentLoaded', function() {
         lineWrapping: true,
         viewportMargin: Infinity,
         matchBrackets: true,
-        autoCloseBrackets: true
+        autoCloseBrackets: true,
+        autoCloseTags: true,
+        foldGutter: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+        extraKeys: {
+            "Ctrl-Space": "autocomplete",
+            "Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }
+        }
     });
 
     updateCharCount();
