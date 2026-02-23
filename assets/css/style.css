@@ -599,9 +599,9 @@ h6 i.bi-pin-angle-fill {
 }
 
 @media (max-width: 991.98px) {
-  .nav-toggle-group {
+  /* .nav-toggle-group {
     display: none;
-  }
+  } */
 }
 
 /* Settings Tags Sorting Mode */

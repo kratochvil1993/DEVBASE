@@ -60,28 +60,28 @@ $stats = getGlobalStats();
         <button class="btn btn-menu border-0 me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand fw-bold" href="index.php">
+        <a class="navbar-brand fw-bold d-none d-md-block " href="index.php">
             <span>    
                 <img src="./assets/logoAlt.png" alt="DevBase Logo"  class="d-inline-block align-text-top logo" >
             </span>
             <span>DevBase</span>
         </a>
 
-        <div class="d-none d-lg-flex position-absolute start-50 translate-middle-x">
+        <div class=" d-flex position-absolute start-50 translate-middle-x">
             <div class="nav-toggle-group">
                 <?php if (getSetting('snippets_enabled', '1') == '1'): ?>
                 <a href="index.php" class="nav-toggle-btn <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?>">
-                    <i class="bi bi-code-slash me-2"></i> Snippets
+                    <i class="bi bi-code-slash me-2"></i> <span class="d-none d-md-inline">Snippets</span>
                 </a>
                 <?php endif; ?>
                 <?php if (getSetting('notes_enabled', '1') == '1'): ?>
                 <a href="notes.php" class="nav-toggle-btn <?php echo $currentPage == 'notes.php' ? 'active' : ''; ?>">
-                    <i class="bi bi-journal-text me-2"></i> Notes
+                    <i class="bi bi-journal-text me-2"></i> <span class="d-none d-md-inline">Notes</span>
                 </a>
                 <?php endif; ?>
                 <?php if (getSetting('todos_enabled', '1') == '1'): ?>
                 <a href="todo.php" class="nav-toggle-btn <?php echo $currentPage == 'todo.php' ? 'active' : ''; ?> d-flex align-items-center">
-                    <i class="bi bi-check2-square me-2"></i> TODO
+                    <i class="bi bi-check2-square me-2"></i> <span class="d-none d-md-inline">TODO</span>
                     <?php 
                     if (getSetting('todo_badge_enabled', '1') == '1' && $stats['total_todos'] > 0) {
                         echo '<span class="badge badge-todo ms-2">' . $stats['total_todos'] . '</span>';
