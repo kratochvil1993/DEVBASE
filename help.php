@@ -133,6 +133,10 @@ console.log('Hello World');
                     <strong class="text-white d-block">Persistence vzhledu:</strong>
                     Vaše volba mezi tmavým a světlým režimem je bezpečně uložena v databázi. Při příštím přihlášení nebo na jiném zařízení se vám aplikace zobrazí přesně tak, jak jste ji naposledy zanechali.
                 </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Automatické sledování změn:</strong>
+                    Po každém uložení, úpravě nebo vytvoření nového záznamu vás aplikace automaticky přesune na danou položku a zvýrazní ji jemným animovaným efektem. Nemusíte tak položku znovu hledat v seznamu.
+                </li>
             </ul>
         </div>
 
