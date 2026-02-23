@@ -308,7 +308,18 @@ function openEditTodoModal(todo) {
 // Tag filtering logic
 document.addEventListener('DOMContentLoaded', () => {
     const tagButtons = document.querySelectorAll('#tagFilters .btn');
-    let currentTag = 'all';
+    let currentTag = localStorage.getItem('todoTag') || 'all';
+
+    // Restore initial UI state
+    if (tagButtons.length > 0) {
+        tagButtons.forEach(btn => {
+            if (btn.getAttribute('data-tag') === currentTag) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
 
     const filterTodos = () => {
         const items = document.querySelectorAll('.todo-item');
@@ -347,18 +358,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Initial filter application
+    if (tagButtons.length > 0) {
+        filterTodos();
+    }
+
     tagButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             tagButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentTag = btn.getAttribute('data-tag');
+            localStorage.setItem('todoTag', currentTag);
             filterTodos();
         });
     });
-    
-    // Add searching capability inline with add form?
-    // Since the add form behaves like a search but adds, and user requested tags behavior similar
-    // to search, we just added tags filter. We can also add client-side search if needed later.
 });
 </script>
 

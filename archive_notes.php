@@ -454,8 +454,22 @@ function openEditNoteModal(note) {
 // Search and Tag filtering for notes
 const noteSearchInput = document.getElementById('noteSearch');
 const noteTagButtons = document.querySelectorAll('#noteTagFilters .btn');
-let currentNoteSearch = '';
-let currentNoteTag = 'all';
+let currentNoteSearch = localStorage.getItem('archiveNoteSearch') || '';
+let currentNoteTag = localStorage.getItem('archiveNoteTag') || 'all';
+
+// Restore initial UI state
+if (noteSearchInput) {
+    noteSearchInput.value = currentNoteSearch;
+}
+if (noteTagButtons.length > 0) {
+    noteTagButtons.forEach(btn => {
+        if (btn.getAttribute('data-tag') === currentNoteTag) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+}
 
 const filterNotes = () => {
     const notes = document.querySelectorAll('.note-item');
@@ -486,9 +500,15 @@ const filterNotes = () => {
     });
 };
 
+// Initial filter application
+if (noteSearchInput || noteTagButtons.length > 0) {
+    filterNotes();
+}
+
 if (noteSearchInput) {
     noteSearchInput.addEventListener('input', function(e) {
         currentNoteSearch = e.target.value.toLowerCase();
+        localStorage.setItem('archiveNoteSearch', currentNoteSearch);
         filterNotes();
     });
 }
@@ -498,6 +518,7 @@ noteTagButtons.forEach(btn => {
         noteTagButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentNoteTag = btn.getAttribute('data-tag');
+        localStorage.setItem('archiveNoteTag', currentNoteTag);
         filterNotes();
     });
 });

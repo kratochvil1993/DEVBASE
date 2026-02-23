@@ -138,7 +138,18 @@ include 'includes/header.php';
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const tagButtons = document.querySelectorAll('#tagFilters .btn');
-    let currentTag = 'all';
+    let currentTag = localStorage.getItem('archiveTodoTag') || 'all';
+
+    // Restore initial UI state
+    if (tagButtons.length > 0) {
+        tagButtons.forEach(btn => {
+            if (btn.getAttribute('data-tag') === currentTag) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
 
     const filterTodos = () => {
         const items = document.querySelectorAll('.todo-item');
@@ -162,11 +173,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Initial filter application
+    if (tagButtons.length > 0) {
+        filterTodos();
+    }
+
     tagButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             tagButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentTag = btn.getAttribute('data-tag');
+            localStorage.setItem('archiveTodoTag', currentTag);
             filterTodos();
         });
     });
