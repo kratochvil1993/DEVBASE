@@ -49,7 +49,7 @@ include 'includes/header.php';
             <div class="mt-3 d-flex justify-content-between align-items-center text-white-50 small">
                 <div>
                     <span class="me-3"><i class="bi bi-keyboard me-1"></i> Ctrl+S pro uložení</span>
-                    <span><i class="bi bi-info-circle me-1"></i> Podporuje PHP, JS, HTML, CSS, SQL</span>
+                    <span><i class="bi bi-info-circle me-1"></i> Podporuje PHP, JS, HTML, CSS, SQL, Bash</span>
                 </div>
                 <div id="charCount">Znaků: 0</div>
             </div>

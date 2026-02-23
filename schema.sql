@@ -93,7 +93,8 @@ INSERT IGNORE INTO languages (name, prism_class) VALUES
 ('HTML', 'html'),
 ('CSS', 'css'),
 ('SQL', 'sql'),
-('Python', 'python');
+('Python', 'python'),
+('Bash', 'bash');
 
 INSERT IGNORE INTO tags (name) VALUES 
 ('Frontend'),
