@@ -363,26 +363,30 @@ pre[class*="language-"] {
 
 /* Sorting Mode */
 .sorting-mode .note-card,
-.sorting-mode .snippet-card {
+.sorting-mode .snippet-card,
+.sorting-mode .todo-item {
   cursor: grab;
   animation: jiggle 0.5s ease-in-out infinite;
   user-select: none;
 }
 
 .sorting-mode .note-item:nth-child(2n) .note-card,
-.sorting-mode .snippet-card-wrapper:nth-child(2n) .snippet-card {
+.sorting-mode .snippet-card-wrapper:nth-child(2n) .snippet-card,
+.sorting-mode .todo-item:nth-child(2n) {
   animation-duration: 0.45s;
   animation-delay: 0.05s;
 }
 
 .sorting-mode .note-item:nth-child(3n) .note-card,
-.sorting-mode .snippet-card-wrapper:nth-child(3n) .snippet-card {
+.sorting-mode .snippet-card-wrapper:nth-child(3n) .snippet-card,
+.sorting-mode .todo-item:nth-child(3n) {
   animation-duration: 0.55s;
   animation-delay: -0.1s;
 }
 
 .sorting-mode .note-card:active,
-.sorting-mode .snippet-card:active {
+.sorting-mode .snippet-card:active,
+.sorting-mode .todo-item:active {
   cursor: grabbing;
   animation: none !important;
   transform: scale(1.02) !important;

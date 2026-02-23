@@ -204,7 +204,10 @@ function toggleSortingMode() {
     const addBtn = document.getElementById('addTodoBtn');
 
     if (isSortingMode) {
-        document.querySelectorAll('.d-flex.flex-column.gap-3').forEach(list => list.classList.add('sorting-mode'));
+        const pinnedList = document.getElementById('pinnedTodosList');
+        const othersList = document.getElementById('othersTodosList');
+        if (pinnedList) pinnedList.classList.add('sorting-mode');
+        if (othersList) othersList.classList.add('sorting-mode');
         editBtn.classList.add('d-none');
         saveBtn.classList.remove('d-none');
         addForm.classList.add('d-none');
@@ -224,7 +227,10 @@ function toggleSortingMode() {
         if (othersList) sortableOthers = new Sortable(othersList, sortableConfig);
         
     } else {
-        document.querySelectorAll('.d-flex.flex-column.gap-3').forEach(list => list.classList.remove('sorting-mode'));
+        const pinnedList = document.getElementById('pinnedTodosList');
+        const othersList = document.getElementById('othersTodosList');
+        if (pinnedList) pinnedList.classList.remove('sorting-mode');
+        if (othersList) othersList.classList.remove('sorting-mode');
         editBtn.classList.remove('d-none');
         saveBtn.classList.add('d-none');
         addForm.classList.remove('d-none');
