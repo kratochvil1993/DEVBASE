@@ -33,6 +33,9 @@ include 'includes/header.php';
                             <i class="bi bi-check-circle me-1"></i> Uloženo!
                         </div>
                     <?php endif; ?>
+                    <button type="button" class="btn btn-copy px-4 me-2" onclick="copyCode(this)">
+                        <i class="bi bi-clipboard me-2"></i> copy
+                    </button>
                     <button type="button" class="btn btn-add-snipet px-4" onclick="saveCode()">
                         <i class="bi bi-save me-2"></i> Uložit kód
                     </button>
@@ -133,6 +136,22 @@ li.CodeMirror-hint-active {
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
 }
+.btn-copy {
+    background: rgba(142, 84, 233, 0.15);
+    border: 1px solid rgba(142, 84, 233, 0.4);
+    color: #fff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-copy:hover {
+    background: rgba(142, 84, 233, 0.3);
+    border-color: rgba(142, 84, 233, 0.6);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(142, 84, 233, 0.2);
+}
+.btn-copy:active {
+    transform: translateY(0);
+}
 @keyframes fadeOut {
     0% { opacity: 1; }
     80% { opacity: 1; }
@@ -185,6 +204,23 @@ function updateCharCount() {
 function saveCode() {
     document.getElementById('formContent').value = editor.getValue();
     document.getElementById('saveForm').submit();
+}
+
+function copyCode(btn) {
+    const content = editor.getValue();
+    navigator.clipboard.writeText(content).then(() => {
+        const originalHtml = btn.innerHTML;
+        
+        btn.innerHTML = '<i class="bi bi-check2 me-2"></i> Zkopírováno!';
+        btn.classList.replace('btn-copy', 'btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.classList.replace('btn-success', 'btn-copy');
+        }, 2000);
+    }).catch(err => {
+        console.error('Chyba při kopírování: ', err);
+    });
 }
 </script>
 
