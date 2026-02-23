@@ -725,20 +725,68 @@ function importAllData($data, $mode = 'append') {
     return true;
 }
 
-function getScratchpadContent($name = 'default') {
+function getAllScratchpads() {
     global $conn;
-    $name = $conn->real_escape_string($name);
-    $result = $conn->query("SELECT content FROM scratchpads WHERE name = '$name'");
+    $result = $conn->query("SELECT * FROM scratchpads ORDER BY id ASC");
+    $scratchpads = [];
+    while ($row = $result->fetch_assoc()) {
+        $scratchpads[] = $row;
+    }
+    return $scratchpads;
+}
+
+function getScratchpad($id) {
+    global $conn;
+    $id = (int)$id;
+    $result = $conn->query("SELECT * FROM scratchpads WHERE id = $id");
+    return $result ? $result->fetch_assoc() : null;
+}
+
+function getScratchpadContent($id = null) {
+    global $conn;
+    if ($id === null) {
+        $result = $conn->query("SELECT content FROM scratchpads ORDER BY id ASC LIMIT 1");
+    } else {
+        $id = (int)$id;
+        $result = $conn->query("SELECT content FROM scratchpads WHERE id = $id");
+    }
     if ($result && $row = $result->fetch_assoc()) {
         return $row['content'];
     }
     return '';
 }
 
-function saveScratchpadContent($content, $name = 'default') {
+function saveScratchpadContent($content, $id) {
+    global $conn;
+    $id = (int)$id;
+    $content = $conn->real_escape_string($content);
+    return $conn->query("UPDATE scratchpads SET content = '$content' WHERE id = $id");
+}
+
+function createScratchpad($name = 'Nový draft') {
     global $conn;
     $name = $conn->real_escape_string($name);
-    $content = $conn->real_escape_string($content);
-    return $conn->query("UPDATE scratchpads SET content = '$content' WHERE name = '$name'");
+    $conn->query("INSERT INTO scratchpads (name, content) VALUES ('$name', '')");
+    return $conn->insert_id;
+}
+
+function deleteScratchpad($id) {
+    global $conn;
+    $id = (int)$id;
+    
+    // Ensure we don't delete the last scratchpad
+    $res = $conn->query("SELECT COUNT(*) as count FROM scratchpads");
+    $row = $res->fetch_assoc();
+    if ($row['count'] <= 1) return false;
+
+    $sql = "DELETE FROM scratchpads WHERE id = $id";
+    return $conn->query($sql);
+}
+
+function renameScratchpad($id, $name) {
+    global $conn;
+    $id = (int)$id;
+    $name = $conn->real_escape_string($name);
+    return $conn->query("UPDATE scratchpads SET name = '$name' WHERE id = $id");
 }
 ?>

@@ -6,15 +6,55 @@ if (getSetting('code_enabled', '1') !== '1') {
     exit;
 }
 
+// Handle actions
+if (isset($_GET['action'])) {
+    if ($_GET['action'] == 'add') {
+        $new_id = createScratchpad('Draft ' . (count(getAllScratchpads()) + 1));
+        header("Location: code.php?id=$new_id");
+        exit;
+    }
+    if ($_GET['action'] == 'delete' && isset($_GET['id'])) {
+        deleteScratchpad($_GET['id']);
+        header('Location: code.php');
+        exit;
+    }
+}
+
 // Handle save request
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'save_code') {
     $content = $_POST['content'] ?? '';
-    saveScratchpadContent($content);
-    header('Location: code.php?saved=1');
-    exit;
+    $id = $_POST['id'] ?? null;
+    if ($id) {
+        saveScratchpadContent($content, $id);
+        
+        // Handle rename if provided
+        if (isset($_POST['name']) && !empty($_POST['name'])) {
+            renameScratchpad($id, $_POST['name']);
+        }
+        
+        header('Location: code.php?id=' . $id . '&saved=1');
+        exit;
+    }
 }
 
-$content = getScratchpadContent();
+$scratchpads = getAllScratchpads();
+$active_id = isset($_GET['id']) ? (int)$_GET['id'] : ($scratchpads[0]['id'] ?? null);
+
+// If active ID is not in list (e.g. deleted), fallback to first
+$active_pad = null;
+foreach ($scratchpads as $pad) {
+    if ($pad['id'] == $active_id) {
+        $active_pad = $pad;
+        break;
+    }
+}
+if (!$active_pad && !empty($scratchpads)) {
+    $active_pad = $scratchpads[0];
+    $active_id = $active_pad['id'];
+}
+
+$content = $active_pad ? $active_pad['content'] : '';
+$pad_name = $active_pad ? $active_pad['name'] : 'Draft';
 
 include 'includes/header.php';
 ?>
@@ -23,26 +63,50 @@ include 'includes/header.php';
     <div class="col-12">
         <div class="glass-card p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h4 class="text-white mb-0"><i class="bi bi-braces me-2"></i> Code Scratchpad</h4>
-                    <p class="text-white-50 small mb-0">Rychlý prostor pro váš kód nebo poznámky. Automatické barvy pro různé jazyky.</p>
+                <div class="flex-grow-1 me-4">
+                    <div class="d-flex align-items-center mb-1">
+                        <h4 class="text-white mb-0 me-3"><i class="bi bi-braces me-2"></i> </h4>
+                        <input type="text" id="padName" class="form-control-plaintext text-white h4 mb-0 fw-bold p-0" 
+                               value="<?php echo htmlspecialchars($pad_name); ?>" placeholder="Název draftu..."
+                               style="border: none; outline: none; background: transparent;">
+                    </div>                   
                 </div>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 align-items-center">
                     <?php if (isset($_GET['saved'])): ?>
                         <div id="saveToast" class="badge bg-success d-flex align-items-center px-3 py-2 me-2" style="animation: fadeOut 3s forwards;">
                             <i class="bi bi-check-circle me-1"></i> Uloženo!
                         </div>
                     <?php endif; ?>
-                    <button type="button" class="btn btn-copy px-4 me-2" onclick="copyCode(this)">
+                    <button type="button" class="btn btn-copy px-3" onclick="copyCode(this)">
                         <i class="bi bi-clipboard me-2"></i> copy
                     </button>
-                    <button type="button" class="btn btn-add-snipet px-4" onclick="saveCode()">
-                        <i class="bi bi-save me-2"></i> Uložit kód
+                    <button type="button" class="btn btn-add-snipet px-3" onclick="saveCode()">
+                        <i class="bi bi-save me-2"></i> Uložit
                     </button>
                 </div>
             </div>
 
-            <div class="editor-container border border-light border-opacity-10 rounded overflow-hidden shadow-lg">
+            <!-- Tab Bar -->
+            <div class="d-flex align-items-center mb-0 overflow-auto tab-container px-1">
+                <?php foreach ($scratchpads as $pad): ?>
+                    <div class="nav-tab-item <?php echo $pad['id'] == $active_id ? 'active' : ''; ?> me-1">
+                        <a href="code.php?id=<?php echo $pad['id']; ?>" class="nav-tab-link py-2 px-3">
+                            <i class="bi bi-file-earmark-code me-1"></i>
+                            <?php echo htmlspecialchars($pad['name']); ?>
+                        </a>
+                        <?php if (count($scratchpads) > 1): ?>
+                            <button type="button" class="btn-tab-close ms-0" onclick="confirmDelete(<?php echo $pad['id']; ?>, '<?php echo addslashes($pad['name']); ?>')">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+                <a href="code.php?action=add" class="btn btn-add-tab ms-1" title="Nový draft">
+                    <i class="bi bi-plus-lg"></i>
+                </a>
+            </div>
+
+            <div class="editor-container border border-light border-opacity-10 rounded-bottom overflow-hidden shadow-lg" style="border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;">
                 <textarea id="codeEditor"><?php echo htmlspecialchars($content); ?></textarea>
             </div>
             
@@ -59,6 +123,8 @@ include 'includes/header.php';
 
 <form id="saveForm" method="POST" style="display: none;">
     <input type="hidden" name="action" value="save_code">
+    <input type="hidden" name="id" value="<?php echo $active_id; ?>">
+    <input type="hidden" name="name" id="formPadName">
     <textarea name="content" id="formContent"></textarea>
 </form>
 
@@ -96,10 +162,72 @@ include 'includes/header.php';
 <script src="assets/vendor/codemirror/mode/htmlmixed/htmlmixed.js"></script>
 
 <style>
+.tab-container::-webkit-scrollbar {
+    height: 3px;
+}
+.tab-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+.nav-tab-item {
+    display: flex;
+    align-items: center;
+    background: rgba(40, 42, 54, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding: 0 4px 0 0;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.nav-tab-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+.nav-tab-item.active {
+    background: rgba(142, 84, 233, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+    border-bottom: 2px solid #8e54e9;
+}
+.nav-tab-link {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-size: 0.85rem;
+    display: block;
+}
+.nav-tab-item.active .nav-tab-link {
+    color: #fff;
+    font-weight: 500;
+}
+.btn-tab-close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 1rem;
+    padding: 0 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+.btn-tab-close:hover {
+    color: #ff5555;
+    background: rgba(255, 85, 85, 0.1);
+}
+.btn-add-tab {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    border-radius: 5px;
+    padding: 4px 8px;
+    transition: all 0.2s ease;
+}
+.btn-add-tab:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
 .CodeMirror {
-    height: 70vh; /* Better height on large screens */
+    height: 65vh;
     font-size: 15px;
-    background: rgba(40, 42, 54, 0.6) !important; /* Semi-transparent Dracula */
+    background: rgba(40, 42, 54, 0.6) !important;
     backdrop-filter: blur(4px);
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -136,6 +264,9 @@ li.CodeMirror-hint-active {
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
 }
+.glass-card:hover {
+    transform: none !important;
+}
 .btn-copy {
     background: rgba(142, 84, 233, 0.15);
     border: 1px solid rgba(142, 84, 233, 0.4);
@@ -165,7 +296,7 @@ let editor;
 document.addEventListener('DOMContentLoaded', function() {
     editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
         lineNumbers: true,
-        mode: 'php', // Autodetect? Or just default to PHP since it handles HTML/JS/CSS too
+        mode: 'php',
         theme: 'dracula',
         tabSize: 4,
         indentUnit: 4,
@@ -192,8 +323,6 @@ document.addEventListener('DOMContentLoaded', function() {
             saveCode();
         }
     });
-
-    // Language switcher based on content hint could be added here
 });
 
 function updateCharCount() {
@@ -203,7 +332,14 @@ function updateCharCount() {
 
 function saveCode() {
     document.getElementById('formContent').value = editor.getValue();
+    document.getElementById('formPadName').value = document.getElementById('padName').value;
     document.getElementById('saveForm').submit();
+}
+
+function confirmDelete(id, name) {
+    if (confirm('Opravdu chcete smazat draft "' + name + '"?')) {
+        window.location.href = 'code.php?action=delete&id=' + id;
+    }
 }
 
 function copyCode(btn) {
