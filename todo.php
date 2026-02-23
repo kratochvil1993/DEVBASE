@@ -61,9 +61,9 @@ include 'includes/header.php';
                     </span>
                     <input type="text" name="text" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Co je potřeba udělat?" required autocomplete="off">
                     <select name="tags[]" class="form-select bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" style="max-width: 140px; cursor: pointer;">
-                        <option value="" style="background: #2b3035;">Bez štítku</option>
-                        <?php foreach ($allTags as $tag): ?>
-                            <option value="<?php echo $tag['id']; ?>" style="background: #2b3035;"><?php echo htmlspecialchars($tag['name']); ?></option>
+                        <option value="" style="background: #2b3035;" <?php echo empty($allTags) ? 'selected' : ''; ?>>Bez štítku</option>
+                        <?php foreach ($allTags as $index => $tag): ?>
+                            <option value="<?php echo $tag['id']; ?>" style="background: #2b3035;" <?php echo ($index === 0) ? 'selected' : ''; ?>><?php echo htmlspecialchars($tag['name']); ?></option>
                         <?php endforeach; ?>
                     </select>
                     <input type="date" name="deadline" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Termín splnění" style="max-width: 160px; cursor: pointer;">
