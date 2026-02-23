@@ -683,4 +683,21 @@ function importAllData($data, $mode = 'append') {
 
     return true;
 }
+
+function getScratchpadContent($name = 'default') {
+    global $conn;
+    $name = $conn->real_escape_string($name);
+    $result = $conn->query("SELECT content FROM scratchpads WHERE name = '$name'");
+    if ($row = $result->fetch_assoc()) {
+        return $row['content'];
+    }
+    return '';
+}
+
+function saveScratchpadContent($content, $name = 'default') {
+    global $conn;
+    $name = $conn->real_escape_string($name);
+    $content = $conn->real_escape_string($content);
+    return $conn->query("UPDATE scratchpads SET content = '$content' WHERE name = '$name'");
+}
 ?>

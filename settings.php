@@ -24,6 +24,9 @@ if (isset($_POST['action'])) {
     } elseif ($_POST['action'] == 'toggle_todos') {
         $enabled = isset($_POST['todos_enabled']) ? '1' : '0';
         updateSetting('todos_enabled', $enabled);
+    } elseif ($_POST['action'] == 'toggle_code') {
+        $enabled = isset($_POST['code_enabled']) ? '1' : '0';
+        updateSetting('code_enabled', $enabled);
     } elseif ($_POST['action'] == 'toggle_todo_badge') {
         $enabled = isset($_POST['todo_badge_enabled']) ? '1' : '0';
         updateSetting('todo_badge_enabled', $enabled);
@@ -134,6 +137,19 @@ include 'includes/header.php';
                     <label class="form-check-label text-white" for="todosEnabledToggle">
                         <span class="d-block fw-bold">Povolit sekci TODO</span>
                         <small class="text-white-50">Zobrazit nebo skrýt sekci s úkoly.</small>
+                    </label>
+                </div>
+            </form>
+
+            <form method="POST" id="settingsFormCode" class="mb-3">
+                <input type="hidden" name="action" value="toggle_code">
+                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
+                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="code_enabled" id="codeEnabledToggle" 
+                           <?php echo getSetting('code_enabled', '1') == '1' ? 'checked' : ''; ?>
+                           onchange="this.form.submit()">
+                    <label class="form-check-label text-white" for="codeEnabledToggle">
+                        <span class="d-block fw-bold">Povolit sekci Code</span>
+                        <small class="text-white-50">Zobrazit nebo skrýt sekci s editorem kódu.</small>
                     </label>
                 </div>
             </form>

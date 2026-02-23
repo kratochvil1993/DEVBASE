@@ -136,3 +136,13 @@ INSERT INTO snippet_tags (snippet_id, tag_id) VALUES
 (2, (SELECT id FROM tags WHERE name = 'API')),
 (3, (SELECT id FROM tags WHERE name = 'UI/UX')),
 (3, (SELECT id FROM tags WHERE name = 'Frontend'));
+
+CREATE TABLE IF NOT EXISTS scratchpads (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) DEFAULT 'default',
+    content LONGTEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT IGNORE INTO scratchpads (name, content) VALUES ('default', '// Vítejte v editoru kódu. Zde si můžete psát poznámky nebo kód.');
+
