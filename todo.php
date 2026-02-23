@@ -71,8 +71,8 @@ include 'includes/header.php';
 
             </form>
 
-            <div class="d-flex flex-wrap gap-2">
-                <button type="submit" form="addTodoForm" class="btn btn-add-snipet rounded px-4">
+            <div class="d-flex flex-wrap gap-2 ms-auto">
+                <button type="submit" form="addTodoForm" class="btn btn-add-snipet rounded px-4" id="addTodoBtn">
                     <i class="bi bi-plus-lg"></i>
                 </button>
                 <button class="btn btn-edit-order rounded px-4" id="editOrderBtn" onclick="toggleSortingMode()">
@@ -200,11 +200,15 @@ function toggleSortingMode() {
     const saveBtn = document.getElementById('saveOrderBtn');
     const actionBtns = document.querySelectorAll('.action-btns');
     const checkboxes = document.querySelectorAll('.form-check-input');
+    const addForm = document.getElementById('addTodoForm');
+    const addBtn = document.getElementById('addTodoBtn');
 
     if (isSortingMode) {
         document.querySelectorAll('.d-flex.flex-column.gap-3').forEach(list => list.classList.add('sorting-mode'));
         editBtn.classList.add('d-none');
         saveBtn.classList.remove('d-none');
+        addForm.classList.add('d-none');
+        addBtn.classList.add('d-none');
         actionBtns.forEach(btn => btn.classList.add('d-none'));
         checkboxes.forEach(cb => cb.disabled = true);
 
@@ -223,6 +227,8 @@ function toggleSortingMode() {
         document.querySelectorAll('.d-flex.flex-column.gap-3').forEach(list => list.classList.remove('sorting-mode'));
         editBtn.classList.remove('d-none');
         saveBtn.classList.add('d-none');
+        addForm.classList.remove('d-none');
+        addBtn.classList.remove('d-none');
         actionBtns.forEach(btn => btn.classList.remove('d-none'));
         checkboxes.forEach(cb => cb.disabled = false);
 
