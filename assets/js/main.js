@@ -21,8 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Unified Filtering logic
   const searchInput = document.getElementById("snippetSearch");
   const tagButtons = document.querySelectorAll("#tagFilters .btn");
-  let currentSearch = localStorage.getItem("snippetSearch") || "";
-  let currentTag = localStorage.getItem("snippetTag") || "all";
+  let currentSearch = (localStorage.getItem("snippetSearch") || "")
+    .toLowerCase()
+    .trim();
+  let currentTag = (localStorage.getItem("snippetTag") || "all").trim();
 
   // Restore initial UI state
   if (searchInput) {
@@ -56,13 +58,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const tags = tagsAttr ? tagsAttr.toLowerCase().split(",") : [];
 
       const matchesSearch =
+        currentSearch === "" ||
         title.includes(currentSearch) ||
         description.includes(currentSearch) ||
         code.includes(currentSearch) ||
-        tags.some((t) => t.includes(currentSearch));
+        tags.some((t) => t.trim().toLowerCase().includes(currentSearch));
 
       const matchesTag =
-        currentTag === "all" || tags.includes(currentTag.toLowerCase());
+        currentTag === "all" ||
+        tags.some((t) => t.trim().toLowerCase() === currentTag.toLowerCase());
 
       const wrapper = card.parentElement;
 

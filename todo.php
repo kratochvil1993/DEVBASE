@@ -316,7 +316,7 @@ function openEditTodoModal(todo) {
 // Tag filtering logic
 document.addEventListener('DOMContentLoaded', () => {
     const tagButtons = document.querySelectorAll('#tagFilters .btn');
-    let currentTag = localStorage.getItem('todoTag') || 'all';
+    let currentTag = (localStorage.getItem('todoTag') || 'all').trim();
 
     // Restore initial UI state
     if (tagButtons.length > 0) {
@@ -338,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
         items.forEach(item => {
             const tagsAttr = item.getAttribute('data-tags');
             const tags = tagsAttr ? tagsAttr.toLowerCase().split(',') : [];
-            const matchesTag = currentTag === 'all' || tags.includes(currentTag.toLowerCase());
+            const matchesTag = currentTag === 'all' || tags.some(t => t.trim().toLowerCase() === currentTag.toLowerCase());
 
             if (matchesTag) {
                 item.style.display = 'block';

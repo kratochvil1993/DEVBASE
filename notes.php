@@ -473,8 +473,8 @@ function openEditNoteModal(note) {
 // Search and Tag filtering for notes
 const noteSearchInput = document.getElementById('noteSearch');
 const noteTagButtons = document.querySelectorAll('#noteTagFilters .btn');
-let currentNoteSearch = localStorage.getItem('noteSearch') || '';
-let currentNoteTag = localStorage.getItem('noteTag') || 'all';
+let currentNoteSearch = (localStorage.getItem('noteSearch') || '').toLowerCase().trim();
+let currentNoteTag = (localStorage.getItem('noteTag') || 'all').trim();
 
 // Restore initial UI state
 if (noteSearchInput) {
@@ -502,11 +502,12 @@ const filterNotes = () => {
         const tagsAttr = note.getAttribute('data-tags');
         const tags = tagsAttr ? tagsAttr.toLowerCase().split(',') : [];
         
-        const matchesSearch = title.includes(currentNoteSearch) || 
+        const matchesSearch = currentNoteSearch === "" || 
+                             title.includes(currentNoteSearch) || 
                              content.includes(currentNoteSearch) ||
-                             tags.some(t => t.includes(currentNoteSearch));
+                             tags.some(t => t.trim().toLowerCase().includes(currentNoteSearch));
         
-        const matchesTag = currentNoteTag === 'all' || tags.includes(currentNoteTag.toLowerCase());
+        const matchesTag = currentNoteTag === 'all' || tags.some(t => t.trim().toLowerCase() === currentNoteTag.toLowerCase());
 
         if (matchesSearch && matchesTag) {
             note.style.display = 'block';
