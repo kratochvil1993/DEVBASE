@@ -3,7 +3,8 @@ require_once 'includes/functions.php';
 
 // Check if database and tables are created
 $check = @$conn->query("SHOW TABLES LIKE 'snippets'");
-if (!$check || $check->num_rows == 0) {
+$check2 = @$conn->query("SHOW TABLES LIKE 'scratchpads'");
+if (!$check || $check->num_rows == 0 || !$check2 || $check2->num_rows == 0) {
     header('Location: includes/init_db.php');
     exit;
 }

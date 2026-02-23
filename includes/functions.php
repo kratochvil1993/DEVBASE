@@ -688,7 +688,7 @@ function getScratchpadContent($name = 'default') {
     global $conn;
     $name = $conn->real_escape_string($name);
     $result = $conn->query("SELECT content FROM scratchpads WHERE name = '$name'");
-    if ($row = $result->fetch_assoc()) {
+    if ($result && $row = $result->fetch_assoc()) {
         return $row['content'];
     }
     return '';
