@@ -110,6 +110,21 @@ console.log('Hello World');
             </ul>
         </div>
 
+        <div class="glass-card p-4 mb-4">
+            <h4 class="text-white mb-4"><i class="bi bi-keyboard me-2"></i> Globální klávesové zkratky</h4>
+            <p class="text-white-50 small mb-3">Tyto zkratky fungují napříč celou aplikací pro zrychlení vaší práce:</p>
+            <ul class="text-white-50 small list-unstyled">
+                <li class="mb-2">
+                    <span class="badge bg-primary me-2">Option + F</span> nebo <span class="badge bg-primary me-2">Alt + F</span>
+                    <strong class="text-white ms-2">Rychlé vyhledávání:</strong> Okamžitě zaměří (focus) vyhledávací pole v aktuální sekci (Snipety / Poznámky). Pokud už v poli text je, celý se označí pro snadné přepsání.
+                </li>
+                <li class="mb-2">
+                    <span class="badge bg-primary me-2">Option + N</span> nebo <span class="badge bg-primary me-2">Alt + N</span>
+                    <strong class="text-white ms-2">Nový záznam:</strong> Otevře modální okno pro přidání nového snippetu nebo poznámky (podle aktuální sekce).
+                </li>
+            </ul>
+        </div>
+
         <div class="glass-card p-4">
             <h4 class="text-white mb-4"><i class="bi bi-tags me-2"></i> Strategie tagování</h4>
             <ul class="text-white-50 small list-unstyled">
@@ -142,7 +157,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Profesionální funkce:</strong>
-                    Editor podporuje automatické doplňování závorek a uvozovek, zavírání HTML tagů a zvýraznění párových značek. Obsahuje také funkci **Folding** (skládání kódu) pomocí šipek u čísel řádků.
+                    Editor podporuje automatické doplňování závorek a uvozovek, zavírání HTML tagů a zvýraznění párových značek. Obsahuje také funkci **Folding** (skládání kódu) pomocí šipek u čísel řádků. Celý obsah editoru můžete také jedním kliknutím uložit do schránky pomocí tlačítka **copy**.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Klávesové zkratky:</strong>

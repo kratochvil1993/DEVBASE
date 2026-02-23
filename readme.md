@@ -22,6 +22,15 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Záloha a Přenos dat (Export/Import)**: Kompletní správa vašich dat. Celou databázi (snippety, poznámky, úkoly, tagy i nastavení) lze jedním kliknutím exportovat do JSON souboru a následně jej importovat zpět – buď formou přidání k existujícím datům, nebo kompletním přepsáním.
 - **Propracované UI**: Elegantní rozhraní postavené na Bootstrap 5, oživené plovoucími barevnými prvky, blur efekty, micro-animacemi a moderní vizí glassmorphismu.
 - **Plně lokální běh**: Všechny knihovny, ikony a fonty jsou uloženy lokálně v projektu. Aplikace nevyžaduje přístup k internetu pro své fungování (ideální pro bezpečné interní prostředí).
+- **Klávesové zkratky**: Podpora pro rychlé vyhledávání (**Alt+F**) a přidávání záznamů (**Alt+N**). V code editoru jsou pak dostupné pokročilé zkratky pro ukládání (**Ctrl+S**), našeptávání a manipulaci s kódem.
+
+## Klávesové zkratky
+
+Pro maximální efektivitu můžete používat tyto systémové zkratky:
+
+- **Option + F** (nebo **Alt + F**): Rychlé zaměření vyhledávacího pole v aktuální sekci.
+- **Option + N** (nebo **Alt + N**): Okamžité otevření okna pro přidání nového snippetu nebo poznámky.
+- **Ctrl + S** (v editoru): Rychlé uložení rozpracovaného kódu v sekci Scratchpad.
 
 ## Instalace a Spuštění
 

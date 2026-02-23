@@ -1,6 +1,19 @@
 <?php
 require_once 'db.php';
 
+// Check if database and tables are created
+$check = @$conn->query("SHOW TABLES LIKE 'snippets'");
+$check2 = @$conn->query("SHOW TABLES LIKE 'scratchpads'");
+if (!$check || $check->num_rows == 0 || !$check2 || $check2->num_rows == 0) {
+    // Determine path to includes/init_db.php
+    $path = "includes/init_db.php";
+    if (!file_exists($path)) {
+        $path = "../includes/init_db.php";
+    }
+    header("Location: $path");
+    exit;
+}
+
 function getAllSnippets($search = '') {
     global $conn;
     $sql = "SELECT s.*, l.name as language_name, l.prism_class 
