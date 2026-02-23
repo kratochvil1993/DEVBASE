@@ -510,7 +510,8 @@ function exportAllData() {
         'tags' => [],
         'snippets' => [],
         'notes' => [],
-        'todos' => []
+        'todos' => [],
+        'scratchpads' => []
     ];
 
     // Settings
@@ -564,6 +565,12 @@ function exportAllData() {
         $data['todos'][] = $row;
     }
 
+    // Scratchpads
+    $res = $conn->query("SELECT * FROM scratchpads");
+    while ($row = $res->fetch_assoc()) {
+        $data['scratchpads'][] = $row;
+    }
+
     return $data;
 }
 
@@ -579,6 +586,7 @@ function importAllData($data, $mode = 'append') {
         $conn->query("DELETE FROM todos");
         $conn->query("DELETE FROM tags");
         $conn->query("DELETE FROM languages");
+        $conn->query("DELETE FROM scratchpads");
         // We don't delete all settings to avoid breaking security unless user wants that
         // But we could overwrite them.
     }
@@ -635,8 +643,10 @@ function importAllData($data, $mode = 'append') {
             $desc = $conn->real_escape_string($snip['description']);
             $code = $conn->real_escape_string($snip['code']);
             $lang_id = isset($langMap[$snip['language_id']]) ? $langMap[$snip['language_id']] : 'NULL';
+            $pinned = (int)($snip['is_pinned'] ?? 0);
+            $sort = (int)($snip['sort_order'] ?? 0);
             
-            $conn->query("INSERT INTO snippets (title, description, code, language_id) VALUES ('$title', '$desc', '$code', $lang_id)");
+            $conn->query("INSERT INTO snippets (title, description, code, language_id, is_pinned, sort_order) VALUES ('$title', '$desc', '$code', $lang_id, $pinned, $sort)");
             $new_id = $conn->insert_id;
 
             if (!empty($snip['tags'])) {
@@ -657,9 +667,10 @@ function importAllData($data, $mode = 'append') {
             $content = $conn->real_escape_string($note['content']);
             $sort = (int)($note['sort_order'] ?? 0);
             $archived = (int)($note['is_archived'] ?? 0);
+            $pinned = (int)($note['is_pinned'] ?? 0);
             $lang_id = isset($langMap[$note['language_id']]) ? $langMap[$note['language_id']] : 'NULL';
 
-            $conn->query("INSERT INTO notes (title, content, sort_order, language_id, is_archived) VALUES ('$title', '$content', $sort, $lang_id, $archived)");
+            $conn->query("INSERT INTO notes (title, content, sort_order, language_id, is_archived, is_pinned) VALUES ('$title', '$content', $sort, $lang_id, $archived, $pinned)");
             $new_id = $conn->insert_id;
 
             if (!empty($note['tags'])) {
@@ -678,9 +689,11 @@ function importAllData($data, $mode = 'append') {
         foreach ($data['todos'] as $todo) {
             $text = $conn->real_escape_string($todo['text']);
             $archived = (int)($todo['is_archived'] ?? 0);
+            $pinned = (int)($todo['is_pinned'] ?? 0);
             $sort = (int)($todo['sort_order'] ?? 0);
+            $deadline = !empty($todo['deadline']) ? "'" . $conn->real_escape_string($todo['deadline']) . "'" : "NULL";
 
-            $conn->query("INSERT INTO todos (text, is_archived, sort_order) VALUES ('$text', $archived, $sort)");
+            $conn->query("INSERT INTO todos (text, is_archived, sort_order, is_pinned, deadline) VALUES ('$text', $archived, $sort, $pinned, $deadline)");
             $new_id = $conn->insert_id;
 
             if (!empty($todo['tags'])) {
@@ -690,6 +703,21 @@ function importAllData($data, $mode = 'append') {
                         $conn->query("INSERT INTO todo_tags (todo_id, tag_id) VALUES ($new_id, $new_tag_id)");
                     }
                 }
+            }
+        }
+    }
+
+    // Import Scratchpads
+    if (!empty($data['scratchpads'])) {
+        foreach ($data['scratchpads'] as $pad) {
+            $name = $conn->real_escape_string($pad['name']);
+            $content = $conn->real_escape_string($pad['content']);
+            
+            $check = $conn->query("SELECT id FROM scratchpads WHERE name = '$name'");
+            if ($row = $check->fetch_assoc()) {
+                $conn->query("UPDATE scratchpads SET content = '$content' WHERE name = '$name'");
+            } else {
+                $conn->query("INSERT INTO scratchpads (name, content) VALUES ('$name', '$content')");
             }
         }
     }
