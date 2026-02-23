@@ -424,4 +424,31 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
   renderMarkdownSnippets();
+
+  // Global Keyboard Shortcuts
+  document.addEventListener("keydown", (e) => {
+    // Check for Option+F (altKey) - using e.code for Safari compatibility
+    if (e.altKey && e.code === "KeyF") {
+      const searchInput =
+        document.getElementById("snippetSearch") ||
+        document.getElementById("noteSearch");
+
+      if (searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select(); // Select existing text for easy replacement
+      }
+    }
+    // Check for Option+N (altKey) - New Snippet/Note
+    if (e.altKey && e.code === "KeyN") {
+      const newBtn =
+        document.getElementById("newSnippetBtn") ||
+        document.getElementById("newNoteBtn");
+
+      if (newBtn && !newBtn.classList.contains("d-none")) {
+        e.preventDefault();
+        newBtn.click();
+      }
+    }
+  });
 });
