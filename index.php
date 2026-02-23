@@ -6,11 +6,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_snippet') {
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
         $id = !empty($_POST['snippet_id']) ? $_POST['snippet_id'] : null;
-        saveSnippet($_POST['title'], $_POST['description'], $_POST['code'], $_POST['language_id'], $tags, $id);
+        $saved_id = saveSnippet($_POST['title'], $_POST['description'], $_POST['code'], $_POST['language_id'], $tags, $id);
+        if ($saved_id) {
+            header('Location: index.php?updated_id=' . $saved_id);
+            exit;
+        }
     } elseif ($_POST['action'] == 'delete_snippet') {
         deleteSnippet($_POST['snippet_id']);
     } elseif ($_POST['action'] == 'toggle_pin') {
         toggleSnippetPin($_POST['snippet_id']);
+        header('Location: index.php?updated_id=' . $_POST['snippet_id']);
+        exit;
     }
     header('Location: index.php');
     exit;

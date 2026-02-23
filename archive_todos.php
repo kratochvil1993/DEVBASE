@@ -11,6 +11,8 @@ if (getSetting('todos_enabled', '1') == '0') {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'unarchive_todo') {
         archiveTodo($_POST['todo_id'], 0);
+        header('Location: todo.php?updated_id=' . $_POST['todo_id']);
+        exit;
     } elseif ($_POST['action'] == 'delete_todo') {
         deleteTodo($_POST['todo_id']);
     } elseif ($_POST['action'] == 'empty_archive') {

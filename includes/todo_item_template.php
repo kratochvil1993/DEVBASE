@@ -16,6 +16,7 @@ if (!empty($todo['deadline'])) {
 }
 ?>
 <div class="card glass-card todo-item <?php echo $todo['is_pinned'] ? 'pinned' : ''; ?> <?php echo $deadlineStatus; ?>" 
+     id="todo-card-<?php echo $todo['id']; ?>"
      data-id="<?php echo $todo['id']; ?>"
      data-deadline="<?php echo htmlspecialchars($todo['deadline'] ?? ''); ?>"
      data-tags="<?php echo htmlspecialchars(implode(',', array_column($todo['tags'] ?? [], 'name'))); ?>">

@@ -12,13 +12,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_note') {
         $id = !empty($_POST['note_id']) ? $_POST['note_id'] : null;
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
-        saveNote($_POST['title'], $_POST['content'], null, $tags, $id);
+        $saved_id = saveNote($_POST['title'], $_POST['content'], null, $tags, $id);
+        if ($saved_id) {
+            $sortParam = isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : '';
+            header('Location: notes.php?updated_id=' . $saved_id . $sortParam);
+            exit;
+        }
     } elseif ($_POST['action'] == 'delete_note') {
         deleteNote($_POST['note_id']);
     } elseif ($_POST['action'] == 'archive_note') {
         archiveNote($_POST['note_id'], 1);
     } elseif ($_POST['action'] == 'toggle_pin') {
         toggleNotePin($_POST['note_id']);
+        $sortParam = isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : '';
+        header('Location: notes.php?updated_id=' . $_POST['note_id'] . $sortParam);
+        exit;
     }
     $sortParam = isset($_GET['sort']) ? '?sort=' . $_GET['sort'] : '';
     header('Location: notes.php' . $sortParam);

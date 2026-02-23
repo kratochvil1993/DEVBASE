@@ -178,7 +178,7 @@ function saveSnippet($title, $description, $code, $language_id, $tags = [], $id 
             $tag_id = (int)$tag_id;
             $conn->query("INSERT INTO snippet_tags (snippet_id, tag_id) VALUES ($snippet_id, $tag_id)");
         }
-        return true;
+        return $snippet_id;
     }
     return false;
 }
@@ -290,7 +290,7 @@ function saveNote($title, $content, $language_id = null, $tags = [], $id = null)
             $tag_id = (int)$tag_id;
             $conn->query("INSERT INTO note_tags (note_id, tag_id) VALUES ($note_id, $tag_id)");
         }
-        return true;
+        return $note_id;
     }
     return false;
 }
@@ -372,7 +372,7 @@ function saveTodo($text, $tags = [], $id = null) {
                 $conn->query("INSERT INTO todo_tags (todo_id, tag_id) VALUES ($todo_id, $tag_id)");
             }
         }
-        return true;
+        return $todo_id;
     }
     return false;
 }

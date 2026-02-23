@@ -1,4 +1,4 @@
-<div class="col-md-6 col-lg-4 col-xl-3 snippet-card-wrapper <?php echo ($snippet['is_pinned'] ?? 0) ? 'pinned' : ''; ?>" data-id="<?php echo $snippet['id']; ?>">
+<div class="col-md-6 col-lg-4 col-xl-3 snippet-card-wrapper <?php echo ($snippet['is_pinned'] ?? 0) ? 'pinned' : ''; ?>" data-id="<?php echo $snippet['id']; ?>" id="snippet-card-<?php echo $snippet['id']; ?>">
     <div class="card glass-card h-100 snippet-card" 
          data-tags="<?php echo htmlspecialchars(implode(',', array_column($snippet['tags'] ?? [], 'name'))); ?>" 
          onclick="openViewModal(<?php echo htmlspecialchars(json_encode($snippet), ENT_QUOTES, 'UTF-8'); ?>)">

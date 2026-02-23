@@ -11,16 +11,24 @@ if (getSetting('todos_enabled', '1') == '0') {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_todo') {
         $tags = isset($_POST['tags']) ? (array)$_POST['tags'] : [];
-        saveTodo($_POST['text'], $tags);
+        $saved_id = saveTodo($_POST['text'], $tags);
+        if ($saved_id) {
+            header('Location: todo.php?updated_id=' . $saved_id);
+            exit;
+        }
     } elseif ($_POST['action'] == 'edit_todo') {
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
         saveTodo($_POST['text'], $tags, $_POST['todo_id']);
+        header('Location: todo.php?updated_id=' . $_POST['todo_id']);
+        exit;
     } elseif ($_POST['action'] == 'archive_todo') {
         archiveTodo($_POST['todo_id'], 1);
     } elseif ($_POST['action'] == 'delete_todo') {
         deleteTodo($_POST['todo_id']);
     } elseif ($_POST['action'] == 'toggle_pin') {
         toggleTodoPin($_POST['todo_id']);
+        header('Location: todo.php?updated_id=' . $_POST['todo_id']);
+        exit;
     }
     header('Location: todo.php');
     exit;

@@ -12,11 +12,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_note') {
         $id = !empty($_POST['note_id']) ? $_POST['note_id'] : null;
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
-        saveNote($_POST['title'], $_POST['content'], null, $tags, $id);
+        $saved_id = saveNote($_POST['title'], $_POST['content'], null, $tags, $id);
+        if ($saved_id) {
+            $sortParam = isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : '';
+            header('Location: archive_notes.php?updated_id=' . $saved_id . $sortParam);
+            exit;
+        }
     } elseif ($_POST['action'] == 'delete_note') {
         deleteNote($_POST['note_id']);
     } elseif ($_POST['action'] == 'unarchive_note') {
         archiveNote($_POST['note_id'], 0);
+        header('Location: notes.php?updated_id=' . $_POST['note_id']);
+        exit;
     }
     $sortParam = isset($_GET['sort']) ? '?sort=' . $_GET['sort'] : '';
     header('Location: archive_notes.php' . $sortParam);
@@ -125,7 +132,7 @@ include 'includes/header.php';
             $tagNames = array_map(function($t) { return $t['name']; }, $note['tags']);
             $tagData = implode(',', $tagNames);
         ?>
-            <div class="col-md-4 col-lg-6 note-item" data-id="<?php echo $note['id']; ?>" data-tags="<?php echo htmlspecialchars($tagData); ?>">
+            <div class="col-md-4 col-lg-6 note-item" data-id="<?php echo $note['id']; ?>" id="note-card-<?php echo $note['id']; ?>" data-tags="<?php echo htmlspecialchars($tagData); ?>">
                 <div class="card glass-card h-100 note-card" onclick="handleNoteClick(event, <?php echo htmlspecialchars(json_encode($note), ENT_QUOTES, 'UTF-8'); ?>)">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">

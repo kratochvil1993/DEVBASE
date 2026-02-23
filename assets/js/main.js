@@ -472,4 +472,36 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
+
+  // Handle scrolling to updated item
+  const urlParams = new URLSearchParams(window.location.search);
+  const updatedId = urlParams.get("updated_id");
+  if (updatedId) {
+    const prefix = document.getElementById("snippet-card-" + updatedId)
+      ? "snippet-card-"
+      : document.getElementById("note-card-" + updatedId)
+        ? "note-card-"
+        : document.getElementById("todo-card-" + updatedId)
+          ? "todo-card-"
+          : "";
+
+    if (prefix) {
+      const element = document.getElementById(prefix + updatedId);
+      if (element) {
+        // We wait a bit for animations and filters to settle
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          element.classList.add("updated-highlight");
+
+          // Clean up URL without reload to keep it tidy
+          const cleanSearch = window.location.search
+            .replace(new RegExp("[?&]updated_id=" + updatedId), "")
+            .replace(/^&/, "?");
+          const newUrl =
+            window.location.pathname + (cleanSearch === "?" ? "" : cleanSearch);
+          window.history.replaceState({}, document.title, newUrl);
+        }, 600);
+      }
+    }
+  }
 });

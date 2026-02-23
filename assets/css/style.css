@@ -732,3 +732,23 @@ h6 i.bi-pin-angle-fill {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
   transform: rotate(90deg);
 }
+
+/* Updated Item Highlight Animation */
+@keyframes highlight-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 229, 130, 0.7);
+    border-color: rgba(0, 229, 130, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 20px 5px rgba(0, 229, 130, 0.5);
+    border-color: rgba(0, 229, 130, 1);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 229, 130, 0);
+    border-color: var(--glass-border);
+  }
+}
+
+.updated-highlight {
+  animation: highlight-glow 2s ease-out;
+}
