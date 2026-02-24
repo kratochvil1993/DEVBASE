@@ -95,8 +95,7 @@ include 'includes/header.php';
 
 <div class="row">
     <div class="col-12 mb-4">
-        <h2 class="text-white fw-bold">Nastavení</h2>
-        <p class="text-white-50">Spravujte nastavení aplikace, štítky a jazyky.</p>
+        <h2 class="text-white fw-bold">Nastavení</h2>        
     </div>
 
     <!-- General Settings -->
