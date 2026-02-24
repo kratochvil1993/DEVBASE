@@ -111,7 +111,7 @@ include 'includes/header.php';
 
 <div class="row mb-3">
     <div class="col-12">
-        <div class="glass-card p-4">
+        <div class="glass-card no-jump p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="flex-grow-1 me-4">
                     <div class="d-flex align-items-center mb-1">
@@ -156,7 +156,7 @@ include 'includes/header.php';
             </div>
 
             <!-- Tab Bar -->
-            <div class="d-flex align-items-center mb-0 overflow-auto tab-container px-1">
+            <div class="d-flex align-items-center mb-0 overflow-auto tab-container">
                 <?php foreach ($scratchpads as $pad): ?>
                     <div class="nav-tab-item <?php echo $pad['id'] == $active_id ? 'active' : ''; ?> me-1">
                         <a href="code.php?id=<?php echo $pad['id']; ?>" class="nav-tab-link py-2 px-3">
@@ -359,7 +359,7 @@ li.CodeMirror-hint-active {
     background: rgba(142, 84, 233, 0.3);
     border-color: rgba(142, 84, 233, 0.6);
     color: #fff;
-    transform: translateY(-2px);
+    transform: none;
     box-shadow: 0 5px 15px rgba(142, 84, 233, 0.2);
 }
 .btn-copy:active {
@@ -375,11 +375,14 @@ li.CodeMirror-hint-active {
     background: rgba(13, 202, 240, 0.3);
     border-color: rgba(13, 202, 240, 0.6);
     color: #fff;
-    transform: translateY(-2px);
+    transform: none;
     box-shadow: 0 5px 15px rgba(13, 202, 240, 0.2);
 }
 .btn-send-to:active {
     transform: translateY(0);
+}
+.btn-add-snipet:hover {
+    transform: none !important;
 }
 @keyframes fadeOut {
     0% { opacity: 1; }

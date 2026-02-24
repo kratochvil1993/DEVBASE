@@ -856,3 +856,8 @@ h6 i.bi-pin-angle-fill {
     color: #fff;
   }
 }
+
+/* Code Mirror */
+.CodeMirror {
+  border-radius: 0 !important;
+}
