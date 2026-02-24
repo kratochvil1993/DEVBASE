@@ -3,17 +3,20 @@ require_once 'includes/functions.php';
 
 // Handle Snippet addition, update or delete (same logic as on index.php)
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
+    $redirect_anchor = '';
     if ($_POST['action'] == 'add_snippet') {
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
         $id = !empty($_POST['snippet_id']) ? $_POST['snippet_id'] : null;
         $is_locked = isset($_POST['is_locked']) ? 1 : 0;
-        saveSnippet($_POST['title'], $_POST['description'], $_POST['code'], $_POST['language_id'], $tags, $id, $is_locked);
+        $snippet_id = saveSnippet($_POST['title'], $_POST['description'], $_POST['code'], $_POST['language_id'], $tags, $id, $is_locked);
+        if ($snippet_id) $redirect_anchor = '#snippet-' . $snippet_id;
     } elseif ($_POST['action'] == 'delete_snippet') {
         deleteSnippet($_POST['snippet_id']);
     } elseif ($_POST['action'] == 'toggle_pin') {
         toggleSnippetPin($_POST['snippet_id']);
+        $redirect_anchor = '#snippet-' . $_POST['snippet_id'];
     }
-    header('Location: manage.php');
+    header('Location: manage.php' . $redirect_anchor);
     exit;
 }
 
@@ -25,6 +28,13 @@ $languages = getAllLanguages();
 
 include 'includes/header.php';
 ?>
+<style>
+    .manage-snippet-row:target {
+        background: rgba(var(--bs-primary-rgb), 0.15) !important;
+        outline: 1px solid rgba(var(--bs-primary-rgb), 0.3);
+        transition: background 1s ease-in-out;
+    }
+</style>
 <div class="container">
 <div class="row align-items-center mb-4">
     <div class="col-12">

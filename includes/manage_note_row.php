@@ -1,4 +1,5 @@
 <tr class="manage-note-row"
+    id="note-<?php echo $note['id']; ?>"
     data-id="<?php echo $note['id']; ?>"
     data-title="<?php echo strtolower(htmlspecialchars($note['title'])); ?>"
     data-content="<?php echo strtolower(htmlspecialchars($note['content'])); ?>"

@@ -1,4 +1,5 @@
 <tr class="manage-row manage-snippet-row border-bottom border-light border-opacity-10"
+    id="snippet-<?php echo $snippet['id']; ?>"
     data-id="<?php echo $snippet['id']; ?>"
     data-title="<?php echo strtolower(htmlspecialchars($snippet['title'])); ?>"
     data-desc="<?php echo strtolower(htmlspecialchars($snippet['description'] ?? '')); ?>"

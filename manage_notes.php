@@ -9,17 +9,20 @@ if (getSetting('notes_enabled', '1') == '0') {
 
 // Handle Note addition, update or delete
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
+    $redirect_anchor = '';
     if ($_POST['action'] == 'add_note') {
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
         $id = !empty($_POST['note_id']) ? $_POST['note_id'] : null;
         $is_locked = isset($_POST['is_locked']) ? 1 : 0;
-        saveNote($_POST['title'], $_POST['content'], null, $tags, $id, $is_locked);
+        $note_id = saveNote($_POST['title'], $_POST['content'], null, $tags, $id, $is_locked);
+        if ($note_id) $redirect_anchor = '#note-' . $note_id;
     } elseif ($_POST['action'] == 'delete_note') {
         deleteNote($_POST['note_id']);
     } elseif ($_POST['action'] == 'toggle_pin') {
         toggleNotePin($_POST['note_id']);
+        $redirect_anchor = '#note-' . $_POST['note_id'];
     }
-    header('Location: manage_notes.php');
+    header('Location: manage_notes.php' . $redirect_anchor);
     exit;
 }
 
@@ -32,6 +35,13 @@ $languages = getAllLanguages();
 
 include 'includes/header.php';
 ?>
+<style>
+    .manage-note-row:target {
+        background: rgba(var(--bs-primary-rgb), 0.15) !important;
+        outline: 1px solid rgba(var(--bs-primary-rgb), 0.3);
+        transition: background 1s ease-in-out;
+    }
+</style>
 <div class="container">
     <div class="row align-items-center mb-4">
         <div class="col-12">
