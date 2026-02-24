@@ -100,7 +100,7 @@ include 'includes/header.php';
 
     <!-- General Settings -->
     <div class="col-md-6 mb-4">
-        <div class="glass-card p-4 h-100">
+        <div class="glass-card no-jump p-4 h-100">
             <h4 class="text-white mb-3">Obecné nastavení</h4>
             <form method="POST" id="settingsFormSnippets" class="mb-3">
                 <input type="hidden" name="action" value="toggle_snippets">
@@ -183,7 +183,7 @@ include 'includes/header.php';
 
     <!-- Security Settings -->
     <div class="col-md-6 mb-4">
-        <div class="glass-card p-4 h-100">
+        <div class="glass-card no-jump p-4 h-100">
             <h4 class="text-white mb-3"><i class="bi bi-shield-lock me-2 text-primary"></i>Zabezpečení</h4>
             <?php $hasPassword = !empty(getSetting('app_password')); ?>
             <div class="security-settings-container">
@@ -250,7 +250,7 @@ include 'includes/header.php';
     
     <!-- Snippet Tag Management -->
     <div class="col-md-6 mb-4">
-        <div class="glass-card p-4 h-100">
+        <div class="glass-card no-jump p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="text-white mb-0">Štítky kódů</h4>
                 <div class="d-flex gap-2">
@@ -307,7 +307,7 @@ include 'includes/header.php';
 
     <!-- Note Tag Management -->
     <div class="col-md-6 mb-4">
-        <div class="glass-card p-4 h-100">
+        <div class="glass-card no-jump p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="text-white mb-0">Štítky poznámek</h4>
                 <div class="d-flex gap-2">
@@ -364,7 +364,7 @@ include 'includes/header.php';
 
     <!-- Todo Tag Management -->
     <div class="col-md-6 mb-4">
-        <div class="glass-card p-4 h-100">
+        <div class="glass-card no-jump p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="text-white mb-0">Štítky úkolů</h4>
                 <div class="d-flex gap-2">
@@ -421,7 +421,7 @@ include 'includes/header.php';
 
     <!-- Language Management -->
     <div class="col-md-6 mb-4">
-        <div class="glass-card p-4 h-100">
+        <div class="glass-card no-jump p-4 h-100">
             <h4 class="text-white mb-4">Správa jazyků</h4>
             
             <form method="POST" class="mb-4" id="langForm">
@@ -462,7 +462,7 @@ include 'includes/header.php';
 
     <!-- Backup and Restore -->
     <div class="col-12 mb-4">
-        <div class="glass-card p-4">
+        <div class="glass-card no-jump p-4">
             <h4 class="text-white mb-4"><i class="bi bi-cloud-arrow-down me-2 text-primary"></i>Záloha a obnovení dat</h4>
             
             <?php if (isset($_GET['import'])): ?>

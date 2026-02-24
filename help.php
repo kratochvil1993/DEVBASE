@@ -37,7 +37,7 @@ include 'includes/header.php';
 
     <!-- Markdown Overview -->
     <div class="col-lg-12 mb-4 help-section" id="markdown">
-        <div class="glass-card p-4">
+        <div class="glass-card no-jump p-4">
             <h4 class="text-white mb-4"><i class="bi bi-markdown me-2"></i> Markdown Tahák</h4>
             
             <div class="help-section mb-4">
@@ -98,7 +98,7 @@ console.log('Hello World');
 
     <!-- Tips Sidebar -->
     <div class="col-lg-12">
-        <div class="glass-card p-4 mb-4 help-section" id="searching">
+        <div class="glass-card no-jump p-4 mb-4 help-section" id="searching">
             <h4 class="text-white mb-4"><i class="bi bi-lightbulb me-2"></i> Tipy pro vyhledávání</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
@@ -140,7 +140,7 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card p-4 mb-4 help-section" id="shortcuts">
+        <div class="glass-card no-jump p-4 mb-4 help-section" id="shortcuts">
             <h4 class="text-white mb-4"><i class="bi bi-keyboard me-2"></i> Globální klávesové zkratky</h4>
             <p class="text-white-50 small mb-3">Tyto zkratky fungují napříč celou aplikací pro zrychlení vaší práce:</p>
             
@@ -177,7 +177,7 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card p-4 help-section" id="tagging">
+        <div class="glass-card no-jump p-4 help-section" id="tagging">
             <h4 class="text-white mb-4"><i class="bi bi-tags me-2"></i> Strategie tagování</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
@@ -203,7 +203,7 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card p-4 mt-4 help-section" id="editor">
+        <div class="glass-card no-jump p-4 mt-4 help-section" id="editor">
             <h4 class="text-white mb-4"><i class="bi bi-braces me-2"></i> Práce s Editorem (Code Scratchpad)</h4>
             <p class="text-white small mb-3">Tato sekce slouží jako vaše "pískoviště" pro libovolný kód, konfigurační řetězce nebo technické poznámky, které chcete mít neustále po ruce.</p>
             <ul class="text-white-50 small list-unstyled">
@@ -238,7 +238,7 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card p-4 mt-4 help-section" id="notes">
+        <div class="glass-card no-jump p-4 mt-4 help-section" id="notes">
             <h4 class="text-white mb-4"><i class="bi bi-journal-text me-2"></i> Práce s Poznámkami</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
@@ -276,7 +276,7 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card p-4 mt-4 help-section" id="todo">
+        <div class="glass-card no-jump p-4 mt-4 help-section" id="todo">
             <h4 class="text-white mb-4"><i class="bi bi-check2-square me-2"></i> Správa úkolů (TODO)</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
@@ -310,7 +310,7 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card p-4 mt-4 help-section" id="security">
+        <div class="glass-card no-jump p-4 mt-4 help-section" id="security">
             <h4 class="text-white mb-4"><i class="bi bi-shield-lock me-2"></i> Zabezpečení a Soukromí</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
@@ -331,7 +331,7 @@ console.log('Hello World');
                 </li>
             </ul>
         </div>
-        <div class="glass-card p-4 mt-4 help-section" id="backup">
+        <div class="glass-card no-jump p-4 mt-4 help-section" id="backup">
             <h4 class="text-white mb-4"><i class="bi bi-cloud-arrow-down me-2"></i> Záloha a obnovení dat</h4>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
