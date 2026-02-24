@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS snippets (
     code TEXT NOT NULL,
     language_id INT,
     is_pinned TINYINT(1) DEFAULT 0,
+    is_locked TINYINT(1) DEFAULT 0,
     sort_order INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (language_id) REFERENCES languages(id) ON DELETE SET NULL
@@ -42,6 +43,7 @@ CREATE TABLE IF NOT EXISTS notes (
     sort_order INT DEFAULT 0,
     language_id INT,
     is_pinned TINYINT(1) DEFAULT 0,
+    is_locked TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     is_archived TINYINT(1) DEFAULT 0,
     FOREIGN KEY (language_id) REFERENCES languages(id) ON DELETE SET NULL

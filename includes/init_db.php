@@ -26,6 +26,22 @@ if (file_exists($schema_file)) {
                 $result->free();
             }
         } while ($conn->more_results() && $conn->next_result());
+
+        // Migrations: Ensure specific columns exist even if tables already existed
+        $migrations = [
+            'snippets' => ['is_locked' => 'TINYINT(1) DEFAULT 0'],
+            'notes' => ['is_locked' => 'TINYINT(1) DEFAULT 0']
+        ];
+
+        foreach ($migrations as $table => $columns) {
+            foreach ($columns as $column => $definition) {
+                $checkCol = $conn->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
+                if ($checkCol && $checkCol->num_rows == 0) {
+                    $conn->query("ALTER TABLE `$table` ADD COLUMN `$column` $definition");
+                }
+            }
+        }
+
         header("Refresh: 2; URL=../index.php");
         echo "<div style='font-family: sans-serif; text-align: center; margin-top: 50px;'>";
         echo "<h2>Databáze a schéma byly úspěšně inicializovány.</h2>";

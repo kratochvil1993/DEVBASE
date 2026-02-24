@@ -1,10 +1,14 @@
 <?php
 require_once 'db.php';
 
-// Check if database and tables are created
+// Check if database and tables are created and up to date
 $check = @$conn->query("SHOW TABLES LIKE 'snippets'");
 $check2 = @$conn->query("SHOW TABLES LIKE 'scratchpads'");
-if (!$check || $check->num_rows == 0 || !$check2 || $check2->num_rows == 0) {
+$check3 = @$conn->query("SHOW COLUMNS FROM snippets LIKE 'is_locked'");
+
+if (!$check || $check->num_rows == 0 || 
+    !$check2 || $check2->num_rows == 0 || 
+    !$check3 || $check3->num_rows == 0) {
     // Determine path to includes/init_db.php
     $path = "includes/init_db.php";
     if (!file_exists($path)) {
@@ -646,9 +650,10 @@ function importAllData($data, $mode = 'append') {
             $code = $conn->real_escape_string($snip['code']);
             $lang_id = isset($langMap[$snip['language_id']]) ? $langMap[$snip['language_id']] : 'NULL';
             $pinned = (int)($snip['is_pinned'] ?? 0);
+            $locked = (int)($snip['is_locked'] ?? 0);
             $sort = (int)($snip['sort_order'] ?? 0);
             
-            $conn->query("INSERT INTO snippets (title, description, code, language_id, is_pinned, sort_order) VALUES ('$title', '$desc', '$code', $lang_id, $pinned, $sort)");
+            $conn->query("INSERT INTO snippets (title, description, code, language_id, is_pinned, is_locked, sort_order) VALUES ('$title', '$desc', '$code', $lang_id, $pinned, $locked, $sort)");
             $new_id = $conn->insert_id;
 
             if (!empty($snip['tags'])) {
@@ -670,9 +675,10 @@ function importAllData($data, $mode = 'append') {
             $sort = (int)($note['sort_order'] ?? 0);
             $archived = (int)($note['is_archived'] ?? 0);
             $pinned = (int)($note['is_pinned'] ?? 0);
+            $locked = (int)($note['is_locked'] ?? 0);
             $lang_id = isset($langMap[$note['language_id']]) ? $langMap[$note['language_id']] : 'NULL';
 
-            $conn->query("INSERT INTO notes (title, content, sort_order, language_id, is_archived, is_pinned) VALUES ('$title', '$content', $sort, $lang_id, $archived, $pinned)");
+            $conn->query("INSERT INTO notes (title, content, sort_order, language_id, is_archived, is_pinned, is_locked) VALUES ('$title', '$content', $sort, $lang_id, $archived, $pinned, $locked)");
             $new_id = $conn->insert_id;
 
             if (!empty($note['tags'])) {
