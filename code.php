@@ -70,7 +70,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 }
 
 $scratchpads = getAllScratchpads();
-$active_id = isset($_GET['id']) ? (int)$_GET['id'] : ($scratchpads[0]['id'] ?? null);
+
+// Determine active ID: 1. URL parameter, 2. Cookie, 3. First available scratchpad
+$active_id = null;
+if (isset($_GET['id'])) {
+    $active_id = (int)$_GET['id'];
+    setcookie('last_scratchpad_id', $active_id, time() + (86400 * 30), "/");
+} elseif (isset($_COOKIE['last_scratchpad_id'])) {
+    $active_id = (int)$_COOKIE['last_scratchpad_id'];
+} else {
+    $active_id = $scratchpads[0]['id'] ?? null;
+}
 
 // If active ID is not in list (e.g. deleted), fallback to first
 $active_pad = null;
@@ -80,10 +90,15 @@ foreach ($scratchpads as $pad) {
         break;
     }
 }
+
 if (!$active_pad && !empty($scratchpads)) {
     $active_pad = $scratchpads[0];
     $active_id = $active_pad['id'];
+    // Update cookie with the actual active ID if the previous one was invalid
+    setcookie('last_scratchpad_id', $active_id, time() + (86400 * 30), "/");
 }
+
+
 
 $content = $active_pad ? $active_pad['content'] : '';
 $pad_name = $active_pad ? $active_pad['name'] : 'Draft';
