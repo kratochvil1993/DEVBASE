@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_note') {
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
         $id = !empty($_POST['note_id']) ? $_POST['note_id'] : null;
-        saveNote($_POST['title'], $_POST['content'], null, $tags, $id);
+        $is_locked = isset($_POST['is_locked']) ? 1 : 0;
+        saveNote($_POST['title'], $_POST['content'], null, $tags, $id, $is_locked);
     } elseif ($_POST['action'] == 'delete_note') {
         deleteNote($_POST['note_id']);
     } elseif ($_POST['action'] == 'toggle_pin') {
@@ -207,6 +208,9 @@ function openAddNoteManageModal() {
     }
     document.getElementById('noteSubmitBtn').innerText = 'Uložit poznámku';
 
+    const lockInput = document.getElementById('noteLockedInput');
+    if (lockInput) lockInput.checked = false;
+
     const tagCheckboxes = document.querySelectorAll('#noteForm input[name="tags[]"]');
     tagCheckboxes.forEach(cb => cb.checked = false);
 }
@@ -225,6 +229,10 @@ function openEditNoteManageModal(note) {
     tagCheckboxes.forEach(cb => {
         cb.checked = note.tags.some(t => t.id == cb.value);
     });
+
+    const isLocked = (note.is_locked == 1 || note.is_locked === true || note.is_locked === "1");
+    const lockInput = document.getElementById('noteLockedInput');
+    if (lockInput) lockInput.checked = isLocked;
     
     var myModal = new bootstrap.Modal(document.getElementById('addNoteModal'));
     myModal.show();
@@ -298,9 +306,19 @@ function copyNoteContent(btn) {
                 <div class="modal-body">
                     <input type="hidden" name="action" value="add_note">
                     <input type="hidden" name="note_id" id="noteId" value="">
-                    <div class="mb-3">
-                        <label class="form-label text-white-50 small">Název</label>
-                        <input type="text" id="noteTitleInput" name="title" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-9">
+                            <label class="form-label text-white-50 small">Název</label>
+                            <input type="text" id="noteTitleInput" name="title" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" name="is_locked" id="noteLockedInput" value="1">
+                                <label class="form-check-label text-white-50 small" for="noteLockedInput">
+                                    <i class="bi bi-lock-fill me-1"></i> Skrýt obsah
+                                </label>
+                            </div>
+                        </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-12">

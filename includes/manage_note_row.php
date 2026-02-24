@@ -12,6 +12,9 @@
         <?php endif; ?>
     </td>
     <td class="px-4 py-3 fw-medium">
+        <?php if ($note['is_locked']): ?>
+            <i class="bi bi-lock-fill me-1 small text-white-50"></i>
+        <?php endif; ?>
         <?php echo htmlspecialchars($note['title']); ?>
         <div class="small text-white-50 fw-light mt-1 text-truncate" style="max-width: 350px;">
             <?php echo htmlspecialchars(substr(strip_tags($note['content']), 0, 100)) . (strlen(strip_tags($note['content'])) > 100 ? '...' : ''); ?>
