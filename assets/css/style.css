@@ -863,3 +863,71 @@ h6 i.bi-pin-angle-fill {
 .CodeMirror {
   border-radius: 0 !important;
 }
+/* Locked Note Styles */
+.note-item.locked .quill-preview {
+  filter: blur(8px) opacity(0.4);
+  user-select: none;
+  pointer-events: none;
+  transition: filter 0.3s ease;
+}
+
+.note-item.locked .note-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.note-item.locked .note-card::after {
+  content: "\F471"; /* bi-lock-fill */
+  font-family: "bootstrap-icons";
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.4);
+  z-index: 1;
+  pointer-events: none;
+  text-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.note-item.locked:hover .quill-preview {
+  filter: blur(6px) opacity(0.5);
+}
+
+.note-item.locked .card-title i.bi-lock-fill {
+  font-size: 0.9rem;
+  vertical-align: middle;
+  color: rgba(255, 255, 255, 0.5);
+}
+/* Locked Snippet Styles */
+.snippet-card-wrapper.locked .snippet-code-wrapper,
+.snippet-card-wrapper.locked .card-text {
+  filter: blur(8px) opacity(0.4);
+  user-select: none;
+  pointer-events: none;
+  transition: filter 0.3s ease;
+}
+
+.snippet-card-wrapper.locked .snippet-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.snippet-card-wrapper.locked .snippet-card::after {
+  content: "\F471"; /* bi-lock-fill */
+  font-family: "bootstrap-icons";
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.4);
+  z-index: 1;
+  pointer-events: none;
+  text-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.snippet-card-wrapper.locked:hover .snippet-code-wrapper,
+.snippet-card-wrapper.locked:hover .card-text {
+  filter: blur(6px) opacity(0.5);
+}

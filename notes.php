@@ -12,7 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_note') {
         $id = !empty($_POST['note_id']) ? $_POST['note_id'] : null;
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
-        $saved_id = saveNote($_POST['title'], $_POST['content'], null, $tags, $id);
+        $is_locked = isset($_POST['is_locked']) ? 1 : 0;
+        $saved_id = saveNote($_POST['title'], $_POST['content'], null, $tags, $id, $is_locked);
         if ($saved_id) {
             $sortParam = isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : '';
             header('Location: notes.php?updated_id=' . $saved_id . $sortParam);
@@ -72,7 +73,7 @@ include 'includes/header.php';
             </div>
 
             <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-add-snipet rounded Xrounded-pill px-4" id="newNoteBtn" data-bs-toggle="modal" data-bs-target="#noteModal" onclick="openAddNoteModal()">
+                <button class="btn btn-add-snipet rounded Xrounded-pill px-4" id="newNoteBtn" onclick="openAddNoteModal()">
                     <i class="bi bi-plus-lg"></i>
                 </button>
                 <button class="btn btn-edit-order rounded Xrounded-pill px-4" id="editOrderBtn" onclick="toggleSortingMode()">
@@ -214,9 +215,17 @@ include 'includes/header.php';
                     <input type="hidden" name="action" value="add_note">
                     <input type="hidden" name="note_id" id="noteId" value="">
                     <div class="row g-3">
-                        <div class="col-12">
+                        <div class="col-md-9">
                             <label class="form-label text-white-50 small">Název</label>
                             <input type="text" name="title" id="noteTitleInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required placeholder="Napište název...">
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" name="is_locked" id="noteLockedInput" value="1">
+                                <label class="form-check-label text-white-50 small" for="noteLockedInput">
+                                    <i class="bi bi-lock-fill me-1"></i> Skrýt obsah
+                                </label>
+                            </div>
                         </div>
                         <div class="col-12">
                             <label class="form-label text-white-50 small">Obsah</label>
@@ -422,7 +431,7 @@ function openViewNoteModal(note) {
         };
     }
     
-    var myModal = new bootstrap.Modal(document.getElementById('viewNoteModal'));
+    const myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('viewNoteModal'));
     myModal.show();
 }
 
@@ -440,6 +449,9 @@ function copyNoteContent(btn) {
 }
 
 function openAddNoteModal() {
+    const modalEl = document.getElementById('noteModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    
     document.getElementById('noteModalTitle').innerText = 'Nová poznámka';
     document.getElementById('noteId').value = '';
     document.getElementById('noteTitleInput').value = '';
@@ -447,12 +459,18 @@ function openAddNoteModal() {
     quill.root.innerHTML = '';
     document.getElementById('noteSubmitBtn').innerText = 'Uložit poznámku';
 
-    // Reset tags
+    // Reset tags and lock
     const tagCheckboxes = document.querySelectorAll('#noteForm input[name="tags[]"]');
     tagCheckboxes.forEach(cb => cb.checked = false);
+    document.getElementById('noteLockedInput').checked = false;
+    
+    modal.show();
 }
 
 function openEditNoteModal(note) {
+    const modalEl = document.getElementById('noteModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    
     document.getElementById('noteModalTitle').innerText = 'Upravit poznámku';
     document.getElementById('noteId').value = note.id;
     document.getElementById('noteTitleInput').value = note.title;
@@ -463,11 +481,14 @@ function openEditNoteModal(note) {
     // Set tags
     const tagCheckboxes = document.querySelectorAll('#noteForm input[name="tags[]"]');
     tagCheckboxes.forEach(cb => {
-        cb.checked = note.tags.some(t => t.id == cb.value);
+        cb.checked = note.tags ? note.tags.some(t => t.id == cb.value) : false;
     });
     
-    var myModal = new bootstrap.Modal(document.getElementById('noteModal'));
-    myModal.show();
+    // Set locked state robustly
+    const isLocked = note.is_locked == 1 || note.is_locked === true || note.is_locked === "1";
+    document.getElementById('noteLockedInput').checked = isLocked;
+    
+    modal.show();
 }
 
 // Search and Tag filtering for notes

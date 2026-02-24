@@ -6,7 +6,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_snippet') {
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
         $id = !empty($_POST['snippet_id']) ? $_POST['snippet_id'] : null;
-        $saved_id = saveSnippet($_POST['title'], $_POST['description'], $_POST['code'], $_POST['language_id'], $tags, $id);
+        $is_locked = isset($_POST['is_locked']) ? 1 : 0;
+        $saved_id = saveSnippet($_POST['title'], $_POST['description'], $_POST['code'], $_POST['language_id'], $tags, $id, $is_locked);
         if ($saved_id) {
             header('Location: index.php?updated_id=' . $saved_id);
             exit;
@@ -57,7 +58,7 @@ include 'includes/header.php';
                 </span>
                 <input type="text" id="snippetSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat snipety...">
             </div>
-            <button class="btn btn-add-snipet rounded px-3 ms-auto" data-bs-toggle="modal" data-bs-target="#addSnippetModal" id="newSnippetBtn" title="Nový snipet">
+            <button class="btn btn-add-snipet rounded px-3 ms-auto" onclick="openAddModal()" id="newSnippetBtn" title="Nový snipet">
                 <i class="bi bi-plus-lg"></i>
             </button>
             <button class="btn btn-edit-order rounded px-4" id="editOrderBtn" onclick="toggleSortingMode()" style="text-wrap: nowrap;">
@@ -97,18 +98,30 @@ include 'includes/header.php';
                 <div class="modal-body">
                     <input type="hidden" name="action" value="add_snippet">
                     <input type="hidden" name="snippet_id" id="snippetId" value="">
-                    <div class="mb-3">
-                        <label class="form-label text-white-50 small">Název</label>
-                        <input type="text" name="title" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="form-label text-white-50 small">Název</label>
+                            <input type="text" name="title" id="snippetTitleInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required placeholder="Název snipetu...">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label text-white-50 small">Popis</label>
-                        <textarea name="description" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="2"></textarea>
+                    <div class="row mb-3">
+                        <div class="col-md-9">
+                            <label class="form-label text-white-50 small">Popis</label>
+                            <textarea name="description" id="snippetDescriptionInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="2" placeholder="Krátký popis..."></textarea>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" name="is_locked" id="snippetLockedInput" value="1">
+                                <label class="form-check-label text-white-50 small" for="snippetLockedInput">
+                                    <i class="bi bi-lock-fill me-1"></i> Skrýt obsah
+                                </label>
+                            </div>
+                        </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label text-white-50 small">Jazyk</label>
-                            <select name="language_id" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
+                            <select name="language_id" id="snippetLanguageInput" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
                                 <option value="" class="text-dark">Vybrat jazyk</option>
                                 <?php foreach ($languages as $lang): ?>
                                     <option value="<?php echo $lang['id']; ?>" class="text-dark"><?php echo htmlspecialchars($lang['name']); ?></option>
@@ -133,7 +146,7 @@ include 'includes/header.php';
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-white-50 small">Kód</label>
-                        <textarea name="code" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none font-monospace" rows="10" required></textarea>
+                        <textarea name="code" id="snippetCodeInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none font-monospace" rows="10" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-top border-light border-opacity-10">
@@ -293,6 +306,160 @@ function saveOrder() {
     .then(response => response.json())
     .then(data => {
         console.log('Order saved:', data);
+    });
+}
+
+function openAddModal() {
+    const modalEl = document.getElementById('addSnippetModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    
+    document.getElementById('modalTitle').innerText = 'Přidat nový snipet';
+    document.getElementById('snippetId').value = '';
+    document.getElementById('snippetForm').reset();
+    document.getElementById('submitBtn').innerText = 'Uložit snipet';
+    
+    // Explicitly clear inputs if reset() isn't enough for some browser states
+    document.getElementById('snippetTitleInput').value = '';
+    document.getElementById('snippetDescriptionInput').value = '';
+    document.getElementById('snippetCodeInput').value = '';
+    document.getElementById('snippetLockedInput').checked = false;
+    
+    modal.show();
+}
+
+function openEditModal(snippet) {
+    const modalEl = document.getElementById('addSnippetModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    
+    document.getElementById('modalTitle').innerText = 'Upravit snipet';
+    document.getElementById('snippetId').value = snippet.id;
+    document.getElementById('snippetTitleInput').value = snippet.title || '';
+    document.getElementById('snippetDescriptionInput').value = snippet.description || '';
+    document.getElementById('snippetLanguageInput').value = snippet.language_id || '';
+    document.getElementById('snippetCodeInput').value = snippet.code || '';
+    
+    // Tags
+    const tagCheckboxes = document.querySelectorAll('#snippetForm input[name="tags[]"]');
+    tagCheckboxes.forEach(cb => {
+        cb.checked = snippet.tags ? snippet.tags.some(t => t.id == cb.value) : false;
+    });
+
+    document.getElementById('submitBtn').innerText = 'Uložit změny';
+    
+    const isLocked = (snippet.is_locked == 1 || snippet.is_locked === true || snippet.is_locked === "1");
+    const lockInput = document.getElementById('snippetLockedInput');
+    if (lockInput) {
+        lockInput.checked = isLocked;
+    }
+    modal.show();
+}
+
+
+
+function openViewModal(snippet) {
+    document.getElementById('viewModalTitle').innerText = snippet.title;
+    document.getElementById('viewModalLanguage').innerText = snippet.language_name || 'Bez jazyka';
+    
+    const codeEl = document.getElementById('viewModalCode');
+    codeEl.innerText = snippet.code;
+    codeEl.className = 'language-' + (snippet.prism_class || 'none');
+    
+    // Tags
+    const tagsWrapper = document.getElementById('viewModalTags');
+    tagsWrapper.innerHTML = '';
+    if (snippet.tags && snippet.tags.length > 0) {
+        snippet.tags.forEach(tag => {
+            const span = document.createElement('span');
+            span.className = 'badge tag-badge';
+            span.style.backgroundColor = tag.color || '#6c757d';
+            span.textContent = tag.name;
+            tagsWrapper.appendChild(span);
+        });
+    }
+
+    // Edit button inside view modal
+    document.getElementById('editSnippetFromViewBtn').onclick = function() {
+        const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewSnippetModal'));
+        if (viewModal) viewModal.hide();
+        openEditModal(snippet);
+    };
+
+    if (typeof Prism !== 'undefined') {
+        Prism.highlightElement(codeEl);
+    }
+
+    const myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('viewSnippetModal'));
+    myModal.show();
+}
+
+// Search and Tag filtering
+const snippetSearchInput = document.getElementById('snippetSearch');
+const tagFilters = document.querySelectorAll('#tagFilters button');
+const snippetCards = document.querySelectorAll('.snippet-card-wrapper');
+
+function filterSnippets() {
+    if (!snippetSearchInput) return;
+    
+    const searchTerm = snippetSearchInput.value.toLowerCase().trim();
+    const activeTagBtn = document.querySelector('#tagFilters button.active');
+    const activeTag = activeTagBtn ? activeTagBtn.dataset.tag : 'all';
+
+    let pinnedCount = 0;
+    let othersCount = 0;
+
+    snippetCards.forEach(card => {
+        const title = (card.querySelector('.card-title')?.innerText || '').toLowerCase();
+        const desc = (card.querySelector('.card-text')?.innerText || '').toLowerCase();
+        // Try multiple ways to get tags
+        const tagsRaw = card.getAttribute('data-tags') || card.querySelector('.snippet-card')?.dataset?.tags || '';
+        const cardTags = tagsRaw.toLowerCase().split(',').map(t => t.trim());
+
+        const matchesSearch = !searchTerm || title.includes(searchTerm) || desc.includes(searchTerm) || tagsRaw.toLowerCase().includes(searchTerm);
+        const matchesTag = activeTag === 'all' || cardTags.includes(activeTag.toLowerCase());
+
+        if (matchesSearch && matchesTag) {
+            card.classList.remove('d-none');
+            if (card.parentElement.id === 'pinnedSnippetsGrid') pinnedCount++;
+            else othersCount++;
+        } else {
+            card.classList.add('d-none');
+        }
+    });
+
+    // Toggle visibility of empty containers
+    const pinnedContainer = document.getElementById('pinnedSnippetsContainer');
+    const othersContainer = document.getElementById('othersSnippetsContainer');
+    const othersHeader = document.getElementById('othersHeader');
+
+    if (pinnedContainer) pinnedContainer.classList.toggle('d-none', pinnedCount === 0);
+    if (othersContainer) {
+        othersContainer.classList.toggle('d-none', othersCount === 0 && pinnedCount === 0);
+        if (othersHeader) othersHeader.classList.toggle('d-none', pinnedCount === 0 || othersCount === 0);
+    }
+}
+
+if (snippetSearchInput) {
+    snippetSearchInput.addEventListener('input', filterSnippets);
+}
+
+tagFilters.forEach(btn => {
+    btn.addEventListener('click', () => {
+        tagFilters.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filterSnippets();
+    });
+});
+
+function copyToClipboard(btn, elementId) {
+    const text = document.getElementById(elementId).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = 'copied!';
+        btn.classList.replace('btn-outline-light', 'btn-success');
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.replace('btn-success', 'btn-outline-light');
+        }, 2000);
     });
 }
 </script>

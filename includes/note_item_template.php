@@ -1,8 +1,11 @@
-<div class="col-md-4 col-lg-6 note-item <?php echo $note['is_pinned'] ? 'pinned' : ''; ?>" data-id="<?php echo $note['id']; ?>" id="note-card-<?php echo $note['id']; ?>" data-tags="<?php echo htmlspecialchars($tagData); ?>">
+<div class="col-md-4 col-lg-6 note-item <?php echo $note['is_pinned'] ? 'pinned' : ''; ?> <?php echo $note['is_locked'] ? 'locked' : ''; ?>" data-id="<?php echo $note['id']; ?>" id="note-card-<?php echo $note['id']; ?>" data-tags="<?php echo htmlspecialchars($tagData); ?>">
     <div class="card glass-card h-100 note-card" onclick="handleNoteClick(event, <?php echo htmlspecialchars(json_encode($note), ENT_QUOTES, 'UTF-8'); ?>)">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start mb-2">
                 <h5 class="card-title text-white mb-0 text-truncate">
+                    <?php if ($note['is_locked']): ?>
+                        <i class="bi bi-lock-fill me-1 small opacity-50"></i>
+                    <?php endif; ?>
                     <?php echo htmlspecialchars($note['title']); ?>
                 </h5>
                 <div class="d-flex gap-2 delete-btn-wrapper" onclick="event.stopPropagation()">

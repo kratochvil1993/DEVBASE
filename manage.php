@@ -6,7 +6,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_snippet') {
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
         $id = !empty($_POST['snippet_id']) ? $_POST['snippet_id'] : null;
-        saveSnippet($_POST['title'], $_POST['description'], $_POST['code'], $_POST['language_id'], $tags, $id);
+        $is_locked = isset($_POST['is_locked']) ? 1 : 0;
+        saveSnippet($_POST['title'], $_POST['description'], $_POST['code'], $_POST['language_id'], $tags, $id, $is_locked);
     } elseif ($_POST['action'] == 'delete_snippet') {
         deleteSnippet($_POST['snippet_id']);
     } elseif ($_POST['action'] == 'toggle_pin') {
@@ -46,7 +47,7 @@ include 'includes/header.php';
 
                 <!-- Action Buttons -->
                 <div class="d-flex gap-2">
-                    <button class="btn btn-add-snipet rounded px-3 shadow-sm" id="newSnippetBtn" data-bs-toggle="modal" data-bs-target="#addSnippetModal" title="Nový snipet">
+                    <button class="btn btn-add-snipet rounded px-3 shadow-sm" id="newSnippetBtn" onclick="openAddModal()" title="Nový snipet">
                         <i class="bi bi-plus-lg"></i>
                     </button>
                     <button class="btn btn-edit-order rounded px-3 shadow-sm" id="editOrderBtn" onclick="toggleSortingMode()">
@@ -280,22 +281,47 @@ function saveOrder() {
     });
 }
 
+function openAddModal() {
+    const modalEl = document.getElementById('addSnippetModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    document.getElementById('snippetForm').reset();
+    document.getElementById('modalTitle').innerText = 'Přidat nový snipet';
+    document.getElementById('snippetId').value = '';
+    
+    const lockInput = document.getElementById('snippetLockedInput');
+    if (lockInput) lockInput.checked = false;
+    
+    modal.show();
+}
+
 function openEditModal(snippet) {
+    const modalEl = document.getElementById('addSnippetModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     document.getElementById('modalTitle').innerText = 'Upravit snipet';
     document.getElementById('snippetId').value = snippet.id;
-    const form = document.getElementById('snippetForm');
-    form.querySelector('[name="title"]').value = snippet.title;
-    form.querySelector('[name="description"]').value = snippet.description || '';
-    form.querySelector('[name="language_id"]').value = snippet.language_id || '';
-    form.querySelector('[name="code"]').value = snippet.code;
     
-    const tagCheckboxes = form.querySelectorAll('input[name="tags[]"]');
+    document.getElementById('snippetTitleInput').value = snippet.title || '';
+    document.getElementById('snippetDescriptionInput').value = snippet.description || '';
+    document.getElementById('snippetLanguageInput').value = snippet.language_id || '';
+    document.getElementById('snippetCodeInput').value = snippet.code || '';
+    
+    const tagCheckboxes = document.querySelectorAll('#snippetForm input[name="tags[]"]');
     tagCheckboxes.forEach(cb => {
-        cb.checked = snippet.tags.some(t => t.id == cb.value);
+        cb.checked = snippet.tags ? snippet.tags.some(t => t.id == cb.value) : false;
     });
     
-    var myModal = new bootstrap.Modal(document.getElementById('addSnippetModal'));
-    myModal.show();
+    document.getElementById('submitBtn').innerText = 'Uložit změny';
+
+    const isLocked = (snippet.is_locked == 1 || snippet.is_locked === true || snippet.is_locked === "1");
+    
+    modal.show();
+
+    const applyLockState = () => {
+        const lockInput = document.getElementById('snippetLockedInput');
+        if (lockInput) lockInput.checked = isLocked;
+    };
+    applyLockState();
+    modalEl.addEventListener('shown.bs.modal', applyLockState, { once: true });
 }
 
 function openViewModal(snippet) {
@@ -374,18 +400,28 @@ function copyToClipboard(btn, elementId) {
                 <div class="modal-body">
                     <input type="hidden" name="action" value="add_snippet">
                     <input type="hidden" name="snippet_id" id="snippetId" value="">
-                    <div class="mb-3">
-                        <label class="form-label text-white-50 small">Název</label>
-                        <input type="text" name="title" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required>
+                    <div class="row g-3">
+                        <div class="col-md-9">
+                            <label class="form-label text-white-50 small">Název</label>
+                            <input type="text" name="title" id="snippetTitleInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" name="is_locked" id="snippetLockedInput" value="1">
+                                <label class="form-check-label text-white-50 small" for="snippetLockedInput">
+                                    <i class="bi bi-lock-fill me-1"></i> Skrýt obsah
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 mt-3">
                         <label class="form-label text-white-50 small">Popis</label>
-                        <textarea name="description" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="2"></textarea>
+                        <textarea name="description" id="snippetDescriptionInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="2"></textarea>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label text-white-50 small">Jazyk</label>
-                            <select name="language_id" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
+                            <select name="language_id" id="snippetLanguageInput" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
                                 <option value="" class="text-dark">Vybrat jazyk</option>
                                 <?php foreach ($languages as $lang): ?>
                                     <option value="<?php echo $lang['id']; ?>" class="text-dark"><?php echo htmlspecialchars($lang['name']); ?></option>
@@ -410,7 +446,7 @@ function copyToClipboard(btn, elementId) {
                     </div>
                     <div class="mb-3">
                         <label class="form-label text-white-50 small">Kód</label>
-                        <textarea name="code" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none font-monospace" rows="10" required></textarea>
+                        <textarea name="code" id="snippetCodeInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none font-monospace" rows="10" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-top border-light border-opacity-10">

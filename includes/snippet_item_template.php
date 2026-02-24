@@ -1,10 +1,15 @@
-<div class="col-md-6 col-lg-4 col-xl-3 snippet-card-wrapper <?php echo ($snippet['is_pinned'] ?? 0) ? 'pinned' : ''; ?>" data-id="<?php echo $snippet['id']; ?>" id="snippet-card-<?php echo $snippet['id']; ?>">
+<div class="col-md-6 col-lg-4 col-xl-3 snippet-card-wrapper <?php echo ($snippet['is_pinned'] ?? 0) ? 'pinned' : ''; ?> <?php echo ($snippet['is_locked'] ?? 0) ? 'locked' : ''; ?>" data-id="<?php echo $snippet['id']; ?>" id="snippet-card-<?php echo $snippet['id']; ?>">
     <div class="card glass-card h-100 snippet-card" 
          data-tags="<?php echo htmlspecialchars(implode(',', array_column($snippet['tags'] ?? [], 'name'))); ?>" 
          onclick="openViewModal(<?php echo htmlspecialchars(json_encode($snippet), ENT_QUOTES, 'UTF-8'); ?>)">
         <div class="card-body d-flex flex-column">
             <div class="d-flex justify-content-between align-items-start mb-2">
-                <h5 class="card-title text-white mb-0"><?php echo htmlspecialchars($snippet['title']); ?></h5>
+                <h5 class="card-title text-white mb-0">
+                    <?php if ($snippet['is_locked'] ?? 0): ?>
+                        <i class="bi bi-lock-fill me-1 small opacity-50"></i>
+                    <?php endif; ?>
+                    <?php echo htmlspecialchars($snippet['title']); ?>
+                </h5>
                 <div class="d-flex gap-2 action-btns-wrapper" onclick="event.stopPropagation()">
                     <form method="POST" class="d-inline">
                         <input type="hidden" name="action" value="toggle_pin">

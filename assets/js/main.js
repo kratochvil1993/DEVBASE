@@ -161,6 +161,15 @@ document.addEventListener("DOMContentLoaded", () => {
       cb.checked = snippet.tags.some((tag) => tag.id == cb.value);
     });
 
+    const isLocked =
+      snippet.is_locked == 1 ||
+      snippet.is_locked === true ||
+      snippet.is_locked === "1";
+    const lockInput = document.getElementById("snippetLockedInput");
+    if (lockInput) {
+      lockInput.checked = isLocked;
+    }
+
     const modal = new bootstrap.Modal(
       document.getElementById("addSnippetModal"),
     );
