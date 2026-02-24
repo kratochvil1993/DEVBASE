@@ -21,19 +21,51 @@ if (isset($_GET['action'])) {
 }
 
 // Handle save request
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && $_POST['action'] == 'save_code') {
-    $content = $_POST['content'] ?? '';
-    $id = $_POST['id'] ?? null;
-    if ($id) {
-        saveScratchpadContent($content, $id);
-        
-        // Handle rename if provided
-        if (isset($_POST['name']) && !empty($_POST['name'])) {
-            renameScratchpad($id, $_POST['name']);
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
+    if ($_POST['action'] == 'save_code') {
+        $content = $_POST['content'] ?? '';
+        $id = $_POST['id'] ?? null;
+        if ($id) {
+            saveScratchpadContent($content, $id);
+            
+            // Handle rename if provided
+            if (isset($_POST['name']) && !empty($_POST['name'])) {
+                renameScratchpad($id, $_POST['name']);
+            }
+            
+            header("Location: code.php?id=$id&saved=1");
+            exit;
         }
+    } elseif ($_POST['action'] == 'move_to_notes') {
+        $title = $_POST['title'] ?? '';
+        $content = $_POST['content'] ?? '';
+        $tags = $_POST['tags'] ?? [];
+        $scratchpad_id = $_POST['scratchpad_id'] ?? null;
         
-        header('Location: code.php?id=' . $id . '&saved=1');
-        exit;
+        if ($title && $content && $scratchpad_id) {
+            $saved_id = saveNote($title, $content, null, $tags);
+            if ($saved_id) {
+                deleteScratchpad($scratchpad_id);
+                header("Location: code.php?note_moved=1");
+                exit;
+            }
+        }
+    } elseif ($_POST['action'] == 'move_to_snippets') {
+        $title = $_POST['title'] ?? '';
+        $description = $_POST['description'] ?? '';
+        $code = $_POST['code'] ?? '';
+        $language_id = $_POST['language_id'] ?? null;
+        $tags = $_POST['tags'] ?? [];
+        $scratchpad_id = $_POST['scratchpad_id'] ?? null;
+        
+        if ($title && $code && $scratchpad_id) {
+            $saved_id = saveSnippet($title, $description, $code, $language_id, $tags);
+            if ($saved_id) {
+                deleteScratchpad($scratchpad_id);
+                header("Location: code.php?snippet_moved=1");
+                exit;
+            }
+        }
     }
 }
 
@@ -55,6 +87,9 @@ if (!$active_pad && !empty($scratchpads)) {
 
 $content = $active_pad ? $active_pad['content'] : '';
 $pad_name = $active_pad ? $active_pad['name'] : 'Draft';
+$allNoteTags = getAllTags('note');
+$allSnippetTags = getAllTags('snippet');
+$languages = getAllLanguages();
 
 include 'includes/header.php';
 ?>
@@ -77,9 +112,28 @@ include 'includes/header.php';
                             <i class="bi bi-check-circle me-1"></i> Uloženo!
                         </div>
                     <?php endif; ?>
+                    <?php if (isset($_GET['note_moved'])): ?>
+                        <div id="moveToast" class="badge bg-info d-flex align-items-center px-3 py-2 me-2" style="animation: fadeOut 3s forwards;">
+                            <i class="bi bi-journal-check me-1"></i> Přesunuto do poznámek!
+                        </div>
+                    <?php endif; ?>
+                    <?php if (isset($_GET['snippet_moved'])): ?>
+                        <div id="snippetToast" class="badge bg-primary d-flex align-items-center px-3 py-2 me-2" style="animation: fadeOut 3s forwards;">
+                            <i class="bi bi-code-square me-1"></i> Přesunuto do snippetů!
+                        </div>
+                    <?php endif; ?>
                     <button type="button" class="btn btn-copy px-3" onclick="copyCode(this)">
                         <i class="bi bi-clipboard me-2"></i> copy
                     </button>
+                    <div class="dropdown">
+                        <button class="btn btn-send-to px-3 dropdown-toggle text-white" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-send me-2"></i> Poslat do
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark glass-dropdown border-light border-opacity-10">
+                            <li><a class="dropdown-item" href="#" onclick="openAddToSnippetsModal()"><i class="bi bi-code-slash me-2"></i> do Snippets</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="openAddToNotesModal()"><i class="bi bi-journal-plus me-2"></i> do Notes</a></li>
+                        </ul>
+                    </div>
                     <button type="button" class="btn btn-add-snipet px-3" onclick="saveCode()">
                         <i class="bi bi-save me-2"></i> Uložit
                     </button>
@@ -264,7 +318,20 @@ li.CodeMirror-hint-active {
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
 }
-.glass-card:hover {
+.glass-dropdown {
+    background: rgba(25, 25, 25, 0.95) !important;
+    backdrop-filter: blur(15px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    padding: 0.5rem 0 !important;
+}
+.dropdown-item {
+    transition: all 0.2s ease !important;
+    padding: 0.6rem 1.2rem !important;
+}
+.dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
     transform: none !important;
 }
 .btn-copy {
@@ -283,6 +350,22 @@ li.CodeMirror-hint-active {
 .btn-copy:active {
     transform: translateY(0);
 }
+.btn-send-to {
+    background: rgba(13, 202, 240, 0.15);
+    border: 1px solid rgba(13, 202, 240, 0.4);
+    color: #fff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-send-to:hover {
+    background: rgba(13, 202, 240, 0.3);
+    border-color: rgba(13, 202, 240, 0.6);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(13, 202, 240, 0.2);
+}
+.btn-send-to:active {
+    transform: translateY(0);
+}
 @keyframes fadeOut {
     0% { opacity: 1; }
     80% { opacity: 1; }
@@ -290,8 +373,125 @@ li.CodeMirror-hint-active {
 }
 </style>
 
+<!-- Add to Notes Modal -->
+<div class="modal fade" id="addToNotesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-bottom border-light border-opacity-10">
+                <h5 class="modal-title text-white">Přidat draft do poznámek</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" id="addToNotesForm">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="move_to_notes">
+                    <input type="hidden" name="scratchpad_id" value="<?php echo $active_id; ?>">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label text-white-50 small">Název poznámky</label>
+                            <input type="text" name="title" id="noteTitleInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required placeholder="Napište název...">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-white-50 small">Obsah</label>
+                            <div id="quillEditor" style="height: 300px; background: transparent; color: white;"></div>
+                            <input type="hidden" name="content" id="noteContentInput">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-white-50 small d-block">Štítky</label>
+                            <div class="d-flex flex-wrap gap-2 p-3 rounded border border-light border-opacity-10">
+                                <?php if (empty($allNoteTags)): ?>
+                                    <p class="text-white-50 small mb-0 w-100 text-center">Žádné štítky nejsou definovány.</p>
+                                <?php else: ?>
+                                    <?php foreach ($allNoteTags as $tag): ?>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="tags[]" value="<?php echo $tag['id']; ?>" id="noteTag<?php echo $tag['id']; ?>">
+                                            <label class="form-check-label text-white-50 small" for="noteTag<?php echo $tag['id']; ?>">
+                                                <span class="badge" style="background-color: <?php echo $tag['color'] ? htmlspecialchars($tag['color']) : '#6c757d'; ?>">
+                                                    <?php echo htmlspecialchars($tag['name']); ?>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-light border-opacity-10">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zrušit</button>
+                    <button type="submit" class="btn btn-add-snipet px-4">Vytvořit poznámku a smazat draft</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add to Snippets Modal -->
+<div class="modal fade" id="addToSnippetsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-bottom border-light border-opacity-10">
+                <h5 class="modal-title text-white">Přidat draft do snippetů</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" id="addToSnippetsForm">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="move_to_snippets">
+                    <input type="hidden" name="scratchpad_id" value="<?php echo $active_id; ?>">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label text-white-50 small">Název snippetu</label>
+                            <input type="text" name="title" id="snippetTitleInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required placeholder="Název snippetu...">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label text-white-50 small">Popis</label>
+                            <textarea name="description" id="snippetDescriptionInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="2" placeholder="Krátký popis..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-white-50 small">Jazyk</label>
+                            <select name="language_id" id="snippetLanguageSelect" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
+                                <option value="" class="text-dark">Vybrat jazyk</option>
+                                <?php foreach ($languages as $lang): ?>
+                                    <option value="<?php echo $lang['id']; ?>" class="text-dark"><?php echo htmlspecialchars($lang['name']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-white-50 small d-block">Štítky</label>
+                            <div class="d-flex flex-wrap gap-2 p-2 rounded border border-light border-opacity-10">
+                                <?php if (empty($allSnippetTags)): ?>
+                                    <p class="text-white-50 small mb-0 w-100 text-center">Není štítek.</p>
+                                <?php else: ?>
+                                    <?php foreach ($allSnippetTags as $tag): ?>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="tags[]" value="<?php echo $tag['id']; ?>" id="snipTag<?php echo $tag['id']; ?>">
+                                            <label class="form-check-label text-white-50 small" for="snipTag<?php echo $tag['id']; ?>">
+                                                <span class="badge" style="background-color: <?php echo $tag['color'] ? htmlspecialchars($tag['color']) : '#6c757d'; ?>">
+                                                    <?php echo htmlspecialchars($tag['name']); ?>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-white-50 small">Kód</label>
+                            <textarea name="code" id="snippetCodeInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none font-monospace" rows="10" required></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-light border-opacity-10">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zrušit</button>
+                    <button type="submit" class="btn btn-add-snipet px-4">Vytvořit snippet a smazat draft</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 let editor;
+let quill;
 
 document.addEventListener('DOMContentLoaded', function() {
     editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
@@ -316,11 +516,38 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCharCount();
     editor.on('change', updateCharCount);
 
+    // Quill for Modal
+    quill = new Quill('#quillEditor', {
+        theme: 'snow',
+        placeholder: 'Napište vaši poznámku...',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'clean']
+            ]
+        }
+    });
+
+    document.getElementById('addToNotesForm').addEventListener('submit', function() {
+        if (quill) {
+            document.getElementById('noteContentInput').value = quill.root.innerHTML;
+        }
+    });
+
     // Shortcuts
     document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
             e.preventDefault();
-            saveCode();
+            if (document.getElementById('addToNotesModal').classList.contains('show')) {
+                document.getElementById('addToNotesForm').requestSubmit();
+            } else if (document.getElementById('addToSnippetsModal').classList.contains('show')) {
+                document.getElementById('addToSnippetsForm').requestSubmit();
+            } else {
+                saveCode();
+            }
         }
     });
 });
@@ -334,6 +561,37 @@ function saveCode() {
     document.getElementById('formContent').value = editor.getValue();
     document.getElementById('formPadName').value = document.getElementById('padName').value;
     document.getElementById('saveForm').submit();
+}
+
+function openAddToNotesModal() {
+    const title = document.getElementById('padName').value;
+    const content = editor.getValue();
+    
+    document.getElementById('noteTitleInput').value = title;
+    
+    if (quill) {
+        // Clear and insert content as a code block
+        const escapedContent = content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        quill.clipboard.dangerouslyPasteHTML('<pre>' + escapedContent + '</pre>');
+    }
+    
+    const modalEl = document.getElementById('addToNotesModal');
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (!modal) modal = new bootstrap.Modal(modalEl);
+    modal.show();
+}
+
+function openAddToSnippetsModal() {
+    const title = document.getElementById('padName').value;
+    const content = editor.getValue();
+    
+    document.getElementById('snippetTitleInput').value = title;
+    document.getElementById('snippetCodeInput').value = content;
+    
+    const modalEl = document.getElementById('addToSnippetsModal');
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (!modal) modal = new bootstrap.Modal(modalEl);
+    modal.show();
 }
 
 function confirmDelete(id, name) {
