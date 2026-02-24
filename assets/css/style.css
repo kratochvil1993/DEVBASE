@@ -357,7 +357,7 @@ pre[class*="language-"] {
 
 .note-card {
   cursor: pointer;
-  min-height: 180px;
+  min-height: 300px;
   display: flex;
   flex-direction: column;
 }
@@ -697,6 +697,14 @@ h6 i.bi-pin-angle-fill {
 }
 
 /* Formatted preview in cards */
+.quill-preview {
+  display: -webkit-box;
+  line-clamp: 10;
+  -webkit-line-clamp: 10;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .quill-preview p,
 .quill-preview h1,
 .quill-preview h2,

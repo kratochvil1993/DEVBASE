@@ -37,7 +37,7 @@
                     </form>
                 </div>
             </div>
-            <div class="card-text text-white-50 small mb-0 quill-preview" style="display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;">
+            <div class="card-text text-white-50 small mb-0 quill-preview">
                 <?php echo $note['content']; ?>
             </div>
         </div>
