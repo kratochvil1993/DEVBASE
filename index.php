@@ -49,7 +49,7 @@ include 'includes/header.php';
 
 <div class="row mb-3 align-items-center">
     <div class="col-md-8 mx-auto">
-        <div class="glass-card p-2 d-flex gap-3">
+        <div class="glass-card no-jump p-2 d-flex gap-3">
             <div class="input-group flex-grow-1" style="max-width: 161px;">
 
                 <span class="input-group-text bg-transparent border-0 text-white">

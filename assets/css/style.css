@@ -62,7 +62,7 @@ nav .logo {
 
 .glass-card.no-jump:hover {
   transform: none;
-  box-shadow: var(--card-shadow);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
 }
 
 .todo-item.glass-card:hover {
