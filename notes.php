@@ -68,7 +68,7 @@ include 'includes/header.php';
                     <span class="input-group-text bg-transparent border-0 text-white">
                         <i class="bi bi-search"></i>
                     </span>
-                    <input type="text" id="noteSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat v poznámkách...">
+                    <input type="text" id="noteSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat">
                 </div>
             </div>
 

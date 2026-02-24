@@ -67,7 +67,7 @@ include 'includes/header.php';
                     <span class="input-group-text bg-transparent border-0 text-white">
                         <i class="bi bi-check2-square"></i>
                     </span>
-                    <input type="text" name="text" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Co je potřeba udělat?" required autocomplete="off">
+                    <input type="text" name="text" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Přidat" required autocomplete="off">
                     <select name="tags[]" class="form-select bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" style="max-width: 140px; cursor: pointer;">
                         <option value="" style="background: #2b3035;" <?php echo empty($allTags) ? 'selected' : ''; ?>>Bez štítku</option>
                         <?php foreach ($allTags as $index => $tag): ?>

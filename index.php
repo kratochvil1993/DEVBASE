@@ -56,7 +56,7 @@ include 'includes/header.php';
                 <span class="input-group-text bg-transparent border-0 text-white">
                     <i class="bi bi-search"></i>
                 </span>
-                <input type="text" id="snippetSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat snipety...">
+                <input type="text" id="snippetSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat">
             </div>
             <button class="btn btn-add-snipet rounded px-3 ms-auto" onclick="openAddModal()" id="newSnippetBtn" title="Nový snipet">
                 <i class="bi bi-plus-lg"></i>
