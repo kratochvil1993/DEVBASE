@@ -3,36 +3,49 @@ require_once 'includes/functions.php';
 
 // Handle Tag actions
 if (isset($_POST['action'])) {
+    $section = '';
+    
     if ($_POST['action'] == 'save_tag') {
         $id = !empty($_POST['id']) ? $_POST['id'] : null;
         $color = !empty($_POST['color']) ? $_POST['color'] : null;
         $type = !empty($_POST['type']) ? $_POST['type'] : 'snippet';
         saveTag($_POST['name'], $color, $type, $id);
+        $section = "section-{$type}-tags";
     } elseif ($_POST['action'] == 'delete_tag') {
+        $type = !empty($_POST['type']) ? $_POST['type'] : 'snippet';
         deleteTag($_POST['id']);
+        $section = "section-{$type}-tags";
     } elseif ($_POST['action'] == 'save_language') {
         $id = !empty($_POST['id']) ? $_POST['id'] : null;
         saveLanguage($_POST['name'], $_POST['prism_class'], $id);
+        $section = "section-languages";
     } elseif ($_POST['action'] == 'delete_language') {
         deleteLanguage($_POST['id']);
+        $section = "section-languages";
     } elseif ($_POST['action'] == 'toggle_snippets') {
         $enabled = isset($_POST['snippets_enabled']) ? '1' : '0';
         updateSetting('snippets_enabled', $enabled);
+        $section = "section-general";
     } elseif ($_POST['action'] == 'toggle_notes') {
         $enabled = isset($_POST['notes_enabled']) ? '1' : '0';
         updateSetting('notes_enabled', $enabled);
+        $section = "section-general";
     } elseif ($_POST['action'] == 'toggle_todos') {
         $enabled = isset($_POST['todos_enabled']) ? '1' : '0';
         updateSetting('todos_enabled', $enabled);
+        $section = "section-general";
     } elseif ($_POST['action'] == 'toggle_code') {
         $enabled = isset($_POST['code_enabled']) ? '1' : '0';
         updateSetting('code_enabled', $enabled);
+        $section = "section-general";
     } elseif ($_POST['action'] == 'toggle_todo_badge') {
         $enabled = isset($_POST['todo_badge_enabled']) ? '1' : '0';
         updateSetting('todo_badge_enabled', $enabled);
+        $section = "section-general";
     } elseif ($_POST['action'] == 'toggle_theme_toggle') {
         $enabled = isset($_POST['theme_toggle_enabled']) ? '1' : '0';
         updateSetting('theme_toggle_enabled', $enabled);
+        $section = "section-general";
     } elseif ($_POST['action'] == 'save_security') {
         $enabled = isset($_POST['security_enabled']) ? '1' : '0';
         $currentPassword = getSetting('app_password');
@@ -48,9 +61,11 @@ if (isset($_POST['action'])) {
             // Password already set, just toggle enable state
             updateSetting('security_enabled', $enabled);
         }
+        $section = "section-security";
     } elseif ($_POST['action'] == 'reset_password') {
         updateSetting('app_password', '');
         updateSetting('security_enabled', '0');
+        $section = "section-security";
     } elseif ($_POST['action'] == 'export_data') {
         $data = exportAllData();
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
@@ -67,16 +82,19 @@ if (isset($_POST['action'])) {
             $mode = $_POST['import_mode'] ?? 'append';
             if ($data) {
                 importAllData($data, $mode);
-                header('Location: settings.php?import=success');
+                header('Location: settings.php?import=success#section-backup');
                 exit;
             }
         }
-        header('Location: settings.php?import=error');
+        header('Location: settings.php?import=error#section-backup');
         exit;
     }
-    header('Location: settings.php');
+    
+    $anchor = $section ? "#" . $section : "";
+    header('Location: settings.php' . $anchor);
     exit;
 }
+
 
 $snippetsEnabled = getSetting('snippets_enabled', '1');
 $notesEnabled = getSetting('notes_enabled', '1');
@@ -99,7 +117,7 @@ include 'includes/header.php';
     </div>
 
     <!-- General Settings -->
-    <div class="col-md-6 mb-4">
+    <div class="col-md-6 mb-4 settings-section" id="section-general">
         <div class="glass-card no-jump p-4 h-100">
             <h4 class="text-white mb-3">Obecné nastavení</h4>
             <form method="POST" id="settingsFormSnippets" class="mb-3">
@@ -182,7 +200,7 @@ include 'includes/header.php';
     </div>
 
     <!-- Security Settings -->
-    <div class="col-md-6 mb-4">
+    <div class="col-md-6 mb-4 settings-section" id="section-security">
         <div class="glass-card no-jump p-4 h-100">
             <h4 class="text-white mb-3"><i class="bi bi-shield-lock me-2 text-primary"></i>Zabezpečení</h4>
             <?php $hasPassword = !empty(getSetting('app_password')); ?>
@@ -249,7 +267,7 @@ include 'includes/header.php';
     </div>
     
     <!-- Snippet Tag Management -->
-    <div class="col-md-6 mb-4">
+    <div class="col-md-6 mb-4 settings-section" id="section-snippet-tags">
         <div class="glass-card no-jump p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="text-white mb-0">Štítky kódů</h4>
@@ -293,6 +311,7 @@ include 'includes/header.php';
                             </button>
                             <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento štítek smazat?');">
                                 <input type="hidden" name="action" value="delete_tag">
+                                <input type="hidden" name="type" value="snippet">
                                 <input type="hidden" name="id" value="<?php echo $tag['id']; ?>">
                                 <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
                                     <i class="bi bi-trash"></i> 
@@ -306,7 +325,7 @@ include 'includes/header.php';
     </div>
 
     <!-- Note Tag Management -->
-    <div class="col-md-6 mb-4">
+    <div class="col-md-6 mb-4 settings-section" id="section-note-tags">
         <div class="glass-card no-jump p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="text-white mb-0">Štítky poznámek</h4>
@@ -350,6 +369,7 @@ include 'includes/header.php';
                             </button>
                             <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento štítek smazat?');">
                                 <input type="hidden" name="action" value="delete_tag">
+                                <input type="hidden" name="type" value="note">
                                 <input type="hidden" name="id" value="<?php echo $tag['id']; ?>">
                                 <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
                                     <i class="bi bi-trash"></i> 
@@ -363,7 +383,7 @@ include 'includes/header.php';
     </div>
 
     <!-- Todo Tag Management -->
-    <div class="col-md-6 mb-4">
+    <div class="col-md-6 mb-4 settings-section" id="section-todo-tags">
         <div class="glass-card no-jump p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="text-white mb-0">Štítky úkolů</h4>
@@ -407,6 +427,7 @@ include 'includes/header.php';
                             </button>
                             <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento štítek smazat?');">
                                 <input type="hidden" name="action" value="delete_tag">
+                                <input type="hidden" name="type" value="todo">
                                 <input type="hidden" name="id" value="<?php echo $tag['id']; ?>">
                                 <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
                                     <i class="bi bi-trash"></i> 
@@ -420,7 +441,7 @@ include 'includes/header.php';
     </div>
 
     <!-- Language Management -->
-    <div class="col-md-6 mb-4">
+    <div class="col-md-6 mb-4 settings-section" id="section-languages">
         <div class="glass-card no-jump p-4 h-100">
             <h4 class="text-white mb-4">Správa jazyků</h4>
             
@@ -461,7 +482,7 @@ include 'includes/header.php';
    
 
     <!-- Backup and Restore -->
-    <div class="col-12 mb-4">
+    <div class="col-12 mb-4 settings-section" id="section-backup">
         <div class="glass-card no-jump p-4">
             <h4 class="text-white mb-4"><i class="bi bi-cloud-arrow-down me-2 text-primary"></i>Záloha a obnovení dat</h4>
             
