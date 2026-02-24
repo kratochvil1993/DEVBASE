@@ -93,7 +93,7 @@ include 'includes/header.php';
 
     <div class="row mb-5">
         <div class="col-12">
-        <div class="glass-card p-0 overflow-hidden">
+        <div class="glass-card p-0 no-jump overflow-hidden ">
             <div class="table-responsive">
                 <table class="table table-hover table-borderless table-dark text-white mb-0 align-middle manage-notes-table" style="background: transparent;">
                     <thead class="border-bottom border-light border-opacity-25" style="background: rgba(255,255,255,0.05);">
