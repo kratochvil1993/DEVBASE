@@ -5,10 +5,12 @@ require_once 'db.php';
 $check = @$conn->query("SHOW TABLES LIKE 'snippets'");
 $check2 = @$conn->query("SHOW TABLES LIKE 'scratchpads'");
 $check3 = @$conn->query("SHOW COLUMNS FROM snippets LIKE 'is_locked'");
+$check4 = @$conn->query("SHOW COLUMNS FROM todos LIKE 'is_locked'");
 
 if (!$check || $check->num_rows == 0 || 
     !$check2 || $check2->num_rows == 0 || 
-    !$check3 || $check3->num_rows == 0) {
+    !$check3 || $check3->num_rows == 0 ||
+    !$check4 || $check4->num_rows == 0) {
     // Determine path to includes/init_db.php
     $path = "includes/init_db.php";
     if (!file_exists($path)) {
@@ -352,20 +354,21 @@ function getAllTodos($archive_status = 0) {
     return $todos;
 }
 
-function saveTodo($text, $tags = [], $id = null) {
+function saveTodo($text, $tags = [], $id = null, $is_locked = 0) {
     global $conn;
     $text = $conn->real_escape_string($text);
+    $is_locked = (int)$is_locked;
 
     $deadline = !empty($_POST['deadline']) ? "'" . $conn->real_escape_string($_POST['deadline']) . "'" : "NULL";
     
     if ($id) {
         $id = (int)$id;
-        $sql = "UPDATE todos SET text = '$text', deadline = $deadline WHERE id = $id";
+        $sql = "UPDATE todos SET text = '$text', deadline = $deadline, is_locked = $is_locked WHERE id = $id";
     } else {
         $result = $conn->query("SELECT MIN(sort_order) as min_sort FROM todos");
         $row = $result ? $result->fetch_assoc() : null;
         $next_sort = $row['min_sort'] !== null ? (int)$row['min_sort'] - 1 : 0;
-        $sql = "INSERT INTO todos (text, deadline, sort_order) VALUES ('$text', $deadline, $next_sort)";
+        $sql = "INSERT INTO todos (text, deadline, sort_order, is_locked) VALUES ('$text', $deadline, $next_sort, $is_locked)";
     }
     
     if ($conn->query($sql)) {

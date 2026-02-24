@@ -939,3 +939,32 @@ h6 i.bi-pin-angle-fill {
 .snippet-card-wrapper.locked:hover .card-text {
   filter: blur(6px) opacity(0.5);
 }
+
+/* Locked Todo Styles */
+.todo-item.locked .text-truncate {
+  filter: blur(6px) opacity(0.4);
+  user-select: none;
+  pointer-events: none;
+  transition: filter 0.3s ease;
+}
+
+.todo-item.locked:hover .text-truncate {
+  filter: blur(4px) opacity(0.5);
+}
+
+.todo-item.locked {
+  position: relative;
+}
+
+.todo-item.locked::after {
+  content: "\F471"; /* bi-lock-fill */
+  font-family: "bootstrap-icons";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5rem;
+  color: rgba(255, 255, 255, 0.2);
+  z-index: 10;
+  pointer-events: none;
+}

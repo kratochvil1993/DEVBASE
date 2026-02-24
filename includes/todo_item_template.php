@@ -15,9 +15,10 @@ if (!empty($todo['deadline'])) {
     }
 }
 ?>
-<div class="card glass-card todo-item <?php echo $todo['is_pinned'] ? 'pinned' : ''; ?> <?php echo $deadlineStatus; ?>" 
+<div class="card glass-card todo-item <?php echo $todo['is_pinned'] ? 'pinned' : ''; ?> <?php echo $todo['is_locked'] ? 'locked' : ''; ?> <?php echo $deadlineStatus; ?>" 
      id="todo-card-<?php echo $todo['id']; ?>"
      data-id="<?php echo $todo['id']; ?>"
+     data-is-locked="<?php echo $todo['is_locked']; ?>"
      data-deadline="<?php echo htmlspecialchars($todo['deadline'] ?? ''); ?>"
      data-tags="<?php echo htmlspecialchars(implode(',', array_column($todo['tags'] ?? [], 'name'))); ?>">
 
@@ -39,7 +40,12 @@ if (!empty($todo['deadline'])) {
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
-                    <span class="fs-5 text-truncate text-white"><?php echo htmlspecialchars($todo['text']); ?></span>
+                    <span class="fs-5 text-truncate text-white">
+                        <?php if ($todo['is_locked']): ?>
+                            <i class="bi bi-lock-fill me-1 small opacity-50"></i>
+                        <?php endif; ?>
+                        <?php echo htmlspecialchars($todo['text']); ?>
+                    </span>
                     <?php if ($deadlineDateFormatted): ?>
                         <small class="text-white-50 mt-1">
                             <i class="bi bi-calendar-event me-1"></i>

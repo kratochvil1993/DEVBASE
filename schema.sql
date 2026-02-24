@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS todos (
     deadline DATE DEFAULT NULL,
     is_archived TINYINT(1) DEFAULT 0,
     is_pinned TINYINT(1) DEFAULT 0,
+    is_locked TINYINT(1) DEFAULT 0,
     sort_order INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

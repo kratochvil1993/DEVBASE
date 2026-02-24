@@ -11,14 +11,16 @@ if (getSetting('todos_enabled', '1') == '0') {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'add_todo') {
         $tags = isset($_POST['tags']) ? (array)$_POST['tags'] : [];
-        $saved_id = saveTodo($_POST['text'], $tags);
+        $is_locked = isset($_POST['is_locked']) ? 1 : 0;
+        $saved_id = saveTodo($_POST['text'], $tags, null, $is_locked);
         if ($saved_id) {
             header('Location: todo.php?updated_id=' . $saved_id);
             exit;
         }
     } elseif ($_POST['action'] == 'edit_todo') {
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
-        saveTodo($_POST['text'], $tags, $_POST['todo_id']);
+        $is_locked = isset($_POST['is_locked']) ? 1 : 0;
+        saveTodo($_POST['text'], $tags, $_POST['todo_id'], $is_locked);
         header('Location: todo.php?updated_id=' . $_POST['todo_id']);
         exit;
     } elseif ($_POST['action'] == 'archive_todo') {
@@ -167,6 +169,15 @@ include 'includes/header.php';
                         <input type="date" name="deadline" id="editTodoDeadline" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none">
                     </div>
 
+                    <div class="mb-3">
+                        <div class="form-check form-switch card-text">
+                            <input class="form-check-input" type="checkbox" name="is_locked" id="editTodoLocked" value="1">
+                            <label class="form-check-label text-white-50 small" for="editTodoLocked">
+                                <i class="bi bi-lock-fill me-1"></i> Skrýt obsah
+                            </label>
+                        </div>
+                    </div>
+
 
                     <div class="mb-3">
                         <label class="form-label text-white-50 small">Štítky</label>
@@ -296,6 +307,7 @@ function openEditTodoModal(todo) {
     document.getElementById('editTodoId').value = todo.id;
     document.getElementById('editTodoText').value = todo.text;
     document.getElementById('editTodoDeadline').value = todo.deadline || '';
+    document.getElementById('editTodoLocked').checked = (todo.is_locked == 1 || todo.is_locked === true || todo.is_locked === "1");
 
     
     // Check checkboxes

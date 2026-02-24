@@ -30,7 +30,8 @@ if (file_exists($schema_file)) {
         // Migrations: Ensure specific columns exist even if tables already existed
         $migrations = [
             'snippets' => ['is_locked' => 'TINYINT(1) DEFAULT 0'],
-            'notes' => ['is_locked' => 'TINYINT(1) DEFAULT 0']
+            'notes' => ['is_locked' => 'TINYINT(1) DEFAULT 0'],
+            'todos' => ['is_locked' => 'TINYINT(1) DEFAULT 0']
         ];
 
         foreach ($migrations as $table => $columns) {
