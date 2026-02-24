@@ -450,32 +450,66 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   renderMarkdownSnippets();
 
+  // Navigation Map
+  const navMap = {
+    Digit1: "index.php",
+    Digit2: "code.php",
+    Digit3: "notes.php",
+    Digit4: "todo.php",
+    // Fallback for some layouts
+    Numpad1: "index.php",
+    Numpad2: "code.php",
+    Numpad3: "notes.php",
+    Numpad4: "todo.php",
+  };
+
   // Global Keyboard Shortcuts
-  document.addEventListener("keydown", (e) => {
-    // Check for Option+F (altKey) - using e.code for Safari compatibility
-    if (e.altKey && e.code === "KeyF") {
-      const searchInput =
-        document.getElementById("snippetSearch") ||
-        document.getElementById("noteSearch");
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      // Navigation Shortcuts: Option + 1-4
+      const isInput = ["INPUT", "TEXTAREA"].includes(e.target.tagName);
+      const isEditable = e.target.isContentEditable;
+      const isEditor =
+        e.target.closest &&
+        (e.target.closest(".CodeMirror") || e.target.closest(".ql-editor"));
+      const isTyping = isInput || isEditable || isEditor;
 
-      if (searchInput) {
+      if (e.altKey && navMap[e.code]) {
+        if (isTyping) return;
         e.preventDefault();
-        searchInput.focus();
-        searchInput.select(); // Select existing text for easy replacement
+        e.stopPropagation();
+        console.log("DevBase Shortcut: Navigating to " + navMap[e.code]);
+        window.location.href = navMap[e.code];
+        return;
       }
-    }
-    // Check for Option+N (altKey) - New Snippet/Note
-    if (e.altKey && e.code === "KeyN") {
-      const newBtn =
-        document.getElementById("newSnippetBtn") ||
-        document.getElementById("newNoteBtn");
 
-      if (newBtn && !newBtn.classList.contains("d-none")) {
-        e.preventDefault();
-        newBtn.click();
+      // Check for Option+F (altKey) - using e.code for Safari compatibility
+      if (e.altKey && e.code === "KeyF") {
+        const searchInput =
+          document.getElementById("snippetSearch") ||
+          document.getElementById("noteSearch");
+
+        if (searchInput) {
+          e.preventDefault();
+          searchInput.focus();
+          searchInput.select(); // Select existing text for easy replacement
+        }
       }
-    }
-  });
+      // Check for Option+N (altKey) - New Snippet/Note
+      if (e.altKey && e.code === "KeyN") {
+        const newBtn =
+          document.getElementById("newSnippetBtn") ||
+          document.getElementById("newNoteBtn");
+
+        if (newBtn && !newBtn.classList.contains("d-none")) {
+          e.preventDefault();
+          newBtn.click();
+        }
+      }
+    },
+    true,
+  );
 
   // Handle scrolling to updated item
   const urlParams = new URLSearchParams(window.location.search);

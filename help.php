@@ -143,18 +143,36 @@ console.log('Hello World');
         <div class="glass-card p-4 mb-4 help-section" id="shortcuts">
             <h4 class="text-white mb-4"><i class="bi bi-keyboard me-2"></i> Globální klávesové zkratky</h4>
             <p class="text-white-50 small mb-3">Tyto zkratky fungují napříč celou aplikací pro zrychlení vaší práce:</p>
+            
+            <h6 class="text-white-50 small text-uppercase fw-bold mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Navigace mezi sekcemi</h6>
+            <ul class="text-white-50 small list-unstyled mb-4">
+                <li class="mb-2">
+                    <span class="badge bg-primary me-2">Option + 1</span> <strong class="text-white ms-2">Snippets:</strong> Přejde na hlavní přehled snippetů.
+                </li>
+                <li class="mb-2">
+                    <span class="badge bg-primary me-2">Option + 2</span> <strong class="text-white ms-2">Code:</strong> Otevře kódový editor (Scratchpad).
+                </li>
+                <li class="mb-2">
+                    <span class="badge bg-primary me-2">Option + 3</span> <strong class="text-white ms-2">Notes:</strong> Přejde na poznámky.
+                </li>
+                <li class="mb-2">
+                    <span class="badge bg-primary me-2">Option + 4</span> <strong class="text-white ms-2">TODO:</strong> Otevře správu úkolů.
+                </li>
+            </ul>
+
+            <h6 class="text-white-50 small text-uppercase fw-bold mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Akce a Vyhledávání</h6>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-2">
                     <span class="badge bg-primary me-2">Option + F</span> nebo <span class="badge bg-primary me-2">Alt + F</span>
-                    <strong class="text-white ms-2">Rychlé vyhledávání:</strong> Okamžitě zaměří (focus) vyhledávací pole v aktuální sekci (Snipety / Poznámky). Pokud už v poli text je, celý se označí pro snadné přepsání.
+                    <strong class="text-white ms-2">Rychlé vyhledávání:</strong> Okamžitě zaměří (focus) vyhledávací pole v aktuální sekci.
                 </li>
                 <li class="mb-2">
                     <span class="badge bg-primary me-2">Option + N</span> nebo <span class="badge bg-primary me-2">Alt + N</span>
-                    <strong class="text-white ms-2">Nový záznam:</strong> Otevře modální okno pro přidání nového snippetu nebo poznámky (podle aktuální sekce).
+                    <strong class="text-white ms-2">Nový záznam:</strong> Otevře modální okno pro přidání nového snippetu nebo poznámky.
                 </li>
                 <li class="mb-2">
                     <span class="badge bg-primary me-2">Ctrl + S</span>
-                    <strong class="text-white ms-2">Rychlé uložení / Odeslání:</strong> V kódovém editoru (Scratchpad) uloží rozpracovaný kód. V modálních oknech (např. při přidávání do Poznámek/Snippetů) slouží jako zkratka pro odeslání celého formuláře.
+                    <strong class="text-white ms-2">Rychlé uložení / Odeslání:</strong> Uloží kód v editoru nebo odešle formulář v modálním okně.
                 </li>
             </ul>
         </div>

@@ -21,6 +21,6 @@
 <!-- Quill.js core -->
 <script src="assets/vendor/quill/quill.js"></script>
 <!-- Custom JS -->
-<script src="assets/js/main.js"></script>
+<script src="assets/js/main.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>
