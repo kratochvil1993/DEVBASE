@@ -84,7 +84,10 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
 ('snippets_enabled', '1'),
 ('notes_enabled', '1'),
 ('todos_enabled', '1'),
-('todo_badge_enabled', '1');
+('code_enabled', '1'),
+('todo_badge_enabled', '1'),
+('theme_toggle_enabled', '1'),
+('security_enabled', '0');
 
 -- Seed initial data
 INSERT IGNORE INTO languages (name, prism_class) VALUES 
