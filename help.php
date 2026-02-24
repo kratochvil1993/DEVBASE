@@ -147,16 +147,16 @@ console.log('Hello World');
             <h6 class="text-white-50 small text-uppercase fw-bold mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Navigace mezi sekcemi</h6>
             <ul class="text-white-50 small list-unstyled mb-4">
                 <li class="mb-2">
-                    <span class="badge bg-primary me-2">Option + 1</span> <strong class="text-white ms-2">Snippets:</strong> Přejde na hlavní přehled snippetů.
+                    <span class="badge bg-primary me-2">Option + 1</span> nebo <span class="badge bg-primary me-2">Alt + 1</span> <strong class="text-white ms-2">Snippets:</strong> Přejde na hlavní přehled snippetů.
                 </li>
                 <li class="mb-2">
-                    <span class="badge bg-primary me-2">Option + 2</span> <strong class="text-white ms-2">Code:</strong> Otevře kódový editor (Scratchpad).
+                    <span class="badge bg-primary me-2">Option + 2</span> nebo <span class="badge bg-primary me-2">Alt + 2</span> <strong class="text-white ms-2">Code:</strong> Otevře kódový editor (Scratchpad).
                 </li>
                 <li class="mb-2">
-                    <span class="badge bg-primary me-2">Option + 3</span> <strong class="text-white ms-2">Notes:</strong> Přejde na poznámky.
+                    <span class="badge bg-primary me-2">Option + 3</span> nebo <span class="badge bg-primary me-2">Alt + 3</span> <strong class="text-white ms-2">Notes:</strong> Přejde na poznámky.
                 </li>
                 <li class="mb-2">
-                    <span class="badge bg-primary me-2">Option + 4</span> <strong class="text-white ms-2">TODO:</strong> Otevře správu úkolů.
+                    <span class="badge bg-primary me-2">Option + 4</span> nebo <span class="badge bg-primary me-2">Alt + 4</span> <strong class="text-white ms-2">TODO:</strong> Otevře správu úkolů.
                 </li>
             </ul>
 
@@ -223,7 +223,7 @@ console.log('Hello World');
                     <strong class="text-white d-block">Klávesové zkratky:</strong>
                     Rychlost je základ, proto můžete v editoru používat tyto zkratky:
                     <ul class="mt-2 text-white">
-                        <li><span class="badge bg-primary me-2">Alt + L</span> <strong>Skok do editoru</strong> (rychle zaměří kurzor do editoru)</li>
+                        <li><span class="badge bg-primary me-2">Option + L</span> nebo <span class="badge bg-primary me-2">Alt + L</span> <strong>Skok do editoru</strong> (rychle zaměří kurzor do editoru)</li>
                         <li><span class="badge bg-primary me-2">Ctrl + S</span> <strong>Uložit</strong> (uloží rozpracovaný kód do databáze)</li>
                         <li><span class="badge bg-primary me-2">Ctrl + Space</span> <strong>Našeptávání</strong> (autocomplete klíčových slov)</li>
                         <li><span class="badge bg-primary me-2">Ctrl + F</span> <strong>Vyhledávání</strong> přímo uvnitř kódu</li>
@@ -321,6 +321,10 @@ console.log('Hello World');
                 <li class="mb-3">
                     <strong class="text-white d-block">Ruční uzamčení:</strong>
                     Pokud máte zámek aktivní, v horní liště vedle Dark Mode přepínače uvidíte ikonu **zámku**. Kliknutím na ni se aplikace okamžitě uzamkne a přesměruje vás na zamykací obrazovku. Ideální, když odcházíte od počítače.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Skrytí obsahu (Zámek položek):</strong>
+                    Jednotlivé snipety a poznámky můžete v editačním modálu označit volbou **"Skrýt obsah"**. Taková položka bude mít v hlavním přehledu svůj obsah skrytý (zobrazí se pouze ikona zámku). Pro zobrazení obsahu je pak nutné aplikaci odemknout vaším globálním heslem.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Bezpečnost hesla:</strong>

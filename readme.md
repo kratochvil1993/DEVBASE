@@ -20,7 +20,7 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Integrovaný Markdown**: Snipety lze zapisovat formou Markdownu pro kombinaci více jazyků či tabulek.
 - **Flexibilní navigace**: Rychlé přepínání mezi snipety, poznámkami a úkoly přímo v hlavičce (dle aktuálního nastavení). U sekce TODO se navíc může zobrazovat "badge" s počtem aktivních úkolů.
 - **Rychlé statistiky**: Přehledný panel v bočním menu (offcanvas), který okamžitě zobrazuje aktuální počty vašich snippetů, poznámek a **aktivních** úkolů v elegantních minikartách.
-- **Zabezpečení (App Lock)**: Možnost uzamknout celou aplikaci pod heslo. Funkci lze aktivovat v Nastavení po zadání a potvrzení hesla. Následně lze aplikaci kdykoliv "zacvaknout" pomocí ikony zámku v hlavičce. Systém využívá bezpečné hashování hesla.
+- **Zabezpečení (App Lock & Item Lock)**: Možnost uzamknout celou aplikaci pod heslo. Funkci lze aktivovat v Nastavení po zadání a potvrzení hesla. Následně lze aplikaci kdykoliv "zacvaknout" pomocí ikony zámku v hlavičce. Kromě toho lze **uzamknout i jednotlivé snipety a poznámky** (volba "Skrýt obsah" v editaci). Takto označené položky budou mít v přehledu skrytý obsah a k jeho zobrazení je nutné aplikaci odemknout globálním heslem. Systém využívá bezpečné hashování hesla.
 - **Záloha a Přenos dat (Export/Import)**: Kompletní správa vašich dat. Celou databázi (snippety, poznámky, úkoly, tagy i nastavení) lze jedním kliknutím exportovat do JSON souboru a následně jej importovat zpět – buď formou přidání k existujícím datům, nebo kompletním přepsáním.
 - **Správa jazyků**: DevBase umožňuje definovat vlastní programovací jazyky a přiřadit jim příslušné CSS třídy pro Prism.js. Seznam jazyků lze spravovat v Nastavení, včetně přidávání nových a mazání nepotřebných.
 - **Propracované UI**: Elegantní rozhraní postavené na Bootstrap 5, oživené plovoucími barevnými prvky, blur efekty, micro-animacemi a moderní vizí glassmorphismu.
@@ -31,8 +31,10 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 
 Pro maximální efektivitu můžete používat tyto systémové zkratky:
 
+- **Option + 1, 2, 3, 4**: Rychlá navigace mezi hlavními sekcemi (Snippety, Code, Poznámky, TODO).
 - **Option + F** (nebo **Alt + F**): Rychlé zaměření vyhledávacího pole v aktuální sekci (Snippety / Poznámky).
 - **Option + N** (nebo **Alt + N**): Okamžité otevření okna pro přidání nového snippetu nebo poznámky.
+- **Option + L** (v sekci Code): Rychlé zaměření kurzoru do editoru kódu.
 - **Ctrl + S** (v editoru a modálech): Rychlé uložení rozpracovaného kódu v sekci Scratchpad nebo odeslání formuláře v editačních modálech.
 
 ## Instalace a Spuštění
