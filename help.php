@@ -216,8 +216,8 @@ console.log('Hello World');
                     Pokud máte hotový kód nebo text, který chcete trvale uložit, využijte tlačítko <i class="bi bi-send me-1"></i> **Poslat do**. To vám umožní vybraný draft okamžitě převést na plnohodnotný **Snippet** (včetně jazyka a popisu) nebo do **Poznámek** (obsah se vloží jako kódový blok). Po úspěšném přesunu se původní draft smaže, abyste měli v editoru pořádek.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Profesionální funkce:</strong>
-                    Editor podporuje automatické doplňování závorek a uvozovek, zavírání HTML tagů a zvýraznění párových značek. Obsahuje také funkci **Folding** (skládání kódu) pomocí šipek u čísel řádků. Celý obsah editoru můžete také jedním kliknutím uložit do schránky pomocí tlačítka **copy**.
+                    <strong class="text-white d-block">Profesionální funkce a Správa jazyků:</strong>
+                    Editor podporuje automatické doplňování závorek a uvozovek, zavírání HTML tagů a zvýraznění párových značek. V **Nastavení** můžete spravovat seznam dostupných programovacích jazyků, přidávat nové nebo upravovat jejich třídy pro Prism.js. Editor obsahuje také funkci **Folding** (skládání kódu) pomocí šipek u čísel řádků. Celý obsah editoru můžete také jedním kliknutím uložit do schránky pomocí tlačítka **copy**.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Klávesové zkratky:</strong>
