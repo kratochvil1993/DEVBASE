@@ -182,6 +182,7 @@ include 'includes/header.php';
             <div class="mt-3 d-flex justify-content-between align-items-center text-white-50 small">
                 <div>
                     <span class="me-3"><i class="bi bi-keyboard me-1"></i> Ctrl+S pro uložení</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+L pro skok do editoru</span>
                     <span><i class="bi bi-info-circle me-1"></i> Podporuje PHP, JS, HTML, CSS, SQL, Bash</span>
                 </div>
                 <div id="charCount">Znaků: 0</div>
@@ -565,6 +566,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('addToSnippetsForm').requestSubmit();
             } else {
                 saveCode();
+            }
+        }
+        
+        // Option + L focus editor
+        if (e.altKey && e.code === 'KeyL') {
+            e.preventDefault();
+            if (editor) {
+                editor.focus();
             }
         }
     });

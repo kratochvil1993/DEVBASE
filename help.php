@@ -223,6 +223,7 @@ console.log('Hello World');
                     <strong class="text-white d-block">Klávesové zkratky:</strong>
                     Rychlost je základ, proto můžete v editoru používat tyto zkratky:
                     <ul class="mt-2 text-white">
+                        <li><span class="badge bg-primary me-2">Alt + L</span> <strong>Skok do editoru</strong> (rychle zaměří kurzor do editoru)</li>
                         <li><span class="badge bg-primary me-2">Ctrl + S</span> <strong>Uložit</strong> (uloží rozpracovaný kód do databáze)</li>
                         <li><span class="badge bg-primary me-2">Ctrl + Space</span> <strong>Našeptávání</strong> (autocomplete klíčových slov)</li>
                         <li><span class="badge bg-primary me-2">Ctrl + F</span> <strong>Vyhledávání</strong> přímo uvnitř kódu</li>
