@@ -288,7 +288,7 @@ function copyNoteContent(btn) {
 
 <!-- Add/Edit Note Modal -->
 <div class="modal fade" id="addNoteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <h5 class="modal-title text-white" id="noteModalTitle">Nová poznámka</h5>
@@ -336,7 +336,7 @@ function copyNoteContent(btn) {
 
 <!-- View Note Modal -->
 <div class="modal fade" id="viewNoteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <h5 class="modal-title text-white mb-0" id="viewNoteModalTitle">Zobrazit poznámku</h5>

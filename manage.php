@@ -364,7 +364,7 @@ function copyToClipboard(btn, elementId) {
 
 <!-- Add Snippet Modal -->
 <div class="modal fade" id="addSnippetModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <h5 class="modal-title text-white" id="modalTitle">Přidat nový snipet</h5>
@@ -424,7 +424,7 @@ function copyToClipboard(btn, elementId) {
 
 <!-- View Snippet Modal -->
 <div class="modal fade" id="viewSnippetModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <h5 class="modal-title text-white mb-0" id="viewModalTitle">Zobrazit snipet</h5>
