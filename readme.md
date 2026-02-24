@@ -11,7 +11,7 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Vlastní řazení (Drag & Drop) a Připínání**: Důležité položky si můžete připnout špendlíkem, čímž zůstanou vždy nahoře. Pořadí poznámek, úkolů i snipetů si pak můžete měnit jednoduchým přetažením myší v rámci sekcí (Připnuté / Ostatní). Režim úprav je vizuálně indikován jemným vibrováním prvků pro lepší orientaci. U snipetů je tato funkce dostupná v sekci **Správa snippetů**.
 - **Konzistentní správa**: Sjednocené rozhraní pro správu všech sekcí s intuitivním filtrováním podle tagů a rychlým fulltextovým vyhledáváním.
 - **Rychlé vyhledávání**: Inteligentní vyhledávání v reálném čase napříč sekcemi, které prohledává názvy i obsah.
-- **Code Scratchpad (Pískoviště)**: Speciální prostor pro psaní a ukládání libovolného kódu nebo poznámek s podporou **více otevřených draftů (tabů)** současně. Každý draft si můžete libovolně pojmenovat přímo kliknutím na jeho název. Editor je postaven na profesionální knihovně **CodeMirror 5** a nabízí pokročilé funkce jako chytré doplňování závorek, našeptávání (autocomplete), skládání kódu (folding) a vyhledávání přímo v textu. Vše se ukládá do databáze a je k dispozici při každém přístupu. Sekci lze v nastavení vypnout.
+- **Code Scratchpad (Pískoviště)**: Speciální prostor pro psaní a ukládání libovolného kódu nebo poznámek s podporou **více otevřených draftů (tabů)** současně. Každý draft si můžete libovolně pojmenovat přímo kliknutím na jeho název. Aplikace si **pamatuje váš poslední aktivní draft** (pomocí cookies), takže se k němu vždy vrátíte. Hotový kód můžete jedním kliknutím **poslat do Snippetů nebo do Poznámek**. Editor je postaven na profesionální knihovně **CodeMirror 5** a nabízí pokročilé funkce jako chytré doplňování závorek, našeptávání (autocomplete), skládání kódu (folding) a vyhledávání přímo v textu. Vše se ukládá do databáze a je k dispozici při každém přístupu. Sekci lze v nastavení vypnout.
 - **Detailní náhled**: Snipety i poznámky lze otevřít ve velkém modálním okně pro pohodlné čtení. Nově je v náhledu k dispozici tlačítko pro okamžitý přechod do režimu úprav.
 - **Automatické sledování změn**: Po každém uložení, úpravě nebo vytvoření nového záznamu vás aplikace automaticky přesune na danou položku a zvýrazní ji jemným animovaným efektem pro zachování kontextu.
 - **Interaktivní nápověda**: Stránka s nápovědou obsahuje chytré sticky menu, které se na mobilních zařízeních sbalí do přehledného overlaye a automaticky sleduje, kterou sekci právě čtete.
@@ -30,9 +30,9 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 
 Pro maximální efektivitu můžete používat tyto systémové zkratky:
 
-- **Option + F** (nebo **Alt + F**): Rychlé zaměření vyhledávacího pole v aktuální sekci.
+- **Option + F** (nebo **Alt + F**): Rychlé zaměření vyhledávacího pole v aktuální sekci (Snippety / Poznámky).
 - **Option + N** (nebo **Alt + N**): Okamžité otevření okna pro přidání nového snippetu nebo poznámky.
-- **Ctrl + S** (v editoru): Rychlé uložení rozpracovaného kódu v sekci Scratchpad.
+- **Ctrl + S** (v editoru a modálech): Rychlé uložení rozpracovaného kódu v sekci Scratchpad nebo odeslání formuláře v editačních modálech.
 
 ## Instalace a Spuštění
 

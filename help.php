@@ -152,6 +152,10 @@ console.log('Hello World');
                     <span class="badge bg-primary me-2">Option + N</span> nebo <span class="badge bg-primary me-2">Alt + N</span>
                     <strong class="text-white ms-2">Nový záznam:</strong> Otevře modální okno pro přidání nového snippetu nebo poznámky (podle aktuální sekce).
                 </li>
+                <li class="mb-2">
+                    <span class="badge bg-primary me-2">Ctrl + S</span>
+                    <strong class="text-white ms-2">Rychlé uložení / Odeslání:</strong> V kódovém editoru (Scratchpad) uloží rozpracovaný kód. V modálních oknech (např. při přidávání do Poznámek/Snippetů) slouží jako zkratka pro odeslání celého formuláře.
+                </li>
             </ul>
         </div>
 
@@ -186,8 +190,12 @@ console.log('Hello World');
             <p class="text-white small mb-3">Tato sekce slouží jako vaše "pískoviště" pro libovolný kód, konfigurační řetězce nebo technické poznámky, které chcete mít neustále po ruce.</p>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
-                    <strong class="text-white d-block">Více draftů (Taby):</strong>
-                    Nově můžete mít v sekci Scratchpad otevřeno **mnoho různých draftů** současně. Mezi nimi přepínáte pomocí tabů nad editorem. Každý draft si můžete **přejmenovat** jednoduše kliknutím na jeho název v horní části.
+                    <strong class="text-white d-block">Více draftů (Taby) a Persistence:</strong>
+                    Nově můžete mít v sekci Scratchpad otevřeno **mnoho různých draftů** současně. Mezi nimi přepínáte pomocí tabů nad editorem. Každý draft si můžete **přejmenovat** jednoduše kliknutím na jeho název. Aplikace si automaticky pamatuje, který tab jste měli naposledy otevřený, takže se k němu vždy vrátíte.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Poslat do Snippetů / Poznámek:</strong>
+                    Pokud máte hotový kód nebo text, který chcete trvale uložit, využijte tlačítko <i class="bi bi-send me-1"></i> **Poslat do**. To vám umožní vybraný draft okamžitě převést na plnohodnotný **Snippet** (včetně jazyka a popisu) nebo do **Poznámek** (obsah se vloží jako kódový blok). Po úspěšném přesunu se původní draft smaže, abyste měli v editoru pořádek.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Profesionální funkce:</strong>
