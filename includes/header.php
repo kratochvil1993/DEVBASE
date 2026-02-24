@@ -48,7 +48,7 @@ $stats = getGlobalStats();
     <!-- Quill.js CSS -->
     <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/style.css?v=<?php echo filemtime('assets/css/style.css'); ?>" rel="stylesheet">
 </head>
 <body>
 
