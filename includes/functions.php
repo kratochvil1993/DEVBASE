@@ -6,11 +6,13 @@ $check = @$conn->query("SHOW TABLES LIKE 'snippets'");
 $check2 = @$conn->query("SHOW TABLES LIKE 'scratchpads'");
 $check3 = @$conn->query("SHOW COLUMNS FROM snippets LIKE 'is_locked'");
 $check4 = @$conn->query("SHOW COLUMNS FROM todos LIKE 'is_locked'");
+$check5 = @$conn->query("SHOW COLUMNS FROM notes LIKE 'is_locked'");
 
 if (!$check || $check->num_rows == 0 || 
     !$check2 || $check2->num_rows == 0 || 
     !$check3 || $check3->num_rows == 0 ||
-    !$check4 || $check4->num_rows == 0) {
+    !$check4 || $check4->num_rows == 0 ||
+    !$check5 || $check5->num_rows == 0) {
     // Determine path to includes/init_db.php
     $path = "includes/init_db.php";
     if (!file_exists($path)) {
