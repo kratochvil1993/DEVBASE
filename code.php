@@ -59,7 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
         $scratchpad_id = $_POST['scratchpad_id'] ?? null;
         
         if ($title && $code && $scratchpad_id) {
-            $saved_id = saveSnippet($title, $description, $code, $language_id, $tags);
+            $is_locked = isset($_POST['is_locked']) ? 1 : 0;
+            $saved_id = saveSnippet($title, $description, $code, $language_id, $tags, null, $is_locked);
             if ($saved_id) {
                 deleteScratchpad($scratchpad_id);
                 header("Location: code.php?snippet_moved=1");
@@ -461,9 +462,17 @@ li.CodeMirror-hint-active {
                             <label class="form-label text-white-50 small">Název snippetu</label>
                             <input type="text" name="title" id="snippetTitleInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required placeholder="Název snippetu...">
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-9">
                             <label class="form-label text-white-50 small">Popis</label>
                             <textarea name="description" id="snippetDescriptionInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="2" placeholder="Krátký popis..."></textarea>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" name="is_locked" id="snippetLockedInput" value="1">
+                                <label class="form-check-label text-white-50 small" for="snippetLockedInput">
+                                    <i class="bi bi-lock-fill me-1"></i> Skrýt obsah
+                                </label>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label text-white-50 small">Jazyk</label>
@@ -614,6 +623,8 @@ function openAddToSnippetsModal() {
     
     document.getElementById('snippetTitleInput').value = title;
     document.getElementById('snippetCodeInput').value = content;
+    const lockInput = document.getElementById('snippetLockedInput');
+    if (lockInput) lockInput.checked = false;
     
     const modalEl = document.getElementById('addToSnippetsModal');
     let modal = bootstrap.Modal.getInstance(modalEl);

@@ -400,10 +400,16 @@ function copyToClipboard(btn, elementId) {
                 <div class="modal-body">
                     <input type="hidden" name="action" value="add_snippet">
                     <input type="hidden" name="snippet_id" id="snippetId" value="">
-                    <div class="row g-3">
-                        <div class="col-md-9">
+                    <div class="row mb-3">
+                        <div class="col-12">
                             <label class="form-label text-white-50 small">Název</label>
-                            <input type="text" name="title" id="snippetTitleInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required>
+                            <input type="text" name="title" id="snippetTitleInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required placeholder="Název snipetu...">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-9">
+                            <label class="form-label text-white-50 small">Popis</label>
+                            <textarea name="description" id="snippetDescriptionInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="2" placeholder="Krátký popis..."></textarea>
                         </div>
                         <div class="col-md-3 d-flex align-items-end">
                             <div class="form-check form-switch mb-2">
@@ -413,10 +419,6 @@ function copyToClipboard(btn, elementId) {
                                 </label>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3 mt-3">
-                        <label class="form-label text-white-50 small">Popis</label>
-                        <textarea name="description" id="snippetDescriptionInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="2"></textarea>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
