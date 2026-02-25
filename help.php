@@ -42,7 +42,7 @@ include 'includes/header.php';
             
             <div class="help-section mb-4">
                 <h6 class="text-white-50 mb-2">Kombinace HTML a JavaScriptu</h6>
-                <p class="text-white small mb-3">Pro nejlepší výsledek při ukládání mixu HTML a JS doporučujeme použít "Markdown" formát s kódovými bloky:</p>
+            
                 
                 <div class="snippet-code-wrapper mb-3 position-relative">
                     <button class="btn btn-sm btn-outline-light copy-btn position-absolute top-0 end-0 m-2" onclick="copyToClipboard(this, 'help-md-1')">
