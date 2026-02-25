@@ -16,7 +16,7 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Automatické sledování změn**: Po každém uložení, úpravě nebo vytvoření nového záznamu vás aplikace automaticky přesune na danou položku a zvýrazní ji jemným animovaným efektem pro zachování kontextu. Stejná logika funguje i v **Nastavení**, kde vás aplikace po přidání štítku nebo jazyka plynule vrátí přesně k sekci, se kterou jste pracovali.
 - **Interaktivní nápověda**: Stránka s nápovědou obsahuje chytré sticky menu, které se na mobilních zařízeních sbalí do přehledného overlaye a automaticky sleduje, kterou sekci právě čtete.
 - **Tmavý / Světlý režim**: Možnost hladkého přepínání témat přímo v side-baru s automatickým ukládáním volby. Tento přepínač lze v Nastavení také zcela skrýt.
-- **Kopírování v jednom kroku**: Tlačítka pro okamžité uložení bloku zdrojového kódu do schránky (clipboard).
+- **Inteligentní kopírování**: Kromě tlačítek pro okamžité uložení bloku zdrojového kódu do schránky (clipboard) aplikace podporuje **automatické kopírování výběru**. Jakýkoliv označený text v detailním náhledu se okamžitě po uvolnění myši uloží do schránky, což výrazně urychluje práci.
 - **Integrovaný Markdown**: Snipety lze zapisovat formou Markdownu pro kombinaci více jazyků či tabulek.
 - **Flexibilní navigace**: Rychlé přepínání mezi snipety, poznámkami a úkoly přímo v hlavičce (dle aktuálního nastavení). U sekce TODO se navíc může zobrazovat "badge" s počtem aktivních úkolů.
 - **Rychlé statistiky**: Přehledný panel v bočním menu (offcanvas), který okamžitě zobrazuje aktuální počty vašich snippetů, poznámek a **aktivních** úkolů v elegantních minikartách.

@@ -118,6 +118,10 @@ console.log('Hello World');
                     Kliknutím na kartu snipetu otevřete **detailní náhled** v modálním okně. Pokud potřebujete provést změnu, můžete využít tlačítko **Upravit** přímo v tomto náhledu, které vás okamžitě přepne do editačního režimu.
                 </li>
                 <li class="mb-3">
+                    <strong class="text-white d-block">Automatické kopírování výběru:</strong>
+                    V detailním náhledu snippetu nebo poznámky se jakýkoliv **označený text automaticky zkopíruje** do schránky v momentě, kdy pustíte tlačítko myši. Ideální pro bleskové vytažení části kódu bez nutnosti stisknout Ctrl+C.
+                </li>
+                <li class="mb-3">
                     <strong class="text-white d-block">Připínání (Pinning):</strong>
                     Důležité snipety si můžete připnout ikonou špendlíku. Zůstanou pak v samostatné sekci **PŘIPNUTÉ** vždy na začátku seznamu, bez ohledu na ostatní filtry.
                 </li>
