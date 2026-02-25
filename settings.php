@@ -293,7 +293,7 @@ include 'includes/header.php';
                 </div>
             </form>
 
-            <div class="list-group list-group-flush bg-transparent" style="max-height: 400px; overflow-y: auto;" id="snippetTagsList">
+            <div class="list-group list-group-flush bg-transparent" style="max-height: 450px; overflow-y: auto;" id="snippetTagsList">
                 <?php foreach ($snippetTags as $tag): ?>
                     <div class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-light border-opacity-10 px-0 snippet-tag-row" data-id="<?php echo $tag['id']; ?>">
                         <span>
@@ -351,7 +351,7 @@ include 'includes/header.php';
                 </div>
             </form>
 
-            <div class="list-group list-group-flush bg-transparent" style="max-height: 400px; overflow-y: auto;" id="noteTagsList">
+            <div class="list-group list-group-flush bg-transparent" style="max-height:450px; overflow-y: auto;" id="noteTagsList">
                 <?php foreach ($noteTags as $tag): ?>
                     <div class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-light border-opacity-10 px-0 note-tag-row" data-id="<?php echo $tag['id']; ?>">
                         <span>
@@ -409,7 +409,7 @@ include 'includes/header.php';
                 </div>
             </form>
 
-            <div class="list-group list-group-flush bg-transparent" style="max-height: 400px; overflow-y: auto;" id="todoTagsList">
+            <div class="list-group list-group-flush bg-transparent" style="max-height: 450px; overflow-y: auto;" id="todoTagsList">
                 <?php foreach ($todoTags as $tag): ?>
                     <div class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-light border-opacity-10 px-0 todo-tag-row" data-id="<?php echo $tag['id']; ?>">
                         <span>
