@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   php-env:
@@ -8,13 +8,20 @@ services:
       - ./:/var/www/html
     ports:
       - 9060:80
+    depends_on:
+      - mysql_db
 
   mysql_db:
-    image: mysql:latest
+    image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: devbase
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin:latest
@@ -22,4 +29,8 @@ services:
     ports:
       - 9061:80
     environment:
-      - PMA_ARBITRARY=1
+      PMA_ARBITRARY: 1
+      PMA_HOST: mysql_db
+
+volumes:
+  db_data:
