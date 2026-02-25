@@ -237,6 +237,9 @@ console.log('Hello World');
                         <li><span class="badge bg-primary me-2">Ctrl + F</span> <strong>Vyhledávání</strong> přímo uvnitř kódu</li>
                         <li><span class="badge bg-primary me-2">Alt + F</span> <strong>Nahrazení</strong> textu</li>
                         <li><span class="badge bg-primary me-2">Ctrl + Q</span> <strong>Sbalit blok</strong> (fold) na aktuálním řádku</li>
+                        <li><span class="badge bg-primary me-2">Option + N</span> nebo <span class="badge bg-primary me-2">Alt + N</span> <strong>Nový draft</strong></li>
+                        <li><span class="badge bg-primary me-2">Option + W</span> nebo <span class="badge bg-primary me-2">Alt + W</span> <strong>Zavřít draft</strong></li>
+                        <li><span class="badge bg-primary me-2">Option + ← / →</span> <strong>Přepínat drafty</strong></li>
                         <li><span class="badge bg-primary me-2">Alt + G</span> <strong>Skočit na řádek...</strong></li>
                     </ul>
                 </li>
