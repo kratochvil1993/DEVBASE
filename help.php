@@ -323,6 +323,10 @@ console.log('Hello World');
                     <strong class="text-white d-block">Termíny splnění (Deadlines):</strong>
                     U každého úkolu můžete nastavit konkrétní datum splnění. Pokud se termín blíží (dnes nebo zítra), u úkolu se objeví žlutý odznak **Blíží se**. Pokud termín již vypršel, objeví se červený odznak **Po termínu**. Termíny lze zadat při přidávání úkolu nebo dodatečně přes ikonu tužky.
                 </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Systém upozornění (Notifikace):</strong>
+                    V pravé části horní navigace se nachází **ikona zvonečku**, která vás upozorní na úkoly s vypršeným nebo blížícím se termínem. Ikona obsahuje badge s počtem připomínek. Červená barva a pulzování značí úkoly po termínu, oranžová pak úkoly zítřejší. Kliknutím na zvoneček otevřete rychlý přehled s přímými odkazy na konkrétní úkoly.
+                </li>
             </ul>
         </div>
 
