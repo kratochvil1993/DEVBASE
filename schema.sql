@@ -9,10 +9,11 @@ CREATE TABLE IF NOT EXISTS languages (
 
 CREATE TABLE IF NOT EXISTS tags (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(50) NOT NULL,
     color VARCHAR(7) DEFAULT NULL,
     type VARCHAR(20) DEFAULT 'snippet',
-    sort_order INT DEFAULT 0
+    sort_order INT DEFAULT 0,
+    UNIQUE (name, type)
 );
 
 CREATE TABLE IF NOT EXISTS snippets (
@@ -89,7 +90,7 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
 ('todos_enabled', '1'),
 ('code_enabled', '1'),
 ('todo_badge_enabled', '1'),
-('theme_toggle_enabled', '1'),
+('theme_toggle_enabled', '0'),
 ('security_enabled', '0');
 
 -- Seed initial data
@@ -102,15 +103,19 @@ INSERT IGNORE INTO languages (name, prism_class) VALUES
 ('Python', 'python'),
 ('Bash', 'bash');
 
-INSERT IGNORE INTO tags (name) VALUES 
-('Frontend'),
-('Backend'),
-('Database'),
-('Security'),
-('UI/UX'),
-('Utility'),
-('React'),
-('API');
+-- Seed initial tags with types and colors
+INSERT IGNORE INTO tags (name, type, color) VALUES 
+('Frontend', 'snippet', '#3498db'),
+('Backend', 'snippet', '#2ecc71'),
+('Database', 'snippet', '#f1c40f'),
+('Důležité', 'note', '#e74c3c'),
+('Důležité', 'snippet', '#e74c3c'),
+('Práce', 'todo', '#9b59b6'),
+('Osobní', 'todo', '#1abc9c'),
+('Studium', 'todo', '#34495e'),
+('Chill', 'todo', '#2980b9'),
+('Nápady', 'note', '#f39c12'),
+('Archiv', 'note', '#95a5a6');
 
 -- Sample Snippets
 INSERT INTO snippets (title, description, code, language_id) VALUES 
@@ -137,12 +142,34 @@ try {
 
 -- Tag Sample Snippets
 INSERT INTO snippet_tags (snippet_id, tag_id) VALUES 
-(1, (SELECT id FROM tags WHERE name = 'Backend')),
-(1, (SELECT id FROM tags WHERE name = 'Database')),
-(2, (SELECT id FROM tags WHERE name = 'Frontend')),
-(2, (SELECT id FROM tags WHERE name = 'API')),
-(3, (SELECT id FROM tags WHERE name = 'UI/UX')),
-(3, (SELECT id FROM tags WHERE name = 'Frontend'));
+((SELECT id FROM snippets WHERE title = 'PHP PDO Connection' LIMIT 1), (SELECT id FROM tags WHERE name = 'Backend' AND type = 'snippet' LIMIT 1)),
+((SELECT id FROM snippets WHERE title = 'PHP PDO Connection' LIMIT 1), (SELECT id FROM tags WHERE name = 'Database' AND type = 'snippet' LIMIT 1)),
+((SELECT id FROM snippets WHERE title = 'JS Fetch API' LIMIT 1), (SELECT id FROM tags WHERE name = 'Frontend' AND type = 'snippet' LIMIT 1)),
+((SELECT id FROM snippets WHERE title = 'CSS Glassmorphism Card' LIMIT 1), (SELECT id FROM tags WHERE name = 'Frontend' AND type = 'snippet' LIMIT 1));
+
+-- Sample Notes
+INSERT INTO notes (title, content) VALUES 
+('Vítejte v DevBase', 'Toto je vaše první poznámka. DevBase vám umožňuje ukládat kousky kódu, poznámky a úkoly na jednom místě.'),
+('Tipy pro Markdown', 'V poznámkách můžete používat standardní text nebo si je organizovat pomocí štítků.'),
+('Můj první draft', 'Zde si můžete psát své nápady, které později rozpracujete.');
+
+-- Tag Sample Notes
+INSERT INTO note_tags (note_id, tag_id) VALUES 
+((SELECT id FROM notes WHERE title = 'Vítejte v DevBase' LIMIT 1), (SELECT id FROM tags WHERE name = 'Důležité' AND type = 'note' LIMIT 1)),
+((SELECT id FROM notes WHERE title = 'Tipy pro Markdown' LIMIT 1), (SELECT id FROM tags WHERE name = 'Důležité' AND type = 'note' LIMIT 1)),
+((SELECT id FROM notes WHERE title = 'Můj první draft' LIMIT 1), (SELECT id FROM tags WHERE name = 'Nápady' AND type = 'note' LIMIT 1));
+
+-- Sample Todos
+INSERT INTO todos (text) VALUES 
+('Prozkoumat funkce DevBase'),
+('Uložit si první vlastní snippet'),
+('Naučit se pokročilé SQL dotazy');
+
+-- Tag Sample Todos
+INSERT INTO todo_tags (todo_id, tag_id) VALUES 
+((SELECT id FROM todos WHERE text = 'Prozkoumat funkce DevBase' LIMIT 1), (SELECT id FROM tags WHERE name = 'Práce' AND type = 'todo' LIMIT 1)),
+((SELECT id FROM todos WHERE text = 'Uložit si první vlastní snippet' LIMIT 1), (SELECT id FROM tags WHERE name = 'Osobní' AND type = 'todo' LIMIT 1)),
+((SELECT id FROM todos WHERE text = 'Naučit se pokročilé SQL dotazy' LIMIT 1), (SELECT id FROM tags WHERE name = 'Studium' AND type = 'todo' LIMIT 1));
 
 CREATE TABLE IF NOT EXISTS scratchpads (
     id INT AUTO_INCREMENT PRIMARY KEY,
