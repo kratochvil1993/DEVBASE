@@ -9,20 +9,25 @@ if (getSetting('notes_enabled', '1') == '0') {
 
 // Handle Note addition, update or delete
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
-    $redirect_anchor = '';
+    $updated_id = '';
     if ($_POST['action'] == 'add_note') {
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
         $id = !empty($_POST['note_id']) ? $_POST['note_id'] : null;
         $is_locked = isset($_POST['is_locked']) ? 1 : 0;
         $note_id = saveNote($_POST['title'], $_POST['content'], null, $tags, $id, $is_locked);
-        if ($note_id) $redirect_anchor = '#note-' . $note_id;
+        if ($note_id) $updated_id = $note_id;
     } elseif ($_POST['action'] == 'delete_note') {
         deleteNote($_POST['note_id']);
     } elseif ($_POST['action'] == 'toggle_pin') {
         toggleNotePin($_POST['note_id']);
-        $redirect_anchor = '#note-' . $_POST['note_id'];
+        $updated_id = $_POST['note_id'];
     }
-    header('Location: manage_notes.php' . $redirect_anchor);
+    
+    $redirect_url = 'manage_notes.php';
+    if ($updated_id) {
+        $redirect_url .= '?updated_id=' . $updated_id;
+    }
+    header('Location: ' . $redirect_url);
     exit;
 }
 
@@ -91,7 +96,7 @@ include 'includes/header.php';
         </div>
     </div>
 
-    <div class="row mb-5">
+    <div class="row" style="margin-bottom: 30vh;">
         <div class="col-12">
         <div class="glass-card p-0 no-jump overflow-hidden ">
             <div class="table-responsive">

@@ -3,20 +3,25 @@ require_once 'includes/functions.php';
 
 // Handle Snippet addition, update or delete (same logic as on index.php)
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
-    $redirect_anchor = '';
+    $updated_id = '';
     if ($_POST['action'] == 'add_snippet') {
         $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
         $id = !empty($_POST['snippet_id']) ? $_POST['snippet_id'] : null;
         $is_locked = isset($_POST['is_locked']) ? 1 : 0;
         $snippet_id = saveSnippet($_POST['title'], $_POST['description'], $_POST['code'], $_POST['language_id'], $tags, $id, $is_locked);
-        if ($snippet_id) $redirect_anchor = '#snippet-' . $snippet_id;
+        if ($snippet_id) $updated_id = $snippet_id;
     } elseif ($_POST['action'] == 'delete_snippet') {
         deleteSnippet($_POST['snippet_id']);
     } elseif ($_POST['action'] == 'toggle_pin') {
         toggleSnippetPin($_POST['snippet_id']);
-        $redirect_anchor = '#snippet-' . $_POST['snippet_id'];
+        $updated_id = $_POST['snippet_id'];
     }
-    header('Location: manage.php' . $redirect_anchor);
+    
+    $redirect_url = 'manage.php';
+    if ($updated_id) {
+        $redirect_url .= '?updated_id=' . $updated_id;
+    }
+    header('Location: ' . $redirect_url);
     exit;
 }
 
@@ -84,7 +89,7 @@ include 'includes/header.php';
     </div>
 </div>
 
-<div class="row mb-5">
+<div class="row" style="margin-bottom: 30vh;">
     <div class="col-12">
         <div class="glass-card p-0 no-jump overflow-hidden">
             <div class="table-responsive">

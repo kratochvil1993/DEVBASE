@@ -85,6 +85,7 @@ include 'includes/header.php';
             <?php else: ?>
                 <?php foreach ($todos as $todo): ?>
                     <div class="card glass-card todo-item" 
+                         id="todo-card-<?php echo $todo['id']; ?>"
                          data-id="<?php echo $todo['id']; ?>"
                          data-tags="<?php echo htmlspecialchars(implode(',', array_column($todo['tags'], 'name'))); ?>">
                         <div class="card-body p-3">

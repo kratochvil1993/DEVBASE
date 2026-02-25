@@ -569,13 +569,21 @@ document.addEventListener("DOMContentLoaded", () => {
         ? "note-card-"
         : document.getElementById("todo-card-" + updatedId)
           ? "todo-card-"
-          : "";
+          : document.getElementById("note-" + updatedId)
+            ? "note-"
+            : document.getElementById("snippet-" + updatedId)
+              ? "snippet-"
+              : "";
 
     if (prefix) {
       const element = document.getElementById(prefix + updatedId);
       if (element) {
         // We wait a bit for animations and filters to settle
         setTimeout(() => {
+          // Clear any inline animation from filters (like popIn) to allow highlight to run
+          element.style.animation = "none";
+          element.offsetHeight; // trigger reflow
+
           element.scrollIntoView({ behavior: "smooth", block: "center" });
           element.classList.add("updated-highlight");
 

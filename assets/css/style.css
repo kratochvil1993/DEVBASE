@@ -415,6 +415,12 @@ pre[class*="language-"] {
   border-collapse: collapse !important;
 }
 
+.manage-note-row,
+.manage-snippet-row,
+.todo-item {
+  scroll-margin-top: 120px;
+}
+
 .manage-notes-table tbody tr {
   transition:
     transform 0.3s ease,
@@ -739,24 +745,66 @@ h6 i.bi-pin-angle-fill {
   transform: rotate(90deg);
 }
 
-/* Updated Item Highlight Animation */
-@keyframes highlight-glow {
+@keyframes card-highlight-glow {
   0% {
-    box-shadow: 0 0 0 0 rgba(0, 229, 130, 0.7);
-    border-color: rgba(0, 229, 130, 0.8);
+    box-shadow: 0 0 0 0 rgba(0, 229, 130, 0);
+    border-color: var(--glass-border);
+    transform: scale(1);
+    background-color: transparent;
   }
-  50% {
-    box-shadow: 0 0 20px 5px rgba(0, 229, 130, 0.5);
-    border-color: rgba(0, 229, 130, 1);
+  30% {
+    box-shadow: 0 0 40px 10px rgba(0, 229, 130, 0.5);
+    border-color: rgba(0, 229, 130, 1) !important;
+    transform: scale(1.01);
+    background-color: rgba(0, 229, 130, 0.15) !important;
   }
   100% {
     box-shadow: 0 0 0 0 rgba(0, 229, 130, 0);
     border-color: var(--glass-border);
+    transform: scale(1);
+    background-color: transparent;
   }
 }
 
-.updated-highlight {
-  animation: highlight-glow 2s ease-out;
+@keyframes row-highlight-glow {
+  0% {
+    background-color: transparent;
+    border-left: 0px solid rgba(0, 229, 130, 0);
+  }
+  30% {
+    background-color: rgba(0, 229, 130, 0.2) !important;
+    border-left: 4px solid rgba(0, 229, 130, 1);
+    outline: 1px solid rgba(0, 229, 130, 0.5);
+  }
+  100% {
+    background-color: transparent;
+    border-left: 0px solid rgba(0, 229, 130, 0);
+    outline: 1px solid transparent;
+  }
+}
+
+.updated-highlight .glass-card,
+.updated-highlight.glass-card,
+.updated-highlight.todo-item,
+.updated-highlight.note-item {
+  animation: card-highlight-glow 2.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  z-index: 50;
+}
+
+.updated-highlight.manage-note-row,
+.updated-highlight.manage-snippet-row {
+  animation: row-highlight-glow 2.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  z-index: 50;
+}
+
+/* Ensure updated elements aren't hidden under header */
+.snippet-card-wrapper,
+.note-item,
+.todo-item,
+.manage-note-row,
+.manage-snippet-row {
+  scroll-margin-top: 100px;
 }
 
 /* Help Submenu Styles */
