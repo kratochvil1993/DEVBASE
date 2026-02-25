@@ -182,9 +182,11 @@ include 'includes/header.php';
             
             <div class="mt-3 d-flex justify-content-between align-items-center text-white-50 small">
                 <div>
-                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Ctrl+S pro uložení</span>
-                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+L pro skok do editoru</span>
-                    <span><i class="bi bi-info-circle me-1"></i> Podporuje PHP, JS, HTML, CSS, SQL, Bash</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Ctrl+S uložit</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+L focus</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+N nový</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+W zavřít</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+←/→ taby</span>
                 </div>
                 <div id="charCount">Znaků: 0</div>
             </div>
@@ -583,6 +585,41 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             if (editor) {
                 editor.focus();
+            }
+        }
+
+        // Option + N new scratchpad
+        if (e.altKey && e.code === 'KeyN') {
+            e.preventDefault();
+            window.location.href = 'code.php?action=add';
+        }
+
+        // Option + W close current scratchpad
+        if (e.altKey && e.code === 'KeyW') {
+            e.preventDefault();
+            const activeTab = document.querySelector('.nav-tab-item.active');
+            if (activeTab) {
+                const closeBtn = activeTab.querySelector('.btn-tab-close');
+                if (closeBtn) {
+                    closeBtn.click();
+                }
+            }
+        }
+
+        // Option + Right/Left arrow for tab switching
+        if (e.altKey && (e.code === 'ArrowRight' || e.code === 'ArrowLeft')) {
+            const tabs = Array.from(document.querySelectorAll('.nav-tab-link'));
+            const activeIndex = tabs.findIndex(tab => tab.closest('.nav-tab-item').classList.contains('active'));
+            
+            if (activeIndex !== -1 && tabs.length > 1) {
+                e.preventDefault();
+                let nextIndex;
+                if (e.code === 'ArrowRight') {
+                    nextIndex = (activeIndex + 1) % tabs.length;
+                } else {
+                    nextIndex = (activeIndex - 1 + tabs.length) % tabs.length;
+                }
+                window.location.href = tabs[nextIndex].href;
             }
         }
     });
