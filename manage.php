@@ -45,18 +45,18 @@ include 'includes/header.php';
 <!-- Controls (Search, Buttons, Filters) -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="glass-card p-2 mb-3">
-            <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
+        <div class="glass-card no-jump p-2 mb-3">
+            <div class="d-flex flex-nowrap gap-3 align-items-center justify-content-between">
                 <!-- Search Input -->
-                <div class="input-group flex-grow-1" style="max-width: 161px;">
+                <div class="input-group flex-grow-1">
                     <span class="input-group-text bg-transparent border-0 text-white">
                         <i class="bi bi-search"></i>
                     </span>
-                    <input type="text" id="manageSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat snipety...">
+                    <input type="text" id="manageSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat">
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="d-flex gap-2">
+                <div class="d-flex flex-shrink-0 gap-2">
                     <button class="btn btn-add-snipet rounded px-3 shadow-sm" id="newSnippetBtn" onclick="openAddModal()" title="Nový snipet">
                         <i class="bi bi-plus-lg"></i>
                     </button>

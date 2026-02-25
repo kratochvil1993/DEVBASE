@@ -58,7 +58,7 @@ include 'includes/header.php';
 <div class="row mb-5 align-items-center">
     <div class="col-lg-8 mx-auto">
         <h2 class="text-white mb-3">Archiv poznámek</h2>
-        <div class="glass-card p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between">
+        <div class="glass-card no-jump p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between">
             <div class="flex-grow-1" style="max-width: 400px;">
                 <div class="input-group">
                     <span class="input-group-text bg-transparent border-0 text-white">

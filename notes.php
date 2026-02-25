@@ -63,7 +63,7 @@ include 'includes/header.php';
 <div class="row mb-3 align-items-center">
     <div class="col-lg-8 mx-auto">
         <div class="glass-card no-jump p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between">
-            <div class="flex-grow-1" style="max-width: 161px;">
+            <div class="flex-grow-1" >
                 <div class="input-group">
                     <span class="input-group-text bg-transparent border-0 text-white">
                         <i class="bi bi-search"></i>
