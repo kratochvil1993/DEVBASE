@@ -175,6 +175,10 @@ console.log('Hello World');
                     <strong class="text-white ms-2">Nový záznam:</strong> Otevře modální okno pro přidání nového snippetu nebo poznámky.
                 </li>
                 <li class="mb-2">
+                    <span class="badge bg-primary me-2">Option + L</span> nebo <span class="badge bg-primary me-2">Alt + L</span>
+                    <strong class="text-white ms-2">Skočit do editoru:</strong> V sekci Code rychle zaměří kurzor do editoru kódu.
+                </li>
+                <li class="mb-2">
                     <span class="badge bg-primary me-2">Ctrl + S</span>
                     <strong class="text-white ms-2">Rychlé uložení / Odeslání:</strong> Uloží kód v editoru nebo odešle formulář v modálním okně.
                 </li>
@@ -239,6 +243,10 @@ console.log('Hello World');
                 <li class="mb-3">
                     <strong class="text-white d-block">Persistence:</strong>
                     Obsah editoru je uložen v databázi. I když prohlížeč zavřete nebo restartujete počítač, váš kód tam bude na vás čekat přesně tak, jak jste ho naposledy uložili.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Nastavení:</strong>
+                    Pokud sekci Code (Scratchpad) nepoužíváte, můžete ji v **Nastavení** zcela skrýt.
                 </li>
             </ul>
         </div>
@@ -332,7 +340,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Bezpečnost hesla:</strong>
-                    Hesla jsou v databázi uložena jako bezpečné hashe. Pokud heslo zapomenete, lze jej resetovat přímo v databázi (tabulka `settings`, klíč `security_enabled` na `0`).
+                    Hesla jsou v databázi uložena jako bezpečné hashe. Pokud heslo znáte a chcete jej změnit nebo zrušit, můžete tak učinit přímo v **Nastavení** pomocí tlačítka **Resetovat heslo**. Pokud heslo zapomenete, lze jej nouzově resetovat přímo v databázi (tabulka `settings`, klíč `security_enabled` na `0`).
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Offline bezpečnost:</strong>
