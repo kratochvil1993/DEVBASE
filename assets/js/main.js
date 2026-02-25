@@ -520,6 +520,45 @@ document.addEventListener("DOMContentLoaded", () => {
     true,
   );
 
+  // Auto-copy selection in preview modals
+  document.addEventListener("mouseup", (e) => {
+    // Only trigger if inside a preview modal
+    const previewModal = e.target.closest("#viewSnippetModal, #viewNoteModal");
+    if (!previewModal) return;
+
+    // Ignore if clicking on interactive elements or inside an editor
+    if (e.target.closest("button, input, textarea, .ql-editor")) return;
+
+    const selection = window.getSelection();
+    const selectedText = selection.toString().trim();
+
+    if (selectedText.length > 0) {
+      navigator.clipboard
+        .writeText(selectedText)
+        .then(() => {
+          // Find if there is a copy button in the current modal to show feedback
+          const copyBtn = previewModal.querySelector(".copy-btn");
+          if (copyBtn) {
+            const originalHTML = copyBtn.innerHTML;
+            const originalClass = copyBtn.className;
+
+            copyBtn.innerHTML =
+              '<i class="bi bi-check-all me-1"></i> Selection copied!';
+            copyBtn.classList.add("btn-success");
+            copyBtn.classList.remove("btn-outline-light");
+
+            setTimeout(() => {
+              copyBtn.innerHTML = originalHTML;
+              copyBtn.className = originalClass;
+            }, 1500);
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to auto-copy: ", err);
+        });
+    }
+  });
+
   // Handle scrolling to updated item
   const urlParams = new URLSearchParams(window.location.search);
   const updatedId = urlParams.get("updated_id");
