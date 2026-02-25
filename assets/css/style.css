@@ -798,6 +798,61 @@ h6 i.bi-pin-angle-fill {
   z-index: 50;
 }
 
+/* Notification Dropdown & Pulse Animations */
+.dropdown-menu-glass {
+  background: rgba(25, 30, 45, 0.85) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden;
+}
+
+.dropdown-menu-glass .dropdown-item {
+  color: rgba(255, 255, 255, 0.85);
+  transition: all 0.2s ease;
+}
+
+.dropdown-menu-glass .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.pulse-red {
+  animation: pulse-red-animation 2s infinite;
+  border-radius: 50%;
+}
+
+@keyframes pulse-red-animation {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+  }
+}
+
+.reminder-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.reminder-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.reminder-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+}
+
+.reminder-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
 /* Ensure updated elements aren't hidden under header */
 .snippet-card-wrapper,
 .note-item,

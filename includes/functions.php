@@ -473,6 +473,36 @@ function getGlobalStats() {
     return $stats;
 }
 
+function getTodoReminders() {
+    global $conn;
+    $today = date('Y-m-d');
+    $tomorrow = date('Y-m-d', strtotime('+1 day'));
+    
+    $sql = "SELECT * FROM todos 
+            WHERE is_archived = 0 
+            AND deadline IS NOT NULL 
+            AND deadline <= '$tomorrow' 
+            ORDER BY deadline ASC";
+    
+    $result = $conn->query($sql);
+    $reminders = [
+        'critical' => [], // today or past (red)
+        'warning' => []   // tomorrow (orange)
+    ];
+    
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            if ($row['deadline'] <= $today) {
+                $reminders['critical'][] = $row;
+            } else if ($row['deadline'] == $tomorrow) {
+                $reminders['warning'][] = $row;
+            }
+        }
+    }
+    
+    return $reminders;
+}
+
 function isAppLocked() {
     $security_enabled = getSetting('security_enabled', '0');
     if ($security_enabled !== '1') {
