@@ -62,6 +62,10 @@ if (isset($_POST['action'])) {
             updateSetting('security_enabled', $enabled);
         }
         $section = "section-security";
+    } elseif ($_POST['action'] == 'save_gemini_config') {
+        $key = $_POST['gemini_api_key'] ?? '';
+        updateSetting('gemini_api_key', $key);
+        $section = "section-gemini";
     } elseif ($_POST['action'] == 'reset_password') {
         updateSetting('app_password', '');
         updateSetting('security_enabled', '0');
@@ -477,6 +481,57 @@ include 'includes/header.php';
                     </div>
                 <?php endforeach; ?>
             </div>
+        </div>
+    </div>
+
+    <!-- Gemini AI Settings -->
+    <div class="col-md-6 mb-4 settings-section" id="section-gemini">
+        <div class="glass-card no-jump p-4 h-100 border-primary border-opacity-10">
+            <div class="d-flex align-items-center mb-3">
+                <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                    <i class="bi bi-robot text-primary fs-4"></i>
+                </div>
+                <h4 class="text-white mb-0">Gemini AI</h4>
+            </div>
+            
+            <p class="text-white-50 small mb-4">
+                Propojte aplikaci s AI modelem Gemini. Získáte tím funkce jako automaticky popis kódu, optimalizaci nebo rozbor úkolů. 
+                API klíč získáte zdarma v <a href="https://aistudio.google.com/" target="_blank" class="text-primary text-decoration-none border-bottom">Google AI Studio</a>.
+            </p>
+
+            <form method="POST">
+                <input type="hidden" name="action" value="save_gemini_config">
+                <div class="mb-3">
+                    <label class="form-label text-white-50 small fw-bold">Gemini API Klíč</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
+                            <i class="bi bi-key-fill"></i>
+                        </span>
+                        <input type="password" name="gemini_api_key" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                               placeholder="Zadejte váš API klíč..." 
+                               value="<?php echo htmlspecialchars(getSetting('gemini_api_key', '')); ?>">
+                        <button class="btn btn-outline-primary px-3" type="button" onclick="const input = this.previousElementSibling; input.type = input.type === 'password' ? 'text' : 'password';">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary w-100" type="submit">
+                    <i class="bi bi-check-circle-fill me-2"></i>Uložit konfiguraci
+                </button>
+
+                <?php if (!empty(getSetting('gemini_api_key'))): ?>
+                    <div class="mt-3 d-flex align-items-center gap-2 text-success small">
+                        <i class="bi bi-check-circle-fill"></i>
+                        AI funkce jsou nyní připraveny k použití
+                    </div>
+                <?php else: ?>
+                    <div class="mt-3 d-flex align-items-center gap-2 text-warning small">
+                        <i class="bi bi-info-circle-fill"></i>
+                        Vložte klíč pro aktivaci AI funkcí
+                    </div>
+                <?php endif; ?>
+            </form>
         </div>
     </div>
    
