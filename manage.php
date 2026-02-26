@@ -30,6 +30,7 @@ $pinnedSnippets = array_filter($snippets, function($s) { return ($s['is_pinned']
 $otherSnippets = array_filter($snippets, function($s) { return ($s['is_pinned'] ?? 0) == 0; });
 $tags = getAllTags();
 $languages = getAllLanguages();
+$geminiApiKey = getSetting('gemini_api_key');
 
 include 'includes/header.php';
 ?>
@@ -38,6 +39,28 @@ include 'includes/header.php';
         background: rgba(var(--bs-primary-rgb), 0.15) !important;
         outline: 1px solid rgba(var(--bs-primary-rgb), 0.3);
         transition: background 1s ease-in-out;
+    }
+    @keyframes flash-purple {
+        0% { background: rgba(142, 84, 233, 0.4); }
+        100% { background: transparent; }
+    }
+    .flash-purple {
+        animation: flash-purple 1.5s ease-out;
+    }
+    .btn-ai-action {
+        background: rgba(142, 84, 233, 0.1);
+        border: 1px solid rgba(142, 84, 233, 0.3);
+        color: #8e54e9;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: bold;
+        transition: all 0.2s ease;
+    }
+    .btn-ai-action:hover {
+        background: rgba(142, 84, 233, 0.3);
+        border-color: rgba(142, 84, 233, 0.5);
+        color: #fff;
     }
 </style>
 <div class="container">
@@ -401,6 +424,46 @@ function copyToClipboard(btn, elementId) {
         }, 2000);
     });
 }
+
+function generateAiField(action, targetId) {
+    const code = document.getElementById('snippetCodeInput').value.trim();
+    const target = document.getElementById(targetId);
+    
+    if (!code) {
+        alert('Nejdříve vložte kód!');
+        return;
+    }
+
+    const btn = event.currentTarget;
+    const originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> AI';
+
+    fetch('api/api_ai_handler.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action, content: code })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            target.value = data.answer.replace(/^\\s*[-*•]\\s*/, '').trim();
+            target.classList.add('flash-purple');
+            setTimeout(() => {
+                target.classList.remove('flash-purple');
+            }, 2000);
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        alert('Chyba při komunikaci s AI.');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+    });
+}
 </script>
 
 <!-- Add Snippet Modal -->
@@ -417,13 +480,27 @@ function copyToClipboard(btn, elementId) {
                     <input type="hidden" name="snippet_id" id="snippetId" value="">
                     <div class="row mb-3">
                         <div class="col-12">
-                            <label class="form-label text-white-50 small">Název</label>
+                            <div class="d-flex justify-content-between align-items-end mb-1">
+                                <label class="form-label text-white-50 small mb-0">Název</label>
+                                <?php if (!empty($geminiApiKey)): ?>
+                                <button type="button" class="btn btn-sm btn-ai-action py-0" onclick="generateAiField('generate_title', 'snippetTitleInput')" title="Generovat název">
+                                    <i class="bi bi-magic me-1"></i> AI
+                                </button>
+                                <?php endif; ?>
+                            </div>
                             <input type="text" name="title" id="snippetTitleInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required placeholder="Název snipetu...">
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-9">
-                            <label class="form-label text-white-50 small">Popis</label>
+                            <div class="d-flex justify-content-between align-items-end mb-1">
+                                <label class="form-label text-white-50 small mb-0">Popis</label>
+                                <?php if (!empty($geminiApiKey)): ?>
+                                <button type="button" class="btn btn-sm btn-ai-action py-0" onclick="generateAiField('generate_description', 'snippetDescriptionInput')" title="Generovat popis">
+                                    <i class="bi bi-magic me-1"></i> AI
+                                </button>
+                                <?php endif; ?>
+                            </div>
                             <textarea name="description" id="snippetDescriptionInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="2" placeholder="Krátký popis..."></textarea>
                         </div>
                         <div class="col-md-3 d-flex align-items-end">

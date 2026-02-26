@@ -23,6 +23,10 @@ if (empty($content)) {
 $prompt = "";
 if ($action === 'explain_code') {
     $prompt = "Jsi expertní programátor. Vysvětli prosím stručně a výstižně jednou nebo dvěma větami, co dělá následující kód. Odpověz v češtině jako prostý text bez jakéhokoliv formátování nebo odrážek. Zde je kód:\n\n" . $content;
+} elseif ($action === 'generate_description') {
+    $prompt = "Jsi expertní programátor. Na základě následujícího kódu vygeneruj velmi krátký a výstižný popis (maximálně 10 slov). Odpověz v češtině jako prostý text bez jakéhokoliv formátování, uvozovek nebo odrážek. Zde je kód:\n\n" . $content;
+} elseif ($action === 'generate_title') {
+    $prompt = "Jsi expertní programátor. Na základě následujícího kódu vygeneruj krátký a výstižný název (maximálně 3-5 slov). Odpověz v češtině jako prostý text bez jakéhokoliv formátování, uvozovek nebo odrážek. Zde je kód:\n\n" . $content;
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Neznámá akce.']);
     exit;
