@@ -28,6 +28,8 @@ $pinnedSnippets = array_filter($snippets, function($s) { return ($s['is_pinned']
 $otherSnippets = array_filter($snippets, function($s) { return ($s['is_pinned'] ?? 0) == 0; });
 $allTags = getAllTags(); // For the modal
 $languages = getAllLanguages();
+$geminiApiKey = getSetting('gemini_api_key');
+
 
 // Identify used tags for filtering
 $usedTags = [];
@@ -165,6 +167,7 @@ include 'includes/header.php';
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <h5 class="modal-title text-white mb-0" id="viewModalTitle">Zobrazit snipet</h5>
                 <span class="badge tag-badge ms-3" id="viewModalLanguage"></span>
+                <?php if (!empty($geminiApiKey)): ?>
                 <div class="dropdown ms-auto me-2">
                     <button class="btn btn-sm btn-ai rounded px-3 dropdown-toggle shadow-none border-opacity-25" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="aiSnippetBtn">
                         <i class="bi bi-robot me-1"></i> AI
@@ -177,6 +180,8 @@ include 'includes/header.php';
                         </li>
                     </ul>
                 </div>
+                <?php endif; ?>
+
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
@@ -187,6 +192,7 @@ include 'includes/header.php';
                     <div id="viewModalMarkdown" class="p-3 text-white markdown-preview" style="display: none; overflow-x: auto;"></div>
                     <pre id="viewModalPre" class="m-0"><code id="viewModalCode" class=""></code></pre>
                 </div>
+                <?php if (!empty($geminiApiKey)): ?>
                 <!-- AI Insight Box -->
                 <div id="aiInsightBox" class="m-3 p-3 rounded-3 d-none" style="background: rgba(142, 84, 233, 0.05); border: 1px solid rgba(142, 84, 233, 0.2); backdrop-filter: blur(5px);">
                     <div class="d-flex align-items-center mb-2">
@@ -196,6 +202,8 @@ include 'includes/header.php';
                     </div>
                     <div id="aiInsightContent" class="text-white small lh-base"></div>
                 </div>
+                <?php endif; ?>
+
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
                 <div id="viewModalTags" class="snippet-tags m-0"></div>
@@ -412,10 +420,13 @@ function openViewModal(snippet) {
     const myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('viewSnippetModal'));
     
     // Reset AI box
-    document.getElementById('aiInsightBox').classList.add('d-none');
-    document.getElementById('aiInsightContent').innerHTML = '';
+    const insightBox = document.getElementById('aiInsightBox');
+    const insightContent = document.getElementById('aiInsightContent');
+    if (insightBox) insightBox.classList.add('d-none');
+    if (insightContent) insightContent.innerHTML = '';
     
     myModal.show();
+
 }
 
 let aiTypingInterval = null;
@@ -425,6 +436,9 @@ function aiAction(action) {
     const insightBox = document.getElementById('aiInsightBox');
     const insightContent = document.getElementById('aiInsightContent');
     const aiBtn = document.getElementById('aiSnippetBtn');
+
+    if (!insightBox || !insightContent) return;
+
 
     // Clear previous typing
     if (aiTypingInterval) clearInterval(aiTypingInterval);
@@ -483,6 +497,16 @@ function typeWriter(text, container) {
         }
     }
     type();
+}
+
+if (document.getElementById('viewSnippetModal')) {
+    document.getElementById('viewSnippetModal').addEventListener('hidden.bs.modal', function () {
+        if (aiTypingInterval) clearInterval(aiTypingInterval);
+        const insightBox = document.getElementById('aiInsightBox');
+        const insightContent = document.getElementById('aiInsightContent');
+        if (insightBox) insightBox.classList.add('d-none');
+        if (insightContent) insightContent.innerHTML = '';
+    });
 }
 
 // Search and Tag filtering

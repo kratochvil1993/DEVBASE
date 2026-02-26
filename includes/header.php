@@ -156,12 +156,19 @@ $stats = getGlobalStats();
                 <label class="form-check-label text-white small" for="themeToggle">Dark</label>
         </div>
         <?php endif; ?>
+        <?php 
+        $hasAiKey = !empty(getSetting('gemini_api_key'));
+        ?>
+        <a href="settings.php" class="btn btn-sm btn-link <?php echo $hasAiKey ? 'text-ai' : 'text-white-50'; ?> p-0" title="<?php echo $hasAiKey ? 'AI Configured' : 'AI not configured'; ?>">
+            <i class="bi bi-robot fs-5"></i>
+        </a>
         <?php if (getSetting('security_enabled', '0') == '1'): ?>
                 <a href="?lock=1" class="btn btn-sm btn-link text-white-50 p-0" title="Lock App">
                     <i class="bi bi-lock-fill fs-5"></i>
                 </a>            
-            <?php endif; ?>
+        <?php endif; ?>
         </div>
+
     </div>
 </nav>
 
