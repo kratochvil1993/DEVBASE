@@ -526,6 +526,7 @@ include 'includes/header.php';
                         $models = [
                             'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash-Lite (Výchozí)',
                             'gemini-2.5-flash' => 'Gemini 2.5 Flash',
+                            'gemini-2.5-pro' => 'Gemini 2.5 Pro',
                             'gemini-3-flash' => 'Gemini 3 Flash',
                             'gemini-3-pro' => 'Gemini 3 Pro',
                             'gemini-3.1-pro' => 'Gemini 3.1 Pro',
