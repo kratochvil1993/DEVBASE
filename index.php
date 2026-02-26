@@ -165,6 +165,18 @@ include 'includes/header.php';
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <h5 class="modal-title text-white mb-0" id="viewModalTitle">Zobrazit snipet</h5>
                 <span class="badge tag-badge ms-3" id="viewModalLanguage"></span>
+                <div class="dropdown ms-auto me-2">
+                    <button class="btn btn-sm btn-ai rounded px-3 dropdown-toggle shadow-none border-opacity-25" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="aiSnippetBtn">
+                        <i class="bi bi-robot me-1"></i> AI
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10 mt-2 shadow-lg">
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiAction('explain_code')">
+                                <i class="bi bi-chat-left-text me-2 text-ai"></i> Vysvětlit kód
+                            </a>
+                        </li>
+                    </ul>
+                </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
@@ -174,6 +186,15 @@ include 'includes/header.php';
                     </button>
                     <div id="viewModalMarkdown" class="p-3 text-white markdown-preview" style="display: none; overflow-x: auto;"></div>
                     <pre id="viewModalPre" class="m-0"><code id="viewModalCode" class=""></code></pre>
+                </div>
+                <!-- AI Insight Box -->
+                <div id="aiInsightBox" class="m-3 p-3 rounded-3 d-none" style="background: rgba(142, 84, 233, 0.05); border: 1px solid rgba(142, 84, 233, 0.2); backdrop-filter: blur(5px);">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-robot text-primary me-2"></i>
+                        <span class="small fw-bold text-white-50 text-uppercase tracking-wider">AI Insight</span>
+                        <button type="button" class="btn-close btn-close-white ms-auto small" style="font-size: 0.5rem;" onclick="document.getElementById('aiInsightBox').classList.add('d-none')"></button>
+                    </div>
+                    <div id="aiInsightContent" class="text-white small lh-base"></div>
                 </div>
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
@@ -389,7 +410,79 @@ function openViewModal(snippet) {
     }
 
     const myModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('viewSnippetModal'));
+    
+    // Reset AI box
+    document.getElementById('aiInsightBox').classList.add('d-none');
+    document.getElementById('aiInsightContent').innerHTML = '';
+    
     myModal.show();
+}
+
+let aiTypingInterval = null;
+
+function aiAction(action) {
+    const code = document.getElementById('viewModalCode').innerText;
+    const insightBox = document.getElementById('aiInsightBox');
+    const insightContent = document.getElementById('aiInsightContent');
+    const aiBtn = document.getElementById('aiSnippetBtn');
+
+    // Clear previous typing
+    if (aiTypingInterval) clearInterval(aiTypingInterval);
+    
+    insightBox.classList.remove('d-none');
+    insightContent.innerHTML = '<div class="d-flex align-items-center gap-2 py-2"><div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="text-white-50">AI přemýšlí...</span></div>';
+    aiBtn.disabled = true;
+
+    fetch('api/api_ai_handler.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action, content: code })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            typeWriter(data.answer, insightContent);
+        } else {
+            insightContent.innerHTML = '<div class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i>' + data.message + '</div>';
+        }
+    })
+    .catch(error => {
+        insightContent.innerHTML = '<div class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Chyba při komunikaci s AI.</div>';
+    })
+    .finally(() => {
+        aiBtn.disabled = false;
+    });
+}
+
+function typeWriter(text, container) {
+    container.innerHTML = '';
+    
+    // Handle markdown-like formatting (basic)
+    // First, convert Markdown to HTML if needed, but for simplicity we can use a basic approach
+    // or just show it. Let's use a small helper for basic markdown (bullet points)
+    let formattedText = text.replace(/\n/g, '<br>').replace(/\* /g, '• ');
+    
+    let i = 0;
+    const speed = 2; // ms per char
+    
+    function type() {
+        if (i < formattedText.length) {
+            // If we encounter <br>, we want to add it all at once to avoid broken tags
+            if (formattedText.substr(i, 4) === '<br>') {
+                container.innerHTML += '<br>';
+                i += 4;
+            } else {
+                container.innerHTML += formattedText.charAt(i);
+                i++;
+            }
+            aiTypingInterval = setTimeout(type, speed);
+            
+            // Scroll modal to bottom if content grows
+            const modalBody = document.querySelector('#viewSnippetModal .modal-body');
+            modalBody.scrollTop = modalBody.scrollHeight;
+        }
+    }
+    type();
 }
 
 // Search and Tag filtering
