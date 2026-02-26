@@ -26,6 +26,11 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Propracované UI**: Elegantní rozhraní postavené na Bootstrap 5, oživené plovoucími barevnými prvky, blur efekty, micro-animacemi a moderní vizí glassmorphismu.
 - **Plně lokální běh**: Všechny knihovny, ikony a fonty jsou uloženy lokálně v projektu. Aplikace nevyžaduje přístup k internetu pro své fungování (ideální pro bezpečné interní prostředí).
 - **Klávesové zkratky**: Podpora pro rychlé vyhledávání (**Alt+F**) a přidávání záznamů (**Alt+N**). V code editoru jsou pak dostupné pokročilé zkratky pro ukládání (**Ctrl+S**), našeptávání a manipulaci s kódem.
+- **Integrace Gemini AI**: DevBase využívá sílu umělé inteligence od Google pro usnadnění vaší práce. Funkce jsou dostupné po zadání API klíče v Nastavení:
+  - **Snippets**: AI dokáže analyzovat a lidsky vysvětlit složitější kód jedním kliknutím.
+  - **Poznámky (Editace)**: Automatické generování výstižného titulku na základě obsahu poznámky.
+  - **Poznámky (Detail)**: Okamžité vytvoření stručného souhrnu v odrážkách a inteligentní kontrola českého pravopisu.
+  - **Konfigurace**: V nastavení si můžete zvolit preferovaný model (např. Gemini 2.0 Flash) a otestovat platnost klíče. Všechny AI prvky jsou v UI barevně odlišeny (fialová barva) a zobrazují se pouze při aktivním klíči.
 
 ## Klávesové zkratky
 
@@ -73,5 +78,6 @@ Pokud se chcete k databázi přes Docker připojit přes nástroje jakým je nap
 - **Zpracování úkolů:** Interaktivní odškrtávání a řazení bez nutnosti obnovování stránky (SortableJS)
 - **Formátování & Editor:** WYSIWYG editor Quill.js (pro poznámky) a profesionální kódový editor **CodeMirror 5** (pro Scratchpad)
 - **Zvýraznění kódu:** Prism.js (autoloader s podporou témat) a integrované zvýraznění v reálném čase v editoru
-- **Databáze:** Relační databáze spravovaná pomocí MySQL
+- **Databáze**: Relační databáze spravovaná pomocí MySQL
+- **AI Integrace**: Google Gemini AI (volitelně pro pokročilé funkce)
 - **Nasazení:** Kontejnerizace přes Docker, orchestrace pomocí Docker-Compose

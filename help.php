@@ -23,6 +23,7 @@ include 'includes/header.php';
                 <div class="d-flex flex-column flex-md-row justify-content-center gap-1 gap-md-2 p-1 p-md-0 overflow-x-auto no-scrollbar" id="helpSubmenu">
                     <a href="#markdown" class="submenu-link active" data-section="markdown">Markdown</a>
                     <a href="#searching" class="submenu-link" data-section="searching">Hledání</a>
+                    <a href="#ai" class="submenu-link" data-section="ai">AI Funkce</a>
                     <a href="#shortcuts" class="submenu-link" data-section="shortcuts">Zkratky</a>
                     <a href="#tagging" class="submenu-link" data-section="tagging">Tagy</a>
                     <a href="#editor" class="submenu-link" data-section="editor">Editor</a>
@@ -326,6 +327,37 @@ console.log('Hello World');
                 <li class="mb-3">
                     <strong class="text-white d-block">Systém upozornění (Notifikace):</strong>
                     V pravé části horní navigace se nachází **ikona zvonečku**, která vás upozorní na úkoly s vypršeným nebo blížícím se termínem. Ikona obsahuje badge s počtem připomínek. Červená barva a pulzování značí úkoly po termínu, oranžová pak úkoly zítřejší. Kliknutím na zvoneček otevřete rychlý přehled s přímými odkazy na konkrétní úkoly.
+                </li>
+            </ul>
+        </div>
+
+        <div class="glass-card no-jump p-4 mt-4 help-section" id="ai">
+            <h4 class="text-white mb-4"><i class="bi bi-robot me-2"></i> Integrace Gemini AI</h4>
+            <p class="text-white small mb-3">DevBase využívá pokročilé modely Google Gemini k analýze kódu, generování souhrnů a kontrole textů. Všechny AI funkce jsou v rozhraní zvýrazněny fialovou barvou.</p>
+            <ul class="text-white-50 small list-unstyled">
+                <li class="mb-3">
+                    <strong class="text-white d-block">Nastavení a aktivace:</strong>
+                    V **Nastavení** (sekce Gemini AI) vložte svůj API klíč. Zde si také můžete vybrat konkrétní model (např. **Gemini 2.0 Flash**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a aktivní, v celé aplikaci se zpřístupní AI nástroje.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Vysvětlení kódu (Snippety):</strong>
+                    V detailním náhledu každého snippetu najdete fialové tlačítko **Vysvětlit kód**. AI analyzuje váš kód a vypíše srozumitelný souhrn toho, co kód dělá, včetně vysvětlení klíčových částí.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Chytré názvy (Poznámky):</strong>
+                    Při psaní poznámky v editačním modálu můžete kliknout na ikonu robota u pole Název. AI na základě rozepsaného obsahu navrhne výstižný titulek, který okamžitě vyplní.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Souhrny a pravopis (Poznámky):</strong>
+                    V detailním náhledu poznámky najdete v liště AI nástroje:
+                    <ul class="mt-2">
+                        <li><strong>Vytvořit souhrn:</strong> AI přečte celou poznámku a vytvoří z ní stručný seznam v odrážkách.</li>
+                        <li><strong>Kontrola pravopisu:</strong> Provede revizi českého textu a upozorní na chyby nebo navrhne lepší stylistiku.</li>
+                    </ul>
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Soukromí:</strong>
+                    Váš API klíč je bezpečně uložen v lokální databázi. Obsah je odesílán na servery Google pouze v momentě, kdy explicitně kliknete na AI tlačítko.
                 </li>
             </ul>
         </div>
