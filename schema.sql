@@ -91,7 +91,8 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
 ('code_enabled', '1'),
 ('todo_badge_enabled', '1'),
 ('theme_toggle_enabled', '0'),
-('security_enabled', '0');
+('security_enabled', '0'),
+('gemini_model', 'gemini-2.5-flash-lite');
 
 -- Seed initial data
 INSERT IGNORE INTO languages (name, prism_class) VALUES 

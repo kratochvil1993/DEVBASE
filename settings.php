@@ -64,7 +64,9 @@ if (isset($_POST['action'])) {
         $section = "section-security";
     } elseif ($_POST['action'] == 'save_gemini_config') {
         $key = $_POST['gemini_api_key'] ?? '';
+        $model = $_POST['gemini_model'] ?? 'gemini-2.5-flash-lite';
         updateSetting('gemini_api_key', $key);
+        updateSetting('gemini_model', $model);
         $section = "section-gemini";
     } elseif ($_POST['action'] == 'reset_password') {
         updateSetting('app_password', '');
@@ -514,6 +516,26 @@ include 'includes/header.php';
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-white-50 small fw-bold">Model Gemini</label>
+                    <select name="gemini_model" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
+                        <?php 
+                        $currentModel = getSetting('gemini_model', 'gemini-2.5-flash-lite');
+                        $models = [
+                            'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash-Lite (Výchozí)',
+                            'gemini-2.5-flash' => 'Gemini 2.5 Flash',
+                            'gemini-3-flash' => 'Gemini 3 Flash',
+                            'gemini-3-pro' => 'Gemini 3 Pro',
+                            'gemini-3.1-pro' => 'Gemini 3.1 Pro',
+                        ];
+                        foreach ($models as $val => $label): ?>
+                            <option value="<?php echo $val; ?>" <?php echo $currentModel == $val ? 'selected' : ''; ?>>
+                                <?php echo $label; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 
                 <div class="d-flex gap-2 mt-3">
