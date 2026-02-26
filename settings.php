@@ -524,12 +524,13 @@ include 'includes/header.php';
                         <?php 
                         $currentModel = getSetting('gemini_model', 'gemini-2.5-flash-lite');
                         $models = [
+                            'gemini-flash-latest' => 'Gemini Flash (Aktuální verze)',
                             'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash-Lite (Výchozí)',
                             'gemini-2.5-flash' => 'Gemini 2.5 Flash',
                             'gemini-2.5-pro' => 'Gemini 2.5 Pro',
-                            'gemini-3-flash' => 'Gemini 3 Flash',
-                            'gemini-3-pro' => 'Gemini 3 Pro',
-                            'gemini-3.1-pro' => 'Gemini 3.1 Pro',
+                            'gemini-3-flash' => 'Gemini 3 Flash (Preview)',
+                            'gemini-3-pro' => 'Gemini 3 Pro (Preview)',
+                            'gemini-3.1-pro' => 'Gemini 3.1 Pro (Preview)',
                         ];
                         foreach ($models as $val => $label): ?>
                             <option value="<?php echo $val; ?>" <?php echo $currentModel == $val ? 'selected' : ''; ?>>
