@@ -516,12 +516,21 @@ include 'includes/header.php';
                     </div>
                 </div>
                 
-                <button class="btn btn-primary w-100" type="submit">
-                    <i class="bi bi-check-circle-fill me-2"></i>Uložit konfiguraci
-                </button>
+                <div class="d-flex gap-2 mt-3">
+                    <button class="btn btn-primary flex-grow-1" type="submit">
+                        <i class="bi bi-check-circle-fill me-2"></i>Uložit
+                    </button>
+                    <?php if (!empty(getSetting('gemini_api_key'))): ?>
+                    <button class="btn btn-outline-secondary px-3" type="button" id="testGeminiBtn" onclick="testGeminiConnection()">
+                        <i class="bi bi-broadcast me-2"></i>Otestovat
+                    </button>
+                    <?php endif; ?>
+                </div>
+
+                <div id="geminiTestResult" class="mt-3 d-none p-2 rounded small"></div>
 
                 <?php if (!empty(getSetting('gemini_api_key'))): ?>
-                    <div class="mt-3 d-flex align-items-center gap-2 text-success small">
+                    <div id="geminiStatusReady" class="mt-3 d-flex align-items-center gap-2 text-success small">
                         <i class="bi bi-check-circle-fill"></i>
                         AI funkce jsou nyní připraveny k použití
                     </div>
@@ -786,6 +795,40 @@ document.addEventListener('DOMContentLoaded', function() {
         confirm.addEventListener('input', validatePassword);
     }
 });
+
+function testGeminiConnection() {
+    const btn = document.getElementById('testGeminiBtn');
+    const resultDiv = document.getElementById('geminiTestResult');
+    const statusReady = document.getElementById('geminiStatusReady');
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Testování...';
+    
+    resultDiv.classList.add('d-none');
+    resultDiv.className = 'mt-3 p-2 rounded small';
+
+    fetch('api/api_test_gemini.php')
+        .then(response => response.json())
+        .then(data => {
+            resultDiv.classList.remove('d-none');
+            if (data.status === 'success') {
+                resultDiv.classList.add('bg-success', 'bg-opacity-10', 'text-success', 'border', 'border-success', 'border-opacity-25');
+                resultDiv.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>' + data.message;
+            } else {
+                resultDiv.classList.add('bg-danger', 'bg-opacity-10', 'text-danger', 'border', 'border-danger', 'border-opacity-25');
+                resultDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>' + data.message;
+            }
+        })
+        .catch(error => {
+            resultDiv.classList.remove('d-none');
+            resultDiv.classList.add('bg-danger', 'bg-opacity-10', 'text-danger', 'border', 'border-danger', 'border-opacity-25');
+            resultDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>Chyba při komunikaci se serverem.';
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-broadcast me-2"></i>Otestovat';
+        });
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>
