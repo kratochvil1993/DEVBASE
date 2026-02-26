@@ -313,8 +313,89 @@ function openViewNoteManageModal(note) {
     }
     
     var myModal = new bootstrap.Modal(document.getElementById('viewNoteModal'));
+    
+    // Reset AI box
+    const insightBox = document.getElementById('aiNoteInsightBox');
+    const insightContent = document.getElementById('aiNoteInsightContent');
+    if (insightBox) insightBox.classList.add('d-none');
+    if (insightContent) insightContent.innerHTML = '';
+    
     myModal.show();
 }
+
+let aiNoteTypingInterval = null;
+
+function aiNoteAction(action) {
+    const content = document.getElementById('viewNoteContent').innerText;
+    const insightBox = document.getElementById('aiNoteInsightBox');
+    const insightContent = document.getElementById('aiNoteInsightContent');
+    const aiBtn = document.getElementById('aiNoteBtn');
+
+    if (!insightBox || !insightContent) return;
+
+    if (aiNoteTypingInterval) clearInterval(aiNoteTypingInterval);
+    
+    insightBox.classList.remove('d-none');
+    insightContent.innerHTML = '<div class="d-flex align-items-center gap-2 py-2"><div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="text-white-50">AI přemýšlí...</span></div>';
+    aiBtn.disabled = true;
+
+    fetch('api/api_ai_handler.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action, content: content })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            typeWriterNote(data.answer, insightContent);
+        } else {
+            insightContent.innerHTML = '<div class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i>' + data.message + '</div>';
+        }
+    })
+    .catch(error => {
+        insightContent.innerHTML = '<div class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Chyba při komunikaci s AI.</div>';
+    })
+    .finally(() => {
+        aiBtn.disabled = false;
+    });
+}
+
+function typeWriterNote(text, container) {
+    container.innerHTML = '';
+    let formattedText = text.trim().replace(/\n/g, '<br>').replace(/^\s*\* /gm, '• ').replace(/^\s*\*\B/gm, '• ');
+    let i = 0;
+    const speed = 2;
+    
+    function type() {
+        if (i < formattedText.length) {
+            if (formattedText.substr(i, 4) === '<br>') {
+                container.innerHTML += '<br>';
+                i += 4;
+            } else {
+                container.innerHTML += formattedText.charAt(i);
+                i++;
+            }
+            aiNoteTypingInterval = setTimeout(type, speed);
+            const modalBody = document.querySelector('#viewNoteModal .modal-body');
+            if (modalBody) modalBody.scrollTop = modalBody.scrollHeight;
+        }
+    }
+    type();
+}
+
+// Ensure AI box is cleared when modal closes
+document.addEventListener('DOMContentLoaded', function() {
+    const modalEl = document.getElementById('viewNoteModal');
+    if (modalEl) {
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            if (aiNoteTypingInterval) clearInterval(aiNoteTypingInterval);
+            const insightBox = document.getElementById('aiNoteInsightBox');
+            const insightContent = document.getElementById('aiNoteInsightContent');
+            if (insightBox) insightBox.classList.add('d-none');
+            if (insightContent) insightContent.innerHTML = '';
+        });
+    }
+});
 
 function copyNoteContent(btn) {
     const content = document.getElementById('viewNoteContent').innerText;
@@ -402,6 +483,27 @@ function copyNoteContent(btn) {
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <h5 class="modal-title text-white mb-0" id="viewNoteModalTitle">Zobrazit poznámku</h5>
+                
+                <?php if (!empty($geminiApiKey)): ?>
+                <div class="dropdown ms-auto me-2">
+                    <button class="btn btn-sm btn-ai rounded px-3 dropdown-toggle shadow-none border-opacity-25" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="aiNoteBtn">
+                        <i class="bi bi-robot me-1"></i> AI
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10 mt-2 shadow-lg">
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiNoteAction('summarize_note')">
+                                <i class="bi bi-list-task me-2 text-ai"></i> Shrnutí (body)
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiNoteAction('grammar_check')">
+                                <i class="bi bi-spellcheck me-2 text-ai"></i> Kontrola pravopisu
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <?php endif; ?>
+
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
@@ -411,6 +513,18 @@ function copyNoteContent(btn) {
                     </button>
                     <div id="viewNoteContent" class="p-3" style="max-height: 70vh; overflow-y: auto;"></div>
                 </div>
+                
+                <?php if (!empty($geminiApiKey)): ?>
+                <!-- AI Insight Box for Notes -->
+                <div id="aiNoteInsightBox" class="m-3 p-3 rounded-3 d-none" style="background: rgba(142, 84, 233, 0.05); border: 1px solid rgba(142, 84, 233, 0.2); backdrop-filter: blur(5px);">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-robot text-primary me-2"></i>
+                        <span class="small fw-bold text-white-50 text-uppercase tracking-wider">AI Insight</span>
+                        <button type="button" class="btn-close btn-close-white ms-auto small" style="font-size: 0.5rem;" onclick="document.getElementById('aiNoteInsightBox').classList.add('d-none')"></button>
+                    </div>
+                    <div id="aiNoteInsightContent" class="text-white small lh-base"></div>
+                </div>
+                <?php endif; ?>
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
                 <div id="viewNoteTags" class="snippet-tags m-0"></div>
