@@ -202,16 +202,9 @@ include 'includes/header.php';
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
-                <div class="position-relative">
-                    <button class="btn btn-sm btn-outline-light copy-btn shadow-sm z-3" onclick="copyNoteContent(this)" style="position: absolute; right: 10px; top: 10px; z-index: 10;">
-                        copy
-                    </button>
-                    <div id="viewNoteContent" class="p-3" style="max-height: 70vh; overflow-y: auto;"></div>
-                </div>
-                
                 <?php if (!empty($geminiApiKey)): ?>
                 <!-- AI Insight Box for Notes -->
-                <div id="aiNoteInsightBox" class="m-3 p-3 rounded-3 d-none" style="background: rgba(142, 84, 233, 0.05); border: 1px solid rgba(142, 84, 233, 0.2); backdrop-filter: blur(5px);">
+                <div id="aiNoteInsightBox" class="m-3 p-3 rounded-3 d-none" style="background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(142, 84, 233, 0.5); backdrop-filter: blur(5px);">
                     <div class="d-flex align-items-center mb-2">
                         <i class="bi bi-robot text-primary me-2"></i>
                         <span class="small fw-bold text-white-50 text-uppercase tracking-wider">AI Insight</span>
@@ -220,6 +213,13 @@ include 'includes/header.php';
                     <div id="aiNoteInsightContent" class="text-white small lh-base"></div>
                 </div>
                 <?php endif; ?>
+
+                <div class="position-relative">
+                    <button class="btn btn-sm btn-outline-light copy-btn shadow-sm z-3" onclick="copyNoteContent(this)" style="position: absolute; right: 10px; top: 10px; z-index: 10;">
+                        copy
+                    </button>
+                    <div id="viewNoteContent" class="p-3" style="max-height: 70vh; overflow-y: auto;"></div>
+                </div>
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -492,6 +492,10 @@ function aiNoteAction(action) {
     const aiBtn = document.getElementById('aiNoteBtn');
 
     if (!insightBox || !insightContent) return;
+    
+    // Close dropdown after selection
+    const dropdownInstance = bootstrap.Dropdown.getInstance(aiBtn);
+    if (dropdownInstance) dropdownInstance.hide();
 
     if (aiNoteTypingInterval) clearInterval(aiNoteTypingInterval);
     
@@ -540,7 +544,7 @@ function typeWriterNote(text, container) {
             }
             aiNoteTypingInterval = setTimeout(type, speed);
             const modalBody = document.querySelector('#viewNoteModal .modal-body');
-            if (modalBody) modalBody.scrollTop = modalBody.scrollHeight;
+            // modalBody.scrollTop = 0;
         }
     }
     type();

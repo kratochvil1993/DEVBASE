@@ -199,16 +199,9 @@ include 'includes/header.php';
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
-                <div class="snippet-code-wrapper position-relative m-3">
-                    <button class="btn btn-sm btn-outline-light copy-btn shadow-sm z-3" onclick="copyToClipboard(this, 'viewModalCode')" style="position: absolute; right: 10px; top: 10px; z-index: 10;">
-                        copy
-                    </button>
-                    <div id="viewModalMarkdown" class="p-3 text-white markdown-preview" style="display: none; overflow-x: auto;"></div>
-                    <pre id="viewModalPre" class="m-0"><code id="viewModalCode" class=""></code></pre>
-                </div>
                 <?php if (!empty($geminiApiKey)): ?>
                 <!-- AI Insight Box -->
-                <div id="aiInsightBox" class="m-3 p-3 rounded-3 d-none" style="background: rgba(142, 84, 233, 0.05); border: 1px solid rgba(142, 84, 233, 0.2); backdrop-filter: blur(5px);">
+                <div id="aiInsightBox" class="m-3 p-3 rounded-3 d-none" style="background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(142, 84, 233, 0.5); backdrop-filter: blur(5px);">
                     <div class="d-flex align-items-center mb-2">
                         <i class="bi bi-robot text-primary me-2"></i>
                         <span class="small fw-bold text-white-50 text-uppercase tracking-wider">AI Insight</span>
@@ -217,6 +210,14 @@ include 'includes/header.php';
                     <div id="aiInsightContent" class="text-white small lh-base"></div>
                 </div>
                 <?php endif; ?>
+
+                <div class="snippet-code-wrapper position-relative m-3">
+                    <button class="btn btn-sm btn-outline-light copy-btn shadow-sm z-3" onclick="copyToClipboard(this, 'viewModalCode')" style="position: absolute; right: 10px; top: 10px; z-index: 10;">
+                        copy
+                    </button>
+                    <div id="viewModalMarkdown" class="p-3 text-white markdown-preview" style="display: none; overflow-x: auto;"></div>
+                    <pre id="viewModalPre" class="m-0"><code id="viewModalCode" class=""></code></pre>
+                </div>
 
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
@@ -495,6 +496,10 @@ function aiAction(action) {
 
     if (!insightBox || !insightContent) return;
 
+    // Close dropdown after selection
+    const dropdownInstance = bootstrap.Dropdown.getInstance(aiBtn);
+    if (dropdownInstance) dropdownInstance.hide();
+
 
     // Clear previous typing
     if (aiTypingInterval) clearInterval(aiTypingInterval);
@@ -550,9 +555,9 @@ function typeWriter(text, container) {
             }
             aiTypingInterval = setTimeout(type, speed);
             
-            // Scroll modal to bottom if content grows
+            // Scroll modal to top if needed, but usually it stays there
             const modalBody = document.querySelector('#viewSnippetModal .modal-body');
-            modalBody.scrollTop = modalBody.scrollHeight;
+            // modalBody.scrollTop = 0; // Optional: ensure we are at the top
         }
     }
     type();
