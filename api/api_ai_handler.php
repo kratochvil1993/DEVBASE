@@ -38,6 +38,12 @@ if ($action === 'explain_code') {
     $prompt = "Jsi expertní vývojář a debugger. Analyzuj následující kód a najdi v něm chyby (syntaktické, logické nebo bezpečnostní). Stručně vysvětli, co je špatně, a navrhni opravu. Pokud je to možné, uveď opravenou část kódu v bloku 'OPRAVA:\n\n'. Odpověz v češtině.\n\nZde je kód k analýze:\n\n" . $content;
 } elseif ($action === 'summarize_note') {
     $prompt = "Jsi expertní analytik. Tvým úkolem je analyzovat následující text a vytvořit z něj přehledný výstup. Nejdříve napiš krátce (1-2 věty), o čem celá poznámka v základu je. Poté v bodech vypiš, co se v textu obecně řešilo a co je nejdůležitější (hlavní priority/sdělení). Nakonec vypiš konkrétní fakta, úkoly nebo termíny rozdělené do logických bloků. Každý bod v seznamu MUSÍ začínat znakem '*' na novém řádku. Vyber jen to podstatné a zachovej přehlednost. Odpověz v češtině.\n\nZde je text k analýze:\n\n" . $content;
+} elseif ($action === 'structure_note') {
+    $prompt = "Jsi expertní editor. Tvým úkolem je vzít následující neuspořádaný 'brain dump' (útržky myšlenek, odrážky, poznámky) a přetvořit jej do profesionálně vypadající, strukturované poznámky. Používej nadpisy (Markdown # nebo ##), odrážky a logické odstavce. Zachovej všechny důležité informace, ale dej jim řád a srozumitelnost. Odpověz v češtině. Zde je obsah k přepracování:\n\n" . $content;
+} elseif ($action === 'extract_todos') {
+    $prompt = "Jsi expertní asistent. Tvým úkolem je v následujícím textu identifikovat všechny úkoly, povinnosti a termíny. Vypiš je jako jednoduchý seznam, kde každý úkol je na novém řádku a začíná [TODO]. Pokud u úkolu identifikuješ i termín (datum), uveď ho ve formátu (YYYY-MM-DD) na konci řádku. Pokud v textu žádné úkoly nejsou, napiš 'Žádné úkoly nebyly nalezeny.'. Odpověz v češtině. Zde je text:\n\n" . $content;
+} elseif ($action === 'generate_tldr') {
+    $prompt = "Jsi expertní editor. Vytvoř velmi krátké (max. 2-3 věty) shrnutí (TL;DR) následujícího textu. Zaměř se jen na to nejpodstatnější. Odpověz v češtině. Zde je text:\n\n" . $content;
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Neznámá akce.']);
     exit;

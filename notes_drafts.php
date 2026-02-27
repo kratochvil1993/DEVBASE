@@ -81,6 +81,9 @@ if (!$active_pad && !empty($scratchpads)) {
 $content = $active_pad ? $active_pad['content'] : '';
 $pad_name = $active_pad ? $active_pad['name'] : 'Draft';
 $allNoteTags = getAllTags('note');
+$geminiApiKey = getSetting('gemini_api_key');
+$openaiApiKey = getSetting('openai_api_key');
+$hasAi = !empty($geminiApiKey) || !empty($openaiApiKey);
 
 include 'includes/header.php';
 ?>
@@ -116,6 +119,31 @@ include 'includes/header.php';
                         </div>
                     <?php endif; ?>
                     
+                    <?php if ($hasAi): ?>
+                    <div class="dropdown">
+                        <button class="btn btn-ai px-3 dropdown-toggle text-white border-opacity-25 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="aiBtn">
+                            <i class="bi bi-robot me-1"></i> AI
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10 mt-2 shadow-lg">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiAction('structure_note')">
+                                    <i class="bi bi-layout-text-sidebar-reverse me-2 text-ai"></i> Strukturovat poznámku
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiAction('extract_todos')">
+                                    <i class="bi bi-check2-square me-2 text-ai"></i> Extrahovat TODO úkoly
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiAction('generate_tldr')">
+                                    <i class="bi bi-lightning-charge me-2 text-ai"></i> Vytvořit TL;DR
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <?php endif; ?>
+                    
                     <div class="dropdown">
                         <button class="btn btn-send-to px-3 dropdown-toggle text-white" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-send me-2"></i> Poslat do
@@ -148,6 +176,16 @@ include 'includes/header.php';
                 <button onclick="addNewTab(event)" class="btn btn-add-tab ms-1" title="Nový draft" id="addTabBtn">
                     <i class="bi bi-plus-lg"></i>
                 </button>
+            </div>
+
+            <!-- AI Insight Box -->
+            <div id="aiInsightBox" class="p-3 rounded-0 border-start border-end d-none" style="background: rgba(10, 10, 15, 0.6); border-color: rgba(142, 84, 233, 0.3) !important; backdrop-filter: blur(5px);">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-robot text-ai me-2"></i>
+                    <span class="small fw-bold text-white-50 text-uppercase tracking-wider">AI Assistant</span>
+                    <button type="button" class="btn-close btn-close-white ms-auto small" style="font-size: 0.5rem;" onclick="document.getElementById('aiInsightBox').classList.add('d-none')"></button>
+                </div>
+                <div id="aiInsightContent" class="text-white small lh-base" style="max-height: 400px; overflow-y: auto; white-space: pre-wrap;"></div>
             </div>
 
             <div class="editor-container border border-light border-opacity-10 rounded-bottom overflow-hidden shadow-lg" style="border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; background: rgba(40, 42, 54, 0.6);">
@@ -279,6 +317,29 @@ include 'includes/header.php';
 .btn-send-to:hover {
     background: rgba(13, 202, 240, 0.3);
 }
+.btn-ai {
+    background: rgba(142, 84, 233, 0.1);
+    border: 1px solid rgba(142, 84, 233, 0.3);
+    color: #fff;
+    transition: all 0.3s ease;
+}
+.btn-ai:hover {
+    background: rgba(142, 84, 233, 0.25);
+    border-color: rgba(142, 84, 233, 0.5);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(142, 84, 233, 0.2);
+}
+.text-ai {
+    color: #a78bfa;
+}
+.flash-purple {
+    animation: purpleFlash 2s ease;
+}
+@keyframes purpleFlash {
+    0% { box-shadow: 0 0 0px rgba(142, 84, 233, 0); }
+    50% { box-shadow: 0 0 20px rgba(142, 84, 233, 0.5); border-color: rgba(142, 84, 233, 0.8) !important; }
+    100% { box-shadow: 0 0 0px rgba(142, 84, 233, 0); }
+}
 @keyframes fadeOut {
     0% { opacity: 1; }
     80% { opacity: 1; }
@@ -343,6 +404,200 @@ let quill;
 let modalQuill;
 let lastSavedContent;
 let lastSavedName;
+let aiTypingInterval = null;
+
+function aiAction(action) {
+    const content = quill.root.innerText.trim();
+    const insightBox = document.getElementById('aiInsightBox');
+    const insightContent = document.getElementById('aiInsightContent');
+    const aiBtn = document.getElementById('aiBtn');
+
+    if (!insightBox || !insightContent) return;
+    
+    // Close dropdown
+    const dropdownInstance = bootstrap.Dropdown.getInstance(aiBtn);
+    if (dropdownInstance) dropdownInstance.hide();
+
+    if (aiTypingInterval) clearInterval(aiTypingInterval);
+    
+    insightBox.classList.remove('d-none');
+    insightContent.innerHTML = '<div class="d-flex align-items-center gap-2 py-2"><div class="spinner-border spinner-border-sm text-ai" role="status"></div><span class="text-white-50">AI přemýšlí...</span></div>';
+    aiBtn.disabled = true;
+
+    fetch('api/api_ai_handler.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action, content: content })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            if (action === 'structure_note') {
+                // For structure, we show a button to apply it
+                typeWriter(data.answer, insightContent, () => {
+                   const btn = document.createElement('button');
+                   btn.className = 'btn btn-sm btn-ai mt-3 d-block';
+                   btn.innerHTML = '<i class="bi bi-check2-all me-1"></i> Použít tento formát';
+                   btn.onclick = () => {
+                       const html = simpleMarkdownToHtml(data.answer);
+                       quill.root.innerHTML = html; 
+                       insightBox.classList.add('d-none');
+                   };
+                   insightContent.appendChild(btn);
+                });
+            } else if (action === 'extract_todos') {
+                // Custom handling for todos
+                displayExtractedTodos(data.answer, insightContent);
+            } else {
+                typeWriter(data.answer, insightContent);
+            }
+            
+            // Visual feedback
+            insightBox.classList.remove('flash-purple');
+            void insightBox.offsetWidth;
+            insightBox.classList.add('flash-purple');
+        } else {
+            insightContent.innerHTML = '<div class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i>' + data.message + '</div>';
+        }
+    })
+    .catch(error => {
+        insightContent.innerHTML = '<div class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Chyba při komunikaci s AI.</div>';
+    })
+    .finally(() => {
+        aiBtn.disabled = false;
+    });
+}
+
+function simpleMarkdownToHtml(text) {
+    if (!text) return '';
+    return text
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^\* (.*$)/gim, '<li>$1</li>')
+        .replace(/^- (.*$)/gim, '<li>$1</li>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>')
+        .replace(/<\/ul><ul>/g, ''); // Fix multiple <ul>
+}
+
+function typeWriter(text, container, callback) {
+    container.innerHTML = '';
+    let i = 0;
+    const speed = 5;
+    
+    // Pre-processing
+    let processedHtml = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+
+    function type() {
+        if (i < processedHtml.length) {
+            if (processedHtml.charAt(i) === '<') {
+                let tagEnd = processedHtml.indexOf('>', i);
+                if (tagEnd !== -1) {
+                    container.innerHTML += processedHtml.substring(i, tagEnd + 1);
+                    i = tagEnd + 1;
+                } else {
+                    container.innerHTML += processedHtml.charAt(i);
+                    i++;
+                }
+            } else {
+                container.innerHTML += processedHtml.charAt(i);
+                i++;
+            }
+            aiTypingInterval = setTimeout(type, speed);
+            container.scrollTop = container.scrollHeight;
+        } else if (callback) {
+            callback();
+        }
+    }
+    type();
+}
+
+function displayExtractedTodos(text, container) {
+    container.innerHTML = '';
+    const lines = text.split('\n');
+    let found = false;
+    
+    const list = document.createElement('div');
+    list.className = 'd-flex flex-column gap-2 mt-2';
+    
+    lines.forEach(line => {
+        if (line.includes('[TODO]')) {
+            found = true;
+            const cleanText = line.replace('[TODO]', '').trim();
+            // Extract date if present (YYYY-MM-DD)
+            const dateMatch = cleanText.match(/\((\d{4}-\d{2}-\d{2})\)/);
+            let taskText = cleanText;
+            let deadline = null;
+            
+            if (dateMatch) {
+                deadline = dateMatch[1];
+                taskText = cleanText.replace(dateMatch[0], '').trim();
+            }
+            
+            const item = document.createElement('div');
+            item.className = 'd-flex align-items-center justify-content-between p-3 rounded glass-card border border-white border-opacity-10 text-white mb-2';
+            item.style.background = 'rgba(255, 255, 255, 0.05)';
+            item.innerHTML = `
+                <div class="me-2 overflow-hidden">
+                    <div class="fw-bold text-truncate">${taskText}</div>
+                    ${deadline ? `<small class="text-ai"><i class="bi bi-calendar-event me-1"></i>${deadline}</small>` : ''}
+                </div>
+                <button class="btn btn-sm btn-add-snipet border-opacity-25 py-2 px-3 flex-shrink-0" onclick="addExtractedTodo(this, '${taskText.replace(/'/g, "\\'")}', '${deadline || ''}')">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+            `;
+            list.appendChild(item);
+        }
+    });
+    
+    if (found) {
+        container.innerHTML = '<div class="mb-2 fw-bold text-white-50 small">Nalezené úkoly:</div>';
+        container.appendChild(list);
+    } else {
+        container.innerText = text; // Just show what AI returned
+    }
+}
+
+function addExtractedTodo(btn, text, deadline) {
+    const originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
+    
+    fetch('api/api_save_todo_simple.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text, deadline: deadline })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+            btn.classList.replace('btn-outline-success', 'btn-success');
+            setTimeout(() => {
+                const parent = btn.closest('.d-flex');
+                parent.style.opacity = '0.5';
+                btn.style.display = 'none';
+            }, 1000);
+        } else {
+            alert(data.message);
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        alert('Chyba při ukládání úkolu.');
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+    });
+}
+
 
 function triggerAutosave() {
     if (!quill) return;
