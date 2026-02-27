@@ -1221,6 +1221,10 @@ function switchTab(event, id) {
                 editor.setValue(pad.content);
                 document.getElementById('padName').value = pad.name;
                 
+                // Skrytí AI boxu při přepnutí tabu
+                const insightBox = document.getElementById('aiInsightBox');
+                if (insightBox) insightBox.classList.add('d-none');
+                
                 // Update hidden IDs
                 activeIdInput.value = pad.id;
                 document.getElementById('modalNoteScratchpadId').value = pad.id;
