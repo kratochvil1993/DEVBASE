@@ -374,6 +374,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             newTodoItem.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                             newTodoItem.style.opacity = '1';
                             newTodoItem.style.transform = 'translateY(0)';
+                            
+                            // Cleanup inline styles after animation to allow CSS animations (like jiggle) to work
+                            setTimeout(() => {
+                                newTodoItem.style.transform = '';
+                                newTodoItem.style.transition = '';
+                            }, 450);
                         });
                     }
                     

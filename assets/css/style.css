@@ -385,27 +385,27 @@ pre[class*="language-"] {
   flex-direction: column;
 }
 
-/* Sorting Mode */
+/* Sorting Mode Animations */
 .sorting-mode .note-card,
 .sorting-mode .snippet-card,
 .sorting-mode .todo-item {
-  cursor: grab;
-  animation: jiggle 0.5s ease-in-out infinite;
+  cursor: grab !important;
+  animation: jiggle 0.6s ease-in-out infinite !important;
   user-select: none;
 }
 
-.sorting-mode .note-item:nth-child(2n) .note-card,
-.sorting-mode .snippet-card-wrapper:nth-child(2n) .snippet-card,
-.sorting-mode .todo-item:nth-child(2n) {
-  animation-duration: 0.45s;
-  animation-delay: 0.05s;
+.sorting-mode .note-item:nth-child(odd) .note-card,
+.sorting-mode .snippet-card-wrapper:nth-child(odd) .snippet-card,
+.sorting-mode .todo-item:nth-child(odd) {
+  animation-duration: 0.5s !important;
+  animation-delay: -0.1s !important;
 }
 
-.sorting-mode .note-item:nth-child(3n) .note-card,
-.sorting-mode .snippet-card-wrapper:nth-child(3n) .snippet-card,
-.sorting-mode .todo-item:nth-child(3n) {
-  animation-duration: 0.55s;
-  animation-delay: -0.1s;
+.sorting-mode .note-item:nth-child(even) .note-card,
+.sorting-mode .snippet-card-wrapper:nth-child(even) .snippet-card,
+.sorting-mode .todo-item:nth-child(even) {
+  animation-duration: 0.55s !important;
+  animation-delay: 0.05s !important;
 }
 
 .sorting-mode .note-card:active,
