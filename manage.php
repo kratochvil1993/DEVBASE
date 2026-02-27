@@ -462,7 +462,7 @@ function generateAiField(action, targetId) {
                             <div class="d-flex justify-content-between align-items-end mb-1">
                                 <label class="form-label text-white-50 small mb-0">Název</label>
                                 <?php if (!empty($geminiApiKey)): ?>
-                                <button type="button" class="btn btn-sm btn-ai-action py-0" onclick="generateAiField('generate_title', 'snippetTitleInput')" title="Generovat název">
+                                <button type="button" class="btn btn-sm btn-ai-action" onclick="generateAiField('generate_title', 'snippetTitleInput')" title="Generovat název">
                                     <i class="bi bi-magic me-1"></i> AI
                                 </button>
                                 <?php endif; ?>
@@ -475,7 +475,7 @@ function generateAiField(action, targetId) {
                             <div class="d-flex justify-content-between align-items-end mb-1">
                                 <label class="form-label text-white-50 small mb-0">Popis</label>
                                 <?php if (!empty($geminiApiKey)): ?>
-                                <button type="button" class="btn btn-sm btn-ai-action py-0" onclick="generateAiField('generate_description', 'snippetDescriptionInput')" title="Generovat popis">
+                                <button type="button" class="btn btn-sm btn-ai-action" onclick="generateAiField('generate_description', 'snippetDescriptionInput')" title="Generovat popis">
                                     <i class="bi bi-magic me-1"></i> AI
                                 </button>
                                 <?php endif; ?>

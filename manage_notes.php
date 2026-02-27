@@ -409,7 +409,7 @@ function copyNoteContent(btn) {
                             <div class="d-flex justify-content-between align-items-end mb-1">
                                 <label class="form-label text-white-50 small mb-0">Název</label>
                                 <?php if (!empty($geminiApiKey)): ?>
-                                <button type="button" class="btn btn-sm btn-ai-action py-0" onclick="generateAiNoteTitle()" title="Generovat název">
+                                <button type="button" class="btn btn-sm btn-ai-action" onclick="generateAiNoteTitle()" title="Generovat název">
                                     <i class="bi bi-magic me-1"></i> AI
                                 </button>
                                 <?php endif; ?>
