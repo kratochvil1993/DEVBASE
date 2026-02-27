@@ -221,8 +221,8 @@ console.log('Hello World');
             <p class="text-white small mb-3">Tato sekce slouží jako vaše "pískoviště" pro libovolný kód, konfigurační řetězce nebo technické poznámky, které chcete mít neustále po ruce předtím, než se rozhodnete je trvale uložit do snippetů.</p>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
-                    <strong class="text-white d-block">Více draftů (Taby) a Persistence:</strong>
-                    V sekci Code Drafts můžete mít otevřeno **mnoho různých draftů** současně. Mezi nimi přepínáte pomocí tabů nad editorem. Každý draft si můžete **přejmenovat** jednoduše kliknutím na jeho název. Aplikace si automaticky pamatuje, který tab jste měli naposledy otevřený.
+                    <strong class="text-white d-block">Více draftů (Taby), Persistence a Autosave:</strong>
+                    V sekci Code Drafts můžete mít otevřeno **mnoho různých draftů** současně. Mezi nimi přepínáte pomocí tabů nad editorem. Každý draft si můžete **přejmenovat** jednoduše kliknutím na jeho název. Aplikace si automaticky pamatuje, který tab jste měli naposledy otevřený. Vaše práce je chráněna funkcí **Autosave**, která automaticky ukládá rozpracovaný kód v pravidelných intervalech.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Poslat do Snippetů / Poznámek:</strong>
@@ -255,8 +255,8 @@ console.log('Hello World');
                     Na rozdíl od kódových draftů zde píšete v plnohodnotném textovém editoru (Quill.js) se snadným formátováním (tučné, nadpisy, seznamy).
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Organizace v tabech:</strong>
-                    I zde můžete pracovat na více poznámkách současně díky systému tabů. Každý draft si můžete libovolně pojmenovat.
+                    <strong class="text-white d-block">Organizace v tabech a Autosave:</strong>
+                    I zde můžete pracovat na více poznámkách současně díky systému tabů. Každý draft si můžete libovolně pojmenovat. Stejně jako u kódových draftů, i zde funguje **automatické ukládání (Autosave)** na pozadí.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Přesun do Poznámek:</strong>
@@ -342,12 +342,12 @@ console.log('Hello World');
         </div>
 
         <div class="glass-card no-jump p-4 mt-4 help-section" id="ai">
-            <h4 class="text-white mb-4"><i class="bi bi-robot me-2"></i> Integrace Gemini AI</h4>
-            <p class="text-white small mb-3">DevBase využívá pokročilé modely Google Gemini k analýze kódu, generování souhrnů a kontrole textů. Všechny AI funkce jsou v rozhraní zvýrazněny fialovou barvou.</p>
+            <h4 class="text-white mb-4"><i class="bi bi-robot me-2"></i> Integrace Umělé Inteligence (AI)</h4>
+            <p class="text-white small mb-3">DevBase využívá pokročilé modely Google Gemini a OpenAI k analýze kódu, generování souhrnů a kontrole textů. Všechny AI funkce jsou v rozhraní zvýrazněny fialovou barvou s prémiovým efektem záře.</p>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Nastavení a aktivace:</strong>
-                    V **Nastavení** (sekce Gemini AI) vložte svůj API klíč. Zde si také můžete vybrat konkrétní model (např. **Gemini 2.0 Flash**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a aktivní, v celé aplikaci se zpřístupní AI nástroje.
+                    V **Nastavení** (sekce AI Nastavení) zvolte svého preferovaného poskytovatele (**Gemini** nebo **OpenAI**) a vložte příslušný API klíč. Zde si také můžete vybrat konkrétní model (např. **GPT-4o** nebo **Gemini 2.0 Flash**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a poskytovatel vybrán, v celé aplikaci se zpřístupní AI nástroje.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Vysvětlení kódu (Snippety):</strong>
@@ -367,7 +367,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Soukromí:</strong>
-                    Váš API klíč je bezpečně uložen v lokální databázi. Obsah je odesílán na servery Google pouze v momentě, kdy explicitně kliknete na AI tlačítko.
+                    Vaše API klíče jsou bezpečně uloženy v lokální databázi. Obsah je odesílán na servery poskytovatelů (Google/OpenAI) pouze v momentě, kdy explicitně kliknete na AI tlačítko.
                 </li>
             </ul>
         </div>

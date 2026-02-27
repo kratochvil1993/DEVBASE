@@ -11,8 +11,8 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Vlastní řazení (Drag & Drop) a Připínání**: Důležité položky si můžete připnout špendlíkem, čímž zůstanou vždy nahoře. Pořadí poznámek, úkolů i snipetů si pak můžete měnit jednoduchým přetažením myší v rámci sekcí (Připnuté / Ostatní). Režim úprav je vizuálně indikován jemným vibrováním prvků pro lepší orientaci. U snipetů je tato funkce dostupná v sekci **Správa snippetů**.
 - **Konzistentní správa**: Sjednocené rozhraní pro správu všech sekcí s intuitivním filtrováním podle tagů a rychlým fulltextovým vyhledáváním.
 - **Rychlé vyhledávání**: Inteligentní vyhledávání v reálném čase napříč sekcemi, které prohledává názvy i obsah.
-- **Code Drafts (Kódové koncepty)**: Speciální prostor pro psaní a ukládání libovolného kódu s podporou **více otevřených draftů (tabů)** současně. Každý draft si můžete libovolně pojmenovat. Aplikace si **pamatuje váš poslední aktivní draft**, takže se k němu vždy vrátíte. Hotový kód můžete jedním kliknutím **poslat do Snippetů nebo do Poznámek**. Editor je postaven na knihovně **CodeMirror 5** a nabízí pokročilé funkce jako chytré doplňování, našeptávání a vyhledávání. Sekci lze v nastavení vypnout.
-- **Note Drafts (Poznámkové koncepty)**: Rychlé pískoviště pro vaše textové poznámky předtím, než je finálně uložíte. Podobně jako u kódových draftů můžete mít otevřeno více tabů najednou. Editor využívá **Quill.js (WYSIWYG)** pro pohodlný zápis formátovaného textu. Draft lze následně jedním kliknutím **přesunout do hlavní sekce Poznámky**.
+- **Code Drafts (Kódové koncepty)**: Speciální prostor pro psaní a ukládání libovolného kódu s podporou **více otevřených draftů (tabů)** současně. Každý draft si můžete libovolně pojmenovat. Aplikace si **pamatuje váš poslední aktivní draft**, takže se k němu vždy vrátíte. Drafty jsou chráněny **funkcí Autosave**, která ukládá změny v pravidelných intervalech i při přepínání tabů. Hotový kód můžete jedním kliknutím **poslat do Snippetů nebo do Poznámek**. Editor je postaven na knihovně **CodeMirror 5** a nabízí pokročilé funkce jako chytré doplňování, našeptávání a vyhledávání. Sekci lze v nastavení vypnout.
+- **Note Drafts (Poznámkové koncepty)**: Rychlé pískoviště pro vaše textové poznámky předtím, než je finálně uložíte. Podobně jako u kódových draftů můžete mít otevřeno více tabů najednou a využívat **automatické ukládání (Autosave)**. Editor využívá **Quill.js (WYSIWYG)** pro pohodlný zápis formátovaného textu. Draft lze následně jedním kliknutím **přesunout do hlavní sekce Poznámky**.
 - **Detailní náhled**: Snipety i poznámky lze otevřít ve velkém modálním okně pro pohodlné čtení. Nově je v náhledu k dispozici tlačítko pro okamžitý přechod do režimu úprav.
 - **Automatické sledování změn**: Po každém uložení, úpravě nebo vytvoření nového záznamu vás aplikace automaticky přesune na danou položku a zvýrazní ji jemným animovaným efektem pro zachování kontextu. Stejná logika funguje i v **Nastavení**, kde vás aplikace po přidání štítku nebo jazyka plynule vrátí přesně k sekci, se kterou jste pracovali.
 - **Interaktivní nápověda**: Stránka s nápovědou obsahuje chytré sticky menu, které se na mobilních zařízeních sbalí do přehledného overlaye a automaticky sleduje, kterou sekci právě čtete.
@@ -27,11 +27,11 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Propracované UI**: Elegantní rozhraní postavené na Bootstrap 5, oživené plovoucími barevnými prvky, blur efekty, micro-animacemi a moderní vizí glassmorphismu.
 - **Plně lokální běh**: Všechny knihovny, ikony a fonty jsou uloženy lokálně v projektu. Aplikace nevyžaduje přístup k internetu pro své fungování (ideální pro bezpečné interní prostředí).
 - **Klávesové zkratky**: Podpora pro rychlé vyhledávání (**Alt+F**) a přidávání záznamů (**Alt+N**). V code editoru jsou pak dostupné pokročilé zkratky pro ukládání (**Ctrl+S**), našeptávání a manipulaci s kódem.
-- **Integrace Gemini AI**: DevBase využívá sílu umělé inteligence od Google pro usnadnění vaší práce. Funkce jsou dostupné po zadání API klíče v Nastavení:
+- **Integrace AI (Gemini & OpenAI)**: DevBase využívá sílu umělé inteligence od Google i OpenAI pro usnadnění vaší práce. Funkce jsou dostupné po zadání API klíče v Nastavení:
   - **Snippets**: AI dokáže analyzovat a lidsky vysvětlit složitější kód jedním kliknutím.
   - **Poznámky (Editace)**: Automatické generování výstižného titulku na základě obsahu poznámky.
   - **Poznámky (Detail)**: Okamžité vytvoření stručného souhrnu v odrážkách a inteligentní kontrola českého pravopisu.
-  - **Konfigurace**: V nastavení si můžete zvolit preferovaný model (např. Gemini 2.0 Flash) a otestovat platnost klíče. Všechny AI prvky jsou v UI barevně odlišeny (fialová barva) a zobrazují se pouze při aktivním klíči.
+  - **Konfigurace**: V nastavení si můžete zvolit **preferovaného poskytovatele (Gemini / OpenAI)** a konkrétní model (např. GPT-4o nebo Gemini 2.0 Flash) a otestovat platnost klíčů. Všechny AI prvky jsou v UI barevně odlišeny (fialová s premium glow efektem) a zobrazují se pouze při aktivním klíči.
 
 ## Klávesové zkratky
 
@@ -80,5 +80,5 @@ Pokud se chcete k databázi přes Docker připojit přes nástroje jakým je nap
 - **Formátování & Editor:** WYSIWYG editor Quill.js (pro poznámky a Note Drafts) a profesionální kódový editor **CodeMirror 5** (pro Code Drafts)
 - **Zvýraznění kódu:** Prism.js (autoloader s podporou témat) a integrované zvýraznění v reálném čase v editoru
 - **Databáze**: Relační databáze spravovaná pomocí MySQL
-- **AI Integrace**: Google Gemini AI (volitelně pro pokročilé funkce)
+- **AI Integrace**: Google Gemini AI & OpenAI (volitelně pro pokročilé funkce)
 - **Nasazení:** Kontejnerizace přes Docker, orchestrace pomocí Docker-Compose
