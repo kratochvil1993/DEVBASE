@@ -746,7 +746,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Option + N new scratchpad
         if (e.altKey && e.code === 'KeyN') {
             e.preventDefault();
-            window.location.href = 'code.php?action=add';
+            addNewTab(e);
         }
 
         // Option + W close current scratchpad
@@ -763,18 +763,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Option + Right/Left arrow for tab switching
         if (e.altKey && (e.code === 'ArrowRight' || e.code === 'ArrowLeft')) {
-            const tabs = Array.from(document.querySelectorAll('.nav-tab-link'));
-            const activeIndex = tabs.findIndex(tab => tab.closest('.nav-tab-item').classList.contains('active'));
+            const tabItems = Array.from(document.querySelectorAll('.nav-tab-item'));
+            const activeIndex = tabItems.findIndex(item => item.classList.contains('active'));
             
-            if (activeIndex !== -1 && tabs.length > 1) {
+            if (activeIndex !== -1 && tabItems.length > 1) {
                 e.preventDefault();
                 let nextIndex;
                 if (e.code === 'ArrowRight') {
-                    nextIndex = (activeIndex + 1) % tabs.length;
+                    nextIndex = (activeIndex + 1) % tabItems.length;
                 } else {
-                    nextIndex = (activeIndex - 1 + tabs.length) % tabs.length;
+                    nextIndex = (activeIndex - 1 + tabItems.length) % tabItems.length;
                 }
-                window.location.href = tabs[nextIndex].href;
+                const nextId = tabItems[nextIndex].getAttribute('data-id');
+                switchTab(null, nextId);
             }
         }
     });

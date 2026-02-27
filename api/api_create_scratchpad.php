@@ -5,9 +5,12 @@ checkApiSecurity();
 header('Content-Type: application/json');
 
 try {
-    $scratchpads = getAllScratchpads('code');
-    $name = 'Draft ' . (count($scratchpads) + 1);
-    $new_id = createScratchpad($name, 'code');
+    $type = $_GET['type'] ?? 'code';
+    $prefix = $type === 'note' ? 'Nápad ' : 'Draft ';
+    
+    $scratchpads = getAllScratchpads($type);
+    $name = $prefix . (count($scratchpads) + 1);
+    $new_id = createScratchpad($name, $type);
     
     if ($new_id) {
         echo json_encode([
