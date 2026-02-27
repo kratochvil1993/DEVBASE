@@ -395,30 +395,7 @@ li.CodeMirror-hint-active {
     0% { opacity: 1; }
     80% { opacity: 1; }
     100% { opacity: 0; }
-}
-@keyframes flash-purple {
-    0% { background: rgba(142, 84, 233, 0.4); }
-    100% { background: transparent; }
-}
-.flash-purple {
-    animation: flash-purple 1.5s ease-out;
-}
-.btn-ai-action {
-    background: rgba(142, 84, 233, 0.1);
-    border: 1px solid rgba(142, 84, 233, 0.3);
-    color: #8e54e9;
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: bold;
-    transition: all 0.2s ease;
-}
-.btn-ai-action:hover {
-    background: rgba(142, 84, 233, 0.3);
-    border-color: rgba(142, 84, 233, 0.5);
-    color: #fff;
-}
-</style>
+}</style>
 
 <!-- Add to Notes Modal -->
 <div class="modal fade" id="addToNotesModal" tabindex="-1" aria-hidden="true">
