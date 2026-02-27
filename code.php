@@ -963,6 +963,12 @@ function aiAction(action) {
 
     if (!insightBox || !insightContent) return;
 
+    // Uzavření AI dropdownu po kliknutí
+    if (aiBtn) {
+        const bsDropdown = bootstrap.Dropdown.getInstance(aiBtn);
+        if (bsDropdown) bsDropdown.hide();
+    }
+
     // Clear previous typing
     if (aiTypingInterval) clearInterval(aiTypingInterval);
     
