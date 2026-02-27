@@ -463,13 +463,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const navMap = {
     Digit1: "index.php",
     Digit2: "code.php",
-    Digit3: "notes.php",
-    Digit4: "todo.php",
+    Digit3: "notes_drafts.php",
+    Digit4: "notes.php",
+    Digit5: "todo.php",
     // Fallback for some layouts
     Numpad1: "index.php",
     Numpad2: "code.php",
-    Numpad3: "notes.php",
-    Numpad4: "todo.php",
+    Numpad3: "notes_drafts.php",
+    Numpad4: "notes.php",
+    Numpad5: "todo.php",
   };
 
   // Global Keyboard Shortcuts

@@ -11,7 +11,8 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Vlastní řazení (Drag & Drop) a Připínání**: Důležité položky si můžete připnout špendlíkem, čímž zůstanou vždy nahoře. Pořadí poznámek, úkolů i snipetů si pak můžete měnit jednoduchým přetažením myší v rámci sekcí (Připnuté / Ostatní). Režim úprav je vizuálně indikován jemným vibrováním prvků pro lepší orientaci. U snipetů je tato funkce dostupná v sekci **Správa snippetů**.
 - **Konzistentní správa**: Sjednocené rozhraní pro správu všech sekcí s intuitivním filtrováním podle tagů a rychlým fulltextovým vyhledáváním.
 - **Rychlé vyhledávání**: Inteligentní vyhledávání v reálném čase napříč sekcemi, které prohledává názvy i obsah.
-- **Code Scratchpad (Pískoviště)**: Speciální prostor pro psaní a ukládání libovolného kódu nebo poznámek s podporou **více otevřených draftů (tabů)** současně. Každý draft si můžete libovolně pojmenovat přímo kliknutím na jeho název. Aplikace si **pamatuje váš poslední aktivní draft** (pomocí cookies), takže se k němu vždy vrátíte. Hotový kód můžete jedním kliknutím **poslat do Snippetů nebo do Poznámek**. Editor je postaven na profesionální knihovně **CodeMirror 5** a nabízí pokročilé funkce jako chytré doplňování závorek, našeptávání (autocomplete), skládání kódu (folding) a vyhledávání přímo v textu. Vše se ukládá do databáze a je k dispozici při každém přístupu. Sekci lze v nastavení vypnout.
+- **Code Drafts (Kódové koncepty)**: Speciální prostor pro psaní a ukládání libovolného kódu s podporou **více otevřených draftů (tabů)** současně. Každý draft si můžete libovolně pojmenovat. Aplikace si **pamatuje váš poslední aktivní draft**, takže se k němu vždy vrátíte. Hotový kód můžete jedním kliknutím **poslat do Snippetů nebo do Poznámek**. Editor je postaven na knihovně **CodeMirror 5** a nabízí pokročilé funkce jako chytré doplňování, našeptávání a vyhledávání. Sekci lze v nastavení vypnout.
+- **Note Drafts (Poznámkové koncepty)**: Rychlé pískoviště pro vaše textové poznámky předtím, než je finálně uložíte. Podobně jako u kódových draftů můžete mít otevřeno více tabů najednou. Editor využívá **Quill.js (WYSIWYG)** pro pohodlný zápis formátovaného textu. Draft lze následně jedním kliknutím **přesunout do hlavní sekce Poznámky**.
 - **Detailní náhled**: Snipety i poznámky lze otevřít ve velkém modálním okně pro pohodlné čtení. Nově je v náhledu k dispozici tlačítko pro okamžitý přechod do režimu úprav.
 - **Automatické sledování změn**: Po každém uložení, úpravě nebo vytvoření nového záznamu vás aplikace automaticky přesune na danou položku a zvýrazní ji jemným animovaným efektem pro zachování kontextu. Stejná logika funguje i v **Nastavení**, kde vás aplikace po přidání štítku nebo jazyka plynule vrátí přesně k sekci, se kterou jste pracovali.
 - **Interaktivní nápověda**: Stránka s nápovědou obsahuje chytré sticky menu, které se na mobilních zařízeních sbalí do přehledného overlaye a automaticky sleduje, kterou sekci právě čtete.
@@ -36,13 +37,13 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 
 Pro maximální efektivitu můžete používat tyto systémové zkratky:
 
-- **Option + 1, 2, 3, 4**: Rychlá navigace mezi hlavními sekcemi (Snippety, Code, Poznámky, TODO).
+- **Option + 1, 2, 3, 4, 5**: Rychlá navigace mezi hlavními sekcemi (Snippety, Code Drafts, Note Drafts, Poznámky, TODO).
 - **Option + F** (nebo **Alt + F**): Rychlé zaměření vyhledávacího pole v aktuální sekci (Snippety / Poznámky).
-- **Option + N** (nebo **Alt + N**): Okamžité otevření okna pro přidání nového snippetu nebo poznámky.
-- **Option + L** (v sekci Code): Rychlé zaměření kurzoru do editoru kódu.
-- **Option + N / W** (v sekci Code): Nový draft / Zavřít draft.
-- **Option + ← / →** (v sekci Code): Přepínání mezi taby draftů.
-- **Ctrl + S** (v editoru a modálech): Rychlé uložení rozpracovaného kódu v sekci Scratchpad nebo odeslání formuláře v editačních modálech.
+- **Option + N** (nebo **Alt + N**): Okamžité otevření okna pro přidání nového snippetu/poznámky nebo vytvoření nového draftu (v sekcích Drafts).
+- **Option + L** (v sekci Code Drafts): Rychlé zaměření kurzoru do editoru kódu.
+- **Option + W** (v sekcích Drafts): Zavřít aktuální draft.
+- **Option + ← / →** (v sekcích Drafts): Přepínání mezi taby draftů.
+- **Ctrl + S** (v editorech a modálech): Rychlé uložení rozpracovaného obsahu nebo odeslání formuláře.
 
 ## Instalace a Spuštění
 
@@ -76,7 +77,7 @@ Pokud se chcete k databázi přes Docker připojit přes nástroje jakým je nap
 - **Backend:** Nativní PHP, bez těžkých frameworků.
 - **Frontend / UX:** HTML5, Bootstrap 5.3 a čistý JavaScript (vše linkováno lokálně z `/assets`).
 - **Zpracování úkolů:** Interaktivní odškrtávání a řazení bez nutnosti obnovování stránky (SortableJS)
-- **Formátování & Editor:** WYSIWYG editor Quill.js (pro poznámky) a profesionální kódový editor **CodeMirror 5** (pro Scratchpad)
+- **Formátování & Editor:** WYSIWYG editor Quill.js (pro poznámky a Note Drafts) a profesionální kódový editor **CodeMirror 5** (pro Code Drafts)
 - **Zvýraznění kódu:** Prism.js (autoloader s podporou témat) a integrované zvýraznění v reálném čase v editoru
 - **Databáze**: Relační databáze spravovaná pomocí MySQL
 - **AI Integrace**: Google Gemini AI (volitelně pro pokročilé funkce)

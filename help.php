@@ -26,7 +26,8 @@ include 'includes/header.php';
                     <a href="#ai" class="submenu-link" data-section="ai">AI Funkce</a>
                     <a href="#shortcuts" class="submenu-link" data-section="shortcuts">Zkratky</a>
                     <a href="#tagging" class="submenu-link" data-section="tagging">Tagy</a>
-                    <a href="#editor" class="submenu-link" data-section="editor">Editor</a>
+                    <a href="#code-drafts" class="submenu-link" data-section="code-drafts">Code Drafts</a>
+                    <a href="#note-drafts" class="submenu-link" data-section="note-drafts">Note Drafts</a>
                     <a href="#notes" class="submenu-link" data-section="notes">Poznámky</a>
                     <a href="#todo" class="submenu-link" data-section="todo">TODO</a>
                     <a href="#security" class="submenu-link" data-section="security">Bezpečnost</a>
@@ -155,13 +156,16 @@ console.log('Hello World');
                     <span class="badge bg-primary me-2">Option + 1</span> nebo <span class="badge bg-primary me-2">Alt + 1</span> <strong class="text-white ms-2">Snippets:</strong> Přejde na hlavní přehled snippetů.
                 </li>
                 <li class="mb-2">
-                    <span class="badge bg-primary me-2">Option + 2</span> nebo <span class="badge bg-primary me-2">Alt + 2</span> <strong class="text-white ms-2">Code:</strong> Otevře kódový editor (Scratchpad).
+                    <span class="badge bg-primary me-2">Option + 2</span> nebo <span class="badge bg-primary me-2">Alt + 2</span> <strong class="text-white ms-2">Code Drafts:</strong> Otevře drafty pro kód.
                 </li>
                 <li class="mb-2">
-                    <span class="badge bg-primary me-2">Option + 3</span> nebo <span class="badge bg-primary me-2">Alt + 3</span> <strong class="text-white ms-2">Notes:</strong> Přejde na poznámky.
+                    <span class="badge bg-primary me-2">Option + 3</span> nebo <span class="badge bg-primary me-2">Alt + 3</span> <strong class="text-white ms-2">Note Drafts:</strong> Otevře drafty pro poznámky.
                 </li>
                 <li class="mb-2">
-                    <span class="badge bg-primary me-2">Option + 4</span> nebo <span class="badge bg-primary me-2">Alt + 4</span> <strong class="text-white ms-2">TODO:</strong> Otevře správu úkolů.
+                    <span class="badge bg-primary me-2">Option + 4</span> nebo <span class="badge bg-primary me-2">Alt + 4</span> <strong class="text-white ms-2">Notes:</strong> Přejde na poznámky.
+                </li>
+                <li class="mb-2">
+                    <span class="badge bg-primary me-2">Option + 5</span> nebo <span class="badge bg-primary me-2">Alt + 5</span> <strong class="text-white ms-2">TODO:</strong> Otevře správu úkolů.
                 </li>
             </ul>
 
@@ -177,7 +181,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-2">
                     <span class="badge bg-primary me-2">Option + L</span> nebo <span class="badge bg-primary me-2">Alt + L</span>
-                    <strong class="text-white ms-2">Skočit do editoru:</strong> V sekci Code rychle zaměří kurzor do editoru kódu.
+                    <strong class="text-white ms-2">Skočit do editoru:</strong> V sekci Code Drafts rychle zaměří kurzor do editoru kódu.
                 </li>
                 <li class="mb-2">
                     <span class="badge bg-primary me-2">Ctrl + S</span>
@@ -212,45 +216,51 @@ console.log('Hello World');
             </ul>
         </div>
 
-        <div class="glass-card no-jump p-4 mt-4 help-section" id="editor">
-            <h4 class="text-white mb-4"><i class="bi bi-braces me-2"></i> Práce s Editorem (Code Scratchpad)</h4>
-            <p class="text-white small mb-3">Tato sekce slouží jako vaše "pískoviště" pro libovolný kód, konfigurační řetězce nebo technické poznámky, které chcete mít neustále po ruce.</p>
+        <div class="glass-card no-jump p-4 mt-4 help-section" id="code-drafts">
+            <h4 class="text-white mb-4"><i class="bi bi-braces me-2"></i> Práce s Code Drafts</h4>
+            <p class="text-white small mb-3">Tato sekce slouží jako vaše "pískoviště" pro libovolný kód, konfigurační řetězce nebo technické poznámky, které chcete mít neustále po ruce předtím, než se rozhodnete je trvale uložit do snippetů.</p>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Více draftů (Taby) a Persistence:</strong>
-                    Nově můžete mít v sekci Scratchpad otevřeno **mnoho různých draftů** současně. Mezi nimi přepínáte pomocí tabů nad editorem. Každý draft si můžete **přejmenovat** jednoduše kliknutím na jeho název. Aplikace si automaticky pamatuje, který tab jste měli naposledy otevřený, takže se k němu vždy vrátíte.
+                    V sekci Code Drafts můžete mít otevřeno **mnoho různých draftů** současně. Mezi nimi přepínáte pomocí tabů nad editorem. Každý draft si můžete **přejmenovat** jednoduše kliknutím na jeho název. Aplikace si automaticky pamatuje, který tab jste měli naposledy otevřený.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Poslat do Snippetů / Poznámek:</strong>
-                    Pokud máte hotový kód nebo text, který chcete trvale uložit, využijte tlačítko <i class="bi bi-send me-1"></i> **Poslat do**. To vám umožní vybraný draft okamžitě převést na plnohodnotný **Snippet** (včetně jazyka a popisu) nebo do **Poznámek** (obsah se vloží jako kódový blok). Po úspěšném přesunu se původní draft smaže, abyste měli v editoru pořádek.
+                    Pokud máte hotový kód, který chcete trvale uložit, využijte tlačítko <i class="bi bi-send me-1"></i> **Poslat do**. To vám umožní vybraný draft okamžitě převést na plnohodnotný **Snippet** (včetně jazyka a popisu) nebo do **Poznámek** (obsah se vloží jako kódový blok). Po úspěšném přesunu se původní draft smaže.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Profesionální funkce a Správa jazyků:</strong>
-                    Editor podporuje automatické doplňování závorek a uvozovek, zavírání HTML tagů a zvýraznění párových značek. V **Nastavení** můžete spravovat seznam dostupných programovacích jazyků, přidávat nové nebo upravovat jejich třídy pro Prism.js. Editor obsahuje také funkci **Folding** (skládání kódu) pomocí šipek u čísel řádků. Celý obsah editoru můžete také jedním kliknutím uložit do schránky pomocí tlačítka **copy**.
+                    <strong class="text-white d-block">Profesionální funkce:</strong>
+                    Editor je postaven na **CodeMirror 5** a podporuje automatické doplňování závorek, zvýraznění syntaxe a funkci **Folding** (skládání kódu).
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Klávesové zkratky:</strong>
-                    Rychlost je základ, proto můžete v editoru používat tyto zkratky:
+                    <strong class="text-white d-block">Klávesové zkratky (v sekci Code Drafts):</strong>
                     <ul class="mt-2 text-white">
-                        <li><span class="badge bg-primary me-2">Option + L</span> nebo <span class="badge bg-primary me-2">Alt + L</span> <strong>Skok do editoru</strong> (rychle zaměří kurzor do editoru)</li>
-                        <li><span class="badge bg-primary me-2">Ctrl + S</span> <strong>Uložit</strong> (uloží rozpracovaný kód do databáze)</li>
-                        <li><span class="badge bg-primary me-2">Ctrl + Space</span> <strong>Našeptávání</strong> (autocomplete klíčových slov)</li>
-                        <li><span class="badge bg-primary me-2">Ctrl + F</span> <strong>Vyhledávání</strong> přímo uvnitř kódu</li>
-                        <li><span class="badge bg-primary me-2">Alt + F</span> <strong>Nahrazení</strong> textu</li>
-                        <li><span class="badge bg-primary me-2">Ctrl + Q</span> <strong>Sbalit blok</strong> (fold) na aktuálním řádku</li>
-                        <li><span class="badge bg-primary me-2">Option + N</span> nebo <span class="badge bg-primary me-2">Alt + N</span> <strong>Nový draft</strong></li>
-                        <li><span class="badge bg-primary me-2">Option + W</span> nebo <span class="badge bg-primary me-2">Alt + W</span> <strong>Zavřít draft</strong></li>
+                        <li><span class="badge bg-primary me-2">Option + L</span> <strong>Skok do editoru</strong></li>
+                        <li><span class="badge bg-primary me-2">Ctrl + S</span> <strong>Uložit</strong></li>
+                        <li><span class="badge bg-primary me-2">Ctrl + Space</span> <strong>Našeptávání</strong></li>
+                        <li><span class="badge bg-primary me-2">Option + N</span> <strong>Nový draft</strong></li>
+                        <li><span class="badge bg-primary me-2">Option + W</span> <strong>Zavřit draft</strong></li>
                         <li><span class="badge bg-primary me-2">Option + ← / →</span> <strong>Přepínat drafty</strong></li>
-                        <li><span class="badge bg-primary me-2">Alt + G</span> <strong>Skočit na řádek...</strong></li>
                     </ul>
                 </li>
+            </ul>
+        </div>
+
+        <div class="glass-card no-jump p-4 mt-4 help-section" id="note-drafts">
+            <h4 class="text-white mb-4"><i class="bi bi-journal-plus me-2"></i> Práce s Note Drafts</h4>
+            <p class="text-white small mb-3">Rychlé pískoviště pro vaše textové poznámky a nápady. Ideální místo pro rozepsání obsahu, než ho finálně zařadíte do kategorií.</p>
+            <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
-                    <strong class="text-white d-block">Persistence:</strong>
-                    Obsah editoru je uložen v databázi. I když prohlížeč zavřete nebo restartujete počítač, váš kód tam bude na vás čekat přesně tak, jak jste ho naposledy uložili.
+                    <strong class="text-white d-block">WYSIWYG Editor:</strong>
+                    Na rozdíl od kódových draftů zde píšete v plnohodnotném textovém editoru (Quill.js) se snadným formátováním (tučné, nadpisy, seznamy).
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Nastavení:</strong>
-                    Pokud sekci Code (Scratchpad) nepoužíváte, můžete ji v **Nastavení** zcela skrýt.
+                    <strong class="text-white d-block">Organizace v tabech:</strong>
+                    I zde můžete pracovat na více poznámkách současně díky systému tabů. Každý draft si můžete libovolně pojmenovat.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Přesun do Poznámek:</strong>
+                    Pomocí tlačítka <i class="bi bi-send me-1"></i> **Poslat do** můžete rozpracovaný draft kdykoliv převést na trvalou položku v sekci **Poznámky** (včetně výběru štítků).
                 </li>
             </ul>
         </div>
