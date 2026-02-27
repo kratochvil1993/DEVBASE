@@ -110,7 +110,7 @@ include 'includes/header.php';
                                 </button>
                                 <?php endif; ?>
                             </div>
-                            <input type="text" name="title" id="snippetTitleInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required placeholder="Název snipetu...">
+                            <input type="text" name="title" id="snippetTitleInput" class="form-control form-control-ai text-white border-light border-opacity-25" required placeholder="Název snipetu...">
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -123,7 +123,7 @@ include 'includes/header.php';
                                 </button>
                                 <?php endif; ?>
                             </div>
-                            <textarea name="description" id="snippetDescriptionInput" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="2" placeholder="Krátký popis..."></textarea>
+                            <textarea name="description" id="snippetDescriptionInput" class="form-control form-control-ai text-white border-light border-opacity-25" rows="2" placeholder="Krátký popis..."></textarea>
                         </div>
                         <div class="col-md-3 d-flex align-items-end">
                             <div class="form-check form-switch mb-2">
@@ -340,6 +340,8 @@ function generateAiField(action, targetId) {
     .then(data => {
         if (data.status === 'success') {
             target.value = data.answer.replace(/^\\s*[-*•]\\s*/, '').trim();
+            target.classList.remove('flash-purple');
+            void target.offsetWidth; // trigger reflow
             target.classList.add('flash-purple');
             setTimeout(() => {
                 target.classList.remove('flash-purple');
@@ -510,6 +512,9 @@ function aiAction(action) {
     .then(data => {
         if (data.status === 'success') {
             typeWriter(data.answer, insightContent);
+            insightBox.classList.remove('flash-purple');
+            void insightBox.offsetWidth;
+            insightBox.classList.add('flash-purple');
         } else {
             insightContent.innerHTML = '<div class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i>' + data.message + '</div>';
         }

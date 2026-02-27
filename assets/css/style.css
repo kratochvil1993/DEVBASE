@@ -1093,17 +1093,40 @@ h6 i.bi-pin-angle-fill {
 }
 
 /* AI Actions */
-@keyframes flash-purple {
+@keyframes flash-purple-glow {
   0% {
-    background: rgba(142, 84, 233, 0.4);
+    background-color: rgba(142, 84, 233, 0.4);
+    border-color: #a855f7;
+    box-shadow:
+      0 0 20px rgba(142, 84, 233, 0.7),
+      inset 0 0 10px rgba(142, 84, 233, 0.4);
   }
   100% {
-    background: transparent;
+    background-color: transparent;
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow:
+      0 0 0 rgba(142, 84, 233, 0),
+      inset 0 0 0 rgba(142, 84, 233, 0);
   }
 }
 
 .flash-purple {
-  animation: flash-purple 1.5s ease-out;
+  animation: flash-purple-glow 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both !important;
+}
+
+/* Custom non-blocking styles for AI inputs */
+.form-control-ai {
+  background-color: transparent;
+  box-shadow: none;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.form-control-ai:focus {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(142, 84, 233, 0.5);
+  box-shadow: none;
+  color: #fff;
 }
 
 .btn-ai-action {

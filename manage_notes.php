@@ -325,6 +325,9 @@ function aiNoteAction(action) {
     .then(data => {
         if (data.status === 'success') {
             typeWriterNote(data.answer, insightContent);
+            insightBox.classList.remove('flash-purple');
+            void insightBox.offsetWidth;
+            insightBox.classList.add('flash-purple');
         } else {
             insightContent.innerHTML = '<div class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i>' + data.message + '</div>';
         }
@@ -411,7 +414,7 @@ function copyNoteContent(btn) {
                                 </button>
                                 <?php endif; ?>
                             </div>
-                            <input type="text" id="noteTitleInput" name="title" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required>
+                            <input type="text" id="noteTitleInput" name="title" class="form-control form-control-ai text-white border-light border-opacity-25" required>
                         </div>
                         <div class="col-md-3 d-flex align-items-end">
                             <div class="form-check form-switch mb-2">
@@ -655,6 +658,8 @@ function generateAiNoteTitle() {
     .then(data => {
         if (data.status === 'success') {
             target.value = data.answer.replace(/^\\s*[-*•]\\s*/, '').trim();
+            target.classList.remove('flash-purple');
+            void target.offsetWidth; // trigger reflow
             target.classList.add('flash-purple');
             setTimeout(() => {
                 target.classList.remove('flash-purple');
