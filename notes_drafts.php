@@ -525,13 +525,12 @@ function displayExtractedTodos(text, container) {
     let found = false;
     
     const list = document.createElement('div');
-    list.className = 'd-flex flex-column gap-2 mt-2';
+    list.className = 'd-flex flex-column gap-1 mt-1';
     
     lines.forEach(line => {
         if (line.includes('[TODO]')) {
             found = true;
             const cleanText = line.replace('[TODO]', '').trim();
-            // Extract date if present (YYYY-MM-DD)
             const dateMatch = cleanText.match(/\((\d{4}-\d{2}-\d{2})\)/);
             let taskText = cleanText;
             let deadline = null;
@@ -542,15 +541,24 @@ function displayExtractedTodos(text, container) {
             }
             
             const item = document.createElement('div');
-            item.className = 'd-flex align-items-center justify-content-between p-3 rounded glass-card border border-white border-opacity-10 text-white mb-2';
-            item.style.background = 'rgba(255, 255, 255, 0.05)';
+            item.className = 'd-flex align-items-center justify-content-between p-2 rounded glass-card no-jump border border-light border-opacity-10 text-white';
+            item.style.background = 'rgba(255, 255, 255, 0.03)';
             item.innerHTML = `
-                <div class="me-2 overflow-hidden">
-                    <div class="fw-bold text-truncate">${taskText}</div>
-                    ${deadline ? `<small class="text-ai"><i class="bi bi-calendar-event me-1"></i>${deadline}</small>` : ''}
+                <div class="d-flex align-items-center overflow-hidden flex-grow-1">
+                    <div class="d-flex flex-column overflow-hidden">
+                        <span class="fw-medium text-truncate px-1" style="font-size: 0.85rem;">${taskText}</span>
+                        ${deadline ? `<div class="text-ai d-flex align-items-center px-1" style="font-size: 0.65rem; opacity: 0.8; margin-top: -2px;">
+                            <i class="bi bi-calendar-event me-1"></i>${deadline}
+                        </div>` : ''}
+                    </div>
                 </div>
-                <button class="btn btn-sm btn-add-snipet border-opacity-25 py-2 px-3 flex-shrink-0" onclick="addExtractedTodo(this, '${taskText.replace(/'/g, "\\'")}', '${deadline || ''}')">
-                    <i class="bi bi-plus-lg"></i>
+                <button class="btn btn-sm p-0 d-flex align-items-center justify-content-center flex-shrink-0 ms-2" 
+                        style="width: 26px; height: 26px; border-radius: 6px; background: rgba(0, 229, 130, 0.15); border: 1px solid rgba(0, 229, 130, 0.3); color: #00e582; transition: all 0.2s;"
+                        onclick="addExtractedTodo(this, '${taskText.replace(/'/g, "\\'")}', '${deadline || ''}')"
+                        onmouseover="this.style.background='rgba(0, 229, 130, 0.3)'; this.style.borderColor='rgba(0, 229, 130, 0.5)';"
+                        onmouseout="this.style.background='rgba(0, 229, 130, 0.15)'; this.style.borderColor='rgba(0, 229, 130, 0.3)';"
+                        title="Rychlé přidání">
+                    <i class="bi bi-plus" style="font-size: 1.2rem;"></i>
                 </button>
             `;
             list.appendChild(item);
@@ -558,12 +566,13 @@ function displayExtractedTodos(text, container) {
     });
     
     if (found) {
-        container.innerHTML = '<div class="mb-2 fw-bold text-white-50 small">Nalezené úkoly:</div>';
+        container.innerHTML = '<div class="mb-2 text-white-50" style="font-size: 0.75rem; letter-spacing: 0.5px; font-weight: 600; text-transform: uppercase;">Nalezené úkoly:</div>';
         container.appendChild(list);
     } else {
-        container.innerText = text; // Just show what AI returned
+        container.innerText = text;
     }
 }
+
 
 function addExtractedTodo(btn, text, deadline) {
     const originalHtml = btn.innerHTML;
@@ -579,12 +588,25 @@ function addExtractedTodo(btn, text, deadline) {
     .then(data => {
         if (data.status === 'success') {
             btn.innerHTML = '<i class="bi bi-check-lg"></i>';
-            btn.classList.replace('btn-outline-success', 'btn-success');
+            btn.style.background = '#00e582';
+            btn.style.color = '#fff';
+            
+            const parent = btn.closest('.glass-card');
             setTimeout(() => {
-                const parent = btn.closest('.d-flex');
-                parent.style.opacity = '0.5';
-                btn.style.display = 'none';
-            }, 1000);
+                if (parent) {
+                    parent.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                    parent.style.opacity = '0';
+                    parent.style.transform = 'translateX(30px)';
+                    setTimeout(() => {
+                        parent.remove();
+                        // If all todos are gone, maybe hide the container?
+                        const list = document.querySelector('#aiInsightContent .d-flex.flex-column');
+                        if (list && list.children.length === 0) {
+                            document.getElementById('aiInsightBox').classList.add('d-none');
+                        }
+                    }, 400);
+                }
+            }, 600);
         } else {
             alert(data.message);
             btn.innerHTML = originalHtml;

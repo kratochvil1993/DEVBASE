@@ -369,21 +369,25 @@ function getAllTodos($archive_status = 0) {
     return $todos;
 }
 
-function saveTodo($text, $tags = [], $id = null, $is_locked = 0) {
+function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = null) {
     global $conn;
     $text = $conn->real_escape_string($text);
     $is_locked = (int)$is_locked;
 
-    $deadline = !empty($_POST['deadline']) ? "'" . $conn->real_escape_string($_POST['deadline']) . "'" : "NULL";
+    if ($deadline === null && !empty($_POST['deadline'])) {
+        $deadline = $_POST['deadline'];
+    }
+    
+    $deadline_val = !empty($deadline) ? "'" . $conn->real_escape_string($deadline) . "'" : "NULL";
     
     if ($id) {
         $id = (int)$id;
-        $sql = "UPDATE todos SET text = '$text', deadline = $deadline, is_locked = $is_locked WHERE id = $id";
+        $sql = "UPDATE todos SET text = '$text', deadline = $deadline_val, is_locked = $is_locked WHERE id = $id";
     } else {
         $result = $conn->query("SELECT MIN(sort_order) as min_sort FROM todos");
         $row = $result ? $result->fetch_assoc() : null;
         $next_sort = $row['min_sort'] !== null ? (int)$row['min_sort'] - 1 : 0;
-        $sql = "INSERT INTO todos (text, deadline, sort_order, is_locked) VALUES ('$text', $deadline, $next_sort, $is_locked)";
+        $sql = "INSERT INTO todos (text, deadline, sort_order, is_locked) VALUES ('$text', $deadline_val, $next_sort, $is_locked)";
     }
     
     if ($conn->query($sql)) {
