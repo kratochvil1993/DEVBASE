@@ -9,7 +9,7 @@ if (getSetting('code_enabled', '1') !== '1') {
 // Handle actions
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'add') {
-        $new_id = createScratchpad('Draft ' . (count(getAllScratchpads()) + 1));
+        $new_id = createScratchpad('Draft ' . (count(getAllScratchpads('code')) + 1), 'code');
         header("Location: code.php?id=$new_id");
         exit;
     }
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     }
 }
 
-$scratchpads = getAllScratchpads();
+$scratchpads = getAllScratchpads('code');
 
 // Determine active ID: 1. URL parameter, 2. Cookie, 3. First available scratchpad
 $active_id = null;

@@ -46,6 +46,10 @@ if (isset($_POST['action'])) {
         $enabled = isset($_POST['theme_toggle_enabled']) ? '1' : '0';
         updateSetting('theme_toggle_enabled', $enabled);
         $section = "section-general";
+    } elseif ($_POST['action'] == 'toggle_note_drafts') {
+        $enabled = isset($_POST['note_drafts_enabled']) ? '1' : '0';
+        updateSetting('note_drafts_enabled', $enabled);
+        $section = "section-general";
     } elseif ($_POST['action'] == 'save_security') {
         $enabled = isset($_POST['security_enabled']) ? '1' : '0';
         $currentPassword = getSetting('app_password');
@@ -171,8 +175,21 @@ include 'includes/header.php';
                            <?php echo getSetting('code_enabled', '1') == '1' ? 'checked' : ''; ?>
                            onchange="this.form.submit()">
                     <label class="form-check-label text-white" for="codeEnabledToggle">
-                        <span class="d-block fw-bold">Povolit sekci Code</span>
-                        <small class="text-white-50">Zobrazit nebo skrýt sekci s editorem kódu.</small>
+                        <span class="d-block fw-bold">Povolit sekci Code Drafts</span>
+                        <small class="text-white-50">Zobrazit nebo skrýt sekci se zápisníkem kódu.</small>
+                    </label>
+                </div>
+            </form>
+            
+            <form method="POST" id="settingsFormNoteDrafts" class="mb-3">
+                <input type="hidden" name="action" value="toggle_note_drafts">
+                <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
+                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="note_drafts_enabled" id="noteDraftsEnabledToggle" 
+                           <?php echo getSetting('note_drafts_enabled', '1') == '1' ? 'checked' : ''; ?>
+                           onchange="this.form.submit()">
+                    <label class="form-check-label text-white" for="noteDraftsEnabledToggle">
+                        <span class="d-block fw-bold">Povolit sekci Note Drafts</span>
+                        <small class="text-white-50">Zobrazit nebo skrýt sekci s textovým zápisníkem.</small>
                     </label>
                 </div>
             </form>

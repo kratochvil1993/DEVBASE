@@ -92,6 +92,7 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
 ('todo_badge_enabled', '1'),
 ('theme_toggle_enabled', '0'),
 ('security_enabled', '0'),
+('note_drafts_enabled', '1'),
 ('gemini_model', 'gemini-2.5-flash-lite');
 
 -- Seed initial data
@@ -174,10 +175,13 @@ INSERT INTO todo_tags (todo_id, tag_id) VALUES
 
 CREATE TABLE IF NOT EXISTS scratchpads (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) DEFAULT 'default' UNIQUE,
+    type VARCHAR(20) DEFAULT 'code',
+    name VARCHAR(50) DEFAULT 'default',
     content LONGTEXT,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE (name, type)
 );
 
-INSERT IGNORE INTO scratchpads (name, content) VALUES ('default', '// Vítejte v editoru kódu. Zde si můžete psát poznámky nebo kód.');
+INSERT IGNORE INTO scratchpads (name, content, type) VALUES ('default', '// Vítejte v editoru kódu. Zde si můžete psát poznámky nebo kód.', 'code');
+INSERT IGNORE INTO scratchpads (name, content, type) VALUES ('Poznámky', '<h1>Vítejte v poznámkovém draftu</h1><p>Zde si můžete psát rychlé poznámky...</p>', 'note');
 

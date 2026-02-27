@@ -768,9 +768,10 @@ function importAllData($data, $mode = 'append') {
     return true;
 }
 
-function getAllScratchpads() {
+function getAllScratchpads($type = 'code') {
     global $conn;
-    $result = $conn->query("SELECT * FROM scratchpads ORDER BY id ASC");
+    $type = $conn->real_escape_string($type);
+    $result = $conn->query("SELECT * FROM scratchpads WHERE type = '$type' ORDER BY id ASC");
     $scratchpads = [];
     while ($row = $result->fetch_assoc()) {
         $scratchpads[] = $row;
@@ -785,10 +786,11 @@ function getScratchpad($id) {
     return $result ? $result->fetch_assoc() : null;
 }
 
-function getScratchpadContent($id = null) {
+function getScratchpadContent($id = null, $type = 'code') {
     global $conn;
     if ($id === null) {
-        $result = $conn->query("SELECT content FROM scratchpads ORDER BY id ASC LIMIT 1");
+        $type = $conn->real_escape_string($type);
+        $result = $conn->query("SELECT content FROM scratchpads WHERE type = '$type' ORDER BY id ASC LIMIT 1");
     } else {
         $id = (int)$id;
         $result = $conn->query("SELECT content FROM scratchpads WHERE id = $id");
@@ -806,10 +808,11 @@ function saveScratchpadContent($content, $id) {
     return $conn->query("UPDATE scratchpads SET content = '$content' WHERE id = $id");
 }
 
-function createScratchpad($name = 'Nový draft') {
+function createScratchpad($name = 'Nový draft', $type = 'code') {
     global $conn;
     $name = $conn->real_escape_string($name);
-    $conn->query("INSERT INTO scratchpads (name, content) VALUES ('$name', '')");
+    $type = $conn->real_escape_string($type);
+    $conn->query("INSERT INTO scratchpads (name, content, type) VALUES ('$name', '', '$type')");
     return $conn->insert_id;
 }
 
@@ -817,8 +820,12 @@ function deleteScratchpad($id) {
     global $conn;
     $id = (int)$id;
     
-    // Ensure we don't delete the last scratchpad
-    $res = $conn->query("SELECT COUNT(*) as count FROM scratchpads");
+    // Ensure we don't delete the last scratchpad of this type
+    $id = (int)$id;
+    $pad = getScratchpad($id);
+    if (!$pad) return false;
+    $type = $conn->real_escape_string($pad['type']);
+    $res = $conn->query("SELECT COUNT(*) as count FROM scratchpads WHERE type = '$type'");
     $row = $res->fetch_assoc();
     if ($row['count'] <= 1) return false;
 
