@@ -665,4 +665,38 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+
+  /**
+   * Global Autosave Function
+   * @param {Object} data - { id, content, name }
+   * @param {HTMLElement} indicator - Element to show save status
+   */
+  window.fetchAutosave = (data, indicator = null) => {
+    return fetch("api/api_autosave.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+      keepalive: true, // Crucial for visibilitychange/pagehide
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (indicator && res.status === "success") {
+          const originalText = indicator.innerHTML;
+          indicator.innerHTML = `<i class="bi bi-cloud-check me-1"></i> Uloženo v ${res.time}`;
+          indicator.classList.add("text-success");
+          setTimeout(() => {
+            indicator.innerHTML = originalText;
+            indicator.classList.remove("text-success");
+          }, 3000);
+        }
+        return res;
+      })
+      .catch((err) => {
+        console.error("Autosave error:", err);
+        if (indicator) {
+          indicator.innerHTML = `<i class="bi bi-cloud-slash me-1"></i> Chyba ukládání`;
+          indicator.classList.add("text-danger");
+        }
+      });
+  };
 });

@@ -159,6 +159,9 @@ include 'includes/header.php';
                     <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+←/→ taby</span>
                 </div>
                 <div id="charCount">Znaků: 0</div>
+                <div id="autosaveIndicator" class="ms-3 text-white-50 small" style="transition: all 0.3s ease;">
+                    <i class="bi bi-cloud-arrow-up me-1"></i> Připraveno
+                </div>
             </div>
         </div>
     </div>
@@ -375,6 +378,52 @@ document.addEventListener('DOMContentLoaded', function() {
         if (modalQuill) {
             document.getElementById('noteContentInput').value = modalQuill.root.innerHTML;
         }
+    });
+
+    // Autosave logic
+    let lastSavedContent = quill.root.innerHTML;
+    let lastSavedName = document.getElementById('padName').value;
+    const autosaveIndicator = document.getElementById('autosaveIndicator');
+
+    function triggerAutosave() {
+        if (!quill) return;
+        const currentContent = quill.root.innerHTML;
+        const currentName = document.getElementById('padName').value;
+        const padId = "<?php echo $active_id; ?>";
+
+        if (currentContent === lastSavedContent && currentName === lastSavedName) return;
+
+        if (autosaveIndicator) {
+            autosaveIndicator.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Ukládám...';
+        }
+
+        window.fetchAutosave({
+            id: padId,
+            content: currentContent,
+            name: currentName
+        }, autosaveIndicator).then(res => {
+            if (res && res.status === 'success') {
+                lastSavedContent = currentContent;
+                lastSavedName = currentName;
+            }
+        });
+    }
+
+    // Interval save (every 30s)
+    setInterval(triggerAutosave, 30000);
+
+    // Visibility change save (when user switches browser tab)
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            triggerAutosave();
+        }
+    });
+
+    // Intercept navigation links within the page (tabs)
+    document.querySelectorAll('.nav-tab-link, .btn-add-tab').forEach(link => {
+        link.addEventListener('click', (e) => {
+            triggerAutosave();
+        });
     });
 
     // Shortcuts
