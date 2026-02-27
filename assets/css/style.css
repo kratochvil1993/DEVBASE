@@ -1159,3 +1159,9 @@ h6 i.bi-pin-angle-fill {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(142, 84, 233, 0.2);
 }
+
+#aiNoteInsightContent strong,
+#aiInsightContent strong {
+  color: #8e54e9;
+  font-weight: 700;
+}

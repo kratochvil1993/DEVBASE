@@ -210,7 +210,7 @@ include 'includes/header.php';
                         <span class="small fw-bold text-white-50 text-uppercase tracking-wider">AI Insight</span>
                         <button type="button" class="btn-close btn-close-white ms-auto small" style="font-size: 0.5rem;" onclick="document.getElementById('aiNoteInsightBox').classList.add('d-none')"></button>
                     </div>
-                    <div id="aiNoteInsightContent" class="text-white small lh-base"></div>
+                    <div id="aiNoteInsightContent" class="text-white small lh-base" style="max-height: 400px; overflow-y: auto; white-space: pre-wrap;"></div>
                 </div>
                 <?php endif; ?>
 
@@ -529,22 +529,34 @@ function aiNoteAction(action) {
 
 function typeWriterNote(text, container) {
     container.innerHTML = '';
-    let formattedText = text.trim().replace(/\n/g, '<br>').replace(/^\s*\* /gm, '• ').replace(/^\s*\*\B/gm, '• ');
+    
+    // Pre-processing markdown to HTML
+    let processedHtml = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^\* /gm, '• ')
+        .replace(/\n/g, '<br>');
+
     let i = 0;
-    const speed = 2;
+    const speed = 5;
     
     function type() {
-        if (i < formattedText.length) {
-            if (formattedText.substr(i, 4) === '<br>') {
-                container.innerHTML += '<br>';
-                i += 4;
+        if (i < processedHtml.length) {
+            if (processedHtml.charAt(i) === '<') {
+                let tagEnd = processedHtml.indexOf('>', i);
+                if (tagEnd !== -1) {
+                    container.innerHTML += processedHtml.substring(i, tagEnd + 1);
+                    i = tagEnd + 1;
+                } else {
+                    container.innerHTML += processedHtml.charAt(i);
+                    i++;
+                }
             } else {
-                container.innerHTML += formattedText.charAt(i);
+                container.innerHTML += processedHtml.charAt(i);
                 i++;
             }
             aiNoteTypingInterval = setTimeout(type, speed);
-            const modalBody = document.querySelector('#viewNoteModal .modal-body');
-            // modalBody.scrollTop = 0;
+            container.scrollTop = container.scrollHeight;
         }
     }
     type();
