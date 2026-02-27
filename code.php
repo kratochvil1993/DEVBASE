@@ -162,6 +162,7 @@ include 'includes/header.php';
                         </ul>
                     </div>
                     <?php endif; ?>
+
                     <button type="button" class="btn btn-copy px-3" onclick="copyCode(this)">
                         <i class="bi bi-clipboard me-2"></i> copy
                     </button>
@@ -217,6 +218,7 @@ include 'includes/header.php';
             <div class="mt-3 d-flex justify-content-between align-items-center text-white-50 small">
                 <div>
                     <span class="me-3"><i class="bi bi-keyboard me-1"></i> Ctrl+S uložit</span>
+
                     <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+L focus</span>
                     <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+N nový</span>
                     <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+W zavřít</span>
@@ -245,6 +247,8 @@ include 'includes/header.php';
 <link rel="stylesheet" href="assets/vendor/codemirror/addon/dialog/dialog.css">
 <link rel="stylesheet" href="assets/vendor/codemirror/addon/fold/foldgutter.css">
 <script src="assets/vendor/codemirror/lib/codemirror.js"></script>
+
+
 
 <!-- CodeMirror Addons -->
 <script src="assets/vendor/codemirror/addon/edit/closebrackets.js"></script>
@@ -425,6 +429,17 @@ li.CodeMirror-hint-active {
     color: #8e54e9;
     font-weight: 700;
 }
+.cm-color-preview {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 2px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
 .flash-purple {
     animation: purpleFlash 2s ease;
 }
@@ -623,6 +638,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     updateCharCount();
     editor.on('change', updateCharCount);
+    
+    // Color Picker Init
+    initColorPicker();
 
     // Quill for Modal
     quill = new Quill('#quillEditor', {
@@ -711,6 +729,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 editor.focus();
             }
         }
+        
+
 
         // Option + N new scratchpad
         if (e.altKey && e.code === 'KeyN') {
@@ -939,6 +959,71 @@ function generateAiField(action, targetId) {
         btn.innerHTML = originalHtml;
     });
 }
+
+function initColorPicker() {
+    if (!editor) return;
+    
+    function updateColors() {
+        const content = editor.getValue();
+        const colorRegex = /#[0-9a-fA-F]{3,6}|rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(?:,\s*[\d\.]+\s*)?\)/g;
+        
+        // Clear old widgets
+        editor.getAllMarks().forEach(mark => {
+            if (mark.className === 'cm-color-mark') mark.clear();
+        });
+
+        let match;
+        while ((match = colorRegex.exec(content)) !== null) {
+            const start = editor.posFromIndex(match.index);
+            const end = editor.posFromIndex(match.index + match[0].length);
+            
+            const badge = document.createElement('span');
+            badge.className = 'cm-color-preview';
+            badge.style.backgroundColor = match[0];
+            
+            badge.onclick = (e) => {
+                const input = document.createElement('input');
+                input.type = 'color';
+                // Convert to hex if it's RGB for the native picker
+                input.value = match[0].startsWith('#') ? (match[0].length === 4 ? '#' + match[0][1] + match[0][1] + match[0][2] + match[0][2] + match[0][3] + match[0][3] : match[0]) : '#ffffff';
+                
+                input.oninput = () => {
+                    const newColor = input.value;
+                    const range = mark.find();
+                    if (range) {
+                        editor.replaceRange(newColor, range.from, range.to);
+                    }
+                };
+                input.click();
+            };
+
+            const mark = editor.markText(start, end, {
+                replacedWith: (function() {
+                    const wrapper = document.createElement('span');
+                    wrapper.appendChild(badge);
+                    wrapper.appendChild(document.createTextNode(match[0]));
+                    return wrapper;
+                })(),
+                className: 'cm-color-mark',
+                handleMouseEvents: true
+            });
+        }
+    }
+
+    editor.on('change', debounce(updateColors, 500));
+    updateColors();
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function() {
+        const context = this, args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+}
+
+
 </script>
 
 <?php include 'includes/footer.php'; ?>
