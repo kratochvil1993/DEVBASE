@@ -4,10 +4,11 @@ checkApiSecurity();
 
 header('Content-Type: application/json');
 
-$apiKey = getSetting('gemini_api_key');
+$provider = getSetting('ai_provider', 'gemini');
+$apiKey = ($provider === 'openai') ? getSetting('openai_api_key') : getSetting('gemini_api_key');
 
 if (empty($apiKey)) {
-    echo json_encode(['status' => 'error', 'message' => 'AI není nakonfigurováno. Vložte API klíč v nastavení.']);
+    echo json_encode(['status' => 'error', 'message' => 'AI není nakonfigurováno. Vložte API klíč pro ' . ($provider === 'openai' ? 'OpenAI' : 'Gemini') . ' v nastavení.']);
     exit;
 }
 
@@ -38,28 +39,51 @@ if ($action === 'explain_code') {
     exit;
 }
 
-$model = getSetting('gemini_model', 'gemini-2.5-flash-lite');
-$url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . $apiKey;
-
-$postData = [
-    "contents" => [
-        [
-            "parts" => [
-                ["text" => $prompt]
-            ]
-        ]
-    ],
-    "generationConfig" => [
+if ($provider === 'openai') {
+    // OpenAI Implementation
+    $model = getSetting('openai_model', 'gpt-4o-mini');
+    $url = "https://api.openai.com/v1/chat/completions";
+    
+    $postData = [
+        "model" => $model,
+        "messages" => [
+            ["role" => "user", "content" => $prompt]
+        ],
         "temperature" => 0.7,
-        "maxOutputTokens" => 1000,
-    ]
-];
+        "max_tokens" => 1000
+    ];
+    
+    $headers = [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . $apiKey
+    ];
+} else {
+    // Gemini Implementation
+    $model = getSetting('gemini_model', 'gemini-2.5-flash-lite');
+    $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . $apiKey;
+    
+    $postData = [
+        "contents" => [
+            [
+                "parts" => [
+                    ["text" => $prompt]
+                ]
+            ]
+        ],
+        "generationConfig" => [
+            "temperature" => 0.7,
+            "maxOutputTokens" => 1000,
+        ]
+    ];
+    
+    $headers = ['Content-Type: application/json'];
+}
 
 $ch = curl_init($url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
-curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
 $response = curl_exec($ch);
@@ -71,10 +95,18 @@ if ($error) {
     echo json_encode(['status' => 'error', 'message' => 'Chyba připojení: ' . $error]);
 } elseif ($httpCode !== 200) {
     $resData = json_decode($response, true);
-    $msg = $resData['error']['message'] ?? 'Chyba API (' . $httpCode . ')';
+    if ($provider === 'openai') {
+        $msg = $resData['error']['message'] ?? 'Chyba OpenAI API (' . $httpCode . ')';
+    } else {
+        $msg = $resData['error']['message'] ?? 'Chyba Gemini API (' . $httpCode . ')';
+    }
     echo json_encode(['status' => 'error', 'message' => $msg]);
 } else {
     $resData = json_decode($response, true);
-    $aiText = $resData['candidates'][0]['content']['parts'][0]['text'] ?? 'Nepodařilo se získat odpověď.';
+    if ($provider === 'openai') {
+        $aiText = $resData['choices'][0]['message']['content'] ?? 'Nepodařilo se získat odpověď od OpenAI.';
+    } else {
+        $aiText = $resData['candidates'][0]['content']['parts'][0]['text'] ?? 'Nepodařilo se získat odpověď od Gemini.';
+    }
     echo json_encode(['status' => 'success', 'answer' => $aiText]);
 }

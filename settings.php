@@ -71,7 +71,17 @@ if (isset($_POST['action'])) {
         $model = $_POST['gemini_model'] ?? 'gemini-2.5-flash-lite';
         updateSetting('gemini_api_key', $key);
         updateSetting('gemini_model', $model);
-        $section = "section-gemini";
+        $section = "section-ai";
+    } elseif ($_POST['action'] == 'save_openai_config') {
+        $key = $_POST['openai_api_key'] ?? '';
+        $model = $_POST['openai_model'] ?? 'gpt-4o-mini';
+        updateSetting('openai_api_key', $key);
+        updateSetting('openai_model', $model);
+        $section = "section-ai";
+    } elseif ($_POST['action'] == 'save_ai_provider') {
+        $provider = $_POST['ai_provider'] ?? 'gemini';
+        updateSetting('ai_provider', $provider);
+        $section = "section-ai";
     } elseif ($_POST['action'] == 'reset_password') {
         updateSetting('app_password', '');
         updateSetting('security_enabled', '0');
@@ -503,21 +513,39 @@ include 'includes/header.php';
         </div>
     </div>
 
-    <!-- Gemini AI Settings -->
-    <div class="col-md-6 mb-4 settings-section" id="section-gemini">
-        <div class="glass-card no-jump p-4 h-100 border-primary border-opacity-10">
-            <div class="d-flex align-items-center mb-3">
-                <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
-                    <i class="bi bi-robot text-primary fs-4"></i>
+    <!-- AI Provider Selection -->
+    <div class="col-12 mb-4 settings-section" id="section-ai">
+        <div class="glass-card no-jump p-3 border-primary border-opacity-10">
+            <form method="POST" class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <input type="hidden" name="action" value="save_ai_provider">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                        <i class="bi bi-robot text-primary fs-5"></i>
+                    </div>
+                    <div>
+                        <label class="text-white fw-bold mb-0 d-block">Výchozí AI poskytovatel</label>
+                        <small class="text-white-50">Vyberte motor, který bude pohánět AI funkce v celé aplikaci.</small>
+                    </div>
                 </div>
-                <h4 class="text-white mb-0">Gemini AI</h4>
-            </div>
-            
-            <p class="text-white-50 small mb-4">
-                Propojte aplikaci s AI modelem Gemini. Získáte tím funkce jako automaticky popis kódu, optimalizaci nebo rozbor úkolů. 
-                API klíč získáte zdarma v <a href="https://aistudio.google.com/" target="_blank" class="text-primary text-decoration-none border-bottom">Google AI Studio</a>.
-            </p>
+                <div class="ms-md-auto">
+                    <select name="ai_provider" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none" style="min-width: 220px;" onchange="this.form.submit()">
+                        <?php $currentProvider = getSetting('ai_provider', 'gemini'); ?>
+                        <option value="gemini" class="bg-dark text-white" <?php echo $currentProvider == 'gemini' ? 'selected' : ''; ?>>Google Gemini (Výchozí)</option>
+                        <option value="openai" class="bg-dark text-white" <?php echo $currentProvider == 'openai' ? 'selected' : ''; ?>>OpenAI ChatGPT</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
 
+    <!-- Gemini Config -->
+    <div class="col-md-6 mb-4 settings-section">
+        <div class="glass-card no-jump p-4 h-100 border-primary border-opacity-10">
+            <h5 class="text-white mb-4 d-flex align-items-center">
+                <img src="https://www.gstatic.com/lamda/images/favicon_v2_16x16.png" class="me-2" style="filter: grayscale(1) brightness(2);">
+                Google Gemini
+            </h5>
+            
             <form method="POST">
                 <input type="hidden" name="action" value="save_gemini_config">
                 <div class="mb-3">
@@ -527,60 +555,106 @@ include 'includes/header.php';
                             <i class="bi bi-key-fill"></i>
                         </span>
                         <input type="password" name="gemini_api_key" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
-                               placeholder="Zadejte váš API klíč..." 
+                               placeholder="AI Studio API klíč..." 
                                value="<?php echo htmlspecialchars(getSetting('gemini_api_key', '')); ?>">
-                        <button class="btn btn-outline-primary px-3" type="button" onclick="const input = this.previousElementSibling; input.type = input.type === 'password' ? 'text' : 'password';">
+                        <button class="btn btn-outline-secondary px-3 border-light border-opacity-25" type="button" onclick="const input = this.previousElementSibling; input.type = input.type === 'password' ? 'text' : 'password';">
                             <i class="bi bi-eye"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label class="form-label text-white-50 small fw-bold">Model Gemini</label>
                     <select name="gemini_model" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
                         <?php 
                         $currentModel = getSetting('gemini_model', 'gemini-2.5-flash-lite');
                         $models = [
-                            'gemini-flash-latest' => 'Gemini Flash (Aktuální verze)',
                             'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash-Lite (Výchozí)',
                             'gemini-2.5-flash' => 'Gemini 2.5 Flash',
                             'gemini-2.5-pro' => 'Gemini 2.5 Pro',
-                            'gemini-3-flash-preview' => 'Gemini 3 Flash (Preview)',
-                            'gemini-3-pro-preview' => 'Gemini 3 Pro (Preview)',
-                            'gemini-3.1-pro-preview' => 'Gemini 3.1 Pro (Preview)',
+                            'gemini-2.0-flash-exp' => 'Gemini 2.0 Flash Exp',
+                            'gemini-1.5-flash' => 'Gemini 1.5 Flash',
+                            'gemini-1.5-pro' => 'Gemini 1.5 Pro',
                         ];
                         foreach ($models as $val => $label): ?>
-                            <option value="<?php echo $val; ?>" <?php echo $currentModel == $val ? 'selected' : ''; ?>>
+                            <option value="<?php echo $val; ?>" class="bg-dark text-white" <?php echo $currentModel == $val ? 'selected' : ''; ?>>
                                 <?php echo $label; ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 
-                <div class="d-flex gap-2 mt-3">
+                <div class="d-flex gap-2">
                     <button class="btn btn-primary flex-grow-1" type="submit">
-                        <i class="bi bi-check-circle-fill me-2"></i>Uložit
+                        <i class="bi bi-check-circle me-1"></i> Uložit
                     </button>
                     <?php if (!empty(getSetting('gemini_api_key'))): ?>
-                    <button class="btn btn-outline-secondary px-3" type="button" id="testGeminiBtn" onclick="testGeminiConnection()">
-                        <i class="bi bi-broadcast me-2"></i>Otestovat
+                    <button class="btn btn-outline-light border-opacity-25 px-3" type="button" id="testGeminiBtn" onclick="testGeminiConnection()">
+                        <i class="bi bi-broadcast"></i>
                     </button>
                     <?php endif; ?>
                 </div>
-
                 <div id="geminiTestResult" class="mt-3 d-none p-2 rounded small"></div>
+            </form>
+        </div>
+    </div>
 
-                <?php if (!empty(getSetting('gemini_api_key'))): ?>
-                    <div id="geminiStatusReady" class="mt-3 d-flex align-items-center gap-2 text-success small">
-                        <i class="bi bi-check-circle-fill"></i>
-                        AI funkce jsou nyní připraveny k použití
+    <!-- OpenAI Config -->
+    <div class="col-md-6 mb-4 settings-section">
+        <div class="glass-card no-jump p-4 h-100 border-info border-opacity-10">
+            <h5 class="text-white mb-4 d-flex align-items-center">
+                <i class="bi bi-openai me-2 text-info"></i>
+                OpenAI ChatGPT
+            </h5>
+            
+            <form method="POST">
+                <input type="hidden" name="action" value="save_openai_config">
+                <div class="mb-3">
+                    <label class="form-label text-white-50 small fw-bold">OpenAI API Klíč</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
+                            <i class="bi bi-key-fill"></i>
+                        </span>
+                        <input type="password" name="openai_api_key" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                               placeholder="sk-..." 
+                               value="<?php echo htmlspecialchars(getSetting('openai_api_key', '')); ?>">
+                        <button class="btn btn-outline-secondary px-3 border-light border-opacity-25" type="button" onclick="const input = this.previousElementSibling; input.type = input.type === 'password' ? 'text' : 'password';">
+                            <i class="bi bi-eye"></i>
+                        </button>
                     </div>
-                <?php else: ?>
-                    <div class="mt-3 d-flex align-items-center gap-2 text-warning small">
-                        <i class="bi bi-info-circle-fill"></i>
-                        Vložte klíč pro aktivaci AI funkcí
-                    </div>
-                <?php endif; ?>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-white-50 small fw-bold">Model GPT</label>
+                    <select name="openai_model" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
+                        <?php 
+                        $currentGptModel = getSetting('openai_model', 'gpt-4o-mini');
+                        $gptModels = [
+                            'gpt-5.2' => 'GPT-5.2 Standard',
+                            'gpt-4o-mini' => 'GPT-4o Mini (Doporučeno)',
+                            'gpt-4o' => 'GPT-4o',
+                            'o1-mini' => 'o1 Mini',
+                            'gpt-4-turbo' => 'GPT-4 Turbo',
+                        ];
+                        foreach ($gptModels as $val => $label): ?>
+                            <option value="<?php echo $val; ?>" class="bg-dark text-white" <?php echo $currentGptModel == $val ? 'selected' : ''; ?>>
+                                <?php echo $label; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary flex-grow-1" type="submit">
+                        <i class="bi bi-check-circle me-1"></i> Uložit
+                    </button>
+                    <?php if (!empty(getSetting('openai_api_key'))): ?>
+                    <button class="btn btn-outline-light border-opacity-25 px-3" type="button" id="testOpenAiBtn" onclick="testOpenAiConnection()">
+                        <i class="bi bi-broadcast"></i>
+                    </button>
+                    <?php endif; ?>
+                </div>
+                <div id="openaiTestResult" class="mt-3 d-none p-2 rounded small"></div>
             </form>
         </div>
     </div>
@@ -868,6 +942,39 @@ function testGeminiConnection() {
         .finally(() => {
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-broadcast me-2"></i>Otestovat';
+        });
+}
+
+function testOpenAiConnection() {
+    const btn = document.getElementById('testOpenAiBtn');
+    const resultDiv = document.getElementById('openaiTestResult');
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>';
+    
+    resultDiv.classList.add('d-none');
+    resultDiv.className = 'mt-2 p-2 rounded small';
+
+    fetch('api/api_test_openai.php')
+        .then(response => response.json())
+        .then(data => {
+            resultDiv.classList.remove('d-none');
+            if (data.status === 'success') {
+                resultDiv.classList.add('bg-success', 'bg-opacity-10', 'text-success', 'border', 'border-success', 'border-opacity-25');
+                resultDiv.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>' + data.message;
+            } else {
+                resultDiv.classList.add('bg-danger', 'bg-opacity-10', 'text-danger', 'border', 'border-danger', 'border-opacity-25');
+                resultDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>' + data.message;
+            }
+        })
+        .catch(error => {
+            resultDiv.classList.remove('d-none');
+            resultDiv.classList.add('bg-danger', 'bg-opacity-10', 'text-danger', 'border', 'border-danger', 'border-opacity-25');
+            resultDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>Chyba spojení.';
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-broadcast"></i>';
         });
 }
 </script>
