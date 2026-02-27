@@ -93,7 +93,10 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
 ('theme_toggle_enabled', '0'),
 ('security_enabled', '0'),
 ('note_drafts_enabled', '1'),
-('gemini_model', 'gemini-2.5-flash-lite');
+('gemini_model', 'gemini-2.5-flash-lite'),
+('ai_provider', 'gemini'),
+('openai_api_key', ''),
+('openai_model', 'gpt-4o-mini');
 
 -- Seed initial data
 INSERT IGNORE INTO languages (name, prism_class) VALUES 
