@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Hide empty state if visible
                     if (emptyState) emptyState.remove();
                     
-                    // Show others container if it was hidden (it shouldn't be hidden if we have items, but just in case)
+                    // Show others container if it was hidden
                     if (othersTodosContainer) othersTodosContainer.classList.remove('d-none');
                     
                     // Create a temporary element to hold the new HTML
@@ -367,11 +367,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     newTodoItem.style.opacity = '0';
                     newTodoItem.style.transform = 'translateY(20px)';
                     
-                    // Append to the beginning of the list (since new ones usually go at the top or follow sort_order)
                     if (othersTodosList) {
                         othersTodosList.prepend(newTodoItem);
                         
-                        // Trigger animation
                         requestAnimationFrame(() => {
                             newTodoItem.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                             newTodoItem.style.opacity = '1';
@@ -379,17 +377,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     }
                     
-                    // Clear form
                     addTodoForm.reset();
                     
-                    // Update headers if needed
                     const pinnedVisible = pinnedTodosContainer && !pinnedTodosContainer.classList.contains('d-none');
                     const othersHeader = document.getElementById('othersHeader');
                     if (othersHeader && pinnedVisible) {
                         othersHeader.classList.remove('d-none');
                     }
 
-                    // Success flash
                     newTodoItem.classList.add('flash-purple');
                     setTimeout(() => newTodoItem.classList.remove('flash-purple'), 2000);
                 } else {
@@ -403,6 +398,57 @@ document.addEventListener('DOMContentLoaded', () => {
             .finally(() => {
                 addTodoBtn.disabled = false;
                 addTodoBtn.innerHTML = originalBtnHtml;
+            });
+        });
+    }
+
+    const editTodoForm = document.getElementById('editTodoForm');
+    if (editTodoForm) {
+        editTodoForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnHtml = submitBtn.innerHTML;
+            const todoId = document.getElementById('editTodoId').value;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+            fetch('api/api_todo_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const modalEl = document.getElementById('editTodoModal');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+
+                    const existingCard = document.getElementById('todo-card-' + todoId);
+                    if (existingCard) {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data.html;
+                        const newCard = temp.firstElementChild;
+                        
+                        existingCard.replaceWith(newCard);
+                        newCard.classList.add('flash-purple');
+                        setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                    } else {
+                        window.location.reload();
+                    }
+                } else {
+                    alert('Chyba: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Nastala chyba při ukládání úkolu.');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnHtml;
             });
         });
     }
