@@ -13,11 +13,7 @@ if (isset($_GET['action'])) {
         header("Location: code.php?id=$new_id");
         exit;
     }
-    if ($_GET['action'] == 'delete' && isset($_GET['id'])) {
-        deleteScratchpad($_GET['id']);
-        header('Location: code.php');
-        exit;
-    }
+
 }
 
 // Handle save request
@@ -123,18 +119,28 @@ include 'includes/header.php';
                     </div>                   
                 </div>
                 <div class="d-flex gap-2 align-items-center">
+                    <div id="saveToast" class="badge bg-success d-none align-items-center px-3 py-2 me-2">
+                        <i class="bi bi-check-circle me-1"></i> Uloženo!
+                    </div>
+                    <div id="moveToast" class="badge bg-info d-none align-items-center px-3 py-2 me-2">
+                        <i class="bi bi-journal-check me-1"></i> Přesunuto do poznámek!
+                    </div>
+                    <div id="snippetToast" class="badge bg-primary d-none align-items-center px-3 py-2 me-2">
+                        <i class="bi bi-code-square me-1"></i> Přesunuto do snippetů!
+                    </div>
+                    
                     <?php if (isset($_GET['saved'])): ?>
-                        <div id="saveToast" class="badge bg-success d-flex align-items-center px-3 py-2 me-2" style="animation: fadeOut 3s forwards;">
+                        <div class="badge bg-success d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
                             <i class="bi bi-check-circle me-1"></i> Uloženo!
                         </div>
                     <?php endif; ?>
                     <?php if (isset($_GET['note_moved'])): ?>
-                        <div id="moveToast" class="badge bg-info d-flex align-items-center px-3 py-2 me-2" style="animation: fadeOut 3s forwards;">
+                        <div class="badge bg-info d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
                             <i class="bi bi-journal-check me-1"></i> Přesunuto do poznámek!
                         </div>
                     <?php endif; ?>
                     <?php if (isset($_GET['snippet_moved'])): ?>
-                        <div id="snippetToast" class="badge bg-primary d-flex align-items-center px-3 py-2 me-2" style="animation: fadeOut 3s forwards;">
+                        <div class="badge bg-primary d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
                             <i class="bi bi-code-square me-1"></i> Přesunuto do snippetů!
                         </div>
                     <?php endif; ?>
@@ -184,10 +190,10 @@ include 'includes/header.php';
             <!-- Tab Bar -->
             <div class="d-flex align-items-center mb-0 overflow-auto tab-container">
                 <?php foreach ($scratchpads as $pad): ?>
-                    <div class="nav-tab-item <?php echo $pad['id'] == $active_id ? 'active' : ''; ?> me-1">
-                        <a href="code.php?id=<?php echo $pad['id']; ?>" class="nav-tab-link py-2 px-3">
+                    <div class="nav-tab-item <?php echo $pad['id'] == $active_id ? 'active' : ''; ?> me-1" data-id="<?php echo $pad['id']; ?>">
+                        <a href="code.php?id=<?php echo $pad['id']; ?>" class="nav-tab-link py-2 px-3" onclick="switchTab(event, <?php echo $pad['id']; ?>)">
                             <i class="bi bi-file-earmark-code me-1"></i>
-                            <?php echo htmlspecialchars($pad['name']); ?>
+                            <span class="tab-name"><?php echo htmlspecialchars($pad['name']); ?></span>
                         </a>
                         <?php if (count($scratchpads) > 1): ?>
                             <button type="button" class="btn-tab-close ms-0" onclick="confirmDelete(<?php echo $pad['id']; ?>, '<?php echo addslashes($pad['name']); ?>')">
@@ -196,9 +202,9 @@ include 'includes/header.php';
                         <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
-                <a href="code.php?action=add" class="btn btn-add-tab ms-1" title="Nový draft">
+                <button onclick="addNewTab(event)" class="btn btn-add-tab ms-1" title="Nový draft" id="addTabBtn">
                     <i class="bi bi-plus-lg"></i>
-                </a>
+                </button>
             </div>
 
             <!-- AI Insight Box -->
@@ -235,7 +241,7 @@ include 'includes/header.php';
 
 <form id="saveForm" method="POST" style="display: none;">
     <input type="hidden" name="action" value="save_code">
-    <input type="hidden" name="id" value="<?php echo $active_id; ?>">
+    <input type="hidden" name="id" id="activeScratchpadId" value="<?php echo $active_id; ?>">
     <input type="hidden" name="name" id="formPadName">
     <textarea name="content" id="formContent"></textarea>
 </form>
@@ -484,7 +490,7 @@ li.CodeMirror-hint-active {
             <form method="POST" id="addToNotesForm">
                 <div class="modal-body">
                     <input type="hidden" name="action" value="move_to_notes">
-                    <input type="hidden" name="scratchpad_id" value="<?php echo $active_id; ?>">
+                    <input type="hidden" name="scratchpad_id" id="modalNoteScratchpadId" value="<?php echo $active_id; ?>">
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label text-white-50 small">Název poznámky</label>
@@ -536,7 +542,7 @@ li.CodeMirror-hint-active {
             <form method="POST" id="addToSnippetsForm">
                 <div class="modal-body">
                     <input type="hidden" name="action" value="move_to_snippets">
-                    <input type="hidden" name="scratchpad_id" value="<?php echo $active_id; ?>">
+                    <input type="hidden" name="scratchpad_id" id="modalSnippetScratchpadId" value="<?php echo $active_id; ?>">
                     <div class="row g-3">
                         <div class="col-md-12">
                             <div class="d-flex justify-content-between align-items-end mb-1">
@@ -615,6 +621,33 @@ li.CodeMirror-hint-active {
 <script>
 let editor;
 let quill;
+let lastSavedContent;
+let lastSavedName;
+
+function triggerAutosave() {
+    if (!editor) return;
+    const currentContent = editor.getValue();
+    const currentName = document.getElementById('padName').value;
+    const padId = document.getElementById('activeScratchpadId')?.value;
+
+    if (!padId || (currentContent === lastSavedContent && currentName === lastSavedName)) return;
+
+    const autosaveIndicator = document.getElementById('autosaveIndicator');
+    if (autosaveIndicator) {
+        autosaveIndicator.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Ukládám...';
+    }
+
+    window.fetchAutosave({
+        id: padId,
+        content: currentContent,
+        name: currentName
+    }, autosaveIndicator).then(res => {
+        if (res && res.status === 'success') {
+            lastSavedContent = currentContent;
+            lastSavedName = currentName;
+        }
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
@@ -664,33 +697,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Autosave logic
-    let lastSavedContent = editor.getValue();
-    let lastSavedName = document.getElementById('padName').value;
+    lastSavedContent = editor.getValue();
+    lastSavedName = document.getElementById('padName').value;
     const autosaveIndicator = document.getElementById('autosaveIndicator');
 
-    function triggerAutosave() {
-        if (!editor) return;
-        const currentContent = editor.getValue();
-        const currentName = document.getElementById('padName').value;
-        const padId = "<?php echo $active_id; ?>";
 
-        if (currentContent === lastSavedContent && currentName === lastSavedName) return;
-
-        if (autosaveIndicator) {
-            autosaveIndicator.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Ukládám...';
-        }
-
-        window.fetchAutosave({
-            id: padId,
-            content: currentContent,
-            name: currentName
-        }, autosaveIndicator).then(res => {
-            if (res && res.status === 'success') {
-                lastSavedContent = currentContent;
-                lastSavedName = currentName;
-            }
-        });
-    }
 
     // Interval save (every 30s)
     setInterval(triggerAutosave, 30000);
@@ -703,7 +714,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Intercept navigation links within the page (tabs)
-    document.querySelectorAll('.nav-tab-link, .btn-add-tab').forEach(link => {
+    document.querySelectorAll('.btn-add-tab').forEach(link => {
         link.addEventListener('click', (e) => {
             triggerAutosave();
         });
@@ -775,9 +786,43 @@ function updateCharCount() {
 }
 
 function saveCode() {
-    document.getElementById('formContent').value = editor.getValue();
-    document.getElementById('formPadName').value = document.getElementById('padName').value;
-    document.getElementById('saveForm').submit();
+    const currentContent = editor.getValue();
+    const currentName = document.getElementById('padName').value;
+    const padId = document.getElementById('activeScratchpadId')?.value;
+    const saveToast = document.getElementById('saveToast');
+    
+    if (!padId) return;
+
+    // Show temporary indicator
+    const autosaveIndicator = document.getElementById('autosaveIndicator');
+    if (autosaveIndicator) {
+        autosaveIndicator.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Ukládám...';
+    }
+
+    window.fetchAutosave({
+        id: padId,
+        content: currentContent,
+        name: currentName
+    }, autosaveIndicator).then(res => {
+        if (res && res.status === 'success') {
+            lastSavedContent = currentContent;
+            lastSavedName = currentName;
+            
+            // Show toast
+            if (saveToast) {
+                saveToast.classList.replace('d-none', 'd-flex');
+                saveToast.style.animation = 'none';
+                void saveToast.offsetWidth; // trigger reflow
+                saveToast.style.animation = 'fadeOut 3s forwards';
+                setTimeout(() => saveToast.classList.replace('d-flex', 'd-none'), 3000);
+            }
+
+            // Update tab name in UI if changed
+            const activeTab = document.querySelector('.nav-tab-item.active .tab-name');
+            if (activeTab) activeTab.textContent = currentName;
+        }
+    });
+
 }
 
 function openAddToNotesModal() {
@@ -815,8 +860,74 @@ function openAddToSnippetsModal() {
 
 function confirmDelete(id, name) {
     if (confirm('Opravdu chcete smazat draft "' + name + '"?')) {
-        window.location.href = 'code.php?action=delete&id=' + id;
+        const tabItem = document.querySelector(`.nav-tab-item[data-id="${id}"]`);
+        if (!tabItem) return;
+
+        const isActive = tabItem.classList.contains('active');
+        
+        // Show loading state on the close button if possible
+        const closeBtn = tabItem.querySelector('.btn-tab-close');
+        if (closeBtn) closeBtn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width: 0.7rem; height: 0.7rem;"></span>';
+
+        fetch('api/api_delete_scratchpad.php?id=' + id)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    if (isActive) {
+                        // Switch to another tab before removing
+                        const allTabs = Array.from(document.querySelectorAll('.nav-tab-item'));
+                        const currentIndex = allTabs.indexOf(tabItem);
+                        const nextTab = allTabs[currentIndex + 1] || allTabs[currentIndex - 1];
+                        
+                        if (nextTab) {
+                            const nextId = nextTab.getAttribute('data-id');
+                            switchTab(null, nextId);
+                        }
+                    }
+                    
+                    // Remove the tab element
+                    tabItem.remove();
+                    
+                    // Update controls (hide close buttons if only one left)
+                    updateTabControls();
+                } else {
+                    alert('Chyba při mazání: ' + data.message);
+                    if (closeBtn) closeBtn.innerHTML = '<i class="bi bi-x"></i>';
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting tab:', error);
+                alert('Nastala chyba při mazání tabu.');
+                if (closeBtn) closeBtn.innerHTML = '<i class="bi bi-x"></i>';
+            });
     }
+}
+
+function updateTabControls() {
+    const tabs = document.querySelectorAll('.nav-tab-item');
+    tabs.forEach(tab => {
+        const closeBtn = tab.querySelector('.btn-tab-close');
+        if (tabs.length > 1) {
+            // Ensure close button exists
+            if (!closeBtn) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn-tab-close ms-0';
+                btn.innerHTML = '<i class="bi bi-x"></i>';
+                btn.onclick = (e) => {
+                    const id = tab.getAttribute('data-id');
+                    const name = tab.querySelector('.tab-name').textContent;
+                    confirmDelete(id, name);
+                };
+                tab.appendChild(btn);
+            } else {
+                closeBtn.style.display = '';
+            }
+        } else if (closeBtn) {
+            // Hide or remove if only one tab left
+            closeBtn.style.display = 'none';
+        }
+    });
 }
 
 function copyCode(btn) {
@@ -1023,6 +1134,137 @@ function debounce(func, wait) {
     };
 }
 
+
+function addNewTab(event) {
+    if (event) event.preventDefault();
+    
+    const btn = document.getElementById('addTabBtn');
+    const originalContent = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
+
+    fetch('api/api_create_scratchpad.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const pad = data.data;
+                
+                // Create new tab element
+                const tabContainer = document.querySelector('.tab-container');
+                const newTab = document.createElement('div');
+                newTab.className = 'nav-tab-item me-1';
+                newTab.setAttribute('data-id', pad.id);
+                newTab.innerHTML = `
+                    <a href="code.php?id=${pad.id}" class="nav-tab-link py-2 px-3" onclick="switchTab(event, ${pad.id})">
+                        <i class="bi bi-file-earmark-code me-1"></i>
+                        <span class="tab-name">${pad.name}</span>
+                    </a>
+                    <button type="button" class="btn-tab-close ms-0" onclick="confirmDelete(${pad.id}, '${pad.name}')">
+                        <i class="bi bi-x"></i>
+                    </button>
+                `;
+                
+                // Insert before the plus button
+                tabContainer.insertBefore(newTab, btn);
+                
+                // Update controls (show close buttons if count > 1)
+                updateTabControls();
+
+                // Switch to it
+                switchTab(null, pad.id);
+            } else {
+                alert('Chyba: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error adding tab:', error);
+            alert('Chyba při vytváření tabu.');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalContent;
+        });
+}
+
+function switchTab(event, id) {
+    if (event) event.preventDefault();
+    
+    const activeIdInput = document.getElementById('activeScratchpadId');
+    const currentId = activeIdInput.value;
+    
+    // Don't do anything if we're clicking the already active tab
+    if (currentId == id) return;
+
+    // Trigger autosave for the current tab first
+    triggerAutosave();
+
+    const autosaveIndicator = document.getElementById('autosaveIndicator');
+    if (autosaveIndicator) {
+        autosaveIndicator.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Načítám...';
+    }
+
+    // Fetch the new tab's content
+    fetch(`api/api_get_scratchpad.php?id=${id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const pad = data.data;
+                
+                // Update editor and title
+                editor.setValue(pad.content);
+                document.getElementById('padName').value = pad.name;
+                
+                // Update hidden IDs
+                activeIdInput.value = pad.id;
+                document.getElementById('modalNoteScratchpadId').value = pad.id;
+                document.getElementById('modalSnippetScratchpadId').value = pad.id;
+                
+                // Update UI - active class
+                document.querySelectorAll('.nav-tab-item').forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('data-id') == pad.id) {
+                        item.classList.add('active');
+                    }
+                });
+
+                // Update URL without page reload
+                const newUrl = `code.php?id=${pad.id}`;
+                window.history.pushState({id: pad.id}, pad.name, newUrl);
+                
+                // Update last_scratchpad_id cookie
+                document.cookie = `last_scratchpad_id=${pad.id}; path=/; max-age=${86400 * 30}`;
+
+                // Update last saved indicators
+                lastSavedContent = pad.content;
+                lastSavedName = pad.name;
+
+                if (autosaveIndicator) {
+                    autosaveIndicator.innerHTML = '<i class="bi bi-check-circle me-1"></i> Přepnuto';
+                    setTimeout(() => {
+                        autosaveIndicator.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Připraveno';
+                    }, 2000);
+                }
+            } else {
+                alert('Chyba při načítání: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error switching tab:', error);
+            alert('Nastala chyba při přepínání tabu.');
+        });
+}
+
+// Handle back/forward button in browser
+window.onpopstate = function(event) {
+    if (event.state && event.state.id) {
+        switchTab(null, event.state.id);
+    } else {
+        // If no state, try to get ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        if (id) switchTab(null, id);
+    }
+};
 
 </script>
 
