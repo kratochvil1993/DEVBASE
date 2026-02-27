@@ -111,34 +111,34 @@ include 'includes/header.php';
             <br>
         <?php endif; ?>
 
-        <div class="d-flex flex-column gap-3">
+        <div class="d-flex flex-column gap-3" id="todoMainContainer">
             <?php if (empty($todos)): ?>
-                <div class="text-center text-white-50 py-5 glass-card mt-3">
+                <div id="emptyState" class="text-center text-white-50 py-5 glass-card mt-3">
                     <i class="bi bi-check2-circle display-1 mb-3 d-block"></i>
                     <h3>Žádné aktivní úkoly!</h3>
                     <p>Máte hotovo. Přidejte si další úkol výše.</p>
                 </div>
-            <?php else: ?>
-                <!-- Pinned Todos -->
-                <div id="pinnedTodosContainer" class="<?php echo empty($pinnedTodos) ? 'd-none' : ''; ?> mb-4">
-                    <h6 class="text-white-50 mb-3 px-1"><i class="bi bi-pin-angle-fill me-2"></i> PŘIPNUTÉ</h6>
-                    <div class="d-flex flex-column gap-3" id="pinnedTodosList">
-                        <?php foreach ($pinnedTodos as $todo): ?>
-                            <?php include 'includes/todo_item_template.php'; ?>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-
-                <!-- Other Todos -->
-                <div id="othersTodosContainer">
-                    <h6 class="text-white-50 mb-3 px-1 <?php echo empty($pinnedTodos) ? 'd-none' : ''; ?>" id="othersHeader">OSTATNÍ</h6>
-                    <div class="d-flex flex-column gap-3" id="othersTodosList">
-                        <?php foreach ($otherTodos as $todo): ?>
-                            <?php include 'includes/todo_item_template.php'; ?>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
             <?php endif; ?>
+
+            <!-- Pinned Todos -->
+            <div id="pinnedTodosContainer" class="<?php echo empty($pinnedTodos) ? 'd-none' : ''; ?> mb-4">
+                <h6 class="text-white-50 mb-3 px-1"><i class="bi bi-pin-angle-fill me-2"></i> PŘIPNUTÉ</h6>
+                <div class="d-flex flex-column gap-3" id="pinnedTodosList">
+                    <?php foreach ($pinnedTodos as $todo): ?>
+                        <?php include 'includes/todo_item_template.php'; ?>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <!-- Other Todos -->
+            <div id="othersTodosContainer" class="<?php echo (empty($otherTodos) && !empty($pinnedTodos)) ? 'd-none' : ''; ?>">
+                <h6 class="text-white-50 mb-3 px-1 <?php echo empty($pinnedTodos) ? 'd-none' : ''; ?>" id="othersHeader">OSTATNÍ</h6>
+                <div class="d-flex flex-column gap-3" id="othersTodosList">
+                    <?php foreach ($otherTodos as $todo): ?>
+                        <?php include 'includes/todo_item_template.php'; ?>
+                    <?php endforeach; ?>
+                </div>
+            </div>
         </div>
         <div class="text-end mt-3">
             <a href="archive_todos.php" class="text-white-50 text-decoration-none small"><i class="bi bi-archive me-1"></i> Zobrazit vyřízené úkoly</a>
@@ -326,7 +326,87 @@ function openEditTodoModal(todo) {
 }
 
 // Tag filtering logic
+// AJAX adding of todos
 document.addEventListener('DOMContentLoaded', () => {
+    const addTodoForm = document.getElementById('addTodoForm');
+    const addTodoBtn = document.getElementById('addTodoBtn');
+    const othersTodosList = document.getElementById('othersTodosList');
+    const emptyState = document.getElementById('emptyState');
+    const othersTodosContainer = document.getElementById('othersTodosContainer');
+    const pinnedTodosContainer = document.getElementById('pinnedTodosContainer');
+
+    if (addTodoForm) {
+        addTodoForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const originalBtnHtml = addTodoBtn.innerHTML;
+            
+            addTodoBtn.disabled = true;
+            addTodoBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+
+            fetch('api/api_todo_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Hide empty state if visible
+                    if (emptyState) emptyState.remove();
+                    
+                    // Show others container if it was hidden (it shouldn't be hidden if we have items, but just in case)
+                    if (othersTodosContainer) othersTodosContainer.classList.remove('d-none');
+                    
+                    // Create a temporary element to hold the new HTML
+                    const temp = document.createElement('div');
+                    temp.innerHTML = data.html;
+                    const newTodoItem = temp.firstElementChild;
+                    
+                    // Add animation
+                    newTodoItem.style.opacity = '0';
+                    newTodoItem.style.transform = 'translateY(20px)';
+                    
+                    // Append to the beginning of the list (since new ones usually go at the top or follow sort_order)
+                    if (othersTodosList) {
+                        othersTodosList.prepend(newTodoItem);
+                        
+                        // Trigger animation
+                        requestAnimationFrame(() => {
+                            newTodoItem.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                            newTodoItem.style.opacity = '1';
+                            newTodoItem.style.transform = 'translateY(0)';
+                        });
+                    }
+                    
+                    // Clear form
+                    addTodoForm.reset();
+                    
+                    // Update headers if needed
+                    const pinnedVisible = pinnedTodosContainer && !pinnedTodosContainer.classList.contains('d-none');
+                    const othersHeader = document.getElementById('othersHeader');
+                    if (othersHeader && pinnedVisible) {
+                        othersHeader.classList.remove('d-none');
+                    }
+
+                    // Success flash
+                    newTodoItem.classList.add('flash-purple');
+                    setTimeout(() => newTodoItem.classList.remove('flash-purple'), 2000);
+                } else {
+                    alert('Chyba: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Nastala chyba při ukládání úkolu.');
+            })
+            .finally(() => {
+                addTodoBtn.disabled = false;
+                addTodoBtn.innerHTML = originalBtnHtml;
+            });
+        });
+    }
+
     const tagButtons = document.querySelectorAll('#tagFilters .btn');
     let currentTag = (localStorage.getItem('todoTag') || 'all').trim();
 

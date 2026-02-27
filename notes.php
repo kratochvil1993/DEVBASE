@@ -127,39 +127,41 @@ include 'includes/header.php';
 </div>
 <?php endif; ?>
 
-<div id="pinnedNotesContainer" class="<?php echo empty($pinnedNotes) ? 'd-none' : ''; ?>">
-    <div class="col-12 mb-3">
-        <h6 class="text-white-50 px-1"><i class="bi bi-pin-angle-fill me-2"></i> PŘIPNUTÉ</h6>
-    </div>
-    <div class="row g-4 mb-5" id="pinnedNotesGrid">
-        <?php foreach ($pinnedNotes as $note): 
-            $tagNames = array_map(function($t) { return $t['name']; }, $note['tags']);
-            $tagData = implode(',', $tagNames);
-        ?>
-            <?php include 'includes/note_item_template.php'; ?>
-        <?php endforeach; ?>
-    </div>
-</div>
-
-<div id="othersNotesContainer">
-    <div class="col-12 mb-3 <?php echo empty($pinnedNotes) ? 'd-none' : ''; ?>" id="othersHeader">
-        <h6 class="text-white-50 px-1">OSTATNÍ</h6>
-    </div>
-    <div class="row g-4" id="othersNotesGrid">
-        <?php if (empty($notes)): ?>
-            <div class="col-12 text-center text-white-50 py-5">
-                <i class="bi bi-journal-x display-1 mb-3 d-block"></i>
-                <h3>Zatím nemáte žádné poznámky.</h3>
-                <p>Klikněte na tlačítko výše a vytvořte si první!</p>
-            </div>
-        <?php else: ?>
-            <?php foreach ($otherNotes as $note): 
+<div class="d-flex flex-column gap-3" id="notesMainContainer">
+    <div id="pinnedNotesContainer" class="<?php echo empty($pinnedNotes) ? 'd-none' : ''; ?>">
+        <div class="col-12 mb-3">
+            <h6 class="text-white-50 px-1"><i class="bi bi-pin-angle-fill me-2"></i> PŘIPNUTÉ</h6>
+        </div>
+        <div class="row g-4 mb-5" id="pinnedNotesGrid">
+            <?php foreach ($pinnedNotes as $note): 
                 $tagNames = array_map(function($t) { return $t['name']; }, $note['tags']);
                 $tagData = implode(',', $tagNames);
             ?>
                 <?php include 'includes/note_item_template.php'; ?>
             <?php endforeach; ?>
-        <?php endif; ?>
+        </div>
+    </div>
+
+    <div id="othersNotesContainer" class="<?php echo (empty($otherNotes) && !empty($pinnedNotes)) ? 'd-none' : ''; ?>">
+        <div class="col-12 mb-3 <?php echo empty($pinnedNotes) ? 'd-none' : ''; ?>" id="othersHeader">
+            <h6 class="text-white-50 px-1">OSTATNÍ</h6>
+        </div>
+        <div class="row g-4" id="othersNotesGrid">
+            <?php if (empty($notes)): ?>
+                <div id="emptyNotesState" class="col-12 text-center text-white-50 py-5 glass-card">
+                    <i class="bi bi-journal-x display-1 mb-3 d-block"></i>
+                    <h3>Zatím nemáte žádné poznámky.</h3>
+                    <p>Klikněte na tlačítko výše a vytvořte si první!</p>
+                </div>
+            <?php else: ?>
+                <?php foreach ($otherNotes as $note): 
+                    $tagNames = array_map(function($t) { return $t['name']; }, $note['tags']);
+                    $tagData = implode(',', $tagNames);
+                ?>
+                    <?php include 'includes/note_item_template.php'; ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
 <div class="text-end mt-3">
@@ -328,10 +330,86 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.getElementById('noteForm').addEventListener('submit', function() {
+    document.getElementById('noteForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
         if (quill) {
             document.getElementById('noteContentInput').value = quill.root.innerHTML;
         }
+
+        const formData = new FormData(this);
+        const submitBtn = document.getElementById('noteSubmitBtn');
+        const originalBtnHtml = submitBtn.innerHTML;
+        const noteId = document.getElementById('noteId').value;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Ukládám...';
+
+        fetch('api/api_note_handler.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const modalEl = document.getElementById('noteModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+
+                // If updating existing note
+                if (noteId) {
+                    const existingCard = document.getElementById('note-card-' + noteId);
+                    if (existingCard) {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data.html;
+                        const newCard = temp.firstElementChild;
+                        existingCard.replaceWith(newCard);
+                        newCard.classList.add('flash-purple');
+                        setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                    } else {
+                        // If card not found (e.g. was filtered out), refresh page or just skip
+                        window.location.reload();
+                    }
+                } else {
+                    // New note
+                    const emptyState = document.getElementById('emptyNotesState');
+                    if (emptyState) emptyState.remove();
+
+                    const othersGrid = document.getElementById('othersNotesGrid');
+                    if (othersGrid) {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data.html;
+                        const newCard = temp.firstElementChild;
+                        
+                        newCard.style.opacity = '0';
+                        newCard.style.transform = 'translateY(20px)';
+                        
+                        othersGrid.prepend(newCard);
+                        
+                        requestAnimationFrame(() => {
+                            newCard.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                            newCard.style.opacity = '1';
+                            newCard.style.transform = 'translateY(0)';
+                        });
+
+                        newCard.classList.add('flash-purple');
+                        setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                    } else {
+                        window.location.reload();
+                    }
+                }
+            } else {
+                alert('Chyba: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Nastala chyba při ukládání poznámky.');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
+        });
     });
 });
 
