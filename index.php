@@ -451,9 +451,14 @@ function toggleSnippetPin(id) {
             }
             
             // Highlight the card
-            const newCard = document.getElementById('snippet-card-' + id);
-            newCard.classList.add('flash-purple');
-            setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+            const newWrapper = document.getElementById('snippet-card-' + id);
+            if (newWrapper) {
+                const innerCard = newWrapper.querySelector('.snippet-card');
+                if (innerCard) {
+                    innerCard.classList.add('flash-purple');
+                    setTimeout(() => innerCard.classList.remove('flash-purple'), 2000);
+                }
+            }
             
             updateEmptyStates();
         } else {
@@ -574,11 +579,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     // Flash effect
-                    const newCard = document.getElementById('snippet-card-' + snippetId);
-                    if (newCard) {
-                        newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        newCard.classList.add('flash-purple');
-                        setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                    const newWrapper = document.getElementById('snippet-card-' + snippetId);
+                    if (newWrapper) {
+                        newWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        const innerCard = newWrapper.querySelector('.snippet-card');
+                        if (innerCard) {
+                            innerCard.classList.add('flash-purple');
+                            setTimeout(() => innerCard.classList.remove('flash-purple'), 2000);
+                        }
                     }
                     
                     updateEmptyStates();
