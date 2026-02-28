@@ -54,6 +54,58 @@ if ($action === 'add_todo' || $action === 'edit_todo') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Nepodařilo se uložit úkol do databáze.']);
     }
+} elseif ($action === 'toggle_pin') {
+    $id = $_POST['todo_id'] ?? null;
+    if ($id && toggleTodoPin($id)) {
+        // Fetch the updated todo to render new HTML
+        $todos = getAllTodos(0);
+        $todo = null;
+        foreach ($todos as $t) {
+            if ($t['id'] == $id) {
+                $todo = $t;
+                break;
+            }
+        }
+
+        if ($todo) {
+            ob_start();
+            include '../includes/todo_item_template.php';
+            $html = ob_get_clean();
+
+            echo json_encode([
+                'status' => 'success',
+                'id' => $id,
+                'is_pinned' => (bool)$todo['is_pinned'],
+                'html' => $html,
+                'message' => 'Stav připnutí změněn.'
+            ]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Stav změněn, ale nepodařilo se jej načíst pro zobrazení.']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Chyba při připínání.']);
+    }
+} elseif ($action === 'archive_todo') {
+    $id = $_POST['todo_id'] ?? null;
+    if ($id && archiveTodo($id, 1)) {
+        echo json_encode(['status' => 'success', 'message' => 'Úkol archivován.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Chyba při archivaci.']);
+    }
+} elseif ($action === 'unarchive_todo') {
+    $id = $_POST['todo_id'] ?? null;
+    if ($id && archiveTodo($id, 0)) {
+        echo json_encode(['status' => 'success', 'message' => 'Úkol vrácen na seznam aktivních.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Chyba při obnově úkolu.']);
+    }
+} elseif ($action === 'delete_todo') {
+    $id = $_POST['todo_id'] ?? null;
+    if ($id && deleteTodo($id)) {
+        echo json_encode(['status' => 'success', 'message' => 'Úkol smazán.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Chyba při mazání.']);
+    }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Neznámá akce.']);
 }

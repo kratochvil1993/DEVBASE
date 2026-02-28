@@ -7,33 +7,6 @@ if (getSetting('notes_enabled', '1') == '0') {
     exit;
 }
 
-// Handle Note addition, update or delete
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
-    if ($_POST['action'] == 'add_note') {
-        $id = !empty($_POST['note_id']) ? $_POST['note_id'] : null;
-        $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
-        $is_locked = isset($_POST['is_locked']) ? 1 : 0;
-        $saved_id = saveNote($_POST['title'], $_POST['content'], null, $tags, $id, $is_locked);
-        if ($saved_id) {
-            $sortParam = isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : '';
-            header('Location: notes.php?updated_id=' . $saved_id . $sortParam);
-            exit;
-        }
-    } elseif ($_POST['action'] == 'delete_note') {
-        deleteNote($_POST['note_id']);
-    } elseif ($_POST['action'] == 'archive_note') {
-        archiveNote($_POST['note_id'], 1);
-    } elseif ($_POST['action'] == 'toggle_pin') {
-        toggleNotePin($_POST['note_id']);
-        $sortParam = isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : '';
-        header('Location: notes.php?updated_id=' . $_POST['note_id'] . $sortParam);
-        exit;
-    }
-    $sortParam = isset($_GET['sort']) ? '?sort=' . $_GET['sort'] : '';
-    header('Location: notes.php' . $sortParam);
-    exit;
-}
-
 $currentSort = isset($_GET['sort']) ? $_GET['sort'] : 'custom';
 $notes = getAllNotes($currentSort);
 $pinnedNotes = array_filter($notes, function($n) { return $n['is_pinned'] == 1; });
@@ -363,11 +336,26 @@ document.addEventListener('DOMContentLoaded', function() {
                         const temp = document.createElement('div');
                         temp.innerHTML = data.html;
                         const newCard = temp.firstElementChild;
-                        existingCard.replaceWith(newCard);
+                        
+                        // Check if we need to move the card between grids
+                        const isPinned = newCard.classList.contains('pinned');
+                        const targetGridId = isPinned ? 'pinnedNotesGrid' : 'othersNotesGrid';
+                        const currentGridId = existingCard.parentElement.id;
+
+                        if (targetGridId !== currentGridId) {
+                            existingCard.remove();
+                            const targetGrid = document.getElementById(targetGridId);
+                            if (targetGrid) {
+                                targetGrid.prepend(newCard);
+                            }
+                        } else {
+                            existingCard.replaceWith(newCard);
+                        }
+                        
+                        updateNoteUIState();
                         newCard.classList.add('flash-purple');
                         setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
                     } else {
-                        // If card not found (e.g. was filtered out), refresh page or just skip
                         window.location.reload();
                     }
                 } else {
@@ -375,8 +363,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     const emptyState = document.getElementById('emptyNotesState');
                     if (emptyState) emptyState.remove();
 
-                    const othersGrid = document.getElementById('othersNotesGrid');
-                    if (othersGrid) {
+                    const isPinned = data.is_pinned || false;
+                    const targetGrid = document.getElementById(isPinned ? 'pinnedNotesGrid' : 'othersNotesGrid');
+                    
+                    if (targetGrid) {
                         const temp = document.createElement('div');
                         temp.innerHTML = data.html;
                         const newCard = temp.firstElementChild;
@@ -384,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         newCard.style.opacity = '0';
                         newCard.style.transform = 'translateY(20px)';
                         
-                        othersGrid.prepend(newCard);
+                        targetGrid.prepend(newCard);
                         
                         requestAnimationFrame(() => {
                             newCard.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
@@ -392,6 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             newCard.style.transform = 'translateY(0)';
                         });
 
+                        updateNoteUIState();
                         newCard.classList.add('flash-purple');
                         setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
                     } else {
@@ -503,6 +494,157 @@ function saveOrder() {
 function handleNoteClick(event, note) {
     if (isSortingMode) return;
     openViewNoteModal(note);
+}
+
+function toggleNotePin(noteId, event) {
+    if (event) event.stopPropagation();
+    
+    const formData = new FormData();
+    formData.append('action', 'toggle_pin');
+    formData.append('note_id', noteId);
+
+    fetch('api/api_note_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const existingCard = document.getElementById('note-card-' + noteId);
+            if (existingCard) {
+                const temp = document.createElement('div');
+                temp.innerHTML = data.html;
+                const newCard = temp.firstElementChild;
+                
+                const targetGridId = data.is_pinned ? 'pinnedNotesGrid' : 'othersNotesGrid';
+                const targetGrid = document.getElementById(targetGridId);
+                
+                existingCard.remove();
+                if (targetGrid) {
+                    targetGrid.prepend(newCard);
+                    newCard.classList.add('flash-purple');
+                    setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                }
+                
+                updateNoteUIState();
+            } else {
+                window.location.reload();
+            }
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function updateNoteUIState() {
+    const pinnedGrid = document.getElementById('pinnedNotesGrid');
+    const othersGrid = document.getElementById('othersNotesGrid');
+    const pinnedContainer = document.getElementById('pinnedNotesContainer');
+    const othersContainer = document.getElementById('othersNotesContainer');
+    const othersHeader = document.getElementById('othersHeader');
+    const emptyState = document.getElementById('emptyNotesState');
+
+    if (!pinnedGrid || !othersGrid) return;
+
+    const pinnedCount = pinnedGrid.querySelectorAll('.note-item').length;
+    const othersCount = othersGrid.querySelectorAll('.note-item').length;
+
+    // Show/Hide pinned container
+    if (pinnedCount > 0) {
+        pinnedContainer.classList.remove('d-none');
+        if (othersHeader) othersHeader.classList.remove('d-none');
+    } else {
+        pinnedContainer.classList.add('d-none');
+        if (othersHeader) othersHeader.classList.add('d-none');
+    }
+
+    // Show/Hide others container
+    if (othersCount === 0 && pinnedCount > 0) {
+        othersContainer.classList.add('d-none');
+    } else {
+        othersContainer.classList.remove('d-none');
+    }
+
+    // Handle empty state
+    if (pinnedCount === 0 && othersCount === 0) {
+        if (!emptyState) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.id = 'emptyNotesState';
+            emptyDiv.className = 'col-12 text-center text-white-50 py-5 glass-card';
+            emptyDiv.innerHTML = `
+                <i class="bi bi-journal-x display-1 mb-3 d-block"></i>
+                <h3>Zatím nemáte žádné poznámky.</h3>
+                <p>Klikněte na tlačítko výše a vytvořte si první!</p>
+            `;
+            othersGrid.appendChild(emptyDiv);
+        }
+    } else if (emptyState) {
+        emptyState.remove();
+    }
+}
+
+function archiveNote(noteId, event) {
+    if (event) event.stopPropagation();
+    
+    if (!confirm('Opravdu chcete tuto poznámku archivovat?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'archive_note');
+    formData.append('note_id', noteId);
+
+    fetch('api/api_note_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const card = document.getElementById('note-card-' + noteId);
+            if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    card.remove();
+                    updateNoteUIState();
+                }, 300);
+            }
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function deleteNote(noteId, event) {
+    if (event) event.stopPropagation();
+    
+    if (!confirm('Opravdu chcete tuto poznámku nenávratně smazat?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'delete_note');
+    formData.append('note_id', noteId);
+
+    fetch('api/api_note_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const card = document.getElementById('note-card-' + noteId);
+            if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    card.remove();
+                    updateNoteUIState();
+                }, 300);
+            }
+        } else {
+            alert(data.message);
+        }
+    });
 }
 
 function openViewNoteModal(note) {

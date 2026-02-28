@@ -676,6 +676,98 @@ function generateAiNoteTitle() {
         btn.innerHTML = originalHtml;
     });
 }
+
+function toggleManageNotePin(noteId, event) {
+    if (event) event.stopPropagation();
+    
+    const formData = new FormData();
+    formData.append('action', 'toggle_pin');
+    formData.append('note_id', noteId);
+    formData.append('template', 'manage_row');
+
+    fetch('api/api_note_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const row = document.getElementById('note-' + noteId);
+            if (row) {
+                const temp = document.createElement('tbody');
+                temp.innerHTML = data.html;
+                const newRow = temp.firstElementChild;
+                
+                const targetGridId = data.is_pinned ? 'manageNotesPinnedGrid' : 'manageNotesGrid';
+                const targetGrid = document.getElementById(targetGridId);
+                
+                row.remove();
+                if (targetGrid) {
+                    // Try to insert after section header if it exists
+                    const sectionHeader = targetGrid.querySelector('.section-header-row');
+                    if (sectionHeader && sectionHeader.nextSibling) {
+                        targetGrid.insertBefore(newRow, sectionHeader.nextSibling);
+                    } else {
+                        targetGrid.appendChild(newRow);
+                    }
+                    
+                    newRow.style.transition = 'all 0.5s ease';
+                    newRow.style.backgroundColor = 'rgba(142, 84, 233, 0.2)';
+                    setTimeout(() => newRow.style.backgroundColor = '', 1000);
+                }
+                
+                // Re-run filter logic to show/hide headers as necessary
+                if (typeof filterRows !== 'undefined') {
+                    // Slight timeout to let DOM settle
+                    setTimeout(() => {
+                        const searchInput = document.getElementById('manageNotesSearch');
+                        if (searchInput) searchInput.dispatchEvent(new Event('input'));
+                    }, 50);
+                }
+            } else {
+                window.location.reload();
+            }
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function deleteManageNote(noteId, event) {
+    if (event) event.stopPropagation();
+    
+    if (!confirm('Opravdu chcete tuto poznámku nenávratně smazat?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'delete_note');
+    formData.append('note_id', noteId);
+
+    fetch('api/api_note_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const row = document.getElementById('note-' + noteId);
+            if (row) {
+                row.style.transition = 'all 0.3s ease';
+                row.style.opacity = '0';
+                row.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    row.remove();
+                    // Trigger filter logic to hide/show section headers correctly
+                    setTimeout(() => {
+                        const searchInput = document.getElementById('manageNotesSearch');
+                        if (searchInput) searchInput.dispatchEvent(new Event('input'));
+                    }, 50);
+                }, 300);
+            }
+        } else {
+            alert(data.message);
+        }
+    });
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

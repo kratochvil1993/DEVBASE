@@ -36,13 +36,11 @@
         </div>
     </td>
     <td class="px-4 py-3 text-end text-nowrap">
-        <form method="POST" class="d-inline">
-            <input type="hidden" name="action" value="toggle_pin">
-            <input type="hidden" name="note_id" value="<?php echo $note['id']; ?>">
-            <button type="submit" class="btn btn-sm btn-outline-light border-0 px-2" title="<?php echo $note['is_pinned'] ? 'Odepnout' : 'Připnout'; ?>">
-                <i class="bi bi-pin-angle<?php echo $note['is_pinned'] ? '-fill text-warning' : ''; ?>"></i>
-            </button>
-        </form>
+        <button type="button" class="btn btn-sm btn-outline-light border-0 px-2" 
+                onclick="toggleManageNotePin(<?php echo $note['id']; ?>, event)"
+                title="<?php echo $note['is_pinned'] ? 'Odepnout' : 'Připnout'; ?>">
+            <i class="bi bi-pin-angle<?php echo $note['is_pinned'] ? '-fill text-warning' : ''; ?>"></i>
+        </button>
         <button class="btn btn-sm btn-outline-light border-0 px-2" 
                 onclick='openViewNoteManageModal(<?php echo htmlspecialchars(json_encode($note), ENT_QUOTES, 'UTF-8'); ?>)'
                 title="Zobrazit poznámku">
@@ -53,12 +51,10 @@
                 title="Upravit">
             <i class="bi bi-pencil"></i>
         </button>
-        <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tuto poznámku smazat?');">
-            <input type="hidden" name="action" value="delete_note">
-            <input type="hidden" name="note_id" value="<?php echo $note['id']; ?>">
-            <button type="submit" class="btn btn-sm btn-outline-danger border-0 px-2" title="Smazat">
-                <i class="bi bi-trash"></i>
-            </button>
-        </form>
+        <button type="button" class="btn btn-sm btn-outline-danger border-0 px-2" 
+                onclick="deleteManageNote(<?php echo $note['id']; ?>, event)"
+                title="Smazat">
+            <i class="bi bi-trash"></i>
+        </button>
     </td>
 </tr>

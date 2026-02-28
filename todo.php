@@ -525,6 +525,156 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+function toggleTodoPin(todoId, event) {
+    if (event) event.stopPropagation();
+    
+    const formData = new FormData();
+    formData.append('action', 'toggle_pin');
+    formData.append('todo_id', todoId);
+
+    fetch('api/api_todo_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const existingCard = document.getElementById('todo-card-' + todoId);
+            if (existingCard) {
+                const temp = document.createElement('div');
+                temp.innerHTML = data.html;
+                const newCard = temp.firstElementChild;
+                
+                const targetGridId = data.is_pinned ? 'pinnedTodosList' : 'othersTodosList';
+                const targetGrid = document.getElementById(targetGridId);
+                
+                existingCard.remove();
+                if (targetGrid) {
+                    targetGrid.prepend(newCard);
+                    newCard.classList.add('flash-purple');
+                    setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                }
+                
+                updateTodoUIState();
+            } else {
+                window.location.reload();
+            }
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function archiveTodoItem(todoId, event) {
+    if (event) event.stopPropagation();
+    
+    const formData = new FormData();
+    formData.append('action', 'archive_todo');
+    formData.append('todo_id', todoId);
+
+    fetch('api/api_todo_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const card = document.getElementById('todo-card-' + todoId);
+            if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    card.remove();
+                    updateTodoUIState();
+                }, 300);
+            }
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function deleteTodoItem(todoId, event) {
+    if (event) event.stopPropagation();
+    
+    if (!confirm('Opravdu chcete tento úkol nenávratně smazat?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'delete_todo');
+    formData.append('todo_id', todoId);
+
+    fetch('api/api_todo_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const card = document.getElementById('todo-card-' + todoId);
+            if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    card.remove();
+                    updateTodoUIState();
+                }, 300);
+            }
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function updateTodoUIState() {
+    const pinnedGrid = document.getElementById('pinnedTodosList');
+    const othersGrid = document.getElementById('othersTodosList');
+    const pinnedContainer = document.getElementById('pinnedTodosContainer');
+    const othersContainer = document.getElementById('othersTodosContainer');
+    const othersHeader = document.getElementById('othersHeader');
+    const emptyState = document.getElementById('emptyState');
+    const mainContainer = document.getElementById('todoMainContainer');
+
+    if (!pinnedGrid || !othersGrid) return;
+
+    const pinnedCount = pinnedGrid.querySelectorAll('.todo-item').length;
+    const othersCount = othersGrid.querySelectorAll('.todo-item').length;
+
+    // Show/Hide pinned container
+    if (pinnedCount > 0) {
+        pinnedContainer.classList.remove('d-none');
+        if (othersHeader) othersHeader.classList.remove('d-none');
+    } else {
+        pinnedContainer.classList.add('d-none');
+        if (othersHeader) othersHeader.classList.add('d-none');
+    }
+
+    // Show/Hide others container
+    if (othersCount === 0 && pinnedCount > 0) {
+        othersContainer.classList.add('d-none');
+    } else {
+        othersContainer.classList.remove('d-none');
+    }
+
+    // Handle empty state
+    if (pinnedCount === 0 && othersCount === 0) {
+        if (!emptyState) {
+            const emptyDiv = document.createElement('div');
+            emptyDiv.id = 'emptyState';
+            emptyDiv.className = 'text-center text-white-50 py-5 glass-card mt-3';
+            emptyDiv.innerHTML = `
+                <i class="bi bi-check2-circle display-1 mb-3 d-block"></i>
+                <h3>Žádné aktivní úkoly!</h3>
+                <p>Máte hotovo. Přidejte si další úkol výše.</p>
+            `;
+            mainContainer.prepend(emptyDiv); // Prepend so it shows properly
+        }
+    } else if (emptyState) {
+        emptyState.remove();
+    }
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

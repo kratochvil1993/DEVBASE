@@ -91,11 +91,9 @@ include 'includes/header.php';
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center overflow-hidden flex-grow-1 text-white-50 text-decoration-line-through">
-                                    <form method="POST" class="me-3 mb-0 d-flex align-items-center" id="form_unarchive_<?php echo $todo['id']; ?>" title="Obnovit jako aktivní">
-                                        <input type="hidden" name="action" value="unarchive_todo">
-                                        <input type="hidden" name="todo_id" value="<?php echo $todo['id']; ?>">
-                                        <input class="form-check-input m-0 fs-5 flex-shrink-0" type="checkbox" onclick="document.getElementById('form_unarchive_<?php echo $todo['id']; ?>').submit()" style="cursor: pointer;" checked>
-                                    </form>
+                                    <div class="me-3 mb-0 d-flex align-items-center" title="Obnovit jako aktivní">
+                                        <input class="form-check-input m-0 fs-5 flex-shrink-0" type="checkbox" onclick="unarchiveTodoItem(<?php echo $todo['id']; ?>, event)" style="cursor: pointer;" checked>
+                                    </div>
                                     <div class="d-flex flex-column overflow-hidden flex-grow-1">
                                         <?php if (!empty($todo['tags'])): ?>
                                             <div class="d-flex flex-wrap gap-1 mb-1">
@@ -117,13 +115,9 @@ include 'includes/header.php';
                                 </div>
 
                                 <div class="d-flex gap-2 action-btns flex-shrink-0 ms-3">
-                                    <form method="POST" class="mb-0" onsubmit="return confirm('Opravdu chcete tento úkol smazat?');">
-                                        <input type="hidden" name="action" value="delete_todo">
-                                        <input type="hidden" name="todo_id" value="<?php echo $todo['id']; ?>">
-                                        <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Smazat navždy">
+                                        <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="deleteArchiveTodoItem(<?php echo $todo['id']; ?>, event)" title="Smazat navždy">
                                             <i class="bi bi-trash fs-5"></i>
                                         </button>
-                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -191,6 +185,66 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+function unarchiveTodoItem(todoId, event) {
+    if (event) event.stopPropagation();
+    
+    const formData = new FormData();
+    formData.append('action', 'unarchive_todo');
+    formData.append('todo_id', todoId);
+
+    fetch('api/api_todo_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const card = document.getElementById('todo-card-' + todoId);
+            if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    card.remove();
+                }, 300);
+            }
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function deleteArchiveTodoItem(todoId, event) {
+    if (event) event.stopPropagation();
+    
+    if (!confirm('Opravdu chcete tento úkol nenávratně smazat?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'delete_todo');
+    formData.append('todo_id', todoId);
+
+    fetch('api/api_todo_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const card = document.getElementById('todo-card-' + todoId);
+            if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    card.remove();
+                }, 300);
+            }
+        } else {
+            alert(data.message);
+        }
+    });
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>
