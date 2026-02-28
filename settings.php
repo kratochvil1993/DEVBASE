@@ -1,121 +1,6 @@
 <?php
 require_once 'includes/functions.php';
 
-// Handle Tag actions
-if (isset($_POST['action'])) {
-    $section = '';
-    
-    if ($_POST['action'] == 'save_tag') {
-        $id = !empty($_POST['id']) ? $_POST['id'] : null;
-        $color = !empty($_POST['color']) ? $_POST['color'] : null;
-        $type = !empty($_POST['type']) ? $_POST['type'] : 'snippet';
-        saveTag($_POST['name'], $color, $type, $id);
-        $section = "section-{$type}-tags";
-    } elseif ($_POST['action'] == 'delete_tag') {
-        $type = !empty($_POST['type']) ? $_POST['type'] : 'snippet';
-        deleteTag($_POST['id']);
-        $section = "section-{$type}-tags";
-    } elseif ($_POST['action'] == 'save_language') {
-        $id = !empty($_POST['id']) ? $_POST['id'] : null;
-        saveLanguage($_POST['name'], $_POST['prism_class'], $id);
-        $section = "section-languages";
-    } elseif ($_POST['action'] == 'delete_language') {
-        deleteLanguage($_POST['id']);
-        $section = "section-languages";
-    } elseif ($_POST['action'] == 'toggle_snippets') {
-        $enabled = isset($_POST['snippets_enabled']) ? '1' : '0';
-        updateSetting('snippets_enabled', $enabled);
-        $section = "section-general";
-    } elseif ($_POST['action'] == 'toggle_notes') {
-        $enabled = isset($_POST['notes_enabled']) ? '1' : '0';
-        updateSetting('notes_enabled', $enabled);
-        $section = "section-general";
-    } elseif ($_POST['action'] == 'toggle_todos') {
-        $enabled = isset($_POST['todos_enabled']) ? '1' : '0';
-        updateSetting('todos_enabled', $enabled);
-        $section = "section-general";
-    } elseif ($_POST['action'] == 'toggle_code') {
-        $enabled = isset($_POST['code_enabled']) ? '1' : '0';
-        updateSetting('code_enabled', $enabled);
-        $section = "section-general";
-    } elseif ($_POST['action'] == 'toggle_todo_badge') {
-        $enabled = isset($_POST['todo_badge_enabled']) ? '1' : '0';
-        updateSetting('todo_badge_enabled', $enabled);
-        $section = "section-general";
-    } elseif ($_POST['action'] == 'toggle_theme_toggle') {
-        $enabled = isset($_POST['theme_toggle_enabled']) ? '1' : '0';
-        updateSetting('theme_toggle_enabled', $enabled);
-        $section = "section-general";
-    } elseif ($_POST['action'] == 'toggle_note_drafts') {
-        $enabled = isset($_POST['note_drafts_enabled']) ? '1' : '0';
-        updateSetting('note_drafts_enabled', $enabled);
-        $section = "section-general";
-    } elseif ($_POST['action'] == 'save_security') {
-        $enabled = isset($_POST['security_enabled']) ? '1' : '0';
-        $currentPassword = getSetting('app_password');
-        $newPassword = $_POST['app_password'] ?? '';
-        $confirmPassword = $_POST['app_password_confirm'] ?? '';
-
-        if (!empty($newPassword) && $newPassword === $confirmPassword) {
-            // Setting new password - always enable security as well
-            $hashed_password = password_hash($newPassword, PASSWORD_DEFAULT);
-            updateSetting('app_password', $hashed_password);
-            updateSetting('security_enabled', '1');
-        } elseif (!empty($currentPassword)) {
-            // Password already set, just toggle enable state
-            updateSetting('security_enabled', $enabled);
-        }
-        $section = "section-security";
-    } elseif ($_POST['action'] == 'save_gemini_config') {
-        $key = $_POST['gemini_api_key'] ?? '';
-        $model = $_POST['gemini_model'] ?? 'gemini-2.5-flash-lite';
-        updateSetting('gemini_api_key', $key);
-        updateSetting('gemini_model', $model);
-        $section = "section-ai";
-    } elseif ($_POST['action'] == 'save_openai_config') {
-        $key = $_POST['openai_api_key'] ?? '';
-        $model = $_POST['openai_model'] ?? 'gpt-4o-mini';
-        updateSetting('openai_api_key', $key);
-        updateSetting('openai_model', $model);
-        $section = "section-ai";
-    } elseif ($_POST['action'] == 'save_ai_provider') {
-        $provider = $_POST['ai_provider'] ?? 'gemini';
-        updateSetting('ai_provider', $provider);
-        $section = "section-ai";
-    } elseif ($_POST['action'] == 'reset_password') {
-        updateSetting('app_password', '');
-        updateSetting('security_enabled', '0');
-        $section = "section-security";
-    } elseif ($_POST['action'] == 'export_data') {
-        $data = exportAllData();
-        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        $filename = 'devbase_export_' . date('Y-m-d') . '.json';
-        
-        header('Content-Type: application/json; charset=utf-8');
-        header('Content-Disposition: attachment; filename=' . $filename);
-        echo $json;
-        exit;
-    } elseif ($_POST['action'] == 'import_data') {
-        if (isset($_FILES['import_file']) && $_FILES['import_file']['error'] == 0) {
-            $json = file_get_contents($_FILES['import_file']['tmp_name']);
-            $data = json_decode($json, true);
-            $mode = $_POST['import_mode'] ?? 'append';
-            if ($data) {
-                importAllData($data, $mode);
-                header('Location: settings.php?import=success#section-backup');
-                exit;
-            }
-        }
-        header('Location: settings.php?import=error#section-backup');
-        exit;
-    }
-    
-    $anchor = $section ? "#" . $section : "";
-    header('Location: settings.php' . $anchor);
-    exit;
-}
-
-
 $snippetsEnabled = getSetting('snippets_enabled', '1');
 $notesEnabled = getSetting('notes_enabled', '1');
 $todosEnabled = getSetting('todos_enabled', '1');
@@ -140,95 +25,88 @@ include 'includes/header.php';
     <div class="col-md-6 mb-4 settings-section" id="section-general">
         <div class="glass-card no-jump p-4 h-100">
             <h4 class="text-white mb-3">Obecné nastavení</h4>
-            <form method="POST" id="settingsFormSnippets" class="mb-3">
-                <input type="hidden" name="action" value="toggle_snippets">
+            <div class="mb-3">
                 <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
                     <input class="form-check-input fs-4 ms-0" type="checkbox" name="snippets_enabled" id="snippetsEnabledToggle" 
                            <?php echo $snippetsEnabled == '1' ? 'checked' : ''; ?>
-                           onchange="this.form.submit()">
+                           onchange="updateGeneralSetting('snippets_enabled', this.checked)">
                     <label class="form-check-label text-white" for="snippetsEnabledToggle">
                         <span class="d-block fw-bold">Povolit sekci Snippety</span>
                         <small class="text-white-50">Zobrazit nebo skrýt sekci se snipety kódu.</small>
                     </label>
                 </div>
-            </form>
-            <form method="POST" id="settingsFormNotes" class="mb-3">
-                <input type="hidden" name="action" value="toggle_notes">
+            </div>
+            <div class="mb-3">
                 <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
                     <input class="form-check-input fs-4 ms-0" type="checkbox" name="notes_enabled" id="notesEnabledToggle" 
                            <?php echo $notesEnabled == '1' ? 'checked' : ''; ?>
-                           onchange="this.form.submit()">
+                           onchange="updateGeneralSetting('notes_enabled', this.checked)">
                     <label class="form-check-label text-white" for="notesEnabledToggle">
                         <span class="d-block fw-bold">Povolit sekci Notes</span>
                         <small class="text-white-50">Zobrazit nebo skrýt sekci s poznámkami.</small>
                     </label>
                 </div>
-            </form>
+            </div>
 
-            <form method="POST" id="settingsFormTodos" class="mb-3">
-                <input type="hidden" name="action" value="toggle_todos">
+            <div class="mb-3">
                 <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
                     <input class="form-check-input fs-4 ms-0" type="checkbox" name="todos_enabled" id="todosEnabledToggle" 
                            <?php echo $todosEnabled == '1' ? 'checked' : ''; ?>
-                           onchange="this.form.submit()">
+                           onchange="updateGeneralSetting('todos_enabled', this.checked)">
                     <label class="form-check-label text-white" for="todosEnabledToggle">
                         <span class="d-block fw-bold">Povolit sekci TODO</span>
                         <small class="text-white-50">Zobrazit nebo skrýt sekci s úkoly.</small>
                     </label>
                 </div>
-            </form>
+            </div>
 
-            <form method="POST" id="settingsFormCode" class="mb-3">
-                <input type="hidden" name="action" value="toggle_code">
+            <div class="mb-3">
                 <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
                     <input class="form-check-input fs-4 ms-0" type="checkbox" name="code_enabled" id="codeEnabledToggle" 
                            <?php echo getSetting('code_enabled', '1') == '1' ? 'checked' : ''; ?>
-                           onchange="this.form.submit()">
+                           onchange="updateGeneralSetting('code_enabled', this.checked)">
                     <label class="form-check-label text-white" for="codeEnabledToggle">
                         <span class="d-block fw-bold">Povolit sekci Code Drafts</span>
                         <small class="text-white-50">Zobrazit nebo skrýt sekci se zápisníkem kódu.</small>
                     </label>
                 </div>
-            </form>
+            </div>
             
-            <form method="POST" id="settingsFormNoteDrafts" class="mb-3">
-                <input type="hidden" name="action" value="toggle_note_drafts">
+            <div class="mb-3">
                 <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
                     <input class="form-check-input fs-4 ms-0" type="checkbox" name="note_drafts_enabled" id="noteDraftsEnabledToggle" 
                            <?php echo getSetting('note_drafts_enabled', '1') == '1' ? 'checked' : ''; ?>
-                           onchange="this.form.submit()">
+                           onchange="updateGeneralSetting('note_drafts_enabled', this.checked)">
                     <label class="form-check-label text-white" for="noteDraftsEnabledToggle">
                         <span class="d-block fw-bold">Povolit sekci Note Drafts</span>
                         <small class="text-white-50">Zobrazit nebo skrýt sekci s textovým zápisníkem.</small>
                     </label>
                 </div>
-            </form>
+            </div>
 
-            <form method="POST" id="settingsFormTodoBadge" class="mb-3">
-                <input type="hidden" name="action" value="toggle_todo_badge">
+            <div class="mb-3">
                 <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
                     <input class="form-check-input fs-4 ms-0" type="checkbox" name="todo_badge_enabled" id="todoBadgeEnabledToggle" 
                            <?php echo getSetting('todo_badge_enabled', '1') == '1' ? 'checked' : ''; ?>
-                           onchange="this.form.submit()">
+                           onchange="updateGeneralSetting('todo_badge_enabled', this.checked)">
                     <label class="form-check-label text-white" for="todoBadgeEnabledToggle">
                         <span class="d-block fw-bold">Zobrazovat badge u TODO</span>
                         <small class="text-white-50">Zobrazit počet aktivních úkolů v hlavní navigaci.</small>
                     </label>
                 </div>
-            </form>
+            </div>
 
-            <form method="POST" id="settingsFormThemeToggle">
-                <input type="hidden" name="action" value="toggle_theme_toggle">
+            <div>
                 <div class="form-check form-switch d-flex align-items-center gap-3 ps-0">
                     <input class="form-check-input fs-4 ms-0" type="checkbox" name="theme_toggle_enabled" id="themeToggleEnabledToggle" 
                            <?php echo getSetting('theme_toggle_enabled', '1') == '1' ? 'checked' : ''; ?>
-                           onchange="this.form.submit()">
+                           onchange="updateGeneralSetting('theme_toggle_enabled', this.checked)">
                     <label class="form-check-label text-white" for="themeToggleEnabledToggle">
                         <span class="d-block fw-bold">Zobrazovat přepínač Dark modu</span>
                         <small class="text-white-50">Zobrazit nebo skrýt tlačítko pro změnu vzhledu v navigaci.</small>
                     </label>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -244,7 +122,7 @@ include 'includes/header.php';
                     <div class="form-check form-switch d-flex align-items-center gap-3 ps-0 mb-4">
                         <input class="form-check-input fs-4 ms-0" type="checkbox" name="security_enabled" id="securityEnabledToggle" 
                                <?php echo $securityEnabled == '1' ? 'checked' : ''; ?>
-                               <?php echo !$hasPassword ? 'disabled' : 'onchange="this.form.submit()"'; ?>>
+                               <?php echo !$hasPassword ? 'disabled' : 'onchange="updateGeneralSetting(\'security_enabled\', this.checked)"'; ?>>
                         <label class="form-check-label text-white" for="securityEnabledToggle">
                             <span class="d-block fw-bold">Povolit zámek aplikace</span>
                             <small class="text-white-50">Po aktivaci bude aplikace vyžadovat heslo při každém vstupu.</small>
@@ -282,19 +160,14 @@ include 'includes/header.php';
                     <?php endif; ?>
                 </form>
 
-                <?php if ($hasPassword): ?>
-                    <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="d-flex justify-content-between align-items-center mt-3" id="securityStatusRow">
                         <div class="small text-success">
                             <i class="bi bi-check-circle-fill me-1"></i> Heslo je nastaveno
                         </div>
-                        <form method="POST" onsubmit="return confirm('Opravdu chcete smazat heslo a vypnout zámek?');" class="d-inline">
-                            <input type="hidden" name="action" value="reset_password">
-                            <button type="submit" class="btn btn-sm btn-outline-danger border-0 py-0 shadow-none">
-                                <i class="bi bi-trash me-1"></i> Resetovat heslo
-                            </button>
-                        </form>
+                        <button type="button" class="btn btn-sm btn-outline-danger border-0 py-0 shadow-none" onclick="resetPasswordAjax()">
+                            <i class="bi bi-trash me-1"></i> Resetovat heslo
+                        </button>
                     </div>
-                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -314,15 +187,16 @@ include 'includes/header.php';
                 </div>
             </div>
             
-            <form method="POST" class="mb-4" id="tagForm">
+            <form method="POST" class="mb-4" id="tagForm" onsubmit="handleTagSubmit(event, 'snippet')">
                 <input type="hidden" name="action" value="save_tag">
                 <input type="hidden" name="type" value="snippet">
                 <input type="hidden" name="id" id="tagId" value="">
                 <div class="input-group">
-                    <input type="color" id="tagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Vyberte barvu nebo nechte prázdné">
-                    <input type="text" name="color" id="tagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex" style="max-width: 150px;" pattern="^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$">
+                    <input type="color" id="tagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Vyberte barvu nebo nechte prázdné" oninput="document.getElementById('tagColor').value = this.value">
+                    <input type="text" name="color" id="tagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex" style="max-width: 150px;" pattern="^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$" oninput="document.getElementById('tagColorPicker').value = this.value">
                     <input type="text" name="name" id="tagName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Název" required>
                     <button class="btn btn-add-snipet" type="submit" id="tagSubmitBtn">Přidat</button>
+                    <button class="btn btn-outline-secondary d-none" type="button" id="tagCancelBtn" onclick="resetTagForm('snippet')"><i class="bi bi-x"></i></button>
                 </div>
             </form>
 
@@ -342,14 +216,11 @@ include 'includes/header.php';
                             <button class="btn btn-sm btn-link text-white-50 p-0 text-decoration-none" onclick='editTag(<?php echo json_encode($tag); ?>)'>
                                 <i class="bi bi-pencil"></i> 
                             </button>
-                            <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento štítek smazat?');">
-                                <input type="hidden" name="action" value="delete_tag">
-                                <input type="hidden" name="type" value="snippet">
-                                <input type="hidden" name="id" value="<?php echo $tag['id']; ?>">
-                                <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
+                            <div class="d-inline">
+                                <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none p-0" onclick="deleteTagAjax(<?php echo $tag['id']; ?>, 'snippet')">
                                     <i class="bi bi-trash"></i> 
                                 </button>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -372,15 +243,16 @@ include 'includes/header.php';
                 </div>
             </div>
             
-            <form method="POST" class="mb-4" id="noteTagForm">
+            <form method="POST" class="mb-4" id="noteTagForm" onsubmit="handleTagSubmit(event, 'note')">
                 <input type="hidden" name="action" value="save_tag">
                 <input type="hidden" name="type" value="note">
                 <input type="hidden" name="id" id="noteTagId" value="">
                 <div class="input-group">
-                    <input type="color" id="noteTagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Vyberte barvu nebo nechte prázdné">
-                    <input type="text" name="color" id="noteTagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex" style="max-width: 150px;" pattern="^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$">
+                    <input type="color" id="noteTagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Vyberte barvu nebo nechte prázdné" oninput="document.getElementById('noteTagColor').value = this.value">
+                    <input type="text" name="color" id="noteTagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex" style="max-width: 150px;" pattern="^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$" oninput="document.getElementById('noteTagColorPicker').value = this.value">
                     <input type="text" name="name" id="noteTagName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Název" required>
                     <button class="btn btn-add-snipet" type="submit" id="noteTagSubmitBtn">Přidat</button>
+                    <button class="btn btn-outline-secondary d-none" type="button" id="noteTagCancelBtn" onclick="resetTagForm('note')"><i class="bi bi-x"></i></button>
                 </div>
             </form>
 
@@ -400,14 +272,11 @@ include 'includes/header.php';
                             <button class="btn btn-sm btn-link text-white-50 p-0 text-decoration-none" onclick='editNoteTag(<?php echo json_encode($tag); ?>)'>
                                 <i class="bi bi-pencil"></i> 
                             </button>
-                            <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento štítek smazat?');">
-                                <input type="hidden" name="action" value="delete_tag">
-                                <input type="hidden" name="type" value="note">
-                                <input type="hidden" name="id" value="<?php echo $tag['id']; ?>">
-                                <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
+                            <div class="d-inline">
+                                <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none p-0" onclick="deleteTagAjax(<?php echo $tag['id']; ?>, 'note')">
                                     <i class="bi bi-trash"></i> 
                                 </button>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -430,15 +299,16 @@ include 'includes/header.php';
                 </div>
             </div>
             
-            <form method="POST" class="mb-4" id="todoTagForm">
+            <form method="POST" class="mb-4" id="todoTagForm" onsubmit="handleTagSubmit(event, 'todo')">
                 <input type="hidden" name="action" value="save_tag">
                 <input type="hidden" name="type" value="todo">
                 <input type="hidden" name="id" id="todoTagId" value="">
                 <div class="input-group">
-                    <input type="color" id="todoTagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Vyberte barvu nebo nechte prázdné">
-                    <input type="text" name="color" id="todoTagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex" style="max-width: 150px;" pattern="^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$">
+                    <input type="color" id="todoTagColorPicker" class="form-control form-control-color bg-transparent border-light border-opacity-25" style="max-width: 50px;" title="Vyberte barvu nebo nechte prázdné" oninput="document.getElementById('todoTagColor').value = this.value">
+                    <input type="text" name="color" id="todoTagColor" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="#hex" style="max-width: 150px;" pattern="^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$" oninput="document.getElementById('todoTagColorPicker').value = this.value">
                     <input type="text" name="name" id="todoTagName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Název" required>
                     <button class="btn btn-add-snipet" type="submit" id="todoTagSubmitBtn">Přidat</button>
+                    <button class="btn btn-outline-secondary d-none" type="button" id="todoTagCancelBtn" onclick="resetTagForm('todo')"><i class="bi bi-x"></i></button>
                 </div>
             </form>
 
@@ -458,14 +328,11 @@ include 'includes/header.php';
                             <button class="btn btn-sm btn-link text-white-50 p-0 text-decoration-none" onclick='editTodoTag(<?php echo json_encode($tag); ?>)'>
                                 <i class="bi bi-pencil"></i> 
                             </button>
-                            <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento štítek smazat?');">
-                                <input type="hidden" name="action" value="delete_tag">
-                                <input type="hidden" name="type" value="todo">
-                                <input type="hidden" name="id" value="<?php echo $tag['id']; ?>">
-                                <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
+                            <div class="d-inline">
+                                <button type="button" class="btn btn-sm btn-link text-danger text-decoration-none p-0" onclick="deleteTagAjax(<?php echo $tag['id']; ?>, 'todo')">
                                     <i class="bi bi-trash"></i> 
                                 </button>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -528,7 +395,7 @@ include 'includes/header.php';
                     </div>
                 </div>
                 <div class="ms-md-auto">
-                    <select name="ai_provider" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none" style="min-width: 220px;" onchange="this.form.submit()">
+                    <select name="ai_provider" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none" style="min-width: 220px;" onchange="updateGeneralSetting('ai_provider', this.value)">
                         <?php $currentProvider = getSetting('ai_provider', 'gemini'); ?>
                         <option value="gemini" class="bg-dark text-white" <?php echo $currentProvider == 'gemini' ? 'selected' : ''; ?>>Google Gemini (Výchozí)</option>
                         <option value="openai" class="bg-dark text-white" <?php echo $currentProvider == 'openai' ? 'selected' : ''; ?>>OpenAI ChatGPT</option>
@@ -911,10 +778,160 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+function handleTagSubmit(event, type) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerText;
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+    fetch('api/api_settings_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const listId = type === 'snippet' ? 'snippetTagsList' : (type === 'note' ? 'noteTagsList' : 'todoTagsList');
+            const list = document.getElementById(listId);
+            if (list) {
+                list.innerHTML = data.html;
+            }
+            resetTagForm(type);
+        } else {
+            alert('Chyba: ' + data.message);
+        }
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerText = originalText;
+    });
+}
+
+function deleteTagAjax(id, type) {
+    if (!confirm('Opravdu chcete tento štítek smazat?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'delete_tag');
+    formData.append('id', id);
+
+    fetch('api/api_settings_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const listId = type === 'snippet' ? 'snippetTagsList' : (type === 'note' ? 'noteTagsList' : 'todoTagsList');
+            const list = document.getElementById(listId);
+            if (list) {
+                list.innerHTML = data.html;
+            }
+        } else {
+            alert('Chyba: ' + data.message);
+        }
+    });
+}
+
+function resetPasswordAjax() {
+    if (!confirm('Opravdu chcete smazat heslo a vypnout zámek?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'reset_password');
+
+    fetch('api/api_settings_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.location.reload(); // Still reloading here because password UI has many states, but could be AJAXed too
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function resetTagForm(type) {
+    const prefix = type === 'snippet' ? '' : (type === 'note' ? 'note' : 'todo');
+    const formId = type === 'snippet' ? 'tagForm' : (type === 'note' ? 'noteTagForm' : 'todoTagForm');
+    const idField = document.getElementById(prefix + (prefix ? 'TagId' : 'tagId'));
+    const nameField = document.getElementById(prefix + (prefix ? 'TagName' : 'tagName'));
+    const colorField = document.getElementById(prefix + (prefix ? 'TagColor' : 'tagColor'));
+    const colorPicker = document.getElementById(prefix + (prefix ? 'TagColorPicker' : 'tagColorPicker'));
+    const submitBtn = document.getElementById(prefix + (prefix ? 'TagSubmitBtn' : 'tagSubmitBtn'));
+    const cancelBtn = document.getElementById(prefix + (prefix ? 'TagCancelBtn' : 'tagCancelBtn'));
+
+    idField.value = '';
+    nameField.value = '';
+    colorField.value = '';
+    colorPicker.value = '#000000';
+    submitBtn.innerText = 'Přidat';
+    cancelBtn.classList.add('d-none');
+}
+
+function editTag(tag) {
+    document.getElementById('tagId').value = tag.id;
+    document.getElementById('tagName').value = tag.name;
+    document.getElementById('tagColor').value = tag.color || '';
+    document.getElementById('tagColorPicker').value = tag.color || '#000000';
+    document.getElementById('tagSubmitBtn').innerText = 'Uložit';
+    document.getElementById('tagCancelBtn').classList.remove('d-none');
+    window.location.hash = 'section-snippet-tags';
+}
+
+function editNoteTag(tag) {
+    document.getElementById('noteTagId').value = tag.id;
+    document.getElementById('noteTagName').value = tag.name;
+    document.getElementById('noteTagColor').value = tag.color || '';
+    document.getElementById('noteTagColorPicker').value = tag.color || '#000000';
+    document.getElementById('noteTagSubmitBtn').innerText = 'Uložit';
+    document.getElementById('noteTagCancelBtn').classList.remove('d-none');
+    window.location.hash = 'section-note-tags';
+}
+
+function editTodoTag(tag) {
+    document.getElementById('todoTagId').value = tag.id;
+    document.getElementById('todoTagName').value = tag.name;
+    document.getElementById('todoTagColor').value = tag.color || '';
+    document.getElementById('todoTagColorPicker').value = tag.color || '#000000';
+    document.getElementById('todoTagSubmitBtn').innerText = 'Uložit';
+    document.getElementById('todoTagCancelBtn').classList.remove('d-none');
+    window.location.hash = 'section-todo-tags';
+}
+function updateGeneralSetting(key, val) {
+    const value = typeof val === 'boolean' ? (val ? '1' : '0') : val;
+    const formData = new FormData();
+    formData.append('action', 'toggle_setting');
+    formData.append('key', key);
+    formData.append('value', value);
+
+    let section = document.getElementById('section-general');
+    if (key === 'security_enabled') section = document.getElementById('section-security');
+    if (key === 'ai_provider') section = document.getElementById('section-ai');
+
+    fetch('api/api_settings_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Success without animation
+        } else {
+            alert('Chyba: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
 function testGeminiConnection() {
     const btn = document.getElementById('testGeminiBtn');
     const resultDiv = document.getElementById('geminiTestResult');
-    const statusReady = document.getElementById('geminiStatusReady');
     
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Testování...';
