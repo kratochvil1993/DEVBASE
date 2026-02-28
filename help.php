@@ -229,8 +229,12 @@ console.log('Hello World');
                     Pokud máte hotový kód, který chcete trvale uložit, využijte tlačítko <i class="bi bi-send me-1"></i> **Poslat do**. To vám umožní vybraný draft okamžitě převést na plnohodnotný **Snippet** (včetně jazyka a popisu) nebo do **Poznámek** (obsah se vloží jako kódový blok). Po úspěšném přesunu se původní draft smaže.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Profesionální funkce:</strong>
-                    Editor je postaven na **CodeMirror 5** a podporuje automatické doplňování závorek, zvýraznění syntaxe a funkci **Folding** (skládání kódu).
+                    <strong class="text-white d-block">Profesionální funkce a Color Picker:</strong>
+                    Editor je postaven na **CodeMirror 5** a podporuje automatické doplňování závorek, zvýraznění syntaxe a funkci **Folding** (skládání kódu). Pokud v kódu napíšete barvu v HEX nebo RGB formátu, editor u ní automaticky zobrazí **barevný náhled**, na který můžete kliknout a barvu změnit pomocí integrovaného kapátka.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">AI nástroje v editoru:</strong>
+                    Přímo v horní liště editoru najdete AI menu, které vám umožní označený nebo celý kód **Vysvětlit**, **Refaktorovat** (přepsat čistěji) nebo spustit **Debugger**, který se pokusí najít a opravit chyby.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Klávesové zkratky (v sekci Code Drafts):</strong>
@@ -363,6 +367,7 @@ console.log('Hello World');
                     <ul class="mt-2">
                         <li><strong>Vytvořit souhrn:</strong> AI přečte celou poznámku a vytvoří z ní stručný seznam v odrážkách.</li>
                         <li><strong>Kontrola pravopisu:</strong> Provede revizi českého textu a upozorní na chyby nebo navrhne lepší stylistiku.</li>
+                        <li><strong>Extrahovat úkoly:</strong> AI projde text a automaticky z něj vytvoří seznam TODO úkolů, které si můžete uložit.</li>
                     </ul>
                 </li>
                 <li class="mb-3">
