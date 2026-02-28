@@ -1,30 +1,7 @@
 <?php
 require_once 'includes/functions.php';
 
-// Handle Snippet addition, update or delete (same logic as on index.php)
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
-    $updated_id = '';
-    if ($_POST['action'] == 'add_snippet') {
-        $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
-        $id = !empty($_POST['snippet_id']) ? $_POST['snippet_id'] : null;
-        $is_locked = isset($_POST['is_locked']) ? 1 : 0;
-        $snippet_id = saveSnippet($_POST['title'], $_POST['description'], $_POST['code'], $_POST['language_id'], $tags, $id, $is_locked);
-        if ($snippet_id) $updated_id = $snippet_id;
-    } elseif ($_POST['action'] == 'delete_snippet') {
-        deleteSnippet($_POST['snippet_id']);
-    } elseif ($_POST['action'] == 'toggle_pin') {
-        toggleSnippetPin($_POST['snippet_id']);
-        $updated_id = $_POST['snippet_id'];
-    }
-    
-    $redirect_url = 'manage.php';
-    if ($updated_id) {
-        $redirect_url .= '?updated_id=' . $updated_id;
-    }
-    header('Location: ' . $redirect_url);
-    exit;
-}
-
+// Fetch snippets after any potential background updates
 $snippets = getAllSnippets();
 $pinnedSnippets = array_filter($snippets, function($s) { return ($s['is_pinned'] ?? 0) == 1; });
 $otherSnippets = array_filter($snippets, function($s) { return ($s['is_pinned'] ?? 0) == 0; });
@@ -302,7 +279,8 @@ function openAddModal() {
     document.getElementById('snippetForm').reset();
     document.getElementById('modalTitle').innerText = 'Přidat nový snipet';
     document.getElementById('snippetId').value = '';
-    
+    document.getElementById('submitBtn').innerText = 'Uložit snipet';
+
     const lockInput = document.getElementById('snippetLockedInput');
     if (lockInput) lockInput.checked = false;
     
@@ -443,6 +421,197 @@ function generateAiField(action, targetId) {
         btn.innerHTML = originalHtml;
     });
 }
+
+function toggleSnippetPin(id) {
+    const formData = new FormData();
+    formData.append('action', 'toggle_pin');
+    formData.append('snippet_id', id);
+    formData.append('layout', 'row');
+
+    fetch('api/api_snippet_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const oldRow = document.getElementById('snippet-' + id);
+            if (oldRow) {
+                oldRow.remove();
+                
+                // Determine which grid to add to
+                const pinnedGrid = document.getElementById('managePinnedGrid');
+                const othersGrid = document.getElementById('manageGrid');
+                
+                // Create pinned header if it doesn't exist and we are pinning
+                if (data.is_pinned && pinnedGrid && pinnedGrid.querySelectorAll('.section-header-row[data-section="pinned"]').length === 0) {
+                    pinnedGrid.insertAdjacentHTML('afterbegin', `
+                        <tr class="section-header-row" data-section="pinned" style="background: rgba(255,193,7,0.05);">
+                            <td colspan="6" class="px-4 py-2 border-bottom border-light border-opacity-10">
+                                <span class="text-warning small fw-bold"><i class="bi bi-pin-angle-fill me-2"></i>PŘIPNUTÉ</span>
+                            </td>
+                        </tr>
+                    `);
+                }
+
+                // Append the new row
+                if (data.is_pinned) {
+                    pinnedGrid.insertAdjacentHTML('beforeend', data.html);
+                } else {
+                    // If moving from pinned to others, we might need the "OSTATNÍ" header
+                    if (othersGrid.querySelectorAll('.section-header-row[data-section="others"]').length === 0 && pinnedGrid.querySelectorAll('.manage-row').length > 0) {
+                        othersGrid.insertAdjacentHTML('afterbegin', `
+                            <tr class="section-header-row" data-section="others" style="background: rgba(255,255,255,0.03);">
+                                <td colspan="6" class="px-4 py-2 border-bottom border-light border-opacity-10">
+                                    <span class="text-white-50 small fw-bold">OSTATNÍ</span>
+                                </td>
+                            </tr>
+                        `);
+                    }
+                    othersGrid.insertAdjacentHTML('afterbegin', data.html);
+                }
+                
+                const newRow = document.getElementById('snippet-' + id);
+                if (newRow) {
+                    newRow.classList.add('flash-purple');
+                    setTimeout(() => newRow.classList.remove('flash-purple'), 2000);
+                }
+                
+                updateEmptyStates();
+            }
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function deleteSnippetAjax(id) {
+    if (!confirm('Opravdu chcete tento snipet smazat?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'delete_snippet');
+    formData.append('snippet_id', id);
+
+    fetch('api/api_snippet_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const row = document.getElementById('snippet-' + id);
+            if (row) {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(20px)';
+                row.style.transition = 'all 0.3s ease';
+                setTimeout(() => {
+                    row.remove();
+                    updateEmptyStates();
+                }, 300);
+            }
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function updateEmptyStates() {
+    const pinnedGrid = document.getElementById('managePinnedGrid');
+    const othersGrid = document.getElementById('manageGrid');
+    
+    const pinnedRows = pinnedGrid ? pinnedGrid.querySelectorAll('.manage-row').length : 0;
+    const otherRows  = othersGrid ? othersGrid.querySelectorAll('.manage-row').length : 0;
+    
+    // Toggle pinned section header
+    const pinnedHeader = document.querySelector('.section-header-row[data-section="pinned"]');
+    if (pinnedHeader) pinnedHeader.style.display = pinnedRows > 0 ? '' : 'none';
+    
+    // Toggle others section header
+    const othersHeader = document.querySelector('.section-header-row[data-section="others"]');
+    if (othersHeader) othersHeader.style.display = (pinnedRows > 0 && otherRows > 0) ? '' : 'none';
+    
+    // If absolutely no snippets
+    if (pinnedRows === 0 && otherRows === 0) {
+        othersGrid.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-white-50 py-5">
+                    <i class="bi bi-inbox fs-2 mb-3 d-block"></i>
+                    Zatím nemáte žádné snipety
+                </td>
+            </tr>
+        `;
+    } else {
+        // Remove empty message if it exists
+        const emptyMsg = othersGrid.querySelector('td[colspan="6"].text-center');
+        if (emptyMsg && emptyMsg.parentElement) emptyMsg.parentElement.remove();
+    }
+}
+
+// Handle Form Submission
+document.addEventListener('DOMContentLoaded', function() {
+    const snippetForm = document.getElementById('snippetForm');
+    if (snippetForm) {
+        snippetForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerText;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Ukládám...';
+            
+            const isEdit = formData.get('snippet_id') !== '';
+            if (isEdit) {
+                formData.set('action', 'edit_snippet');
+            }
+            formData.append('layout', 'row');
+
+            fetch('api/api_snippet_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addSnippetModal'));
+                    if (modal) modal.hide();
+                    
+                    const snippetId = data.id;
+                    const existingRow = document.getElementById('snippet-' + snippetId);
+                    
+                    if (existingRow) {
+                        existingRow.outerHTML = data.html;
+                    } else {
+                        const grid = data.is_pinned ? document.getElementById('managePinnedGrid') : document.getElementById('manageGrid');
+                        grid.insertAdjacentHTML('beforeend', data.html); // Add to end for manage page consistency
+                    }
+                    
+                    const newRow = document.getElementById('snippet-' + snippetId);
+                    if (newRow) {
+                        newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        newRow.classList.add('flash-purple');
+                        setTimeout(() => newRow.classList.remove('flash-purple'), 2000);
+                    }
+                    
+                    updateEmptyStates();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Chyba při komunikaci se serverem.');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalText;
+            });
+        });
+    }
+});
 </script>
 
 <!-- Add Snippet Modal -->

@@ -10,6 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $action = $_POST['action'] ?? '';
+$layout = $_POST['layout'] ?? 'card'; // Default to card layout
+$template = ($layout === 'row') ? '../includes/manage_snippet_row.php' : '../includes/snippet_item_template.php';
 
 if ($action === 'add_snippet' || $action === 'edit_snippet') {
     $title = $_POST['title'] ?? '';
@@ -28,7 +30,6 @@ if ($action === 'add_snippet' || $action === 'edit_snippet') {
     $id = saveSnippet($title, $description, $code, $language_id, $tags, $snippet_id, $is_locked);
 
     if ($id) {
-        // Fetch the full snippet object to render the template
         $snippets = getAllSnippets();
         $snippet = null;
         foreach ($snippets as $s) {
@@ -40,7 +41,7 @@ if ($action === 'add_snippet' || $action === 'edit_snippet') {
 
         if ($snippet) {
             ob_start();
-            include '../includes/snippet_item_template.php';
+            include $template;
             $html = ob_get_clean();
 
             echo json_encode([
@@ -60,7 +61,6 @@ if ($action === 'add_snippet' || $action === 'edit_snippet') {
 } elseif ($action === 'toggle_pin') {
     $id = $_POST['snippet_id'] ?? null;
     if ($id && toggleSnippetPin($id)) {
-        // Fetch the updated snippet to render new HTML
         $snippets = getAllSnippets();
         $snippet = null;
         foreach ($snippets as $s) {
@@ -72,7 +72,7 @@ if ($action === 'add_snippet' || $action === 'edit_snippet') {
 
         if ($snippet) {
             ob_start();
-            include '../includes/snippet_item_template.php';
+            include $template;
             $html = ob_get_clean();
 
             echo json_encode([

@@ -44,29 +44,25 @@
         </div>
     </td>
     <td class="px-4 py-3 text-end text-nowrap">
-        <form method="POST" class="d-inline">
-            <input type="hidden" name="action" value="toggle_pin">
-            <input type="hidden" name="snippet_id" value="<?php echo $snippet['id']; ?>">
-            <button type="submit" class="btn btn-sm btn-outline-light border-0 px-2" title="<?php echo $snippet['is_pinned'] ? 'Odepnout' : 'Připnout'; ?>">
-                <i class="bi bi-pin-angle<?php echo $snippet['is_pinned'] ? '-fill text-warning' : ''; ?>"></i>
-            </button>
-        </form>
-        <button class="btn btn-sm btn-outline-light border-0 px-2" 
+        <button type="button" class="btn btn-sm btn-outline-light border-0 px-2" 
+                onclick="toggleSnippetPin(<?php echo $snippet['id']; ?>)"
+                title="<?php echo $snippet['is_pinned'] ? 'Odepnout' : 'Připnout'; ?>">
+            <i class="bi bi-pin-angle<?php echo $snippet['is_pinned'] ? '-fill text-warning' : ''; ?>" id="pin-icon-<?php echo $snippet['id']; ?>"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-light border-0 px-2" 
                 onclick='openViewModal(<?php echo htmlspecialchars(json_encode($snippet), ENT_QUOTES, 'UTF-8'); ?>)'
                 title="Zobrazit snipet">
             <i class="bi bi-eye"></i>
         </button>
-        <button class="btn btn-sm btn-outline-light border-0 px-2" 
+        <button type="button" class="btn btn-sm btn-outline-light border-0 px-2" 
                 onclick='openEditModal(<?php echo htmlspecialchars(json_encode($snippet), ENT_QUOTES, 'UTF-8'); ?>)'
                 title="Upravit">
             <i class="bi bi-pencil"></i>
         </button>
-        <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tento snipet smazat?');">
-            <input type="hidden" name="action" value="delete_snippet">
-            <input type="hidden" name="snippet_id" value="<?php echo $snippet['id']; ?>">
-            <button type="submit" class="btn btn-sm btn-outline-danger border-0 px-2" title="Smazat">
-                <i class="bi bi-trash"></i>
-            </button>
-        </form>
+        <button type="button" class="btn btn-sm btn-outline-danger border-0 px-2" 
+                onclick="deleteSnippetAjax(<?php echo $snippet['id']; ?>)"
+                title="Smazat">
+            <i class="bi bi-trash"></i>
+        </button>
     </td>
 </tr>
