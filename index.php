@@ -169,7 +169,7 @@ include 'includes/header.php';
                     </button>
                     <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10 mt-2 shadow-lg">
                         <li>
-                            <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiAction('explain_code')">
+                            <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('explain_code')">
                                 <i class="bi bi-chat-left-text me-2 text-ai"></i> Vysvětlit kód
                             </a>
                         </li>

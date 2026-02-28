@@ -112,17 +112,17 @@ include 'includes/header.php';
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10 mt-2 shadow-lg">
                             <li>
-                                <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiAction('structure_note')">
+                                <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('structure_note')">
                                     <i class="bi bi-layout-text-sidebar-reverse me-2 text-ai"></i> Strukturovat poznámku
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiAction('extract_todos')">
+                                <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('extract_todos')">
                                     <i class="bi bi-check2-square me-2 text-ai"></i> Extrahovat TODO úkoly
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiAction('generate_tldr')">
+                                <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('generate_tldr')">
                                     <i class="bi bi-lightning-charge me-2 text-ai"></i> Vytvořit TL;DR
                                 </a>
                             </li>
@@ -135,7 +135,7 @@ include 'includes/header.php';
                             <i class="bi bi-send me-2"></i> Poslat do
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark glass-dropdown border-light border-opacity-10">
-                            <li><a class="dropdown-item" href="#" onclick="openAddToNotesModal()"><i class="bi bi-journal-plus me-2"></i> do Notes</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="openAddToNotesModal()"><i class="bi bi-journal-plus me-2"></i> do Notes</a></li>
                         </ul>
                     </div>
                     <button type="button" class="btn btn-add-snipet px-3" onclick="saveDraft()">

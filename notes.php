@@ -161,12 +161,12 @@ include 'includes/header.php';
                     </button>
                     <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10 mt-2 shadow-lg">
                         <li>
-                            <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiNoteAction('summarize_note')">
+                            <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiNoteAction('summarize_note')">
                                 <i class="bi bi-list-task me-2 text-ai"></i> Shrnutí (body)
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiNoteAction('grammar_check')">
+                            <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiNoteAction('grammar_check')">
                                 <i class="bi bi-spellcheck me-2 text-ai"></i> Kontrola pravopisu
                             </a>
                         </li>

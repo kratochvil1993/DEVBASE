@@ -121,17 +121,17 @@ include 'includes/header.php';
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10 mt-2 shadow-lg">
                             <li>
-                                <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiAction('explain_code')">
+                                <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('explain_code')">
                                     <i class="bi bi-chat-left-text me-2 text-ai"></i> Vysvětlit kód
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiAction('refactor_code')">
+                                <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('refactor_code')">
                                     <i class="bi bi-magic me-2 text-ai"></i> Refaktorovat
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center py-2" href="#" onclick="aiAction('debug_code')">
+                                <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('debug_code')">
                                     <i class="bi bi-bug me-2 text-ai"></i> Debugger
                                 </a>
                             </li>
@@ -147,8 +147,8 @@ include 'includes/header.php';
                             <i class="bi bi-send me-2"></i> Poslat do
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark glass-dropdown border-light border-opacity-10">
-                            <li><a class="dropdown-item" href="#" onclick="openAddToSnippetsModal()"><i class="bi bi-code-slash me-2"></i> do Snippets</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="openAddToNotesModal()"><i class="bi bi-journal-plus me-2"></i> do Notes</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="openAddToSnippetsModal()"><i class="bi bi-code-slash me-2"></i> do Snippets</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="openAddToNotesModal()"><i class="bi bi-journal-plus me-2"></i> do Notes</a></li>
                         </ul>
                     </div>
                     <button type="button" class="btn btn-add-snipet px-3" onclick="saveCode()">
