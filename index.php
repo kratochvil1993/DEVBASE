@@ -1,27 +1,8 @@
 <?php
 require_once 'includes/functions.php';
 
-// Handle Snippet addition, update or delete
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
-    if ($_POST['action'] == 'add_snippet') {
-        $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
-        $id = !empty($_POST['snippet_id']) ? $_POST['snippet_id'] : null;
-        $is_locked = isset($_POST['is_locked']) ? 1 : 0;
-        $saved_id = saveSnippet($_POST['title'], $_POST['description'], $_POST['code'], $_POST['language_id'], $tags, $id, $is_locked);
-        if ($saved_id) {
-            header('Location: index.php?updated_id=' . $saved_id);
-            exit;
-        }
-    } elseif ($_POST['action'] == 'delete_snippet') {
-        deleteSnippet($_POST['snippet_id']);
-    } elseif ($_POST['action'] == 'toggle_pin') {
-        toggleSnippetPin($_POST['snippet_id']);
-        header('Location: index.php?updated_id=' . $_POST['snippet_id']);
-        exit;
-    }
-    header('Location: index.php');
-    exit;
-}
+// Synchronous POST handler removed for AJAX-ification
+
 
 $snippets = getAllSnippets();
 $pinnedSnippets = array_filter($snippets, function($s) { return ($s['is_pinned'] ?? 0) == 1; });
@@ -440,6 +421,185 @@ function openEditModal(snippet) {
     modal.show();
 }
 
+function toggleSnippetPin(id) {
+    const formData = new FormData();
+    formData.append('action', 'toggle_pin');
+    formData.append('snippet_id', id);
+
+    fetch('api/api_snippet_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const card = document.getElementById('snippet-card-' + id);
+            const pinnedGrid = document.getElementById('pinnedSnippetsGrid');
+            const othersGrid = document.getElementById('othersSnippetsGrid');
+            
+            // Remove from current grid
+            card.remove();
+            
+            // Add to new grid
+            const targetGrid = data.is_pinned ? pinnedGrid : othersGrid;
+            targetGrid.insertAdjacentHTML('afterbegin', data.html);
+            
+            // Apply Prism highlighting on the new element
+            const newCode = document.getElementById('snippet-' + id);
+            if (newCode && typeof Prism !== 'undefined') {
+                Prism.highlightElement(newCode);
+            }
+            
+            // Highlight the card
+            const newCard = document.getElementById('snippet-card-' + id);
+            newCard.classList.add('flash-purple');
+            setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+            
+            updateEmptyStates();
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function deleteSnippetAjax(id) {
+    if (!confirm('Opravdu chcete tento snipet smazat?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'delete_snippet');
+    formData.append('snippet_id', id);
+
+    fetch('api/api_snippet_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const card = document.getElementById('snippet-card-' + id);
+            if (card) {
+                card.style.transform = 'scale(0.8)';
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.remove();
+                    updateEmptyStates();
+                }, 300);
+            }
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function updateEmptyStates() {
+    const pinnedGrid = document.getElementById('pinnedSnippetsGrid');
+    const othersGrid = document.getElementById('othersSnippetsGrid');
+    const pinnedContainer = document.getElementById('pinnedSnippetsContainer');
+    const othersHeader = document.getElementById('othersHeader');
+    
+    const pinnedCount = pinnedGrid.querySelectorAll('.snippet-card-wrapper').length;
+    const othersCount = othersGrid.querySelectorAll('.snippet-card-wrapper').length;
+    const totalCount = pinnedCount + othersCount;
+
+    if (pinnedContainer) pinnedContainer.classList.toggle('d-none', pinnedCount === 0);
+    if (othersHeader) othersHeader.classList.toggle('d-none', pinnedCount === 0 || othersCount === 0);
+    
+    // Remove empty message if it exists and we have items
+    const emptyMsg = othersGrid.querySelector('.text-center.text-white-50.py-5');
+    if (totalCount > 0 && emptyMsg) {
+        emptyMsg.remove();
+    }
+
+    // If no snippets at all, show the empty message
+    if (totalCount === 0) {
+        othersGrid.innerHTML = `
+            <div class="col-12 text-center text-white-50 py-5">
+                <i class="bi bi-code-slash display-1 mb-3 d-block"></i>
+                <h3>Nebyly nalezeny žádné snipety.</h3>
+                <p>Začněte přidáním nějakých snipetů!</p>
+                <a href="settings.php" class="btn btn-outline-light">Spravovat štítky a jazyky</a>
+            </div>
+        `;
+    }
+}
+
+// Handle Form Submission
+document.addEventListener('DOMContentLoaded', function() {
+    const snippetForm = document.getElementById('snippetForm');
+    if (snippetForm) {
+        snippetForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerText;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Ukládám...';
+            
+            const isEdit = formData.get('snippet_id') !== '';
+            if (isEdit) {
+                formData.set('action', 'edit_snippet');
+            }
+
+            fetch('api/api_snippet_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Hide modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addSnippetModal'));
+                    if (modal) modal.hide();
+                    
+                    const snippetId = data.id;
+                    const existingCard = document.getElementById('snippet-card-' + snippetId);
+                    
+                    if (existingCard) {
+                        // Replace existing card
+                        existingCard.outerHTML = data.html;
+                    } else {
+                        // Add new card (usually to others grid)
+                        const grid = data.is_pinned ? document.getElementById('pinnedSnippetsGrid') : document.getElementById('othersSnippetsGrid');
+                        grid.insertAdjacentHTML('afterbegin', data.html);
+                    }
+                    
+                    // Re-highlight
+                    const newCode = document.getElementById('snippet-' + snippetId);
+                    if (newCode && typeof Prism !== 'undefined') {
+                        Prism.highlightElement(newCode);
+                    }
+                    
+                    // Flash effect
+                    const newCard = document.getElementById('snippet-card-' + snippetId);
+                    if (newCard) {
+                        newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        newCard.classList.add('flash-purple');
+                        setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                    }
+                    
+                    updateEmptyStates();
+                    form.reset();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Chyba při komunikaci se serverem.');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalText;
+            });
+        });
+    }
+});
+
+
 
 
 function openViewModal(snippet) {
@@ -576,7 +736,6 @@ if (document.getElementById('viewSnippetModal')) {
 // Search and Tag filtering
 const snippetSearchInput = document.getElementById('snippetSearch');
 const tagFilters = document.querySelectorAll('#tagFilters button');
-const snippetCards = document.querySelectorAll('.snippet-card-wrapper');
 
 function filterSnippets() {
     if (!snippetSearchInput) return;
@@ -584,11 +743,12 @@ function filterSnippets() {
     const searchTerm = snippetSearchInput.value.toLowerCase().trim();
     const activeTagBtn = document.querySelector('#tagFilters button.active');
     const activeTag = activeTagBtn ? activeTagBtn.dataset.tag : 'all';
+    const currentCards = document.querySelectorAll('.snippet-card-wrapper');
 
     let pinnedCount = 0;
     let othersCount = 0;
 
-    snippetCards.forEach(card => {
+    currentCards.forEach(card => {
         const title = (card.querySelector('.card-title')?.innerText || '').toLowerCase();
         const desc = (card.querySelector('.card-text')?.innerText || '').toLowerCase();
         // Try multiple ways to get tags
@@ -600,7 +760,7 @@ function filterSnippets() {
 
         if (matchesSearch && matchesTag) {
             card.classList.remove('d-none');
-            if (card.parentElement.id === 'pinnedSnippetsGrid') pinnedCount++;
+            if (card.closest('#pinnedSnippetsGrid')) pinnedCount++;
             else othersCount++;
         } else {
             card.classList.add('d-none');
