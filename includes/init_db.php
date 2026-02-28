@@ -1,20 +1,26 @@
 <?php
-$host = 'mysql_db';
-$user = 'root';
-$pass = 'root';
-$dbname = 'devbase';
+require_once __DIR__ . '/db.php';
 
-// Create connection
-$conn = new mysqli($host, $user, $pass);
+// If connection failed in db.php, it would have died there.
+// But we need a connection WITHOUT a database selected to create it if it doesn't exist.
+// Re-using the same variables from db.php (they are in the global scope since they were defined at the top of db.php)
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Check if database exists by trying to select it
+if (!$conn->select_db($dbname)) {
+    // Database doesn't exist, connect without database to create it
+    $conn_init = new mysqli($host, $user, $pass);
+    if ($conn_init->connect_error) {
+        die("Connection failed: " . $conn_init->connect_error);
+    }
+    $conn_init->query("CREATE DATABASE IF NOT EXISTS $dbname");
+    $conn_init->close();
+    
+    // Now select it on the main connection
+    $conn->select_db($dbname);
 }
 
-// Create database if not exists
-$conn->query("CREATE DATABASE IF NOT EXISTS $dbname");
-$conn->select_db($dbname);
+// Ensure charset is set for schema import
+$conn->set_charset("utf8mb4");
 
 // Root path to the schema
 $schema_file = __DIR__ . '/../schema.sql';
@@ -22,23 +28,30 @@ if (file_exists($schema_file)) {
     $sql = file_get_contents($schema_file);
     
     // Execute multiple queries
-    if ($conn->multi_query($sql)) {
-        do {
-            // Free results of each query
-            if ($result = $conn->store_result()) {
-                $result->free();
-            }
-        } while ($conn->more_results() && $conn->next_result());
-    }
-
-    if ($conn->errno) {
+    if (!$conn->multi_query($sql)) {
         echo "<div style='color:red; font-family: sans-serif; text-align: center; margin-top: 50px;'>";
-        echo "<h2>Chyba při inicializaci schéma</h2>";
+        echo "<h2>Chyba při startu importu schéma</h2>";
         echo "<p>" . htmlspecialchars($conn->error) . "</p>";
         echo "</div>";
         $conn->close();
         exit;
     }
+
+    do {
+        // Free results of each query
+        if ($result = $conn->store_result()) {
+            $result->free();
+        }
+
+        if ($conn->errno) {
+            echo "<div style='color:red; font-family: sans-serif; text-align: center; margin-top: 50px;'>";
+            echo "<h2>Chyba při inicializaci schéma</h2>";
+            echo "<p>" . htmlspecialchars($conn->error) . "</p>";
+            echo "</div>";
+            $conn->close();
+            exit;
+        }
+    } while ($conn->more_results() && $conn->next_result());
 
     // Migrations: Ensure specific columns exist even if tables already existed
     $migrations = [
