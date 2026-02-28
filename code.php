@@ -32,37 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
             header("Location: code.php?id=$id&saved=1");
             exit;
         }
-    } elseif ($_POST['action'] == 'move_to_notes') {
-        $title = $_POST['title'] ?? '';
-        $content = $_POST['content'] ?? '';
-        $tags = $_POST['tags'] ?? [];
-        $scratchpad_id = $_POST['scratchpad_id'] ?? null;
-        
-        if ($title && $content && $scratchpad_id) {
-            $saved_id = saveNote($title, $content, null, $tags);
-            if ($saved_id) {
-                deleteScratchpad($scratchpad_id);
-                header("Location: code.php?note_moved=1");
-                exit;
-            }
-        }
-    } elseif ($_POST['action'] == 'move_to_snippets') {
-        $title = $_POST['title'] ?? '';
-        $description = $_POST['description'] ?? '';
-        $code = $_POST['code'] ?? '';
-        $language_id = $_POST['language_id'] ?? null;
-        $tags = $_POST['tags'] ?? [];
-        $scratchpad_id = $_POST['scratchpad_id'] ?? null;
-        
-        if ($title && $code && $scratchpad_id) {
-            $is_locked = isset($_POST['is_locked']) ? 1 : 0;
-            $saved_id = saveSnippet($title, $description, $code, $language_id, $tags, null, $is_locked);
-            if ($saved_id) {
-                deleteScratchpad($scratchpad_id);
-                header("Location: code.php?snippet_moved=1");
-                exit;
-            }
-        }
+
     }
 }
 
@@ -690,11 +660,123 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.getElementById('addToNotesForm').addEventListener('submit', function() {
+    document.getElementById('addToNotesForm').addEventListener('submit', function(e) {
         if (quill) {
             document.getElementById('noteContentInput').value = quill.root.innerHTML;
         }
+
+        e.preventDefault();
+        const formData = new FormData(this);
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Přesouvám...';
+
+        fetch('api/api_move_scratchpad.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const modalEl = document.getElementById('addToNotesModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+
+                // Show toast
+                const toast = document.getElementById('moveToast');
+                if (toast) {
+                    toast.classList.replace('d-none', 'd-flex');
+                    toast.style.animation = 'none';
+                    void toast.offsetWidth;
+                    toast.style.animation = 'fadeOut 3s forwards';
+                    setTimeout(() => toast.classList.replace('d-flex', 'd-none'), 3000);
+                }
+
+                // Remove the tab and switch
+                const padId = formData.get('scratchpad_id');
+                removeTabGracefully(padId);
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(err => alert('Chyba při komunikaci se serverem'))
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
     });
+
+    document.getElementById('addToSnippetsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Přesouvám...';
+
+        fetch('api/api_move_scratchpad.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const modalEl = document.getElementById('addToSnippetsModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+
+                // Show toast
+                const toast = document.getElementById('snippetToast');
+                if (toast) {
+                    toast.classList.replace('d-none', 'd-flex');
+                    toast.style.animation = 'none';
+                    void toast.offsetWidth;
+                    toast.style.animation = 'fadeOut 3s forwards';
+                    setTimeout(() => toast.classList.replace('d-flex', 'd-none'), 3000);
+                }
+
+                // Remove the tab and switch
+                const padId = formData.get('scratchpad_id');
+                removeTabGracefully(padId);
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(err => alert('Chyba při komunikaci se serverem'))
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
+    });
+
+    function removeTabGracefully(padId) {
+        const tabItem = document.querySelector(`.nav-tab-item[data-id="${padId}"]`);
+        if (tabItem) {
+            const isActive = tabItem.classList.contains('active');
+            const allTabs = Array.from(document.querySelectorAll('.nav-tab-item'));
+            
+            if (isActive && allTabs.length > 1) {
+                const currentIndex = allTabs.indexOf(tabItem);
+                const nextTab = allTabs[currentIndex + 1] || allTabs[currentIndex - 1];
+                if (nextTab) {
+                    switchTab(null, nextTab.getAttribute('data-id'));
+                }
+            }
+            
+            if (allTabs.length > 1) {
+                tabItem.remove();
+                updateTabControls();
+            } else {
+                // If it was the last tab, it wouldn't be deleted by the server 
+                // but for UX we just clear it
+                editor.setValue('');
+                document.getElementById('padName').value = 'Draft';
+            }
+        }
+    }
 
     // Autosave logic
     lastSavedContent = editor.getValue();
