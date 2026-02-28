@@ -106,6 +106,13 @@ if ($action === 'add_todo' || $action === 'edit_todo') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Chyba při mazání.']);
     }
+} elseif ($action === 'empty_archive') {
+    global $conn;
+    if ($conn->query("DELETE FROM todos WHERE is_archived = 1")) {
+        echo json_encode(['status' => 'success', 'message' => 'Archiv vyčištěn.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Chyba při mazání archivu.']);
+    }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Neznámá akce.']);
 }

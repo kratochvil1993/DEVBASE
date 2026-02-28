@@ -7,22 +7,6 @@ if (getSetting('todos_enabled', '1') == '0') {
     exit;
 }
 
-// Handle Todo unarchive or delete
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
-    if ($_POST['action'] == 'unarchive_todo') {
-        archiveTodo($_POST['todo_id'], 0);
-        header('Location: todo.php?updated_id=' . $_POST['todo_id']);
-        exit;
-    } elseif ($_POST['action'] == 'delete_todo') {
-        deleteTodo($_POST['todo_id']);
-    } elseif ($_POST['action'] == 'empty_archive') {
-        global $conn;
-        $conn->query("DELETE FROM todos WHERE is_archived = 1");
-    }
-    header('Location: archive_todos.php');
-    exit;
-}
-
 $todos = getAllTodos(1); // 1 = archived
 
 include 'includes/header.php';
@@ -32,14 +16,11 @@ include 'includes/header.php';
     <div class="col-lg-8 mx-auto">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="text-white fw-bold mb-0">Archiv úkolů (TODO)</h2>
-            <?php if (!empty($todos)): ?>
-            <form method="POST" onsubmit="return confirm('Opravdu chcete VŠECHNY archivované úkoly trvale smazat?');">
-                <input type="hidden" name="action" value="empty_archive">
-                <button type="submit" class="btn btn-danger rounded px-4">
+            <div id="archiveActions" class="<?php echo empty($todos) ? 'd-none' : ''; ?>">
+                <button type="button" class="btn btn-danger rounded px-4" onclick="emptyTodoArchive()">
                     <i class="bi bi-trash-fill me-2"></i> Vysypat archiv
                 </button>
-            </form>
-            <?php endif; ?>
+            </div>
         </div>
 
         <?php
@@ -238,12 +219,63 @@ function deleteArchiveTodoItem(todoId, event) {
                 card.style.transform = 'scale(0.8)';
                 setTimeout(() => {
                     card.remove();
+                    checkEmptyArchive();
                 }, 300);
             }
         } else {
             alert(data.message);
         }
     });
+}
+
+function emptyTodoArchive() {
+    if (!confirm('Opravdu chcete VŠECHNY archivované úkoly trvale smazat?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'empty_archive');
+
+    fetch('api/api_todo_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const list = document.getElementById('todosList');
+            const items = list.querySelectorAll('.todo-item');
+            
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.transition = 'all 0.3s ease';
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.8)';
+                    setTimeout(() => item.remove(), 300);
+                }, index * 50);
+            });
+            
+            setTimeout(() => {
+                checkEmptyArchive();
+            }, (items.length * 50) + 350);
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function checkEmptyArchive() {
+    const list = document.getElementById('todosList');
+    if (list.querySelectorAll('.todo-item').length === 0) {
+        list.innerHTML = `
+            <div class="text-center text-white-50 py-5 glass-card mt-3">
+                <i class="bi bi-archive display-1 mb-3 d-block"></i>
+                <h3>Archiv je prázdný.</h3>
+                <p>Zatím jste žádné úkoly nevyřídili.</p>
+            </div>
+        `;
+        document.getElementById('archiveActions').classList.add('d-none');
+        const tagFilters = document.getElementById('tagFilters');
+        if (tagFilters) tagFilters.parentElement.remove();
+    }
 }
 </script>
 

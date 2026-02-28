@@ -7,30 +7,7 @@ if (getSetting('notes_enabled', '1') == '0') {
     exit;
 }
 
-// Handle Note addition, update or delete
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
-    $updated_id = '';
-    if ($_POST['action'] == 'add_note') {
-        $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
-        $id = !empty($_POST['note_id']) ? $_POST['note_id'] : null;
-        $is_locked = isset($_POST['is_locked']) ? 1 : 0;
-        $note_id = saveNote($_POST['title'], $_POST['content'], null, $tags, $id, $is_locked);
-        if ($note_id) $updated_id = $note_id;
-    } elseif ($_POST['action'] == 'delete_note') {
-        deleteNote($_POST['note_id']);
-    } elseif ($_POST['action'] == 'toggle_pin') {
-        toggleNotePin($_POST['note_id']);
-        $updated_id = $_POST['note_id'];
-    }
-    
-    $redirect_url = 'manage_notes.php';
-    if ($updated_id) {
-        $redirect_url .= '?updated_id=' . $updated_id;
-    }
-    header('Location: ' . $redirect_url);
-    exit;
-}
-
+// Fetch notes after potential background updates
 $currentSort = 'custom'; // Manage notes usually uses custom order
 $notes = getAllNotes($currentSort);
 $pinnedNotes = array_filter($notes, function($n) { return $n['is_pinned'] == 1; });
@@ -213,20 +190,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function openAddNoteManageModal() {
+    const modalEl = document.getElementById('addNoteModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    
     document.getElementById('noteModalTitle').innerText = 'Nová poznámka';
     document.getElementById('noteId').value = '';
-    document.getElementById('noteTitleInput').value = '';
-    document.getElementById('noteContentInput').value = '';
+    document.getElementById('noteForm').reset();
+    document.getElementById('noteSubmitBtn').innerText = 'Uložit poznámku';
+
     if (typeof quillManager !== 'undefined') {
         quillManager.root.innerHTML = '';
     }
-    document.getElementById('noteSubmitBtn').innerText = 'Uložit poznámku';
 
     const lockInput = document.getElementById('noteLockedInput');
     if (lockInput) lockInput.checked = false;
 
     const tagCheckboxes = document.querySelectorAll('#noteForm input[name="tags[]"]');
     tagCheckboxes.forEach(cb => cb.checked = false);
+    
+    modal.show();
 }
 
 function openEditNoteManageModal(note) {
@@ -692,45 +674,54 @@ function toggleManageNotePin(noteId, event) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            const row = document.getElementById('note-' + noteId);
-            if (row) {
-                const temp = document.createElement('tbody');
-                temp.innerHTML = data.html;
-                const newRow = temp.firstElementChild;
+            const oldRow = document.getElementById('note-' + noteId);
+            if (oldRow) {
+                oldRow.remove();
                 
-                const targetGridId = data.is_pinned ? 'manageNotesPinnedGrid' : 'manageNotesGrid';
-                const targetGrid = document.getElementById(targetGridId);
+                const pinnedGrid = document.getElementById('manageNotesPinnedGrid');
+                const othersGrid = document.getElementById('manageNotesGrid');
                 
-                row.remove();
-                if (targetGrid) {
-                    // Try to insert after section header if it exists
-                    const sectionHeader = targetGrid.querySelector('.section-header-row');
-                    if (sectionHeader && sectionHeader.nextSibling) {
-                        targetGrid.insertBefore(newRow, sectionHeader.nextSibling);
-                    } else {
-                        targetGrid.appendChild(newRow);
+                // Create pinned header if it doesn't exist and we are pinning
+                if (data.is_pinned && pinnedGrid && pinnedGrid.querySelectorAll('.section-header-row[data-section="pinned"]').length === 0) {
+                    pinnedGrid.insertAdjacentHTML('afterbegin', `
+                        <tr class="section-header-row" data-section="pinned" style="background: rgba(255,193,7,0.05);">
+                            <td colspan="5" class="px-4 py-2 border-bottom border-light border-opacity-10">
+                                <span class="text-warning small fw-bold"><i class="bi bi-pin-angle-fill me-2"></i>PŘIPNUTÉ</span>
+                            </td>
+                        </tr>
+                    `);
+                }
+
+                // Append the new row
+                if (data.is_pinned) {
+                    pinnedGrid.insertAdjacentHTML('beforeend', data.html);
+                } else {
+                    // If moving from pinned to others, we might need the "OSTATNÍ" header
+                    if (othersGrid.querySelectorAll('.section-header-row[data-section="others"]').length === 0 && pinnedGrid.querySelectorAll('.manage-note-row').length > 0) {
+                        othersGrid.insertAdjacentHTML('afterbegin', `
+                            <tr class="section-header-row" data-section="others" style="background: rgba(255,255,255,0.03);">
+                                <td colspan="5" class="px-4 py-2 border-bottom border-light border-opacity-10">
+                                    <span class="text-white-50 small fw-bold">OSTATNÍ</span>
+                                </td>
+                            </tr>
+                        `);
                     }
-                    
-                    newRow.style.transition = 'all 0.5s ease';
-                    newRow.style.backgroundColor = 'rgba(142, 84, 233, 0.2)';
-                    setTimeout(() => newRow.style.backgroundColor = '', 1000);
+                    othersGrid.insertAdjacentHTML('afterbegin', data.html);
                 }
                 
-                // Re-run filter logic to show/hide headers as necessary
-                if (typeof filterRows !== 'undefined') {
-                    // Slight timeout to let DOM settle
-                    setTimeout(() => {
-                        const searchInput = document.getElementById('manageNotesSearch');
-                        if (searchInput) searchInput.dispatchEvent(new Event('input'));
-                    }, 50);
+                const newRow = document.getElementById('note-' + noteId);
+                if (newRow) {
+                    newRow.classList.add('flash-purple');
+                    setTimeout(() => newRow.classList.remove('flash-purple'), 2000);
                 }
-            } else {
-                window.location.reload();
+                
+                updateEmptyStates();
             }
         } else {
             alert(data.message);
         }
-    });
+    })
+    .catch(error => console.error('Error:', error));
 }
 
 function deleteManageNote(noteId, event) {
@@ -751,23 +742,120 @@ function deleteManageNote(noteId, event) {
         if (data.status === 'success') {
             const row = document.getElementById('note-' + noteId);
             if (row) {
-                row.style.transition = 'all 0.3s ease';
                 row.style.opacity = '0';
-                row.style.transform = 'scale(0.95)';
+                row.style.transform = 'translateX(20px)';
+                row.style.transition = 'all 0.3s ease';
                 setTimeout(() => {
                     row.remove();
-                    // Trigger filter logic to hide/show section headers correctly
-                    setTimeout(() => {
-                        const searchInput = document.getElementById('manageNotesSearch');
-                        if (searchInput) searchInput.dispatchEvent(new Event('input'));
-                    }, 50);
+                    updateEmptyStates();
                 }, 300);
             }
         } else {
             alert(data.message);
         }
-    });
+    })
+    .catch(error => console.error('Error:', error));
 }
+
+function updateEmptyStates() {
+    const pinnedGrid = document.getElementById('manageNotesPinnedGrid');
+    const othersGrid = document.getElementById('manageNotesGrid');
+    
+    const pinnedRows = pinnedGrid ? pinnedGrid.querySelectorAll('.manage-note-row').length : 0;
+    const otherRows  = othersGrid ? othersGrid.querySelectorAll('.manage-note-row').length : 0;
+    
+    // Toggle pinned section header
+    const pinnedHeader = document.querySelector('.section-header-row[data-section="pinned"]');
+    if (pinnedHeader) pinnedHeader.style.display = pinnedRows > 0 ? '' : 'none';
+    
+    // Toggle others section header
+    const othersHeader = document.querySelector('.section-header-row[data-section="others"]');
+    if (othersHeader) othersHeader.style.display = (pinnedRows > 0 && otherRows > 0) ? '' : 'none';
+    
+    // If absolutely no notes
+    if (pinnedRows === 0 && otherRows === 0) {
+        othersGrid.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center text-white-50 py-5">
+                    <i class="bi bi-journal-x fs-2 mb-3 d-block"></i>
+                    Zatím nemáte žádné poznámky
+                </td>
+            </tr>
+        `;
+    } else {
+        // Remove empty message if it exists
+        const emptyMsg = othersGrid.querySelector('td[colspan="5"].text-center');
+        if (emptyMsg && emptyMsg.parentElement) emptyMsg.parentElement.remove();
+    }
+}
+
+// Handle Form Submission
+document.addEventListener('DOMContentLoaded', function() {
+    const noteForm = document.getElementById('noteForm');
+    if (noteForm) {
+        noteForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // First update the hidden input from Quill
+            if (typeof quillManager !== 'undefined') {
+                document.getElementById('noteContentInput').value = quillManager.root.innerHTML;
+            }
+            
+            const form = this;
+            const formData = new FormData(form);
+            const submitBtn = document.getElementById('noteSubmitBtn');
+            const originalText = submitBtn.innerText;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Ukládám...';
+            
+            // In notes API, add_note handles both add and edit if note_id is provided
+            formData.set('action', 'add_note');
+            formData.append('template', 'manage_row');
+
+            fetch('api/api_note_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addNoteModal'));
+                    if (modal) modal.hide();
+                    
+                    const noteId = data.id;
+                    const existingRow = document.getElementById('note-' + noteId);
+                    
+                    if (existingRow) {
+                        existingRow.outerHTML = data.html;
+                    } else {
+                        const grid = data.is_pinned ? document.getElementById('manageNotesPinnedGrid') : document.getElementById('manageNotesGrid');
+                        grid.insertAdjacentHTML('beforeend', data.html); // Add to end for manage page consistency
+                    }
+                    
+                    const newRow = document.getElementById('note-' + noteId);
+                    if (newRow) {
+                        newRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        newRow.classList.add('flash-purple');
+                        setTimeout(() => newRow.classList.remove('flash-purple'), 2000);
+                    }
+                    
+                    updateEmptyStates();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Chyba při komunikaci se serverem.');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalText;
+            });
+        });
+    }
+});
 </script>
 
 <?php include 'includes/footer.php'; ?>

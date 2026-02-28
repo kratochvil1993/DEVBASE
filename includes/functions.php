@@ -271,6 +271,21 @@ function getAllNotes($sort = 'custom', $archive_status = 0) {
     return $notes;
 }
 
+function getNote($id) {
+    global $conn;
+    $id = (int)$id;
+    $sql = "SELECT n.*, l.name as language_name, l.prism_class 
+            FROM notes n
+            LEFT JOIN languages l ON n.language_id = l.id
+            WHERE n.id = $id";
+    $result = $conn->query($sql);
+    if ($row = $result->fetch_assoc()) {
+        $row['tags'] = getNoteTags($row['id']);
+        return $row;
+    }
+    return null;
+}
+
 function archiveNote($id, $status = 1) {
     global $conn;
     $id = (int)$id;

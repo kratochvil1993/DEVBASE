@@ -7,30 +7,7 @@ if (getSetting('notes_enabled', '1') == '0') {
     exit;
 }
 
-// Handle Note addition, update or delete
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
-    if ($_POST['action'] == 'add_note') {
-        $id = !empty($_POST['note_id']) ? $_POST['note_id'] : null;
-        $tags = isset($_POST['tags']) ? $_POST['tags'] : [];
-        $is_locked = isset($_POST['is_locked']) ? 1 : 0;
-        $saved_id = saveNote($_POST['title'], $_POST['content'], null, $tags, $id, $is_locked);
-        if ($saved_id) {
-            $sortParam = isset($_GET['sort']) ? '&sort=' . $_GET['sort'] : '';
-            header('Location: archive_notes.php?updated_id=' . $saved_id . $sortParam);
-            exit;
-        }
-    } elseif ($_POST['action'] == 'delete_note') {
-        deleteNote($_POST['note_id']);
-    } elseif ($_POST['action'] == 'unarchive_note') {
-        archiveNote($_POST['note_id'], 0);
-        header('Location: notes.php?updated_id=' . $_POST['note_id']);
-        exit;
-    }
-    $sortParam = isset($_GET['sort']) ? '?sort=' . $_GET['sort'] : '';
-    header('Location: archive_notes.php' . $sortParam);
-    exit;
-}
-
+// Fetch notes
 $currentSort = isset($_GET['sort']) ? $_GET['sort'] : 'custom';
 $notes = getAllNotes($currentSort, 1);
 $languages = getAllLanguages();
@@ -149,20 +126,16 @@ include 'includes/header.php';
                                         title="Upravit">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <form method="POST" class="d-inline" title="Obnovit z archivu">
-                                    <input type="hidden" name="action" value="unarchive_note">
-                                    <input type="hidden" name="note_id" value="<?php echo $note['id']; ?>">
-                                    <button type="submit" class="btn btn-sm btn-link text-success p-0">
-                                        <i class="bi bi-arrow-counterclockwise"></i>
-                                    </button>
-                                </form>
-                                <form method="POST" class="d-inline" onsubmit="return confirm('Opravdu chcete tuto poznámku smazat?');">
-                                    <input type="hidden" name="action" value="delete_note">
-                                    <input type="hidden" name="note_id" value="<?php echo $note['id']; ?>">
-                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Smazat">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-sm btn-link text-success p-0" 
+                                        onclick="unarchiveNote(<?php echo $note['id']; ?>, event)"
+                                        title="Obnovit z archivu">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-link text-danger p-0" 
+                                        onclick="deleteNoteAjax(<?php echo $note['id']; ?>, event)"
+                                        title="Smazat">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </div>
                         </div>
                         <div class="card-text text-white-50 small mb-0 quill-preview">
@@ -300,52 +273,145 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.getElementById('noteForm').addEventListener('submit', function() {
+    document.getElementById('noteForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
         if (quill) {
             document.getElementById('noteContentInput').value = quill.root.innerHTML;
         }
+
+        const formData = new FormData(this);
+        const submitBtn = document.getElementById('noteSubmitBtn');
+        const originalBtnHtml = submitBtn.innerHTML;
+        const noteId = document.getElementById('noteId').value;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Ukládám...';
+
+        fetch('api/api_note_handler.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const modalEl = document.getElementById('noteModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+
+                if (noteId) {
+                    const existingCard = document.getElementById('note-card-' + noteId);
+                    if (existingCard) {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data.html;
+                        const newCard = temp.firstElementChild;
+                        existingCard.replaceWith(newCard);
+                        
+                        const innerCard = newCard.querySelector('.note-card');
+                        if (innerCard) {
+                            innerCard.classList.add('flash-purple');
+                            setTimeout(() => innerCard.classList.remove('flash-purple'), 2000);
+                        }
+                    } else {
+                        window.location.reload();
+                    }
+                }
+                filterNotes();
+            } else {
+                alert('Chyba: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Nastala chyba při ukládání.');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
+        });
     });
 });
 
-function toggleSortingMode() {
-    isSortingMode = !isSortingMode;
-    const grid = document.getElementById('notesGrid');
-    const editBtn = document.getElementById('editOrderBtn');
-    const saveBtn = document.getElementById('saveOrderBtn');
-    const newNoteBtn = document.getElementById('newNoteBtn');
-    const sortDropdown = document.getElementById('sortDropdownContainer');
-    const deleteBtnWrappers = document.querySelectorAll('.delete-btn-wrapper');
+function unarchiveNote(noteId, event) {
+    if (event) event.stopPropagation();
+    
+    const formData = new FormData();
+    formData.append('action', 'archive_note'); // Passing 0 for status to unarchive
+    formData.append('note_id', noteId);
+    formData.append('status', '0');
 
-    if (isSortingMode) {
-        grid.classList.add('sorting-mode');
-        editBtn.classList.add('d-none');
-        saveBtn.classList.remove('d-none');
-        newNoteBtn.classList.add('opacity-50', 'pe-none');
-        sortDropdown.classList.add('opacity-50', 'pe-none');
-        deleteBtnWrappers.forEach(el => el.classList.add('d-none'));
-
-        sortable = new Sortable(grid, {
-            animation: 150,
-            ghostClass: 'glass-card-moving',
-            onEnd: function() {
-                saveOrder();
+    // api_note_handler uses archiveNote($id, 1) currently, let's check if it supports status
+    // Wait, let's check api_note_handler.php again
+    
+    fetch('api/api_note_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const card = document.getElementById('note-card-' + noteId);
+            if (card) {
+                card.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(-20px) scale(0.9)';
+                setTimeout(() => {
+                    card.remove();
+                    if (document.querySelectorAll('.note-item').length === 0) {
+                        const grid = document.getElementById('notesGrid');
+                        grid.innerHTML = `
+                            <div class="col-12 text-center text-white-50 py-5">
+                                <i class="bi bi-archive display-1 mb-3 d-block"></i>
+                                <h3>Žádné poznámky v archivu.</h3>
+                            </div>
+                        `;
+                    }
+                }, 400);
             }
-        });
-    } else {
-        grid.classList.remove('sorting-mode');
-        editBtn.classList.remove('d-none');
-        saveBtn.classList.add('d-none');
-        newNoteBtn.classList.remove('opacity-50', 'pe-none');
-        sortDropdown.classList.remove('opacity-50', 'pe-none');
-        deleteBtnWrappers.forEach(el => el.classList.remove('d-none'));
-
-        if (sortable) {
-            sortable.destroy();
-            sortable = null;
+        } else {
+            alert(data.message);
         }
-        
-        window.location.href = 'notes.php?sort=custom';
-    }
+    });
+}
+
+function deleteNoteAjax(noteId, event) {
+    if (event) event.stopPropagation();
+    
+    if (!confirm('Opravdu chcete tuto poznámku nenávratně smazat?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'delete_note');
+    formData.append('note_id', noteId);
+
+    fetch('api/api_note_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const card = document.getElementById('note-card-' + noteId);
+            if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    card.remove();
+                    if (document.querySelectorAll('.note-item').length === 0) {
+                        const grid = document.getElementById('notesGrid');
+                        grid.innerHTML = `
+                            <div class="col-12 text-center text-white-50 py-5">
+                                <i class="bi bi-archive display-1 mb-3 d-block"></i>
+                                <h3>Žádné poznámky v archivu.</h3>
+                            </div>
+                        `;
+                    }
+                }, 300);
+            }
+        } else {
+            alert(data.message);
+        }
+    });
 }
 
 function saveOrder() {

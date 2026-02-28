@@ -26,15 +26,7 @@ if ($action === 'add_note') {
     $saved_id = saveNote($title, $content, null, $tags, $id, $is_locked);
 
     if ($saved_id) {
-        // Fetch all notes to find the updated/added one
-        $notes = getAllNotes('custom');
-        $note = null;
-        foreach ($notes as $n) {
-            if ($n['id'] == $saved_id) {
-                $note = $n;
-                break;
-            }
-        }
+        $note = getNote($saved_id);
 
         if ($note) {
             ob_start();
@@ -66,15 +58,7 @@ if ($action === 'add_note') {
 } elseif ($action === 'toggle_pin') {
     $id = $_POST['note_id'] ?? null;
     if ($id && toggleNotePin($id)) {
-        // Fetch the updated note
-        $notes = getAllNotes('custom');
-        $note = null;
-        foreach ($notes as $n) {
-            if ($n['id'] == $id) {
-                $note = $n;
-                break;
-            }
-        }
+        $note = getNote($id);
 
         if ($note) {
             ob_start();
@@ -104,10 +88,12 @@ if ($action === 'add_note') {
     }
 } elseif ($action === 'archive_note') {
     $id = $_POST['note_id'] ?? null;
-    if ($id && archiveNote($id, 1)) {
-        echo json_encode(['status' => 'success', 'message' => 'Poznámka archivována.']);
+    $status = isset($_POST['status']) ? (int)$_POST['status'] : 1;
+    if ($id && archiveNote($id, $status)) {
+        $msg = $status ? 'Poznámka archivována.' : 'Poznámka byla obnovena z archivu.';
+        echo json_encode(['status' => 'success', 'message' => $msg]);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Chyba při archivaci.']);
+        echo json_encode(['status' => 'error', 'message' => 'Chyba při (de)archivaci.']);
     }
 } elseif ($action === 'delete_note') {
     $id = $_POST['note_id'] ?? null;
