@@ -174,8 +174,8 @@ include 'includes/header.php';
                 <div id="aiInsightContent" class="text-white small lh-base" style="max-height: 400px; overflow-y: auto; white-space: pre-wrap;"></div>
             </div>
 
-            <div class="editor-container border border-light border-opacity-10 rounded-bottom overflow-hidden shadow-lg" style="border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; background: rgba(40, 42, 54, 0.6);">
-                <div id="quillMainEditor" style="height: 60vh; border: none; color: white;"></div>
+            <div class="editor-container border border-light border-opacity-10 rounded-bottom overflow-hidden shadow-lg" style="border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; background: #282a36;">
+                <div id="quillMainEditor" style="height: 60vh; border: none; color: white; background: #282a36;"></div>
             </div>
             
             <div class="mt-3 d-flex justify-content-between align-items-center text-white-50 small">
@@ -268,15 +268,17 @@ include 'includes/header.php';
 .ql-toolbar.ql-snow {
     border: none !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-    background: rgba(0, 0, 0, 0.2);
+    background: #20222b; /* Slightly darker than editor for contrast */
 }
 .ql-container.ql-snow {
     border: none !important;
     font-family: 'Inter', sans-serif;
     font-size: 16px;
+    background: #282a36;
 }
 .ql-editor {
     padding: 20px;
+    background: #282a36;
 }
 .ql-editor.ql-blank::before {
     color: rgba(255, 255, 255, 0.3) !important;
@@ -352,7 +354,7 @@ include 'includes/header.php';
                         </div>
                         <div class="col-12">
                             <label class="form-label text-white-50 small">Obsah</label>
-                            <div id="modalQuillEditor" style="height: 300px; background: transparent; color: white;"></div>
+                            <div id="modalQuillEditor" style="height: 300px; background: #282a36; color: white;"></div>
                             <input type="hidden" name="content" id="noteContentInput">
                         </div>
                         <div class="col-12">
