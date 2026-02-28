@@ -353,8 +353,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                         
                         updateNoteUIState();
-                        newCard.classList.add('flash-purple');
-                        setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                        filterNotes();
+                        const innerCard = newCard.querySelector('.note-card');
+                        if (innerCard) {
+                            innerCard.classList.add('flash-purple');
+                            setTimeout(() => innerCard.classList.remove('flash-purple'), 2000);
+                        }
                     } else {
                         window.location.reload();
                     }
@@ -383,8 +387,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
 
                         updateNoteUIState();
-                        newCard.classList.add('flash-purple');
-                        setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                        filterNotes();
+                        const innerCard = newCard.querySelector('.note-card');
+                        if (innerCard) {
+                            innerCard.classList.add('flash-purple');
+                            setTimeout(() => innerCard.classList.remove('flash-purple'), 2000);
+                        }
                     } else {
                         window.location.reload();
                     }
@@ -522,8 +530,12 @@ function toggleNotePin(noteId, event) {
                 existingCard.remove();
                 if (targetGrid) {
                     targetGrid.prepend(newCard);
-                    newCard.classList.add('flash-purple');
-                    setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                    filterNotes();
+                    const innerCard = newCard.querySelector('.note-card');
+                    if (innerCard) {
+                        innerCard.classList.add('flash-purple');
+                        setTimeout(() => innerCard.classList.remove('flash-purple'), 2000);
+                    }
                 }
                 
                 updateNoteUIState();
