@@ -1,6 +1,45 @@
 <?php
 require_once 'includes/functions.php';
 
+// Handle standard POST actions (Import/Export/Languages)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $section = '';
+    
+    if ($_POST['action'] == 'save_language') {
+        $id = !empty($_POST['id']) ? $_POST['id'] : null;
+        saveLanguage($_POST['name'], $_POST['prism_class'], $id);
+        $section = "section-languages";
+        header('Location: settings.php#' . $section);
+        exit;
+    } elseif ($_POST['action'] == 'delete_language') {
+        deleteLanguage($_POST['id']);
+        $section = "section-languages";
+        header('Location: settings.php#' . $section);
+        exit;
+    } elseif ($_POST['action'] == 'export_data') {
+        $data = exportAllData();
+        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $filename = 'devbase_export_' . date('Y-m-d') . '.json';
+        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Disposition: attachment; filename=' . $filename);
+        echo $json;
+        exit;
+    } elseif ($_POST['action'] == 'import_data') {
+        if (isset($_FILES['import_file']) && $_FILES['import_file']['error'] == 0) {
+            $json = file_get_contents($_FILES['import_file']['tmp_name']);
+            $data = json_decode($json, true);
+            $mode = $_POST['import_mode'] ?? 'append';
+            if ($data) {
+                importAllData($data, $mode);
+                header('Location: settings.php?import=success#section-backup');
+                exit;
+            }
+        }
+        header('Location: settings.php?import=error#section-backup');
+        exit;
+    }
+}
+
 $snippetsEnabled = getSetting('snippets_enabled', '1');
 $notesEnabled = getSetting('notes_enabled', '1');
 $todosEnabled = getSetting('todos_enabled', '1');

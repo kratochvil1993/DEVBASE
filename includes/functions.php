@@ -787,12 +787,13 @@ function importAllData($data, $mode = 'append') {
         foreach ($data['scratchpads'] as $pad) {
             $name = $conn->real_escape_string($pad['name']);
             $content = $conn->real_escape_string($pad['content']);
+            $type = $conn->real_escape_string($pad['type'] ?? 'code');
             
-            $check = $conn->query("SELECT id FROM scratchpads WHERE name = '$name'");
+            $check = $conn->query("SELECT id FROM scratchpads WHERE name = '$name' AND type = '$type'");
             if ($row = $check->fetch_assoc()) {
-                $conn->query("UPDATE scratchpads SET content = '$content' WHERE name = '$name'");
+                $conn->query("UPDATE scratchpads SET content = '$content' WHERE id = " . $row['id']);
             } else {
-                $conn->query("INSERT INTO scratchpads (name, content) VALUES ('$name', '$content')");
+                $conn->query("INSERT INTO scratchpads (name, content, type) VALUES ('$name', '$content', '$type')");
             }
         }
     }
