@@ -33,20 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
             header("Location: notes_drafts.php?id=$id&saved=1");
             exit;
         }
-    } elseif ($_POST['action'] == 'move_to_notes') {
-        $title = $_POST['title'] ?? '';
-        $content = $_POST['content'] ?? '';
-        $tags = $_POST['tags'] ?? [];
-        $scratchpad_id = $_POST['scratchpad_id'] ?? null;
-        
-        if ($title && $content && $scratchpad_id) {
-            $saved_id = saveNote($title, $content, null, $tags);
-            if ($saved_id) {
-                deleteScratchpad($scratchpad_id);
-                header("Location: notes_drafts.php?note_moved=1");
-                exit;
-            }
-        }
     }
 }
 
@@ -681,10 +667,74 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.getElementById('addToNotesForm').addEventListener('submit', function() {
+    document.getElementById('addToNotesForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const form = this;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addToNotesModal'));
+        const scratchpad_id = document.getElementById('modalNoteScratchpadId').value;
+        const moveToast = document.getElementById('moveToast');
+        
         if (modalQuill) {
             document.getElementById('noteContentInput').value = modalQuill.root.innerHTML;
         }
+
+        const formData = new FormData(form);
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Odesílám...';
+
+        fetch('api/api_note_handler.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                modal.hide();
+                
+                // Show toast
+                if (moveToast) {
+                    moveToast.classList.replace('d-none', 'd-flex');
+                    moveToast.style.animation = 'none';
+                    void moveToast.offsetWidth;
+                    moveToast.style.animation = 'fadeOut 3s forwards';
+                    setTimeout(() => moveToast.classList.replace('d-flex', 'd-none'), 3000);
+                }
+
+                // If successful, remove the tab and switch to another
+                const tabItem = document.querySelector(`.nav-tab-item[data-id="${scratchpad_id}"]`);
+                if (tabItem) {
+                    // Try to find another tab to switch to
+                    let nextTab = tabItem.nextElementSibling;
+                    if (!nextTab || !nextTab.classList.contains('nav-tab-item')) {
+                        nextTab = tabItem.previousElementSibling;
+                    }
+                    
+                    tabItem.remove();
+                    updateTabControls();
+                    
+                    if (nextTab && nextTab.classList.contains('nav-tab-item')) {
+                        const nextId = nextTab.getAttribute('data-id');
+                        switchTab(null, nextId);
+                    } else {
+                        // No more tabs, reload or add a new one? For now let's just reload to get the initial state
+                        window.location.href = 'notes_drafts.php';
+                    }
+                }
+            } else {
+                alert(data.message || 'Chyba při přesunu draftu.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Chyba při komunikaci se serverem.');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Vytvořit poznámku a smazat draft';
+        });
     });
 
     // Autosave logic

@@ -116,6 +116,23 @@ if ($action === 'add_note') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Chyba při mazání.']);
     }
+} elseif ($action === 'move_to_notes') {
+    $title = $_POST['title'] ?? '';
+    $content = $_POST['content'] ?? '';
+    $tags = isset($_POST['tags']) ? (array)$_POST['tags'] : [];
+    $scratchpad_id = $_POST['scratchpad_id'] ?? null;
+    
+    if ($title && $content && $scratchpad_id) {
+        $saved_id = saveNote($title, $content, null, $tags);
+        if ($saved_id) {
+            deleteScratchpad($scratchpad_id);
+            echo json_encode(['status' => 'success', 'message' => 'Poznámka byla vytvořena a draft smazán.']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Nepodařilo se uložit poznámku.']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Chybějící data.']);
+    }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Neznámá akce.']);
 }
