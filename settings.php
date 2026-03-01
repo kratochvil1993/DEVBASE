@@ -473,13 +473,13 @@ include 'includes/header.php';
                     <label class="form-label text-white-50 small fw-bold">Model Gemini</label>
                     <select name="gemini_model" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
                         <?php 
-                        $currentModel = getSetting('gemini_model', 'gemini-3.1-flash');
+                        $currentModel = getSetting('gemini_model', 'gemini-2.5-flash-lite');
                         $models = [
-                            'gemini-3.1-flash' => 'Gemini 3.1 Flash (Výchozí)',
-                            'gemini-3.1-pro' => 'Gemini 3.1 Pro',
-                            'gemini-3-flash' => 'Gemini 3 Flash',
-                            'gemini-3-pro' => 'Gemini 3 Pro',
-                            'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash Lite',
+                            'gemini-flash-latest' => 'Gemini Flash (Aktuální verze)',
+                            'gemini-3.1-pro-preview' => 'Gemini 3.1 Pro (Preview)',
+                            'gemini-3-pro-preview' => 'Gemini 3 Pro (Preview)',
+                            'gemini-3-flash-preview' => 'Gemini 3 Flash (Preview)',
+                            'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash Lite (Výchozí)',
                             'gemini-2.5-flash' => 'Gemini 2.5 Flash',
                             'gemini-2.5-pro' => 'Gemini 2.5 Pro',
                         ];
