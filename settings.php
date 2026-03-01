@@ -419,14 +419,32 @@ include 'includes/header.php';
         </div>
     </div>
 
-    <!-- AI Provider Selection -->
     <div class="col-12 mb-4 settings-section" id="section-ai">
+        <div class="glass-card no-jump p-3 border-primary border-opacity-10 mb-3">
+             <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                        <i class="bi bi-robot text-primary fs-5"></i>
+                    </div>
+                    <div>
+                        <label class="text-white fw-bold mb-0 d-block">Povolit AI funkce</label>
+                        <small class="text-white-50">Zobrazit nebo skrýt všechna AI tlačítka napříč aplikací.</small>
+                    </div>
+                </div>
+                <div class="form-check form-switch ms-md-auto">
+                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="ai_enabled" id="aiEnabledToggle" 
+                           <?php echo getSetting('ai_enabled', '1') == '1' ? 'checked' : ''; ?>
+                           onchange="updateGeneralSetting('ai_enabled', this.checked)">
+                </div>
+            </div>
+        </div>
+
         <div class="glass-card no-jump p-3 border-primary border-opacity-10">
             <form method="POST" class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                 <input type="hidden" name="action" value="save_ai_provider">
                 <div class="d-flex align-items-center">
                     <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
-                        <i class="bi bi-robot text-primary fs-5"></i>
+                        <i class="bi bi-cpu text-primary fs-5"></i>
                     </div>
                     <div>
                         <label class="text-white fw-bold mb-0 d-block">Výchozí AI poskytovatel</label>

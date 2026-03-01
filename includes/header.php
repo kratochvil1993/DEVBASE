@@ -162,11 +162,14 @@ $stats = getGlobalStats();
         </div>
         <?php endif; ?>
         <?php 
-        $hasAiKey = !empty(getSetting('gemini_api_key'));
+        $aiEnabled = getSetting('ai_enabled', '1') == '1';
+        $hasAiKey = !empty(getSetting('gemini_api_key')) || !empty(getSetting('openai_api_key'));
+        if ($aiEnabled && $hasAiKey): 
         ?>
-        <a href="settings.php" class="btn btn-sm btn-link <?php echo $hasAiKey ? 'text-ai' : 'text-white-50'; ?> p-0" title="<?php echo $hasAiKey ? 'AI Configured' : 'AI not configured'; ?>">
+        <a href="settings.php" class="btn btn-sm btn-link text-ai p-0" title="AI Configured">
             <i class="bi bi-robot fs-5"></i>
         </a>
+        <?php endif; ?>
         <?php if (getSetting('security_enabled', '0') == '1'): ?>
                 <a href="?lock=1" class="btn btn-sm btn-link text-white-50 p-0" title="Lock App">
                     <i class="bi bi-lock-fill fs-5"></i>

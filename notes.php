@@ -14,6 +14,7 @@ $otherNotes = array_filter($notes, function($n) { return $n['is_pinned'] == 0; }
 $languages = getAllLanguages();
 $allNoteTags = getAllTags('note');
 $geminiApiKey = getSetting('gemini_api_key');
+$aiEnabled = getSetting('ai_enabled', '1') == '1' && (!empty($geminiApiKey) || !empty(getSetting('openai_api_key')));
 
 // Identify used tags for filtering
 $usedTags = [];
@@ -154,7 +155,7 @@ include 'includes/header.php';
                     <div id="viewNoteTags" class="d-flex gap-1 flex-wrap"></div>
                 </div>
                 
-                <?php if (!empty($geminiApiKey)): ?>
+                <?php if ($aiEnabled): ?>
                 <div class="dropdown ms-auto me-2">
                     <button class="btn btn-sm btn-ai rounded px-3 dropdown-toggle shadow-none border-opacity-25" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="aiNoteBtn">
                         <i class="bi bi-robot me-1"></i> AI
@@ -177,7 +178,7 @@ include 'includes/header.php';
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-0">
-                <?php if (!empty($geminiApiKey)): ?>
+                <?php if ($aiEnabled): ?>
                 <!-- AI Insight Box for Notes -->
                 <div id="aiNoteInsightBox" class="m-3 p-3 rounded-3 d-none" style="background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(142, 84, 233, 0.5); backdrop-filter: blur(5px);">
                     <div class="d-flex align-items-center mb-2">
@@ -227,7 +228,7 @@ include 'includes/header.php';
                         <div class="col-md-9">
                             <div class="d-flex justify-content-between align-items-end mb-1">
                                 <label class="form-label text-white-50 small mb-0">Název</label>
-                                <?php if (!empty($geminiApiKey)): ?>
+                                <?php if ($aiEnabled): ?>
                                 <button type="button" class="btn btn-sm btn-ai-action" onclick="generateAiNoteTitle()" title="Generovat název">
                                     <i class="bi bi-magic me-1"></i> AI
                                 </button>

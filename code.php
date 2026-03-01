@@ -72,6 +72,8 @@ $pad_name = $active_pad ? $active_pad['name'] : 'Draft';
 $allNoteTags = getAllTags('note');
 $allSnippetTags = getAllTags('snippet');
 $languages = getAllLanguages();
+$geminiApiKey = getSetting('gemini_api_key');
+$aiEnabled = getSetting('ai_enabled', '1') == '1' && (!empty($geminiApiKey) || !empty(getSetting('openai_api_key')));
 
 include 'includes/header.php';
 ?>
@@ -114,7 +116,7 @@ include 'includes/header.php';
                             <i class="bi bi-code-square me-1"></i> Přesunuto do snippetů!
                         </div>
                     <?php endif; ?>
-                    <?php if (getSetting('gemini_api_key')): ?>
+                    <?php if ($aiEnabled): ?>
                     <div class="dropdown">
                         <button class="btn btn-ai px-3 dropdown-toggle text-white border-opacity-25 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="aiCodeBtn">
                             <i class="bi bi-robot me-1"></i> AI
@@ -177,6 +179,7 @@ include 'includes/header.php';
                 </button>
             </div>
 
+            <?php if ($aiEnabled): ?>
             <!-- AI Insight Box -->
             <div id="aiInsightBox" class="p-3 rounded-0 border-start border-end d-none" style="background: rgba(10, 10, 15, 0.6); border-color: rgba(142, 84, 233, 0.3) !important; backdrop-filter: blur(5px);">
                 <div class="d-flex align-items-center mb-2">
@@ -186,6 +189,7 @@ include 'includes/header.php';
                 </div>
                 <div id="aiInsightContent" class="text-white small lh-base" style="max-height: 400px; overflow-y: auto; white-space: pre-wrap;"></div>
             </div>
+            <?php endif; ?>
 
             <div class="editor-container border border-light border-opacity-10 rounded-bottom overflow-hidden shadow-lg" style="border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;">
                 <textarea id="codeEditor"><?php echo htmlspecialchars($content); ?></textarea>
@@ -517,7 +521,7 @@ li.CodeMirror-hint-active {
                         <div class="col-md-12">
                             <div class="d-flex justify-content-between align-items-end mb-1">
                                 <label class="form-label text-white-50 small mb-0">Název snippetu</label>
-                                <?php if (getSetting('gemini_api_key')): ?>
+                                <?php if ($aiEnabled): ?>
                                 <button type="button" class="btn btn-sm btn-ai-action" onclick="generateAiField('generate_title', 'snippetTitleInput')" title="Generovat název">
                                     <i class="bi bi-magic me-1"></i> AI
                                 </button>
@@ -528,7 +532,7 @@ li.CodeMirror-hint-active {
                         <div class="col-md-9">
                             <div class="d-flex justify-content-between align-items-end mb-1">
                                 <label class="form-label text-white-50 small mb-0">Popis</label>
-                                <?php if (getSetting('gemini_api_key')): ?>
+                                <?php if ($aiEnabled): ?>
                                 <button type="button" class="btn btn-sm btn-ai-action" onclick="generateAiField('generate_description', 'snippetDescriptionInput')" title="Generovat popis">
                                     <i class="bi bi-magic me-1"></i> AI
                                 </button>

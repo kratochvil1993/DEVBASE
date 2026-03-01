@@ -8,6 +8,7 @@ $otherSnippets = array_filter($snippets, function($s) { return ($s['is_pinned'] 
 $tags = getAllTags();
 $languages = getAllLanguages();
 $geminiApiKey = getSetting('gemini_api_key');
+$aiEnabled = getSetting('ai_enabled', '1') == '1' && (!empty($geminiApiKey) || !empty(getSetting('openai_api_key')));
 
 include 'includes/header.php';
 ?>
@@ -630,7 +631,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="col-12">
                             <div class="d-flex justify-content-between align-items-end mb-1">
                                 <label class="form-label text-white-50 small mb-0">Název</label>
-                                <?php if (!empty($geminiApiKey)): ?>
+                                <?php if ($aiEnabled): ?>
                                 <button type="button" class="btn btn-sm btn-ai-action" onclick="generateAiField('generate_title', 'snippetTitleInput')" title="Generovat název">
                                     <i class="bi bi-magic me-1"></i> AI
                                 </button>
@@ -643,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="col-md-9">
                             <div class="d-flex justify-content-between align-items-end mb-1">
                                 <label class="form-label text-white-50 small mb-0">Popis</label>
-                                <?php if (!empty($geminiApiKey)): ?>
+                                <?php if ($aiEnabled): ?>
                                 <button type="button" class="btn btn-sm btn-ai-action" onclick="generateAiField('generate_description', 'snippetDescriptionInput')" title="Generovat popis">
                                     <i class="bi bi-magic me-1"></i> AI
                                 </button>
