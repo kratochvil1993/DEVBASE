@@ -133,7 +133,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Statistiky v menu:</strong>
-                    V bočním panelu najdete bleskový přehled počtu snippetů, poznámek a **aktivních** úkolů. Grafika karet je nyní statická pro nerušené čtení.
+                    V bočním panelu najdete bleskový přehled počtu snippetů, poznámek a **aktivních** úkolů, včetně počtu rozpracovaných kódových a textových draftů.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Persistence vzhledu:</strong>
@@ -234,7 +234,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">AI nástroje v editoru:</strong>
-                    Přímo v horní liště editoru najdete AI menu, které vám umožní označený nebo celý kód **Vysvětlit**, **Refaktorovat** (přepsat čistěji) nebo spustit **Debugger**, který se pokusí najít a opravit chyby.
+                    Přímo v horní liště editoru najdete AI menu, které vám umožní označený nebo celý kód **Vysvětlit**, **Refaktorovat**, spustit **Debugger** nebo kód automaticky **Zformátovat** (Beautify / Minify) pro lepší přehlednost.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Klávesové zkratky (v sekci Code Drafts):</strong>
@@ -264,7 +264,11 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Přesun do Poznámek a kopírování:</strong>
-                    Pomocí tlačítka <i class="bi bi-send me-1"></i> **Poslat do** můžete rozpracovaný draft kdykoliv převést na trvalou položku v sekci **Poznámky** (včetně výběru štítků). Pokud potřebujete text jen rychle dostat jinam, využijte tlačítko <i class="bi bi-clipboard me-1"></i> **Kopírovat**, které okamžitě uloží celý obsah draftu do vaší schránky.
+                    Pomocí tlačítka <i class="bi bi-send me-1"></i> **Poslat do** můžete rozpracovaný draft kdykoliv převést na trvalou položku v sekci **Poznámky** (včetně výběru štítků). Pokud potřebujete text jen rychle dostat jinam, využijte tlačítko <i class="bi bi-clipboard me-1"></i> **Kopírovat**.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">AI Nástroje a Vlastní prompt:</strong>
+                    V Note Drafts jsou k dispozici pokročilé AI funkce pro strukturování textu nebo extrakci úkolů. Unikátní funkcí je **AI Prompt Bar**, který vyvoláte z AI menu. Umožní vám zadat AI libovolnou instrukci (např. "přelož do angličtiny" nebo "přepiš jako formální dopis") a AI ji provede přímo s vaším textem.
                 </li>
             </ul>
         </div>
@@ -342,6 +346,10 @@ console.log('Hello World');
                     <strong class="text-white d-block">Systém upozornění (Notifikace):</strong>
                     V pravé části horní navigace se nachází **ikona zvonečku**, která vás upozorní na úkoly s vypršeným nebo blížícím se termínem. Ikona obsahuje badge s počtem připomínek. Červená barva a pulzování značí úkoly po termínu, oranžová pak úkoly zítřejší. Kliknutím na zvoneček otevřete rychlý přehled s přímými odkazy na konkrétní úkoly.
                 </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">AI Bojový plán (Strategický souhrn):</strong>
+                    Pokud máte aktivní AI, v sekci TODO najdete fialové tlačítko **AI Souhrn**. AI analyzuje všechny vaše aktivní úkoly, jejich priority (připnutí) a termíny splnění, a sestaví vám přehledný strategický plán, jak úkoly nejlépe odbavit.
+                </li>
             </ul>
         </div>
 
@@ -369,6 +377,14 @@ console.log('Hello World');
                         <li><strong>Kontrola pravopisu:</strong> Provede revizi českého textu a upozorní na chyby nebo navrhne lepší stylistiku.</li>
                         <li><strong>Extrahovat úkoly:</strong> AI projde text a automaticky z něj vytvoří seznam TODO úkolů, které si můžete uložit.</li>
                     </ul>
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Zpracování kódu a draftů:</strong>
+                    Přímo v editorech draftů může AI kód nejen vysvětlit, ale také **zformátovat** (beautify) nebo zmenšit (minify). U Note Drafts pak můžete využít **AI Prompt Bar** pro jakoukoliv vlastní manipulaci s textem na základě vašeho zadání.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Strategický souhrn úkolů:</strong>
+                    V sekci TODO vám AI pomůže se stanovením priorit díky funkci **AI Souhrn**, která vygeneruje "Bojový plán" pro vaše resty a blížící se termíny.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Soukromí:</strong>
