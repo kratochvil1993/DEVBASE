@@ -155,7 +155,7 @@ include 'includes/header.php';
             <h4 class="text-white mb-3"><i class="bi bi-shield-lock me-2 text-primary"></i>Zabezpečení</h4>
             <?php $hasPassword = !empty(getSetting('app_password')); ?>
             <div class="security-settings-container">
-                <form method="POST" class="mb-0">
+                <form onsubmit="handleConfigFormSubmit(event)" class="mb-0">
                     <input type="hidden" name="action" value="save_security">
                     
                     <div class="form-check form-switch d-flex align-items-center gap-3 ps-0 mb-4">
@@ -452,7 +452,7 @@ include 'includes/header.php';
                 Google Gemini
             </h5>
             
-            <form method="POST">
+             <form onsubmit="handleConfigFormSubmit(event)">
                 <input type="hidden" name="action" value="save_gemini_config">
                 <div class="mb-3">
                     <label class="form-label text-white-50 small fw-bold">Gemini API Klíč</label>
@@ -473,14 +473,15 @@ include 'includes/header.php';
                     <label class="form-label text-white-50 small fw-bold">Model Gemini</label>
                     <select name="gemini_model" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
                         <?php 
-                        $currentModel = getSetting('gemini_model', 'gemini-2.5-flash-lite');
+                        $currentModel = getSetting('gemini_model', 'gemini-3.1-flash');
                         $models = [
-                            'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash-Lite (Výchozí)',
+                            'gemini-3.1-flash' => 'Gemini 3.1 Flash (Výchozí)',
+                            'gemini-3.1-pro' => 'Gemini 3.1 Pro',
+                            'gemini-3-flash' => 'Gemini 3 Flash',
+                            'gemini-3-pro' => 'Gemini 3 Pro',
+                            'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash Lite',
                             'gemini-2.5-flash' => 'Gemini 2.5 Flash',
                             'gemini-2.5-pro' => 'Gemini 2.5 Pro',
-                            'gemini-2.0-flash-exp' => 'Gemini 2.0 Flash Exp',
-                            'gemini-1.5-flash' => 'Gemini 1.5 Flash',
-                            'gemini-1.5-pro' => 'Gemini 1.5 Pro',
                         ];
                         foreach ($models as $val => $label): ?>
                             <option value="<?php echo $val; ?>" class="bg-dark text-white" <?php echo $currentModel == $val ? 'selected' : ''; ?>>
@@ -513,7 +514,7 @@ include 'includes/header.php';
                 OpenAI ChatGPT
             </h5>
             
-            <form method="POST">
+            <form onsubmit="handleConfigFormSubmit(event)">
                 <input type="hidden" name="action" value="save_openai_config">
                 <div class="mb-3">
                     <label class="form-label text-white-50 small fw-bold">OpenAI API Klíč</label>
@@ -949,9 +950,9 @@ function updateGeneralSetting(key, val) {
     formData.append('key', key);
     formData.append('value', value);
 
-    let section = document.getElementById('section-general');
-    if (key === 'security_enabled') section = document.getElementById('section-security');
-    if (key === 'ai_provider') section = document.getElementById('section-ai');
+    const section = (key === 'security_enabled') ? document.getElementById('section-security') : 
+                   (key === 'ai_provider' ? document.getElementById('section-ai') : 
+                   document.getElementById('section-general'));
 
     fetch('api/api_settings_handler.php', {
         method: 'POST',
@@ -960,7 +961,13 @@ function updateGeneralSetting(key, val) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            // Success without animation
+            if (section) {
+                const card = section.querySelector('.glass-card');
+                if (card) {
+                    card.classList.add('border-success');
+                    setTimeout(() => card.classList.remove('border-success'), 1000);
+                }
+            }
         } else {
             alert('Chyba: ' + data.message);
         }
@@ -1032,6 +1039,52 @@ function testOpenAiConnection() {
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-broadcast"></i>';
         });
+}
+function handleConfigFormSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Ukládám...';
+
+    fetch('api/api_settings_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Check if we are setting password
+            if (formData.get('action') === 'save_security') {
+                window.location.reload();
+                return;
+            }
+            
+            // Temporary visual feedback
+            const originalClass = submitBtn.className;
+            submitBtn.className = 'btn btn-success flex-grow-1';
+            submitBtn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Uloženo';
+            
+            setTimeout(() => {
+                submitBtn.className = originalClass;
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 2000);
+        } else {
+            alert('Chyba: ' + data.message);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Chyba při komunikaci se serverem.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    });
 }
 </script>
 

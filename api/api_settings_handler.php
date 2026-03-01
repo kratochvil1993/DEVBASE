@@ -58,6 +58,28 @@ if ($action === 'toggle_setting') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Chyba při operaci se štítkem.']);
     }
+} elseif ($action === 'save_gemini_config' || $action === 'save_openai_config' || $action === 'save_security' || $action === 'save_ai_provider') {
+    $success = true;
+    foreach ($_POST as $key => $value) {
+        if ($key === 'action' || $key === 'app_password_confirm') continue;
+        
+        $val = $value;
+        if ($key === 'app_password') {
+            if (empty($value)) continue;
+            $val = password_hash($value, PASSWORD_DEFAULT);
+            updateSetting('security_enabled', '1');
+        }
+
+        if (!updateSetting($key, $val)) {
+            $success = false;
+        }
+    }
+
+    if ($success) {
+        echo json_encode(['status' => 'success', 'message' => 'Konfigurace byla uložena.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Chyba při ukládání konfigurace.']);
+    }
 } elseif ($action === 'reset_password') {
     if (updateSetting('app_password', '') && updateSetting('security_enabled', '0')) {
         echo json_encode(['status' => 'success', 'message' => 'Zámek smazán.']);
