@@ -142,7 +142,7 @@ nav .logo {
   background: rgba(255, 255, 255, 0.25);
   border-color: rgba(255, 255, 255, 0.4);
   color: #ffffff;
-  transform: translateY(-2px);
+  transform: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -336,12 +336,19 @@ pre[class*="language-"] {
   background: rgba(142, 84, 233, 0.35) !important;
   border-color: rgba(142, 84, 233, 0.7) !important;
   color: #fff !important;
-  transform: translateY(-2px);
+  transform: none;
   box-shadow: 0 5px 20px rgba(142, 84, 233, 0.3);
 }
 
 .btn-ai:active {
-  transform: translateY(0);
+  transform: none;
+}
+
+/* Delete buttons and links jump prevention */
+.btn-link.text-danger:hover,
+.btn-outline-danger:hover,
+.btn-tab-close:hover {
+  transform: none !important;
 }
 
 .text-ai {
@@ -1153,7 +1160,7 @@ h6 i.bi-pin-angle-fill {
   background: rgba(142, 84, 233, 0.35) !important;
   border-color: rgba(142, 84, 233, 0.7) !important;
   color: #fff !important;
-  transform: translateY(-1px);
+  transform: none;
   box-shadow: 0 4px 12px rgba(142, 84, 233, 0.2);
 }
 
