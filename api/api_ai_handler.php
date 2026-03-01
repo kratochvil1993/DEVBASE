@@ -44,6 +44,13 @@ if ($action === 'explain_code') {
     $prompt = "Jsi expertní asistent. Tvým úkolem je v následujícím textu identifikovat všechny úkoly, povinnosti a termíny. Vypiš je jako jednoduchý seznam, kde každý úkol je na novém řádku a začíná [TODO]. Pokud u úkolu identifikuješ i termín (datum), uveď ho ve formátu (YYYY-MM-DD) na konci řádku. Pokud v textu žádné úkoly nejsou, napiš 'Žádné úkoly nebyly nalezeny.'. Odpověz v češtině. Zde je text:\n\n" . $content;
 } elseif ($action === 'generate_tldr') {
     $prompt = "Jsi expertní editor. Vytvoř velmi krátké (max. 2-3 věty) shrnutí (TL;DR) následujícího textu. Zaměř se jen na to nejpodstatnější. Odpověz v češtině. Zde je text:\n\n" . $content;
+} elseif ($action === 'custom_prompt') {
+    $userPrompt = $data['prompt'] ?? '';
+    $prompt = "Jsi expertní programátor. Na základě následujícího kódu a instrukce od uživatele proveď požadovanou akci. Pokud uživatel chce kód upravit, uveď nejdříve stručné vysvětlení změn a poté celý výsledný kód v bloku označeném jako 'KÓD:\n\n'. Pokud chce něco vysvětlit nebo analyzovat, odpověz jasně a stručně v češtině.
+    
+    Instrukce od uživatele: " . $userPrompt . "
+    
+    Zde je kód k práci:\n\n" . $content;
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Neznámá akce.']);
     exit;

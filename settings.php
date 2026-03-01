@@ -465,8 +465,7 @@ include 'includes/header.php';
     <!-- Gemini Config -->
     <div class="col-md-6 mb-4 settings-section">
         <div class="glass-card no-jump p-4 h-100 border-primary border-opacity-10">
-            <h5 class="text-white mb-4 d-flex align-items-center">
-                <img src="https://www.gstatic.com/lamda/images/favicon_v2_16x16.png" class="me-2" style="filter: grayscale(1) brightness(2);">
+            <h5 class="text-white mb-4 d-flex align-items-center">                
                 Google Gemini
             </h5>
             

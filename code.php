@@ -137,6 +137,12 @@ include 'includes/header.php';
                                     <i class="bi bi-bug me-2 text-ai"></i> Debugger
                                 </a>
                             </li>
+                            <li class="border-top border-light border-opacity-10 my-1"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="toggleAiPromptBar(true)">
+                                    <i class="bi bi-terminal me-2 text-ai"></i> Vlastní prompt...
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     <?php endif; ?>
@@ -178,6 +184,18 @@ include 'includes/header.php';
             </div>
 
             <?php if ($aiEnabled): ?>
+            <!-- AI Prompt Bar -->
+            <div id="aiPromptBar" class="p-2 border-start border-end d-none" style="background: rgba(142, 84, 233, 0.05); border-color: rgba(142, 84, 233, 0.2) !important; backdrop-filter: blur(5px);">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-transparent border-0 text-ai px-2"><i class="bi bi-robot"></i></span>
+                    <input type="text" id="aiCustomPrompt" class="form-control bg-transparent text-white border-0 shadow-none ps-1" placeholder="Zadejte, co má AI udělat (např. 'přepiš na switch', 'vysvětli funkci')..." onkeyup="if(event.key==='Enter') submitAiPrompt()">
+                    <button class="btn btn-ai btn-sm px-3 rounded ms-2" type="button" onclick="submitAiPrompt()" id="aiPromptSubmitBtn">
+                        Spustit
+                    </button>
+                    <button type="button" class="btn-close btn-close-white ms-2 small mt-1" style="font-size: 0.5rem;" onclick="toggleAiPromptBar(false)"></button>
+                </div>
+            </div>
+
             <!-- AI Insight Box -->
             <div id="aiInsightBox" class="p-3 rounded-0 border-start border-end d-none" style="background: rgba(10, 10, 15, 0.6); border-color: rgba(142, 84, 233, 0.3) !important; backdrop-filter: blur(5px);">
                 <div class="d-flex align-items-center mb-2">
@@ -1372,6 +1390,66 @@ window.onpopstate = function(event) {
         if (id) switchTab(null, id);
     }
 };
+
+function toggleAiPromptBar(show) {
+    const bar = document.getElementById('aiPromptBar');
+    if (!bar) return;
+    
+    if (show) {
+        bar.classList.remove('d-none');
+        document.getElementById('aiCustomPrompt').focus();
+    } else {
+        bar.classList.add('d-none');
+    }
+}
+
+function submitAiPrompt() {
+    const promptInput = document.getElementById('aiCustomPrompt');
+    const prompt = promptInput.value.trim();
+    const code = editor.getValue();
+    const btn = document.getElementById('aiPromptSubmitBtn');
+    
+    if (!prompt) return;
+    
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+    
+    // Pro jistotu otevřeme insight box, aby bylo vidět, že se něco děje
+    const insightBox = document.getElementById('aiInsightBox');
+    const insightContent = document.getElementById('aiInsightContent');
+    insightBox.classList.remove('d-none');
+    insightContent.innerHTML = '<div class="text-white-50"><i class="bi bi-hourglass-split me-2 pulse"></i> AI přemýšlí nad vaším zadáním...</div>';
+
+    fetch('api/api_ai_handler.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            action: 'custom_prompt', 
+            content: code,
+            prompt: prompt
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            typeWriter(data.answer, insightContent);
+            insightBox.classList.remove('flash-purple');
+            void insightBox.offsetWidth;
+            insightBox.classList.add('flash-purple');
+            promptInput.value = ''; // Vyčistit po úspěchu
+        } else {
+            insightContent.innerHTML = '<div class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i> ' + data.message + '</div>';
+        }
+    })
+    .catch(err => {
+        insightContent.innerHTML = '<div class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i> Chyba při komunikaci s AI.</div>';
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+}
 
 </script>
 
