@@ -433,7 +433,7 @@ include 'includes/header.php';
                 </div>
                 <div class="form-check form-switch ms-md-auto">
                     <input class="form-check-input fs-4 ms-0" type="checkbox" name="ai_enabled" id="aiEnabledToggle" 
-                           <?php echo getSetting('ai_enabled', '1') == '1' ? 'checked' : ''; ?>
+                           <?php echo getSetting('ai_enabled', '0') == '1' ? 'checked' : ''; ?>
                            onchange="updateGeneralSetting('ai_enabled', this.checked)">
                 </div>
             </div>

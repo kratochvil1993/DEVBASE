@@ -162,7 +162,7 @@ $stats = getGlobalStats();
         </div>
         <?php endif; ?>
         <?php 
-        $aiEnabled = getSetting('ai_enabled', '1') == '1';
+        $aiEnabled = getSetting('ai_enabled', '0') == '1';
         $hasAiKey = !empty(getSetting('gemini_api_key')) || !empty(getSetting('openai_api_key'));
         if ($aiEnabled && $hasAiKey): 
         ?>

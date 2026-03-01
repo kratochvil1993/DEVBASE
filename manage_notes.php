@@ -14,7 +14,7 @@ $pinnedNotes = array_filter($notes, function($n) { return $n['is_pinned'] == 1; 
 $otherNotes = array_filter($notes, function($n) { return $n['is_pinned'] == 0; });
 $languages = getAllLanguages();
 $geminiApiKey = getSetting('gemini_api_key');
-$aiEnabled = getSetting('ai_enabled', '1') == '1' && (!empty($geminiApiKey) || !empty(getSetting('openai_api_key')));
+$aiEnabled = getSetting('ai_enabled', '0') == '1' && (!empty($geminiApiKey) || !empty(getSetting('openai_api_key')));
 
 include 'includes/header.php';
 ?>

@@ -73,7 +73,7 @@ $allNoteTags = getAllTags('note');
 $allSnippetTags = getAllTags('snippet');
 $languages = getAllLanguages();
 $geminiApiKey = getSetting('gemini_api_key');
-$aiEnabled = getSetting('ai_enabled', '1') == '1' && (!empty($geminiApiKey) || !empty(getSetting('openai_api_key')));
+$aiEnabled = getSetting('ai_enabled', '0') == '1' && (!empty($geminiApiKey) || !empty(getSetting('openai_api_key')));
 
 include 'includes/header.php';
 ?>

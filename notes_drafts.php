@@ -69,7 +69,7 @@ $pad_name = $active_pad ? $active_pad['name'] : 'Draft';
 $allNoteTags = getAllTags('note');
 $geminiApiKey = getSetting('gemini_api_key');
 $openaiApiKey = getSetting('openai_api_key');
-$aiEnabledSetting = getSetting('ai_enabled', '1') == '1';
+$aiEnabledSetting = getSetting('ai_enabled', '0') == '1';
 $hasAi = $aiEnabledSetting && (!empty($geminiApiKey) || !empty($openaiApiKey));
 
 include 'includes/header.php';
