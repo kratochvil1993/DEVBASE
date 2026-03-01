@@ -32,6 +32,10 @@ if ($action === 'explain_code') {
     $prompt = "Jsi expertní editor. Na základě následujícího obsahu poznámky vygeneruj krátký a výstižný název (maximálně 3-5 slov). Odpověz v češtině jako prostý text bez jakéhokoliv formátování, uvozovek nebo odrážek. Zde je obsah:\n\n" . $content;
 } elseif ($action === 'grammar_check') {
     $prompt = "Jsi expertní korektor češtiny. Zkontroluj prosím následující text na gramatické a pravopisné chyby. Pokud najdeš chyby, oprav je a vypiš opravený text. Pokud je text v pořádku, napiš 'Text je gramaticky správně.'. Odpověz stručně v češtině. Zde je text:\n\n" . $content;
+} elseif ($action === 'minify_code') {
+    $prompt = "Jsi expertní programátor. Vezmi následující kód a odstraň z něj všechny zbytečné bílé znaky, nové řádky a komentáře tak, aby byl co nejmenší (minifikovaný), ale stále funkční. Vrat POUZE výsledný minifikovaný kód bez jakéhokoliv vysvětlování, uvozovek nebo Markdown formátování.\n\nZde je kód:\n\n" . $content;
+} elseif ($action === 'beautify_code') {
+    $prompt = "Jsi expertní programátor. Vezmi následující kód a přehledně ho zformátuj. Použij standardní odsazení (4 mezery), přidej nové řádky tam, kde chybí pro lepší čitelnost. Zachovej funkčnost. Vrat POUZE výsledný zformátovaný kód bez jakéhokoliv vysvětlování, uvozovek nebo Markdown formátování.\n\nZde je kód:\n\n" . $content;
 } elseif ($action === 'refactor_code') {
     $prompt = "Jsi špičkový softwarový architekt. Tvým úkolem je provést refaktorování následujícího kódu tak, aby byl čistší, čitelnější a efektivnější. Zachovej funkčnost. Popiš stručně provedené změny v bodech (začni '*') a poté uveď kompletní refaktorovaný kód v bloku označeném jako 'KÓD:\n\n'. Odpověz v češtině.\n\nZde je kód k refaktorování:\n\n" . $content;
 } elseif ($action === 'debug_code') {

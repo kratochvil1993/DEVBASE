@@ -139,6 +139,17 @@ include 'includes/header.php';
                             </li>
                             <li class="border-top border-light border-opacity-10 my-1"></li>
                             <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('minify_code')">
+                                    <i class="bi bi-file-zip me-2 text-ai"></i> Minifikovat
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('beautify_code')">
+                                    <i class="bi bi-justify me-2 text-ai"></i> Zformátovat (Beautify)
+                                </a>
+                            </li>
+                            <li class="border-top border-light border-opacity-10 my-1"></li>
+                            <li>
                                 <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="toggleAiPromptBar(true)">
                                     <i class="bi bi-terminal me-2 text-ai"></i> Vlastní prompt...
                                 </a>
@@ -1109,7 +1120,23 @@ function aiAction(action) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            typeWriter(data.answer, insightContent);
+            const isFormattingAction = action === 'minify_code' || action === 'beautify_code';
+            
+            typeWriter(data.answer, insightContent, () => {
+                if (isFormattingAction) {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-sm btn-ai mt-3 d-block';
+                    btn.innerHTML = '<i class="bi bi-check2-all me-1"></i> Použít tento kód';
+                    btn.onclick = () => {
+                        // Clean the code if AI wrapped it in markdown code blocks
+                        let cleanCode = data.answer.replace(/^```[a-z]*\n/i, '').replace(/\n```$/i, '').trim();
+                        editor.setValue(cleanCode);
+                        insightBox.classList.add('d-none');
+                        triggerAutosave();
+                    };
+                    insightContent.appendChild(btn);
+                }
+            });
             insightBox.classList.remove('flash-purple');
             void insightBox.offsetWidth;
             insightBox.classList.add('flash-purple');
@@ -1125,7 +1152,7 @@ function aiAction(action) {
     });
 }
 
-function typeWriter(text, container) {
+function typeWriter(text, container, callback) {
     container.innerHTML = '';
     
     // Pre-processing markdown to HTML
@@ -1136,11 +1163,10 @@ function typeWriter(text, container) {
         .replace(/\n/g, '<br>');
 
     let i = 0;
-    const speed = 5; // Slightly slower for better readability
+    const speed = 2; // Faster typing
     
     function type() {
         if (i < processedHtml.length) {
-            // If we hit a tag, we need to append the whole tag at once
             if (processedHtml.charAt(i) === '<') {
                 let tagEnd = processedHtml.indexOf('>', i);
                 if (tagEnd !== -1) {
@@ -1156,6 +1182,8 @@ function typeWriter(text, container) {
             }
             aiTypingInterval = setTimeout(type, speed);
             container.scrollTop = container.scrollHeight;
+        } else if (callback) {
+            callback();
         }
     }
     type();
