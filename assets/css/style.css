@@ -780,28 +780,30 @@ h6 i.bi-pin-angle-fill {
 
 @keyframes card-highlight-glow {
   0% {
-    box-shadow: 0 0 0 0 rgba(0, 229, 130, 0);
+    box-shadow:
+      0 0 0 0 rgba(0, 229, 130, 0),
+      inset 0 0 0 0 rgba(0, 229, 130, 0);
     border-color: var(--glass-border);
     transform: scale(1);
-    background-color: transparent;
   }
-  30% {
-    box-shadow: 0 0 40px 10px rgba(0, 229, 130, 0.5);
-    border-color: rgba(0, 229, 130, 1) !important;
+  20% {
+    box-shadow:
+      0 0 40px 10px rgba(0, 229, 130, 0.4),
+      inset 0 0 20px 0 rgba(0, 229, 130, 0.3);
+    border-color: rgba(0, 229, 130, 0.8) !important;
     transform: scale(1.01);
-    background-color: rgba(0, 229, 130, 0.15) !important;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(0, 229, 130, 0);
+    box-shadow:
+      0 0 0 0 rgba(0, 229, 130, 0),
+      inset 0 0 0 0 rgba(0, 229, 130, 0);
     border-color: var(--glass-border);
     transform: scale(1);
-    background-color: transparent;
   }
 }
 
 @keyframes row-highlight-glow {
   0% {
-    background-color: transparent;
     border-left: 0px solid rgba(0, 229, 130, 0);
   }
   30% {
@@ -810,7 +812,6 @@ h6 i.bi-pin-angle-fill {
     outline: 1px solid rgba(0, 229, 130, 0.5);
   }
   100% {
-    background-color: transparent;
     border-left: 0px solid rgba(0, 229, 130, 0);
     outline: 1px solid transparent;
   }
@@ -820,7 +821,7 @@ h6 i.bi-pin-angle-fill {
 .updated-highlight.glass-card,
 .updated-highlight.todo-item,
 .updated-highlight.note-item {
-  animation: card-highlight-glow 2.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  animation: card-highlight-glow 3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   z-index: 50;
 }
 

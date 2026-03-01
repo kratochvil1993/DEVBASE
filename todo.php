@@ -556,6 +556,40 @@ document.addEventListener('DOMContentLoaded', () => {
             filterTodos();
         });
     });
+
+    // Highlight todo from hash
+    const highlightTodoFromHash = () => {
+        const hash = window.location.hash;
+        if (hash && hash.startsWith('#todo-card-')) {
+            const targetId = hash.substring(1);
+            const element = document.getElementById(targetId);
+            if (element) {
+                // Ensure the todo is visible (clear filters if necessary)
+                if (element.style.display === 'none') {
+                    const allBtn = document.querySelector('#tagFilters .btn[data-tag="all"]');
+                    if (allBtn) {
+                        allBtn.classList.add('active');
+                        currentTag = 'all';
+                        localStorage.setItem('todoTag', 'all');
+                        tagButtons.forEach(b => { if(b !== allBtn) b.classList.remove('active'); });
+                        filterTodos();
+                    }
+                }
+                
+                // apply animation
+                element.classList.remove('updated-highlight');
+                void element.offsetWidth; // trigger reflow
+                element.classList.add('updated-highlight');
+
+                // also scroll to it (built-in, but can be forced if needed)
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    };
+
+    window.addEventListener('hashchange', highlightTodoFromHash);
+    // Short delay to ensure popIn animations are done and elements are positioned
+    setTimeout(highlightTodoFromHash, 100);
 });
 
 function toggleTodoPin(todoId, event) {
