@@ -118,6 +118,11 @@ include 'includes/header.php';
                                 </a>
                             </li>
                             <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('format_note')">
+                                    <i class="bi bi-magic me-2 text-ai"></i> Zformátovat (AI)
+                                </a>
+                            </li>
+                            <li>
                                 <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('extract_todos')">
                                     <i class="bi bi-check2-square me-2 text-ai"></i> Extrahovat TODO úkoly
                                 </a>
@@ -482,6 +487,20 @@ function aiAction(action) {
                    };
                    insightContent.appendChild(btn);
                 });
+            } else if (action === 'format_note') {
+                // For format, we also show a button to apply it
+                typeWriter(data.answer, insightContent, () => {
+                   const btn = document.createElement('button');
+                   btn.className = 'btn btn-sm btn-ai mt-3 d-block';
+                   btn.innerHTML = '<i class="bi bi-check2-all me-1"></i> Použít toto formátování';
+                   btn.onclick = () => {
+                       const html = simpleMarkdownToHtml(data.answer);
+                       quill.root.innerHTML = html; 
+                       insightBox.classList.add('d-none');
+                       triggerAutosave();
+                   };
+                   insightContent.appendChild(btn);
+                });
             } else if (action === 'extract_todos') {
                 // Custom handling for todos
                 displayExtractedTodos(data.answer, insightContent);
@@ -523,30 +542,65 @@ function copyNote(btn) {
 
 function simpleMarkdownToHtml(text) {
     if (!text) return '';
-    return text
-        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-        .replace(/^\* (.*$)/gim, '<li>$1</li>')
-        .replace(/^- (.*$)/gim, '<li>$1</li>')
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/\n/g, '<br>')
-        .replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>')
-        .replace(/<\/ul><ul>/g, ''); // Fix multiple <ul>
+    
+    const lines = text.split('\n');
+    let inList = false;
+    let result = '';
+    
+    lines.forEach(line => {
+        let trimmed = line.trim();
+        
+        // Empty lines
+        if (trimmed === '') {
+            if (inList) { result += '</ul>'; inList = false; }
+            result += '<p><br></p>';
+            return;
+        }
+        
+        let content = trimmed;
+        let tag = 'p';
+        
+        // Identify structure
+        if (trimmed.startsWith('# ')) {
+            tag = 'h1';
+            content = trimmed.substring(2);
+        } else if (trimmed.startsWith('## ')) {
+            tag = 'h2';
+            content = trimmed.substring(3);
+        } else if (trimmed.startsWith('### ')) {
+            tag = 'h3';
+            content = trimmed.substring(4);
+        } else if (/^[\*\-\+]\s+/.test(trimmed)) {
+            tag = 'li';
+            content = trimmed.replace(/^[\*\-\+]\s+/, '');
+        }
+        
+        // Format the content (bold, italic) separately from structure markers
+        content = content
+            .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+        if (tag === 'li') {
+            if (!inList) { result += '<ul style="margin-bottom: 1rem;">'; inList = true; }
+            result += '<li>' + content + '</li>';
+        } else {
+            if (inList) { result += '</ul>'; inList = false; }
+            result += `<${tag}>${content}</${tag}>`;
+        }
+    });
+    
+    if (inList) result += '</ul>';
+    return result;
 }
 
 function typeWriter(text, container, callback) {
     container.innerHTML = '';
     let i = 0;
-    const speed = 5;
+    const speed = 2;
     
-    // Pre-processing
-    let processedHtml = text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/\n/g, '<br>');
+    // Use the same robust conversion for preview
+    let processedHtml = simpleMarkdownToHtml(text);
 
     function type() {
         if (i < processedHtml.length) {

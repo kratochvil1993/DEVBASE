@@ -44,6 +44,16 @@ if ($action === 'explain_code') {
     $prompt = "Jsi expertní asistent. Tvým úkolem je v následujícím textu identifikovat všechny úkoly, povinnosti a termíny. Vypiš je jako jednoduchý seznam, kde každý úkol je na novém řádku a začíná [TODO]. Pokud u úkolu identifikuješ i termín (datum), uveď ho ve formátu (YYYY-MM-DD) na konci řádku. Pokud v textu žádné úkoly nejsou, napiš 'Žádné úkoly nebyly nalezeny.'. Odpověz v češtině. Zde je text:\n\n" . $content;
 } elseif ($action === 'generate_tldr') {
     $prompt = "Jsi expertní editor. Vytvoř velmi krátké (max. 2-3 věty) shrnutí (TL;DR) následujícího textu. Zaměř se jen na to nejpodstatnější. Odpověz v češtině. Zde je text:\n\n" . $content;
+} elseif ($action === 'format_note') {
+    $prompt = "Jsi expertní editor. Tvým úkolem je vzít následující text a zformátovat ho tak, aby byl maximálně přehledný, profesionální a čitelný.
+    1. Použij vhodné nadpisy (Markdown # nebo ##).
+    2. Použij odrážky tam, kde to dává smysl.
+    3. Důležité pojmy nebo klíčové informace zvýrazni tučně (**bold**).
+    4. Oprav základní gramatické chyby a interpunkci.
+    5. Zachovej VŠECHNY informace, ale dej jim řád.
+    6. Odpověz POUZE výsledným zformátovaným textem v češtině.
+    
+    Zde je text k formátování:\n\n" . $content;
 } elseif ($action === 'custom_prompt') {
     $userPrompt = $data['prompt'] ?? '';
     $prompt = "Jsi expertní programátor. Na základě následujícího kódu a instrukce od uživatele proveď požadovanou akci. Pokud uživatel chce kód upravit, uveď nejdříve stručné vysvětlení změn a poté celý výsledný kód v bloku označeném jako 'KÓD:\n\n'. Pokud chce něco vysvětlit nebo analyzovat, odpověz jasně a stručně v češtině.
@@ -67,7 +77,7 @@ if ($provider === 'openai') {
             ["role" => "user", "content" => $prompt]
         ],
         "temperature" => 0.7,
-        "max_tokens" => 1000
+        "max_tokens" => 4000
     ];
     
     $headers = [
@@ -89,7 +99,7 @@ if ($provider === 'openai') {
         ],
         "generationConfig" => [
             "temperature" => 0.7,
-            "maxOutputTokens" => 1000,
+            "maxOutputTokens" => 4000,
         ]
     ];
     
