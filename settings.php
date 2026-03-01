@@ -978,12 +978,30 @@ function updateGeneralSetting(key, val) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            if (section) {
-                const card = section.querySelector('.glass-card');
-                if (card) {
-                    card.classList.add('border-success');
-                    setTimeout(() => card.classList.remove('border-success'), 1000);
-                }
+            // AJAX UI Updates for Header/Sidebar
+            const elementsToToggle = {
+                'snippets_enabled': ['nav-snippets-item', 'side-snippets-manage', 'stat-snippets-col'],
+                'notes_enabled': ['nav-notes-item', 'side-notes-manage', 'side-notes-archive', 'stat-notes-col'],
+                'todos_enabled': ['nav-todo-item', 'side-todos-archive', 'stat-todos-col'],
+                'code_enabled': ['nav-code-item', 'stat-code-drafts-col'],
+                'note_drafts_enabled': ['nav-drafts-item', 'stat-note-drafts-col'],
+                'todo_badge_enabled': ['nav-todo-badge-container'],
+                'ai_enabled': ['headerAiIcon'],
+                'security_enabled': ['headerLockIcon'],
+                'theme_toggle_enabled': ['headerThemeToggleContainer']
+            };
+
+            if (elementsToToggle[key]) {
+                elementsToToggle[key].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        if (val === true || val === '1') {
+                            el.classList.remove('d-none');
+                        } else {
+                            el.classList.add('d-none');
+                        }
+                    }
+                });
             }
         } else {
             alert('Chyba: ' + data.message);

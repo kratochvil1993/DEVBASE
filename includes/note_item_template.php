@@ -1,4 +1,4 @@
-<div class="col-md-4 col-lg-6 note-item <?php echo $note['is_pinned'] ? 'pinned' : ''; ?> <?php echo $note['is_locked'] ? 'locked' : ''; ?>" data-id="<?php echo $note['id']; ?>" id="note-card-<?php echo $note['id']; ?>" data-tags="<?php echo htmlspecialchars($tagData); ?>">
+<div class="col-md-6 col-lg-6 note-item <?php echo $note['is_pinned'] ? 'pinned' : ''; ?> <?php echo $note['is_locked'] ? 'locked' : ''; ?>" data-id="<?php echo $note['id']; ?>" id="note-card-<?php echo $note['id']; ?>" data-tags="<?php echo htmlspecialchars($tagData); ?>">
     <div class="card glass-card h-100 note-card" onclick="handleNoteClick(event, <?php echo htmlspecialchars(json_encode($note), ENT_QUOTES, 'UTF-8'); ?>)">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start mb-2">

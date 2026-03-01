@@ -69,38 +69,28 @@ $stats = getGlobalStats();
 
         <div class=" d-flex position-absolute start-50 translate-middle-x">
             <div class="nav-toggle-group">
-                <?php if (getSetting('snippets_enabled', '1') == '1'): ?>
-                <a href="index.php" class="nav-toggle-btn <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?>">
+                <a href="index.php" id="nav-snippets-item" class="nav-toggle-btn <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?> <?php echo getSetting('snippets_enabled', '1') == '0' ? 'd-none' : ''; ?>">
                     <i class="bi bi-code-slash me-2"></i> <span class="d-none d-md-inline">Snippets</span>
                 </a>
-                <?php endif; ?>
-                <?php if (getSetting('code_enabled', '1') == '1'): ?>
-                <a href="code.php" class="nav-toggle-btn <?php echo ($currentPage == 'code.php') ? 'active' : ''; ?>">
+                <a href="code.php" id="nav-code-item" class="nav-toggle-btn <?php echo ($currentPage == 'code.php') ? 'active' : ''; ?> <?php echo getSetting('code_enabled', '1') == '0' ? 'd-none' : ''; ?>">
                     <i class="bi bi-braces me-2"></i> <span class="d-none d-md-inline">Code</span>
                 </a>
-                <?php endif; ?>
-                <?php if (getSetting('note_drafts_enabled', '1') == '1'): ?>
-                <a href="notes_drafts.php" class="nav-toggle-btn <?php echo ($currentPage == 'notes_drafts.php') ? 'active' : ''; ?>">
+                <a href="notes_drafts.php" id="nav-drafts-item" class="nav-toggle-btn <?php echo ($currentPage == 'notes_drafts.php') ? 'active' : ''; ?> <?php echo getSetting('note_drafts_enabled', '1') == '0' ? 'd-none' : ''; ?>">
                     <i class="bi bi-journal-plus me-2"></i> <span class="d-none d-md-inline">Drafts</span>
                 </a>
-                <?php endif; ?>
-                <?php if (getSetting('notes_enabled', '1') == '1'): ?>
-                <a href="notes.php" class="nav-toggle-btn <?php echo $currentPage == 'notes.php' ? 'active' : ''; ?>">
+                <a href="notes.php" id="nav-notes-item" class="nav-toggle-btn <?php echo $currentPage == 'notes.php' ? 'active' : ''; ?> <?php echo getSetting('notes_enabled', '1') == '0' ? 'd-none' : ''; ?>">
                     <i class="bi bi-journal-text me-2"></i> <span class="d-none d-md-inline">Notes</span>
                 </a>
-                <?php endif; ?>
-                <?php if (getSetting('todos_enabled', '1') == '1'): ?>
-                <a href="todo.php" id="nav-todo-link" class="nav-toggle-btn <?php echo $currentPage == 'todo.php' ? 'active' : ''; ?> d-flex align-items-center">
+                <a href="todo.php" id="nav-todo-item" class="nav-toggle-btn <?php echo $currentPage == 'todo.php' ? 'active' : ''; ?> d-flex align-items-center <?php echo getSetting('todos_enabled', '1') == '0' ? 'd-none' : ''; ?>">
                     <i class="bi bi-check2-square me-2"></i> <span class="d-none d-md-inline">TODO</span>
-                    <span id="nav-todo-badge-container">
+                    <span id="nav-todo-badge-container" class="<?php echo getSetting('todo_badge_enabled', '1') == '0' ? 'd-none' : ''; ?>">
                         <?php 
-                        if (getSetting('todo_badge_enabled', '1') == '1' && $stats['total_todos'] > 0) {
+                        if ($stats['total_todos'] > 0) {
                             echo '<span class="badge badge-todo ms-2">' . $stats['total_todos'] . '</span>';
                         }
                         ?>
                     </span>
                 </a>
-                <?php endif; ?>
             </div>
         </div>
         
@@ -109,26 +99,16 @@ $stats = getGlobalStats();
             <?php include 'includes/header_notifications.php'; ?>
         </div>
 
-        <?php if (getSetting('theme_toggle_enabled', '1') == '1'): ?>
-        <div class="form-check form-switch mb-0">
+        <div class="form-check form-switch mb-0 <?php echo getSetting('theme_toggle_enabled', '1') == '1' ? '' : 'd-none'; ?>" id="headerThemeToggleContainer">
                 <input class="form-check-input" type="checkbox" id="themeToggle">
                 <label class="form-check-label text-white small" for="themeToggle">Dark</label>
         </div>
-        <?php endif; ?>
-        <?php 
-        $aiEnabled = getSetting('ai_enabled', '0') == '1';
-        $hasAiKey = !empty(getSetting('gemini_api_key')) || !empty(getSetting('openai_api_key'));
-        if ($aiEnabled && $hasAiKey): 
-        ?>
-        <a href="settings.php#section-ai" class="btn btn-sm btn-link text-ai p-0" title="AI Configured">
+        <a href="settings.php#section-ai" id="headerAiIcon" class="btn btn-sm btn-link text-ai p-0 <?php echo (getSetting('ai_enabled', '0') == '1' && (!empty(getSetting('gemini_api_key')) || !empty(getSetting('openai_api_key')))) ? '' : 'd-none'; ?>" title="AI Configured">
             <i class="bi bi-robot fs-5"></i>
         </a>
-        <?php endif; ?>
-        <?php if (getSetting('security_enabled', '0') == '1'): ?>
-                <a href="?lock=1" class="btn btn-sm btn-link text-white-50 p-0" title="Lock App">
-                    <i class="bi bi-lock-fill fs-5"></i>
-                </a>            
-        <?php endif; ?>
+        <a href="?lock=1" id="headerLockIcon" class="btn btn-sm btn-link text-white-50 p-0 <?php echo getSetting('security_enabled', '0') == '1' ? '' : 'd-none'; ?>" title="Lock App">
+            <i class="bi bi-lock-fill fs-5"></i>
+        </a>
         </div>
 
     </div>
@@ -153,24 +133,18 @@ $stats = getGlobalStats();
             </a>
             <?php endif; ?>
             -->
-            <?php if (getSetting('snippets_enabled', '1') == '1'): ?>
-            <a href="manage.php" class="sidebar-link <?php echo $currentPage == 'manage.php' ? 'active' : ''; ?>">
+            <a href="manage.php" id="side-snippets-manage" class="sidebar-link <?php echo $currentPage == 'manage.php' ? 'active' : ''; ?> <?php echo getSetting('snippets_enabled', '1') == '0' ? 'd-none' : ''; ?>">
                 <i class="bi bi-list-task me-2"></i> Správa snippetů
             </a>
-            <?php endif; ?>
-            <?php if (getSetting('notes_enabled', '1') == '1'): ?>
-            <a href="manage_notes.php" class="sidebar-link <?php echo $currentPage == 'manage_notes.php' ? 'active' : ''; ?>">
+            <a href="manage_notes.php" id="side-notes-manage" class="sidebar-link <?php echo $currentPage == 'manage_notes.php' ? 'active' : ''; ?> <?php echo getSetting('notes_enabled', '1') == '0' ? 'd-none' : ''; ?>">
                 <i class="bi bi-list-task me-2"></i> Správa poznámek
             </a>
-            <a href="archive_notes.php" class="sidebar-link <?php echo $currentPage == 'archive_notes.php' ? 'active' : ''; ?>">
+            <a href="archive_notes.php" id="side-notes-archive" class="sidebar-link <?php echo $currentPage == 'archive_notes.php' ? 'active' : ''; ?> <?php echo getSetting('notes_enabled', '1') == '0' ? 'd-none' : ''; ?>">
                 <i class="bi bi-archive me-2"></i> Archiv poznámek
             </a>
-            <?php endif; ?>
-            <?php if (getSetting('todos_enabled', '1') == '1'): ?>            
-            <a href="archive_todos.php" class="sidebar-link <?php echo $currentPage == 'archive_todos.php' ? 'active' : ''; ?>">
+            <a href="archive_todos.php" id="side-todos-archive" class="sidebar-link <?php echo $currentPage == 'archive_todos.php' ? 'active' : ''; ?> <?php echo getSetting('todos_enabled', '1') == '0' ? 'd-none' : ''; ?>">
                 <i class="bi bi-archive me-2"></i> Archiv TODO
             </a>
-            <?php endif; ?>
             <a href="settings.php" class="sidebar-link <?php echo $currentPage == 'settings.php' ? 'active' : ''; ?>">
                 <i class="bi bi-gear me-2"></i> Nastavení
             </a>
@@ -184,19 +158,19 @@ $stats = getGlobalStats();
             <h6 class="text-white-50 small text-uppercase fw-bold mb-3 px-2" style="font-size: 0.7rem; letter-spacing: 1px;">Statistiky</h6>
             
             <div class="row g-2 px-1">
-                <div class="col-4">
+                <div class="col-4 <?php echo getSetting('snippets_enabled', '1') == '0' ? 'd-none' : ''; ?>" id="stat-snippets-col">
                     <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
                         <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Snippetů</div>
                         <div class="h6 fw-bold text-white mb-0" id="sidebar-snippet-count"><?php echo $stats['total_snippets']; ?></div>
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-4 <?php echo getSetting('notes_enabled', '1') == '0' ? 'd-none' : ''; ?>" id="stat-notes-col">
                     <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
                         <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Notes</div>
                         <div class="h6 fw-bold text-white mb-0" id="sidebar-note-count"><?php echo $stats['total_notes']; ?></div>
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-4 <?php echo getSetting('todos_enabled', '1') == '0' ? 'd-none' : ''; ?>" id="stat-todos-col">
                     <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
                         <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Úkoly</div>
                         <div class="h6 fw-bold text-white mb-0" id="sidebar-todo-count"><?php echo $stats['total_todos']; ?></div>
@@ -205,13 +179,13 @@ $stats = getGlobalStats();
             </div>
 
             <div class="row g-2 px-1 mt-1">
-                <div class="col-6">
+                <div class="col-6 <?php echo getSetting('code_enabled', '1') == '0' ? 'd-none' : ''; ?>" id="stat-code-drafts-col">
                     <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
                         <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Code Draftů</div>
                         <div class="h6 fw-bold text-white mb-0"><?php echo $stats['total_code_drafts'] ?? 0; ?></div>
                     </div>
                 </div>
-                <div class="col-6">
+                <div class="col-6 <?php echo getSetting('note_drafts_enabled', '1') == '0' ? 'd-none' : ''; ?>" id="stat-note-drafts-col">
                     <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
                         <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Note Draftů</div>
                         <div class="h6 fw-bold text-white mb-0"><?php echo $stats['total_note_drafts'] ?? 0; ?></div>
