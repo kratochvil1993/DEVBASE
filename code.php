@@ -377,8 +377,8 @@ li.CodeMirror-hint-active {
 }
 .btn-copy {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 20px;
+    right: 20px;
     z-index: 10;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1033,11 +1033,11 @@ function copyCode(btn) {
         const originalHtml = btn.innerHTML;
         
         btn.innerHTML = 'copied!';
-        btn.classList.replace('btn-copy', 'btn-success');
+        btn.classList.add('btn-success');
         
         setTimeout(() => {
             btn.innerHTML = originalHtml;
-            btn.classList.replace('btn-success', 'btn-copy');
+            btn.classList.remove('btn-success');
         }, 2000);
     }).catch(err => {
         console.error('Chyba při kopírování: ', err);

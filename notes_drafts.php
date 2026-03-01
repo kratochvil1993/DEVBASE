@@ -175,7 +175,10 @@ include 'includes/header.php';
                 <div id="aiInsightContent" class="text-white small lh-base" style="max-height: 400px; overflow-y: auto; white-space: pre-wrap;"></div>
             </div>
 
-            <div class="editor-container border border-light border-opacity-10 rounded-bottom overflow-hidden shadow-lg" style="border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; background: #282a36;">
+            <div class="editor-container border border-light border-opacity-10 rounded-bottom overflow-hidden shadow-lg" style="border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; background: #282a36; position: relative;">
+                <button type="button" class="btn btn-sm btn-copy px-3" onclick="copyNote(this)">
+                    copy
+                </button>
                 <div id="quillMainEditor" style="height: 60vh; border: none; color: white; background: #282a36;"></div>
             </div>
             
@@ -329,6 +332,31 @@ include 'includes/header.php';
     50% { box-shadow: 0 0 20px rgba(142, 84, 233, 0.5); border-color: rgba(142, 84, 233, 0.8) !important; }
     100% { box-shadow: 0 0 0px rgba(142, 84, 233, 0); }
 }
+.btn-copy {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-copy:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    transform: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.btn-copy:active {
+    transform: translateY(0);
+}
 @keyframes fadeOut {
     0% { opacity: 1; }
     80% { opacity: 1; }
@@ -454,6 +482,22 @@ function aiAction(action) {
     })
     .finally(() => {
         aiBtn.disabled = false;
+    });
+}
+
+function copyNote(btn) {
+    const text = quill.getText().trim();
+    navigator.clipboard.writeText(text).then(() => {
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = 'copied!';
+        btn.classList.add('btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.classList.remove('btn-success');
+        }, 2000);
+    }).catch(err => {
+        console.error('Chyba při kopírování: ', err);
     });
 }
 
