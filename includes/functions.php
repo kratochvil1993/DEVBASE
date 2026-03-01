@@ -465,6 +465,8 @@ function getGlobalStats() {
         'total_snippets' => 0,
         'total_notes' => 0,
         'total_todos' => 0,
+        'total_code_drafts' => 0,
+        'total_note_drafts' => 0,
         'last_added' => null,
         'top_tags' => []
     ];
@@ -480,6 +482,13 @@ function getGlobalStats() {
     // Total Todos (active)
     $res = $conn->query("SELECT COUNT(*) as count FROM todos WHERE is_archived = 0");
     if ($res) $stats['total_todos'] = $res->fetch_assoc()['count'];
+
+    // Total Drafts (Scratchpads)
+    $res = $conn->query("SELECT COUNT(*) as count FROM scratchpads WHERE type = 'code'");
+    if ($res) $stats['total_code_drafts'] = $res->fetch_assoc()['count'];
+    
+    $res = $conn->query("SELECT COUNT(*) as count FROM scratchpads WHERE type = 'note'");
+    if ($res) $stats['total_note_drafts'] = $res->fetch_assoc()['count'];
     
     // Last Added
     $res = $conn->query("SELECT title, created_at FROM (

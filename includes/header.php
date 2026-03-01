@@ -249,6 +249,21 @@ $stats = getGlobalStats();
                     </div>
                 </div>
             </div>
+
+            <div class="row g-2 px-1 mt-1">
+                <div class="col-6">
+                    <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
+                        <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Code Draftů</div>
+                        <div class="h6 fw-bold text-white mb-0"><?php echo $stats['total_code_drafts'] ?? 0; ?></div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
+                        <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Note Draftů</div>
+                        <div class="h6 fw-bold text-white mb-0"><?php echo $stats['total_note_drafts'] ?? 0; ?></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>

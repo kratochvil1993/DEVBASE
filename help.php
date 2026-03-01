@@ -26,8 +26,8 @@ include 'includes/header.php';
                     <a href="#ai" class="submenu-link" data-section="ai">AI Funkce</a>
                     <a href="#shortcuts" class="submenu-link" data-section="shortcuts">Zkratky</a>
                     <a href="#tagging" class="submenu-link" data-section="tagging">Tagy</a>
-                    <a href="#code-drafts" class="submenu-link" data-section="code-drafts">Code Drafts</a>
-                    <a href="#note-drafts" class="submenu-link" data-section="note-drafts">Note Drafts</a>
+                    <a href="#code-drafts" class="submenu-link" data-section="code-drafts">Code</a>
+                    <a href="#note-drafts" class="submenu-link" data-section="note-drafts">Drafts</a>
                     <a href="#notes" class="submenu-link" data-section="notes">Poznámky</a>
                     <a href="#todo" class="submenu-link" data-section="todo">TODO</a>
                     <a href="#security" class="submenu-link" data-section="security">Bezpečnost</a>
@@ -217,7 +217,7 @@ console.log('Hello World');
         </div>
 
         <div class="glass-card no-jump p-4 mt-4 help-section" id="code-drafts">
-            <h4 class="text-white mb-4"><i class="bi bi-braces me-2"></i> Práce s Code Drafts</h4>
+            <h4 class="text-white mb-4"><i class="bi bi-braces me-2"></i> Práce s Code</h4>
             <p class="text-white small mb-3">Tato sekce slouží jako vaše "pískoviště" pro libovolný kód, konfigurační řetězce nebo technické poznámky, které chcete mít neustále po ruce předtím, než se rozhodnete je trvale uložit do snippetů.</p>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
@@ -251,7 +251,7 @@ console.log('Hello World');
         </div>
 
         <div class="glass-card no-jump p-4 mt-4 help-section" id="note-drafts">
-            <h4 class="text-white mb-4"><i class="bi bi-journal-plus me-2"></i> Práce s Note Drafts</h4>
+            <h4 class="text-white mb-4"><i class="bi bi-journal-plus me-2"></i> Práce s Drafts</h4>
             <p class="text-white small mb-3">Rychlé pískoviště pro vaše textové poznámky a nápady. Ideální místo pro rozepsání obsahu, než ho finálně zařadíte do kategorií.</p>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
