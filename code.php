@@ -141,9 +141,7 @@ include 'includes/header.php';
                     </div>
                     <?php endif; ?>
 
-                    <button type="button" class="btn btn-copy px-3" onclick="copyCode(this)">
-                        <i class="bi bi-clipboard me-2"></i> copy
-                    </button>
+
                     <div class="dropdown">
                         <button class="btn btn-send-to px-3 dropdown-toggle text-white" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-send me-2"></i> Poslat do
@@ -191,7 +189,10 @@ include 'includes/header.php';
             </div>
             <?php endif; ?>
 
-            <div class="editor-container border border-light border-opacity-10 rounded-bottom overflow-hidden shadow-lg" style="border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;">
+            <div class="editor-container border border-light border-opacity-10 rounded-bottom overflow-hidden shadow-lg" style="border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; position: relative;">
+                <button type="button" class="btn btn-sm btn-copy px-3" onclick="copyCode(this)">
+                    copy
+                </button>
                 <textarea id="codeEditor"><?php echo htmlspecialchars($content); ?></textarea>
             </div>
             
@@ -375,17 +376,26 @@ li.CodeMirror-hint-active {
     transform: none !important;
 }
 .btn-copy {
-    background: rgba(142, 84, 233, 0.15);
-    border: 1px solid rgba(142, 84, 233, 0.4);
-    color: #fff;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .btn-copy:hover {
-    background: rgba(142, 84, 233, 0.3);
-    border-color: rgba(142, 84, 233, 0.6);
-    color: #fff;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #ffffff;
     transform: none;
-    box-shadow: 0 5px 15px rgba(142, 84, 233, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 .btn-copy:active {
     transform: translateY(0);
@@ -1022,7 +1032,7 @@ function copyCode(btn) {
     navigator.clipboard.writeText(content).then(() => {
         const originalHtml = btn.innerHTML;
         
-        btn.innerHTML = '<i class="bi bi-check2 me-2"></i> Zkopírováno!';
+        btn.innerHTML = 'copied!';
         btn.classList.replace('btn-copy', 'btn-success');
         
         setTimeout(() => {

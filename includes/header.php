@@ -76,12 +76,12 @@ $stats = getGlobalStats();
                 <?php endif; ?>
                 <?php if (getSetting('code_enabled', '1') == '1'): ?>
                 <a href="code.php" class="nav-toggle-btn <?php echo ($currentPage == 'code.php') ? 'active' : ''; ?>">
-                    <i class="bi bi-braces me-2"></i> <span class="d-none d-md-inline">Code Drafts</span>
+                    <i class="bi bi-braces me-2"></i> <span class="d-none d-md-inline">Code</span>
                 </a>
                 <?php endif; ?>
                 <?php if (getSetting('note_drafts_enabled', '1') == '1'): ?>
                 <a href="notes_drafts.php" class="nav-toggle-btn <?php echo ($currentPage == 'notes_drafts.php') ? 'active' : ''; ?>">
-                    <i class="bi bi-journal-plus me-2"></i> <span class="d-none d-md-inline">Note Drafts</span>
+                    <i class="bi bi-journal-plus me-2"></i> <span class="d-none d-md-inline">Drafts</span>
                 </a>
                 <?php endif; ?>
                 <?php if (getSetting('notes_enabled', '1') == '1'): ?>
