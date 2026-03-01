@@ -1108,12 +1108,10 @@ h6 i.bi-pin-angle-fill {
   30% {
     box-shadow: 0 0 40px 10px rgba(142, 84, 233, 0.5);
     border-color: rgba(142, 84, 233, 1) !important;
-    transform: scale(1.02);
     background-color: rgba(142, 84, 233, 0.15) !important;
   }
   100% {
     box-shadow: 0 0 0 0 rgba(142, 84, 233, 0);
-    transform: scale(1);
   }
 }
 
