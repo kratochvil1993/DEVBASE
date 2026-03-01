@@ -647,6 +647,10 @@ function triggerAutosave() {
         if (res && res.status === 'success') {
             lastSavedContent = currentContent;
             lastSavedName = currentName;
+            
+            // Update tab name in UI if changed
+            const activeTab = document.querySelector('.nav-tab-item.active .tab-name');
+            if (activeTab) activeTab.textContent = currentName;
         }
     });
 }
@@ -673,6 +677,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     updateCharCount();
     editor.on('change', updateCharCount);
+    
+    // Autosave on name change/blur
+    const padNameInput = document.getElementById('padName');
+    if (padNameInput) {
+        padNameInput.addEventListener('blur', triggerAutosave);
+        padNameInput.addEventListener('change', triggerAutosave);
+    }
     
     // Color Picker Init
     initColorPicker();
