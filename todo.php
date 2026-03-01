@@ -175,6 +175,11 @@ include 'includes/header.php';
                     </div>
 
                     <div class="mb-3">
+                        <label class="form-label text-white-50 small">Poznámka</label>
+                        <textarea name="note" id="editTodoNote" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" rows="3" placeholder="Volitelná poznámka k úkolu..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
                         <div class="form-check form-switch card-text">
                             <input class="form-check-input" type="checkbox" name="is_locked" id="editTodoLocked" value="1">
                             <label class="form-check-label text-white-50 small" for="editTodoLocked">
@@ -205,6 +210,38 @@ include 'includes/header.php';
                     <button type="submit" class="btn btn-add-snipet px-4">Uložit změny</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Todo Modal -->
+<div class="modal fade" id="viewTodoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-bottom border-light border-opacity-10">
+                <h5 class="modal-title text-white">Detail úkolu</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h5 id="viewTodoText" class="text-white mb-2"></h5>
+                    <div id="viewTodoTags" class="d-flex flex-wrap gap-1 mb-3"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-white-50 small mb-1"><i class="bi bi-calendar-event me-1"></i> Termín splnění</label>
+                    <div id="viewTodoDeadline" class="text-white fs-6"></div>
+                </div>
+
+                <div class="mb-0">
+                    <label class="form-label text-white-50 small mb-1"><i class="bi bi-file-earmark-text me-1"></i> Poznámka</label>
+                    <div id="viewTodoNote" class="text-white rounded p-3" style="background: rgba(0,0,0,0.2); min-height: 80px; white-space: pre-wrap;"></div>
+                </div>
+            </div>
+            <div class="modal-footer border-top border-light border-opacity-10">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zavřít</button>
+                <button type="button" class="btn btn-add-snipet px-4" id="viewTodoEditBtn">Upravit</button>
+            </div>
         </div>
     </div>
 </div>
@@ -329,11 +366,59 @@ function saveTodosOrder() {
     });
 }
 
+function openViewTodoModal(todo) {
+    document.getElementById('viewTodoText').innerText = todo.text;
+    
+    // Zobrazeni stitku
+    const tagsContainer = document.getElementById('viewTodoTags');
+    tagsContainer.innerHTML = '';
+    if (todo.tags && todo.tags.length > 0) {
+        todo.tags.forEach(tag => {
+            const badge = document.createElement('span');
+            badge.className = 'badge';
+            badge.style.backgroundColor = tag.color || '#6c757d';
+            badge.style.color = '#fff';
+            badge.innerText = tag.name;
+            tagsContainer.appendChild(badge);
+        });
+    }
+
+    // Zobrazeni terminu
+    const deadlineContainer = document.getElementById('viewTodoDeadline');
+    if (todo.deadline) {
+        const d = new Date(todo.deadline);
+        deadlineContainer.innerText = d.toLocaleDateString('cs-CZ');
+    } else {
+        deadlineContainer.innerHTML = '<span class="text-white-50">Neuveden</span>';
+    }
+
+    // Zobrazeni poznamky
+    const noteContainer = document.getElementById('viewTodoNote');
+    if (todo.note && todo.note.trim() !== '') {
+        noteContainer.innerText = todo.note;
+    } else {
+        noteContainer.innerHTML = '<span class="text-white-50 fst-italic">Bez poznámky.</span>';
+    }
+
+    const editBtn = document.getElementById('viewTodoEditBtn');
+    editBtn.onclick = function() {
+        const modalEl = document.getElementById('viewTodoModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+        openEditTodoModal(todo);
+    };
+
+    const modal = new bootstrap.Modal(document.getElementById('viewTodoModal'));
+    modal.show();
+}
+
 function openEditTodoModal(todo) {
     document.getElementById('editTodoId').value = todo.id;
     document.getElementById('editTodoText').value = todo.text;
     document.getElementById('editTodoDeadline').value = todo.deadline || '';
+    document.getElementById('editTodoNote').value = todo.note || '';
     document.getElementById('editTodoLocked').checked = (todo.is_locked == 1 || todo.is_locked === true || todo.is_locked === "1");
+
 
     
     // Check checkboxes

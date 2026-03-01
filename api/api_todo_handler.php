@@ -19,13 +19,14 @@ if ($action === 'add_todo' || $action === 'edit_todo') {
     $deadline = $_POST['deadline'] ?? null;
     $is_locked = isset($_POST['is_locked']) ? 1 : 0;
     $todo_id = $action === 'edit_todo' ? ($_POST['todo_id'] ?? null) : null;
+    $note = $_POST['note'] ?? null;
 
     if (empty($text)) {
         echo json_encode(['status' => 'error', 'message' => 'Chybí text úkolu.']);
         exit;
     }
 
-    $id = saveTodo($text, $tags, $todo_id, $is_locked, $deadline);
+    $id = saveTodo($text, $tags, $todo_id, $is_locked, $deadline, $note);
     $success = (bool)$id;
 } elseif ($action === 'toggle_pin') {
     $id = $_POST['todo_id'] ?? null;

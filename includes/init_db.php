@@ -72,7 +72,8 @@ if (file_exists($schema_file)) {
             'is_pinned' => 'TINYINT(1) DEFAULT 0',
             'is_archived' => 'TINYINT(1) DEFAULT 0',
             'sort_order' => 'INT DEFAULT 0',
-            'deadline' => 'DATE DEFAULT NULL'
+            'deadline' => 'DATE DEFAULT NULL',
+            'note' => 'TEXT DEFAULT NULL'
         ],
         'tags' => [
             'type' => "VARCHAR(20) DEFAULT 'snippet'",

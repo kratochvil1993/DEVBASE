@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS todos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     text VARCHAR(500) NOT NULL,
     deadline DATE DEFAULT NULL,
+    note TEXT DEFAULT NULL,
     is_archived TINYINT(1) DEFAULT 0,
     is_pinned TINYINT(1) DEFAULT 0,
     is_locked TINYINT(1) DEFAULT 0,

@@ -28,7 +28,7 @@ if (!empty($todo['deadline'])) {
                 <div class="me-3 mb-0 d-flex align-items-center">
                     <input class="form-check-input m-0 fs-5 flex-shrink-0" type="checkbox" onclick="archiveTodoItem(<?php echo $todo['id']; ?>, event)" style="cursor: pointer;">
                 </div>
-                <div class="d-flex flex-column overflow-hidden flex-grow-1">
+                <div class="d-flex flex-column overflow-hidden flex-grow-1" style="cursor: pointer;" onclick="openViewTodoModal(<?php echo htmlspecialchars(json_encode($todo), ENT_QUOTES, 'UTF-8'); ?>)">
                     <?php if (!empty($todo['tags'])): ?>
                         <div class="d-flex flex-wrap gap-1 mb-1">
                             <?php foreach ($todo['tags'] as $tag): ?>
@@ -43,6 +43,9 @@ if (!empty($todo['deadline'])) {
                             <i class="bi bi-lock-fill me-1 small opacity-50"></i>
                         <?php endif; ?>
                         <?php echo htmlspecialchars($todo['text']); ?>
+                        <?php if (!empty($todo['note'])): ?>
+                            <i class="bi bi-file-earmark-text text-white-50 ms-2" style="font-size: 0.8em;" title="Obsahuje poznámku"></i>
+                        <?php endif; ?>
                     </span>
                     <?php if ($deadlineDateFormatted): ?>
                         <small class="text-white-50 mt-1">

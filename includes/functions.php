@@ -11,6 +11,7 @@ $checkSnippetCols = @$conn->query("SHOW COLUMNS FROM snippets LIKE 'is_locked'")
 $checkSnippetPinned = @$conn->query("SHOW COLUMNS FROM snippets LIKE 'is_pinned'");
 $checkTodoCols = @$conn->query("SHOW COLUMNS FROM todos LIKE 'deadline'");
 $checkTodoPinned = @$conn->query("SHOW COLUMNS FROM todos LIKE 'is_pinned'");
+$checkTodoNote = @$conn->query("SHOW COLUMNS FROM todos LIKE 'note'");
 $checkNoteCols = @$conn->query("SHOW COLUMNS FROM notes LIKE 'language_id'");
 $checkNoteArchived = @$conn->query("SHOW COLUMNS FROM notes LIKE 'is_archived'");
 $checkTagsType = @$conn->query("SHOW COLUMNS FROM tags LIKE 'type'");
@@ -22,6 +23,7 @@ if (!$checkSettings || $checkSettings->num_rows == 0 ||
     !$checkSnippetPinned || $checkSnippetPinned->num_rows == 0 ||
     !$checkTodoCols || $checkTodoCols->num_rows == 0 ||
     !$checkTodoPinned || $checkTodoPinned->num_rows == 0 ||
+    !$checkTodoNote || $checkTodoNote->num_rows == 0 ||
     !$checkNoteCols || $checkNoteCols->num_rows == 0 ||
     !$checkNoteArchived || $checkNoteArchived->num_rows == 0 ||
     !$checkTagsType || $checkTagsType->num_rows == 0) {
@@ -392,7 +394,7 @@ function getAllTodos($archive_status = 0) {
     return $todos;
 }
 
-function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = null) {
+function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = null, $note = null) {
     global $conn;
     $text = $conn->real_escape_string($text);
     $is_locked = (int)$is_locked;
@@ -401,16 +403,21 @@ function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = nul
         $deadline = $_POST['deadline'];
     }
     
+    if ($note === null && isset($_POST['note'])) {
+        $note = $_POST['note'];
+    }
+    
     $deadline_val = !empty($deadline) ? "'" . $conn->real_escape_string($deadline) . "'" : "NULL";
+    $note_val = ($note !== null && $note !== '') ? "'" . $conn->real_escape_string($note) . "'" : "NULL";
     
     if ($id) {
         $id = (int)$id;
-        $sql = "UPDATE todos SET text = '$text', deadline = $deadline_val, is_locked = $is_locked WHERE id = $id";
+        $sql = "UPDATE todos SET text = '$text', deadline = $deadline_val, note = $note_val, is_locked = $is_locked WHERE id = $id";
     } else {
         $result = $conn->query("SELECT MIN(sort_order) as min_sort FROM todos");
         $row = $result ? $result->fetch_assoc() : null;
         $next_sort = $row['min_sort'] !== null ? (int)$row['min_sort'] - 1 : 0;
-        $sql = "INSERT INTO todos (text, deadline, sort_order, is_locked) VALUES ('$text', $deadline_val, $next_sort, $is_locked)";
+        $sql = "INSERT INTO todos (text, deadline, note, sort_order, is_locked) VALUES ('$text', $deadline_val, $note_val, $next_sort, $is_locked)";
     }
     
     if ($conn->query($sql)) {
