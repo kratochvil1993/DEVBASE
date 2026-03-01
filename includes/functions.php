@@ -26,12 +26,20 @@ if (!$checkSettings || $checkSettings->num_rows == 0 ||
     !$checkNoteArchived || $checkNoteArchived->num_rows == 0 ||
     !$checkTagsType || $checkTagsType->num_rows == 0) {
     
-    // Determine path to includes/init_db.php
-    $path = "includes/init_db.php";
-    if (!file_exists($path)) {
-        $path = "../includes/init_db.php";
+    // Determine the base URL to redirect to includes/init_db.php
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+    $host_url = $_SERVER['HTTP_HOST'];
+    $script_name = $_SERVER['SCRIPT_NAME'];
+    $base_dir = dirname($script_name);
+    
+    // Normalize base_dir to always point to the root if we are in API or includes
+    if (basename($base_dir) == 'api' || basename($base_dir) == 'includes') {
+        $base_dir = dirname($base_dir);
     }
-    header("Location: $path");
+    
+    $redirect_url = $protocol . "://" . $host_url . rtrim($base_dir, '/') . "/includes/init_db.php";
+    
+    header("Location: $redirect_url");
     exit;
 }
 

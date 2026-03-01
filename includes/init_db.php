@@ -12,7 +12,7 @@ if (!$conn->select_db($dbname)) {
     if ($conn_init->connect_error) {
         die("Connection failed: " . $conn_init->connect_error);
     }
-    $conn_init->query("CREATE DATABASE IF NOT EXISTS $dbname");
+    $conn_init->query("CREATE DATABASE IF NOT EXISTS $dbname CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
     $conn_init->close();
     
     // Now select it on the main connection
@@ -112,11 +112,13 @@ if (file_exists($schema_file)) {
         ('Můj první draft', 'Zde si můžete psát své nápady, které později rozpracujete.')");
     }
 
-    header("Refresh: 2; URL=../index.php");
     echo "<div style='font-family: sans-serif; text-align: center; margin-top: 50px;'>";
     echo "<h2 style='color: #2ecc71;'>Databáze a schéma byly úspěšně inicializovány.</h2>";
-    echo "<p>Za okamžik budete přesměrováni na hlavní stránku...</p>";
+    echo "<p>Položky byly vytvořeny. Za okamžik budete přesměrováni...</p>";
     echo "</div>";
+    
+    // Automatic redirect back to root
+    echo "<script>setTimeout(function(){ window.location.href = '../index.php'; }, 2000);</script>";
 
 } else {
     echo "Schema file not found at: " . htmlspecialchars($schema_file);
