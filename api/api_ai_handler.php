@@ -65,6 +65,19 @@ if ($action === 'explain_code') {
     Instrukce od uživatele: " . $userPrompt . "
     
     Zde je kód k práci:\n\n" . $content;
+} elseif ($action === 'todo_summary') {
+    $content = getTodoSummariesForAI();
+    $prompt = "Jsi špičkový produktivní kouč a analytik. Tvým úkolem je analyzovat následující seznam úkolů uživatele a vytvořit mu krátký, motivující a přehledný 'Bojový plán'.
+    
+    Výstup musí obsahovat:
+    1. 📊 Rychlé shrnutí (kolik toho je celkem a jestli něco hoří - PO TERMÍNU).
+    2. 🎯 TOP PRIORITA: Vyber jeden nejdůležitější úkol, na který se má uživatel dnes zaměřit (zdůvodni proč).
+    3. 🧩 Návrh postupu: Stručně navrhni, v jakém pořadí má úkoly řešit (např. nejdřív ty těžké, odpoledne administrativu).
+    4. ✨ Krátký motivační citát nebo povzbuzení na konec.
+    
+    Odpověz v češtině. Používej Markdown pro formátování (tučné písmo, odrážky, nadpisy). Buď stručný a věcný.
+    
+    Zde je seznam úkolů k analýze:\n\n" . $content;
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Neznámá akce.']);
     exit;

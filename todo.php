@@ -88,6 +88,11 @@ include 'includes/header.php';
                 <button class="btn btn-edit-order rounded px-4" id="editOrderBtn" onclick="toggleSortingMode()">
                     <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
                 </button>
+                <?php if (getSetting('ai_enabled', '0') == '1'): ?>
+                <button class="btn btn-ai rounded px-4" id="aiSummaryBtn">
+                    <i class="bi bi-robot me-2"></i> AI Souhrn
+                </button>
+                <?php endif; ?>
                 <button class="btn btn-success rounded px-4 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
                     <i class="bi bi-check-lg me-2"></i> Hotovo
                 </button>
@@ -200,6 +205,27 @@ include 'includes/header.php';
                     <button type="submit" class="btn btn-add-snipet px-4">Uložit změny</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- AI Summary Modal -->
+<div class="modal fade" id="aiSummaryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-bottom border-light border-opacity-10">
+                <h5 class="modal-title text-white"><i class="bi bi-robot me-2"></i> AI Bojový plán</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-white" id="aiSummaryContent" style="max-height: 70vh; overflow-y: auto;">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-ai mb-3" role="status"></div>
+                    <p class="text-white-50">AI analyzuje tvé úkoly a připravuje strategii...</p>
+                </div>
+            </div>
+            <div class="modal-footer border-top border-light border-opacity-10">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zavřít</button>
+            </div>
         </div>
     </div>
 </div>
@@ -675,6 +701,61 @@ function updateTodoUIState() {
         emptyState.remove();
     }
 }
+
+// AI Summary logic
+document.addEventListener('DOMContentLoaded', () => {
+    const aiSummaryBtn = document.getElementById('aiSummaryBtn');
+    if (aiSummaryBtn) {
+        aiSummaryBtn.addEventListener('click', function() {
+            const modalEl = document.getElementById('aiSummaryModal');
+            const modal = new bootstrap.Modal(modalEl);
+            const contentDiv = document.getElementById('aiSummaryContent');
+            
+            // Show loading state
+            contentDiv.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-ai mb-3" role="status"></div>
+                    <p class="text-white-50">AI analyzuje tvé úkoly a připravuje strategii...</p>
+                </div>
+            `;
+            modal.show();
+            
+            fetch('api/api_ai_handler.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'todo_summary', content: 'dummy' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Check if marked is available (it should be from footer)
+                    if (typeof marked !== 'undefined') {
+                        const html = (typeof marked.parse === 'function') ? marked.parse(data.answer) : marked(data.answer);
+                        contentDiv.innerHTML = '<div class="markdown-preview">' + html + '</div>';
+                    } else {
+                        contentDiv.innerHTML = '<div style="white-space: pre-wrap;">' + data.answer + '</div>';
+                    }
+                } else {
+                    contentDiv.innerHTML = `
+                        <div class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            ${data.message}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                contentDiv.innerHTML = `
+                    <div class="alert alert-danger bg-danger bg-opacity-10 border-danger border-opacity-25 text-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Nastala technická chyba při spojení s AI.
+                    </div>
+                `;
+            });
+        });
+    }
+});
 </script>
 
 <?php include 'includes/footer.php'; ?>

@@ -589,6 +589,44 @@ function verifyAppPassword($password) {
     return false;
 }
 
+/**
+ * Zformátuje všechny aktivní úkoly pro AI analýzu.
+ */
+function getTodoSummariesForAI() {
+    global $conn;
+    $today = date('Y-m-d');
+    
+    $sql = "SELECT t.*, GROUP_CONCAT(tg.name) as tag_names 
+            FROM todos t 
+            LEFT JOIN todo_tags tt ON t.id = tt.todo_id 
+            LEFT JOIN tags tg ON tt.tag_id = tg.id 
+            WHERE t.is_archived = 0 
+            GROUP BY t.id 
+            ORDER BY t.is_pinned DESC, t.deadline ASC, t.sort_order ASC";
+    
+    $result = $conn->query($sql);
+    if (!$result) return "Žádné aktivní úkoly nebyly nalezeny.";
+    
+    $output = "SOUČASNÉ DATUM: " . $today . "\n\nNEVYŘÍZENÉ ÚKOLY:\n";
+    
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $status = "Standardní";
+            if ($row['deadline']) {
+                if ($row['deadline'] < $today) $status = "PO TERMÍNU!";
+                elseif ($row['deadline'] == $today) $status = "DNES";
+            }
+            $tags = $row['tag_names'] ? "[" . $row['tag_names'] . "]" : "";
+            $pinned = $row['is_pinned'] ? "(PŘIPNUTO)" : "";
+            $output .= "- $pinned " . $row['text'] . " $tags (Deadline: " . ($row['deadline'] ?: "neuveden") . ") -> $status\n";
+        }
+    } else {
+        $output .= "Momentálně nemáš žádné aktivní úkoly. Skvělá práce!";
+    }
+    
+    return $output;
+}
+
 function exportAllData() {
     global $conn;
     
