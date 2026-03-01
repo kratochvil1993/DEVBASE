@@ -222,7 +222,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Více draftů (Taby), Persistence a Autosave:</strong>
-                    V sekci Code Drafts můžete mít otevřeno **mnoho různých draftů** současně. Mezi nimi přepínáte pomocí tabů nad editorem. Každý draft si můžete **přejmenovat** jednoduše kliknutím na jeho název. Aplikace si automaticky pamatuje, který tab jste měli naposledy otevřený. Vaše práce je chráněna funkcí **Autosave**, která automaticky ukládá rozpracovaný kód v pravidelných intervalech.
+                    V sekci Code Drafts můžete mít otevřeno **mnoho různých draftů** současně. Mezi nimi přepínáte pomocí tabů nad editorem. Každý draft si můžete **přejmenovat** jednoduše kliknutím na jeho název (změna názvu se pro maximální pohodlí po kliknutí jinam ihned automaticky uloží). Aplikace si automaticky pamatuje, který tab jste měli naposledy otevřený. Vaše práce je chráněna funkcí **Autosave**, která automaticky ukládá rozpracovaný kód v pravidelných intervalech.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Poslat do Snippetů / Poznámek:</strong>
@@ -319,6 +319,10 @@ console.log('Hello World');
                     V horní části najdete panel, který je vizuálně sjednocen s vyhledávacím barem. Jednoduše napište co potřebujete udělat a stiskněte Enter nebo tlačítko pro přidání. Pro maximální efektivitu se při vytváření úkolu automaticky předvolí první štítek z vašeho seznamu (pokud existuje).
                 </li>
                 <li class="mb-3">
+                    <strong class="text-white d-block">Detailní náhled a Úpravy:</strong>
+                    Kliknutím na text úkolu nově otevřete **detailní modální okno** s celkovým přehledem o daném úkolu (včetně rozepsané poznámky, termínu a štítků), přičemž režim úloh je chráněn proti nechtěným přepisům. Pokud chcete úkol upravit, stačí kliknout na vyhrazené tlačítko pro editaci.
+                </li>
+                <li class="mb-3">
                     <strong class="text-white d-block">Štítkování úkolů:</strong>
                     Úkolům můžete přiřazovat barevné štítky. Buď při rychlém přidání (jeden štítek), nebo přes ikonu tužky (neomezeně štítků). Nad seznamem úkolů pak najdete filtry, které vám umožní zobrazit jen úkoly s konkrétním tématem.
                 </li>
@@ -344,7 +348,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Systém upozornění (Notifikace):</strong>
-                    V pravé části horní navigace se nachází **ikona zvonečku**, která vás upozorní na úkoly s vypršeným nebo blížícím se termínem. Ikona obsahuje badge s počtem připomínek. Červená barva a pulzování značí úkoly po termínu, oranžová pak úkoly zítřejší. Kliknutím na zvoneček otevřete rychlý přehled s přímými odkazy na konkrétní úkoly.
+                    V pravé části horní navigace se nachází **ikona zvonečku**, která vás upozorní na úkoly s vypršeným nebo blížícím se termínem. Ikona obsahuje badge s počtem připomínek. Červená barva a pulzování značí úkoly po termínu, oranžová pak úkoly zítřejší. Kliknutím na zvoneček otevřete rychlý přehled s přímými odkazy na konkrétní úkoly. Po prokliknutí z upozornění se daný úkol okamžitě otevře v detailním náhledu a v seznamu se přibližně na 2 vteřiny **vizuálně zvýrazní**, abyste jej vůbec nemuseli hledat.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">AI Bojový plán (Strategický souhrn):</strong>
@@ -380,7 +384,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Zpracování kódu a draftů:</strong>
-                    Přímo v editorech draftů může AI kód nejen vysvětlit, ale také **zformátovat** (beautify) nebo zmenšit (minify). U Note Drafts pak můžete využít **AI Prompt Bar** pro jakoukoliv vlastní manipulaci s textem na základě vašeho zadání.
+                    Přímo v editorech draftů může AI kód nejen vysvětlit, ale také **zformátovat** (beautify) nebo zmenšit (minify). Tyto vylepšené AI funkce pro formátování kódu jsou nyní konzistentně k dispozici v Code Drafts i Note Drafts. U Note Drafts pak navíc můžete využít **AI Prompt Bar** pro jakoukoliv vlastní manipulaci s textem na základě vašeho zadání.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Strategický souhrn úkolů:</strong>
