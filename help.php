@@ -263,8 +263,8 @@ console.log('Hello World');
                     I zde můžete pracovat na více poznámkách současně díky systému tabů. Každý draft si můžete libovolně pojmenovat. Stejně jako u kódových draftů, i zde funguje **automatické ukládání (Autosave)** na pozadí.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Přesun do Poznámek:</strong>
-                    Pomocí tlačítka <i class="bi bi-send me-1"></i> **Poslat do** můžete rozpracovaný draft kdykoliv převést na trvalou položku v sekci **Poznámky** (včetně výběru štítků).
+                    <strong class="text-white d-block">Přesun do Poznámek a kopírování:</strong>
+                    Pomocí tlačítka <i class="bi bi-send me-1"></i> **Poslat do** můžete rozpracovaný draft kdykoliv převést na trvalou položku v sekci **Poznámky** (včetně výběru štítků). Pokud potřebujete text jen rychle dostat jinam, využijte tlačítko <i class="bi bi-clipboard me-1"></i> **Kopírovat**, které okamžitě uloží celý obsah draftu do vaší schránky.
                 </li>
             </ul>
         </div>
@@ -351,7 +351,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Nastavení a aktivace:</strong>
-                    V **Nastavení** (sekce AI Nastavení) zvolte svého preferovaného poskytovatele (**Gemini** nebo **OpenAI**) a vložte příslušný API klíč. Zde si také můžete vybrat konkrétní model (např. **GPT-4o** nebo **Gemini 2.0 Flash**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a poskytovatel vybrán, v celé aplikaci se zpřístupní AI nástroje.
+                    V **Nastavení** (sekce AI Nastavení) zvolte svého preferovaného poskytovatele (**Gemini** nebo **OpenAI**) a vložte příslušný API klíč. Zde si také můžete vybrat konkrétní model (např. **GPT-4o** nebo **Gemini 2.5 Flash Lite**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a poskytovatel vybrán, v celé aplikaci se zpřístupní AI nástroje. Všechny AI funkce lze také v nastavení jedním kliknutím **globálně vypnout**, což skryje všechna fialová tlačítka v celé aplikaci pro dokonale čisté rozhraní.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Vysvětlení kódu (Snippety):</strong>
