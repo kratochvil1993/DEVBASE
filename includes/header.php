@@ -166,7 +166,7 @@ $stats = getGlobalStats();
         $hasAiKey = !empty(getSetting('gemini_api_key')) || !empty(getSetting('openai_api_key'));
         if ($aiEnabled && $hasAiKey): 
         ?>
-        <a href="settings.php" class="btn btn-sm btn-link text-ai p-0" title="AI Configured">
+        <a href="settings.php#section-ai" class="btn btn-sm btn-link text-ai p-0" title="AI Configured">
             <i class="bi bi-robot fs-5"></i>
         </a>
         <?php endif; ?>
