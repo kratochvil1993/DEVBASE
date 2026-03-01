@@ -90,70 +90,24 @@ $stats = getGlobalStats();
                 </a>
                 <?php endif; ?>
                 <?php if (getSetting('todos_enabled', '1') == '1'): ?>
-                <a href="todo.php" class="nav-toggle-btn <?php echo $currentPage == 'todo.php' ? 'active' : ''; ?> d-flex align-items-center">
+                <a href="todo.php" id="nav-todo-link" class="nav-toggle-btn <?php echo $currentPage == 'todo.php' ? 'active' : ''; ?> d-flex align-items-center">
                     <i class="bi bi-check2-square me-2"></i> <span class="d-none d-md-inline">TODO</span>
-                    <?php 
-                    if (getSetting('todo_badge_enabled', '1') == '1' && $stats['total_todos'] > 0) {
-                        echo '<span class="badge badge-todo ms-2">' . $stats['total_todos'] . '</span>';
-                    }
-                    ?>
+                    <span id="nav-todo-badge-container">
+                        <?php 
+                        if (getSetting('todo_badge_enabled', '1') == '1' && $stats['total_todos'] > 0) {
+                            echo '<span class="badge badge-todo ms-2">' . $stats['total_todos'] . '</span>';
+                        }
+                        ?>
+                    </span>
                 </a>
                 <?php endif; ?>
             </div>
         </div>
         
         <div class="ms-auto d-flex align-items-center gap-3">
-        <?php if (getSetting('todos_enabled', '1') == '1'): 
-            $reminders = getTodoReminders();
-            $criticalCount = count($reminders['critical']);
-            $warningCount = count($reminders['warning']);
-            $totalReminders = $criticalCount + $warningCount;
-            
-            if ($totalReminders > 0):
-                $badgeClass = ($criticalCount > 0) ? 'bg-danger' : 'bg-warning text-dark';
-                $pulseClass = ($criticalCount > 0) ? 'pulse-red' : '';
-        ?>
-            <div class="dropdown">
-                <button class="btn btn-link text-white p-0 position-relative <?php echo $pulseClass; ?>" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-bell-fill fs-5"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill <?php echo $badgeClass; ?>" style="font-size: 0.6rem;">
-                        <?php echo $totalReminders; ?>
-                    </span>
-                </button>
-                <div class="dropdown-menu dropdown-menu-end dropdown-menu-glass p-0 mt-2" style="width: 280px;">
-                    <div class="p-3 border-bottom border-light border-opacity-10 d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0 fw-bold">Upozornění</h6>
-                        <span class="badge <?php echo $badgeClass; ?>"><?php echo $totalReminders; ?> celkem</span>
-                    </div>
-                    <div class="reminder-list" style="max-height: 300px; overflow-y: auto;">
-                        <?php if ($criticalCount > 0): ?>
-                            <div class="px-3 py-2 bg-danger bg-opacity-10 small fw-bold text-danger-emphasis">Po termínu / Dnes</div>
-                            <?php foreach ($reminders['critical'] as $todo): ?>
-                                <a class="dropdown-item px-3 py-2 border-bottom border-light border-opacity-10" href="todo.php#todo-card-<?php echo $todo['id']; ?>">
-                                    <div class="text-truncate fw-medium"><?php echo htmlspecialchars($todo['text']); ?></div>
-                                    <small class="text-danger"><i class="bi bi-calendar-x me-1"></i> <?php echo date('j. n. Y', strtotime($todo['deadline'])); ?></small>
-                                </a>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-
-                        <?php if ($warningCount > 0): ?>
-                            <div class="px-3 py-2 bg-warning bg-opacity-10 small fw-bold text-warning-emphasis">Zítra vyprší</div>
-                            <?php foreach ($reminders['warning'] as $todo): ?>
-                                <a class="dropdown-item px-3 py-2 border-bottom border-light border-opacity-10" href="todo.php#todo-card-<?php echo $todo['id']; ?>">
-                                    <div class="text-truncate fw-medium"><?php echo htmlspecialchars($todo['text']); ?></div>
-                                    <small class="text-warning"><i class="bi bi-calendar-event me-1"></i> <?php echo date('j. n. Y', strtotime($todo['deadline'])); ?></small>
-                                </a>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
-                    <div class="p-2 text-center">
-                        <a href="todo.php" class="btn btn-sm btn-link text-white-50 text-decoration-none" style="font-size: 0.75rem;">Zobrazit všechny úkoly</a>
-                    </div>
-                </div>
-            </div>
-        <?php 
-            endif;
-        endif; ?>
+        <div id="header-notifications-container">
+            <?php include 'includes/header_notifications.php'; ?>
+        </div>
 
         <?php if (getSetting('theme_toggle_enabled', '1') == '1'): ?>
         <div class="form-check form-switch mb-0">
@@ -233,19 +187,19 @@ $stats = getGlobalStats();
                 <div class="col-4">
                     <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
                         <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Snippetů</div>
-                        <div class="h6 fw-bold text-white mb-0"><?php echo $stats['total_snippets']; ?></div>
+                        <div class="h6 fw-bold text-white mb-0" id="sidebar-snippet-count"><?php echo $stats['total_snippets']; ?></div>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
                         <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Notes</div>
-                        <div class="h6 fw-bold text-white mb-0"><?php echo $stats['total_notes']; ?></div>
+                        <div class="h6 fw-bold text-white mb-0" id="sidebar-note-count"><?php echo $stats['total_notes']; ?></div>
                     </div>
                 </div>
                 <div class="col-4">
                     <div class="glass-card no-jump p-2 text-center h-100" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);">
                         <div class="text-white-50 mb-1" style="font-size: 0.6rem;">Úkoly</div>
-                        <div class="h6 fw-bold text-white mb-0"><?php echo $stats['total_todos']; ?></div>
+                        <div class="h6 fw-bold text-white mb-0" id="sidebar-todo-count"><?php echo $stats['total_todos']; ?></div>
                     </div>
                 </div>
             </div>
@@ -270,4 +224,39 @@ $stats = getGlobalStats();
 </div>
 
 
+<script>
+function updateGlobalStats(data) {
+    if (!data) return;
+    
+    // Update notifications container
+    const notificationsContainer = document.getElementById('header-notifications-container');
+    if (notificationsContainer && data.nav_notifications_html !== undefined) {
+        notificationsContainer.innerHTML = data.nav_notifications_html;
+    }
+    
+    // Update TODO badge
+    const badgeContainer = document.getElementById('nav-todo-badge-container');
+    if (badgeContainer && data.stats) {
+        if (data.stats.total_todos > 0) {
+            badgeContainer.innerHTML = '<span class="badge badge-todo ms-2">' + data.stats.total_todos + '</span>';
+        } else {
+            badgeContainer.innerHTML = '';
+        }
+    }
+    
+    // Update sidebar todo count
+    const sidebarTodoCount = document.getElementById('sidebar-todo-count');
+    if (sidebarTodoCount && data.stats) {
+        sidebarTodoCount.textContent = data.stats.total_todos;
+    }
+    
+    // Update other stats if needed
+    const sidebarSnippetCount = document.getElementById('sidebar-snippet-count');
+    if (sidebarSnippetCount && data.stats) sidebarSnippetCount.textContent = data.stats.total_snippets;
+    
+    const sidebarNoteCount = document.getElementById('sidebar-note-count');
+    if (sidebarNoteCount && data.stats) sidebarNoteCount.textContent = data.stats.total_notes;
+}
+</script>
 <main class="container-fluid py-4">
+</content>

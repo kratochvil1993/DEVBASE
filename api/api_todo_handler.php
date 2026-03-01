@@ -10,6 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $action = $_POST['action'] ?? '';
+$id = null;
+$success = false;
 
 if ($action === 'add_todo' || $action === 'edit_todo') {
     $text = $_POST['text'] ?? '';
@@ -24,40 +26,43 @@ if ($action === 'add_todo' || $action === 'edit_todo') {
     }
 
     $id = saveTodo($text, $tags, $todo_id, $is_locked, $deadline);
-
-    if ($id) {
-        // Fetch the full todo object to render the template
-        $todos = getAllTodos(0);
-        $todo = null;
-        foreach ($todos as $t) {
-            if ($t['id'] == $id) {
-                $todo = $t;
-                break;
-            }
-        }
-
-        if ($todo) {
-            ob_start();
-            include '../includes/todo_item_template.php';
-            $html = ob_get_clean();
-
-            echo json_encode([
-                'status' => 'success',
-                'id' => $id,
-                'is_new' => $action === 'add_todo',
-                'html' => $html,
-                'message' => $action === 'add_todo' ? 'Úkol byl přidán.' : 'Úkol byl upraven.'
-            ]);
-        } else {
-             echo json_encode(['status' => 'error', 'message' => 'Úkol byl uložen, ale nepodařilo se jej načíst pro zobrazení.']);
-        }
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Nepodařilo se uložit úkol do databáze.']);
-    }
+    $success = (bool)$id;
 } elseif ($action === 'toggle_pin') {
     $id = $_POST['todo_id'] ?? null;
-    if ($id && toggleTodoPin($id)) {
-        // Fetch the updated todo to render new HTML
+    $success = $id && toggleTodoPin($id);
+} elseif ($action === 'archive_todo') {
+    $id = $_POST['todo_id'] ?? null;
+    $success = $id && archiveTodo($id, 1);
+} elseif ($action === 'unarchive_todo') {
+    $id = $_POST['todo_id'] ?? null;
+    $success = $id && archiveTodo($id, 0);
+} elseif ($action === 'delete_todo') {
+    $id = $_POST['todo_id'] ?? null;
+    $success = $id && deleteTodo($id);
+} elseif ($action === 'empty_archive') {
+    global $conn;
+    $success = $conn->query("DELETE FROM todos WHERE is_archived = 1");
+}
+
+if ($success) {
+    // Success block - prepare supplemental data
+    $stats = getGlobalStats();
+    
+    ob_start();
+    include '../includes/header_notifications.php';
+    $nav_notifications_html = ob_get_clean();
+
+    // Preparing the main response
+    $response = [
+        'status' => 'success',
+        'id' => $id,
+        'message' => 'Akce byla úspěšná.',
+        'stats' => $stats,
+        'nav_notifications_html' => $nav_notifications_html
+    ];
+
+    // Specific data based on action
+    if ($action === 'add_todo' || $action === 'edit_todo' || $action === 'toggle_pin') {
         $todos = getAllTodos(0);
         $todo = null;
         foreach ($todos as $t) {
@@ -66,53 +71,19 @@ if ($action === 'add_todo' || $action === 'edit_todo') {
                 break;
             }
         }
-
         if ($todo) {
             ob_start();
             include '../includes/todo_item_template.php';
-            $html = ob_get_clean();
-
-            echo json_encode([
-                'status' => 'success',
-                'id' => $id,
-                'is_pinned' => (bool)$todo['is_pinned'],
-                'html' => $html,
-                'message' => 'Stav připnutí změněn.'
-            ]);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Stav změněn, ale nepodařilo se jej načíst pro zobrazení.']);
+            $response['html'] = ob_get_clean();
+            if ($action === 'toggle_pin') $response['is_pinned'] = (bool)$todo['is_pinned'];
         }
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Chyba při připínání.']);
     }
-} elseif ($action === 'archive_todo') {
-    $id = $_POST['todo_id'] ?? null;
-    if ($id && archiveTodo($id, 1)) {
-        echo json_encode(['status' => 'success', 'message' => 'Úkol archivován.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Chyba při archivaci.']);
-    }
-} elseif ($action === 'unarchive_todo') {
-    $id = $_POST['todo_id'] ?? null;
-    if ($id && archiveTodo($id, 0)) {
-        echo json_encode(['status' => 'success', 'message' => 'Úkol vrácen na seznam aktivních.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Chyba při obnově úkolu.']);
-    }
-} elseif ($action === 'delete_todo') {
-    $id = $_POST['todo_id'] ?? null;
-    if ($id && deleteTodo($id)) {
-        echo json_encode(['status' => 'success', 'message' => 'Úkol smazán.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Chyba při mazání.']);
-    }
-} elseif ($action === 'empty_archive') {
-    global $conn;
-    if ($conn->query("DELETE FROM todos WHERE is_archived = 1")) {
-        echo json_encode(['status' => 'success', 'message' => 'Archiv vyčištěn.']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Chyba při mazání archivu.']);
-    }
+
+    echo json_encode($response);
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Neznámá akce.']);
+    if (!$action) {
+         echo json_encode(['status' => 'error', 'message' => 'Neznámá akce.']);
+    } else {
+         echo json_encode(['status' => 'error', 'message' => 'Akce se nezdařila.']);
+    }
 }

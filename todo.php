@@ -419,6 +419,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     newTodoItem.classList.add('flash-purple');
                     setTimeout(() => newTodoItem.classList.remove('flash-purple'), 2000);
+                    
+                    // Update header/sidebar stats
+                    if (typeof updateGlobalStats === 'function') updateGlobalStats(data);
                 } else {
                     alert('Chyba: ' + data.message);
                 }
@@ -470,6 +473,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         window.location.reload();
                     }
+                    
+                    // Update header/sidebar stats
+                    if (typeof updateGlobalStats === 'function') updateGlobalStats(data);
                 } else {
                     alert('Chyba: ' + data.message);
                 }
@@ -586,6 +592,9 @@ function toggleTodoPin(todoId, event) {
             } else {
                 window.location.reload();
             }
+            
+            // Update header/sidebar stats
+            if (typeof updateGlobalStats === 'function') updateGlobalStats(data);
         } else {
             alert(data.message);
         }
@@ -616,6 +625,9 @@ function archiveTodoItem(todoId, event) {
                     updateTodoUIState();
                 }, 300);
             }
+            
+            // Update header/sidebar stats
+            if (typeof updateGlobalStats === 'function') updateGlobalStats(data);
         } else {
             alert(data.message);
         }
@@ -648,6 +660,9 @@ function deleteTodoItem(todoId, event) {
                     updateTodoUIState();
                 }, 300);
             }
+            
+            // Update header/sidebar stats
+            if (typeof updateGlobalStats === 'function') updateGlobalStats(data);
         } else {
             alert(data.message);
         }
