@@ -712,24 +712,27 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    const CHECK_INTERVAL = 300000; // 5 minut
+    const WATCH_INTERVAL = 30000; // 30 sekund (jak často kontrolovat uplynulý čas)
+
     // Request notification permission if needed
     if (Notification.permission === "default") {
       Notification.requestPermission();
     }
 
-    // Check every 5 minutes (300,000 ms)
-    setInterval(async () => {
+    const performCheck = async () => {
+      // Okamžitě aktualizujeme čas v localStorage, abychom zamezili vícenásobnému volání z více tabů
+      localStorage.setItem("inbox_last_check", Date.now());
+
       try {
         const response = await fetch("api/api_inbox_sync.php");
         const data = await response.json();
 
         if (data.status === "success") {
-          // Update UI components (header bell, badges)
           if (window.updateGlobalStats) {
             updateGlobalStats(data);
           }
 
-          // Show system notification if there are new items
           if (data.count > 0 && Notification.permission === "granted") {
             const text =
               data.count === 1
@@ -751,7 +754,22 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (error) {
         console.error("Inbox Auto-Check Error:", error);
       }
-    }, 300000);
+    };
+
+    const checkAndRun = () => {
+      const lastCheck = parseInt(localStorage.getItem("inbox_last_check") || 0);
+      const now = Date.now();
+
+      if (now - lastCheck >= CHECK_INTERVAL) {
+        performCheck();
+      }
+    };
+
+    // Provést kontrolu hned při načtení (pokud už uplynul čas od poslední kontroly)
+    checkAndRun();
+
+    // Sledovat čas každých 30 sekund
+    setInterval(checkAndRun, WATCH_INTERVAL);
   }
 
   initInboxAutoCheck();
