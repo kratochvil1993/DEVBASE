@@ -30,6 +30,7 @@ include 'includes/header.php';
                     <a href="#note-drafts" class="submenu-link" data-section="note-drafts">Drafts</a>
                     <a href="#notes" class="submenu-link" data-section="notes">Poznámky</a>
                     <a href="#todo" class="submenu-link" data-section="todo">TODO</a>
+                    <a href="#inbox" class="submenu-link" data-section="inbox">Inbox</a>
                     <a href="#security" class="submenu-link" data-section="security">Bezpečnost</a>
                     <a href="#backup" class="submenu-link" data-section="backup">Záloha</a>
                 </div>
@@ -393,6 +394,39 @@ console.log('Hello World');
                 <li class="mb-3">
                     <strong class="text-white d-block">Soukromí:</strong>
                     Vaše API klíče jsou bezpečně uloženy v lokální databázi. Obsah je odesílán na servery poskytovatelů (Google/OpenAI) pouze v momentě, kdy explicitně kliknete na AI tlačítko.
+                </li>
+            </ul>
+        </div>
+
+        <div class="glass-card no-jump p-4 mt-4 help-section" id="inbox">
+            <h4 class="text-white mb-4"><i class="bi bi-mailbox me-2"></i> E-mailový Inbox</h4>
+            <p class="text-white small mb-3">Tato funkce vám umožní vytvořit poznámku nebo úkol jednoduše tím, že pošlete e-mail do své schránky. Aplikace si ho přes IMAP stáhne a roztřídí.</p>
+            <ul class="text-white-50 small list-unstyled">
+                <li class="mb-3">
+                    <strong class="text-white d-block">Konfigurace (IMAP):</strong>
+                    V **Nastavení** (sekce E-mailový Inbox) vyplňte údaje k vaší e-mailové schránce. Standardně se používá port **993** (pro SSL/TLS). Funkčnost můžete okamžitě ověřit tlačítkem **Testovat spojení**.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Rozřazování pomocí tagů (@):</strong>
+                    Aplikace určuje, co má s e-mailem udělat, podle tagu v jeho **předmětu**:
+                    <ul class="mt-2">
+                        <li><code>@note</code> – Vytvoří novou **Poznámku**.</li>
+                        <li><code>@todo</code> – Vytvoří nový **Úkol**.</li>
+                        <li><code>@draft</code> – Vytvoří nový **Poznámkový draft**.</li>
+                    </ul>
+                    Pokud v předmětu není žádný tag, e-mail zůstane v Inboxu jako "Bez tagu" a můžete ho zařadit ručně.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Automatické štítkování (#hashtags):</strong>
+                    Přímo v předmětu e-mailu můžete použít hashtagy (např. <code>#nakup #dulezite</code>). Systém je automaticky převede na štítky v aplikaci. Pokud štítek ještě neexistuje, automaticky ho vytvoří (vše se převádí na malá písmena).
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Zabezpečení (Důvěryhodní odesílatelé):</strong>
+                    V nastavení doporučujeme vyplnit pole **Povolené e-maily odesílatelů**. Aplikace pak bude ignorovat maily, které přijdou z jiných adres, což zamezí spamu nebo nechtěným importům.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Ruční import z Inboxu:</strong>
+                    Na stránce **Inbox** vidíte historii všech stažených mailů. U těch, které se neimportovaly automaticky (např. chyběl tag), najdete tlačítka pro ruční vytvoření poznámky, úkolu nebo draftu.
                 </li>
             </ul>
         </div>
