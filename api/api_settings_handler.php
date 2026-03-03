@@ -58,7 +58,7 @@ if ($action === 'toggle_setting') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Chyba při operaci se štítkem.']);
     }
-} elseif ($action === 'save_gemini_config' || $action === 'save_openai_config' || $action === 'save_security' || $action === 'save_ai_provider') {
+} elseif ($action === 'save_gemini_config' || $action === 'save_openai_config' || $action === 'save_security' || $action === 'save_ai_provider' || $action === 'save_imap_config' || $action === 'save_smtp_config') {
     $success = true;
     foreach ($_POST as $key => $value) {
         if ($key === 'action' || $key === 'app_password_confirm') continue;

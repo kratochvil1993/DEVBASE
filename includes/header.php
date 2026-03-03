@@ -91,6 +91,9 @@ $stats = getGlobalStats();
                         ?>
                     </span>
                 </a>
+                <a href="inbox.php" id="nav-inbox-item" class="nav-toggle-btn <?php echo $currentPage == 'inbox.php' ? 'active' : ''; ?> <?php echo getSetting('inbox_enabled', '0') == '0' ? 'd-none' : ''; ?>">
+                    <i class="bi bi-inbox me-2"></i> <span class="d-none d-md-inline">Inbox</span>
+                </a>
             </div>
         </div>
         

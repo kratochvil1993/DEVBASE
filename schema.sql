@@ -135,3 +135,29 @@ CREATE TABLE IF NOT EXISTS scratchpads (
 INSERT IGNORE INTO scratchpads (name, content, type) VALUES ('default', '// Vítejte v editoru kódu. Zde si můžete psát poznámky nebo kód.', 'code');
 INSERT IGNORE INTO scratchpads (name, content, type) VALUES ('Poznámky', '<h1>Vítejte v poznámkovém draftu</h1><p>Zde si můžete psát rychlé poznámky...</p>', 'note');
 
+CREATE TABLE IF NOT EXISTS inbox_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    mail_uid VARCHAR(100) UNIQUE,
+    subject VARCHAR(255),
+    content TEXT,
+    from_email VARCHAR(255),
+    target_type ENUM('note', 'todo', 'draft', 'unknown') DEFAULT 'unknown',
+    target_id INT DEFAULT NULL,
+    is_imported TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT IGNORE INTO settings (setting_key, setting_value) VALUES 
+('inbox_enabled', '0'),
+('imap_server', ''),
+('imap_port', '993'),
+('imap_user', ''),
+('imap_password', ''),
+('imap_encryption', 'ssl'),
+('smtp_server', ''),
+('smtp_port', '465'),
+('smtp_user', ''),
+('smtp_password', ''),
+('smtp_encryption', 'ssl'),
+('inbox_trusted_emails', '');
+

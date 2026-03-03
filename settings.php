@@ -584,7 +584,87 @@ include 'includes/header.php';
     </div>
    
 
-    <!-- Backup and Restore -->
+    <div class="col-12 mb-4 settings-section" id="section-inbox">
+        <div class="glass-card no-jump p-4 border-warning border-opacity-10">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="bg-warning bg-opacity-10 p-2 rounded-3 me-3">
+                        <i class="bi bi-inbox text-warning fs-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-white mb-0">E-mailový Inbox</h4>
+                        <small class="text-white-50">Automaticky importujte poznámky a úkoly z e-mailů.</small>
+                    </div>
+                </div>
+                <div class="form-check form-switch ms-md-auto">
+                    <input class="form-check-input fs-4 ms-0" type="checkbox" name="inbox_enabled" id="inboxEnabledToggle" 
+                           <?php echo getSetting('inbox_enabled', '0') == '1' ? 'checked' : ''; ?>
+                           onchange="updateGeneralSetting('inbox_enabled', this.checked)">
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- IMAP Config -->
+                <div class="col-md-12 mb-4">
+                <!-- IMAP Config -->
+                <div class="col-md-12 mb-4">
+                    <h5 class="text-white-50 small fw-bold mb-3 text-uppercase">Příchozí pošta (IMAP)</h5>
+                    <form onsubmit="handleConfigFormSubmit(event)">
+                        <input type="hidden" name="action" value="save_imap_config">
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label text-white-50 small fw-bold">IMAP Server</label>
+                                <input type="text" name="imap_server" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                       placeholder="imap.gmail.com" value="<?php echo htmlspecialchars(getSetting('imap_server', '')); ?>">
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label text-white-50 small fw-bold">Port</label>
+                                <input type="text" name="imap_port" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                       placeholder="993" value="<?php echo htmlspecialchars(getSetting('imap_port', '993')); ?>">
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label text-white-50 small fw-bold">Šifrování</label>
+                                <select name="imap_encryption" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
+                                    <?php $enc = getSetting('imap_encryption', 'ssl'); ?>
+                                    <option value="ssl" <?php echo $enc == 'ssl' ? 'selected' : ''; ?> class="bg-dark text-white">SSL (993)</option>
+                                    <option value="tls" <?php echo $enc == 'tls' ? 'selected' : ''; ?> class="bg-dark text-white">TLS (143)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-white-50 small fw-bold">Uživatelské jméno</label>
+                                <input type="text" name="imap_user" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                       placeholder="email@example.com" value="<?php echo htmlspecialchars(getSetting('imap_user', '')); ?>">
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label text-white-50 small fw-bold">Heslo / App Heslo</label>
+                                <input type="password" name="imap_password" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                       placeholder="••••••••" value="<?php echo htmlspecialchars(getSetting('imap_password', '')); ?>">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary w-100" type="submit">Uložit nastavení IMAP</button>
+                    </form>
+                </div>
+
+                <div class="col-12 mt-2">
+                     <div class="mb-3">
+                        <label class="form-label text-white-50 small fw-bold">Povolené e-maily odesílatelů (oddělené čárkou)</label>
+                        <input type="text" name="inbox_trusted_emails" id="inboxTrustedEmails" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                               placeholder="ja@mojedomena.cz, kolega@firma.cz" value="<?php echo htmlspecialchars(getSetting('inbox_trusted_emails', '')); ?>"
+                               onchange="updateGeneralSetting('inbox_trusted_emails', this.value)">
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-warning border-opacity-25 flex-grow-1" type="button" onclick="testInboxConnection()">
+                            <i class="bi bi-shield-check me-2"></i>Testovat spojení s e-mailem
+                        </button>
+                    </div>
+                    <div id="inboxTestResult" class="mt-3 d-none p-3 rounded small"></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="col-12 mb-4 settings-section" id="section-backup">
         <div class="glass-card no-jump p-4">
             <h4 class="text-white mb-4"><i class="bi bi-cloud-arrow-down me-2 text-primary"></i>Záloha a obnovení dat</h4>
@@ -987,6 +1067,7 @@ function updateGeneralSetting(key, val) {
                 'note_drafts_enabled': ['nav-drafts-item', 'stat-note-drafts-col'],
                 'todo_badge_enabled': ['nav-todo-badge-container'],
                 'ai_enabled': ['headerAiIcon'],
+                'inbox_enabled': ['nav-inbox-item'],
                 'security_enabled': ['headerLockIcon'],
                 'theme_toggle_enabled': ['headerThemeToggleContainer']
             };
@@ -1073,6 +1154,38 @@ function testOpenAiConnection() {
         .finally(() => {
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-broadcast"></i>';
+        });
+}
+function testInboxConnection() {
+    const btn = document.querySelector('button[onclick="testInboxConnection()"]');
+    const resultDiv = document.getElementById('inboxTestResult');
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Testování...';
+    
+    resultDiv.classList.add('d-none');
+    resultDiv.className = 'mt-3 p-3 rounded small';
+
+    fetch('api/api_test_inbox.php')
+        .then(response => response.json())
+        .then(data => {
+            resultDiv.classList.remove('d-none');
+            if (data.status === 'success') {
+                resultDiv.classList.add('bg-success', 'bg-opacity-10', 'text-success', 'border', 'border-success', 'border-opacity-25');
+                resultDiv.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>' + data.message;
+            } else {
+                resultDiv.classList.add('bg-danger', 'bg-opacity-10', 'text-danger', 'border', 'border-danger', 'border-opacity-25');
+                resultDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Chyba:</strong> ' + data.message;
+            }
+        })
+        .catch(error => {
+            resultDiv.classList.remove('d-none');
+            resultDiv.classList.add('bg-danger', 'bg-opacity-10', 'text-danger', 'border', 'border-danger', 'border-opacity-25');
+            resultDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>Chyba při komunikaci se serverem.';
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-shield-check me-2"></i>Testovat spojení';
         });
 }
 function handleConfigFormSubmit(event) {

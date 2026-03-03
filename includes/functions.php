@@ -5,6 +5,7 @@ require_once 'db.php';
 $checkSettings = @$conn->query("SHOW TABLES LIKE 'settings'");
 $checkSnippets = @$conn->query("SHOW TABLES LIKE 'snippets'");
 $checkScratchpads = @$conn->query("SHOW TABLES LIKE 'scratchpads'");
+$checkInbox = @$conn->query("SHOW TABLES LIKE 'inbox_items'");
 
 // Important columns for migrations
 $checkSnippetCols = @$conn->query("SHOW COLUMNS FROM snippets LIKE 'is_locked'");
@@ -19,6 +20,7 @@ $checkTagsType = @$conn->query("SHOW COLUMNS FROM tags LIKE 'type'");
 if (!$checkSettings || $checkSettings->num_rows == 0 ||
     !$checkSnippets || $checkSnippets->num_rows == 0 || 
     !$checkScratchpads || $checkScratchpads->num_rows == 0 || 
+    !$checkInbox || $checkInbox->num_rows == 0 ||
     !$checkSnippetCols || $checkSnippetCols->num_rows == 0 ||
     !$checkSnippetPinned || $checkSnippetPinned->num_rows == 0 ||
     !$checkTodoCols || $checkTodoCols->num_rows == 0 ||
@@ -933,5 +935,165 @@ function renameScratchpad($id, $name) {
     $id = (int)$id;
     $name = $conn->real_escape_string($name);
     return $conn->query("UPDATE scratchpads SET name = '$name' WHERE id = $id");
+}
+
+// INBOX FUNCTIONS
+function getAllInboxItems() {
+    global $conn;
+    $sql = "SELECT * FROM inbox_items ORDER BY created_at DESC";
+    $result = $conn->query($sql);
+    $items = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $items[] = $row;
+        }
+    }
+    return $items;
+}
+
+function deleteInboxItem($id) {
+    global $conn;
+    $id = (int)$id;
+    return $conn->query("DELETE FROM inbox_items WHERE id = $id");
+}
+
+function clearInbox() {
+    global $conn;
+    return $conn->query("DELETE FROM inbox_items");
+}
+
+function processInboxMail($uid, $from, $subject, $body) {
+    global $conn;
+    $uid = $conn->real_escape_string($uid);
+    $from = $conn->real_escape_string($from);
+    $subject = $conn->real_escape_string($subject);
+    $body = $conn->real_escape_string($body);
+
+    // Check for trusted emails
+    $trusted = getSetting('inbox_trusted_emails', '');
+    if (!empty($trusted)) {
+        $trusted_array = array_map('trim', explode(',', strtolower($trusted)));
+        if (!in_array(strtolower($from), $trusted_array)) {
+            return false; // Not trusted
+        }
+    }
+
+    // Check if already exists
+    $check = $conn->query("SELECT id FROM inbox_items WHERE mail_uid = '$uid'");
+    if ($check && $check->num_rows > 0) return false;
+
+    $target_type = 'unknown';
+    $target_id = null;
+    $title = $subject;
+
+    if (stripos($subject, '@note') !== false) {
+        $target_type = 'note';
+        $title = trim(str_ireplace('@note', '', $subject));
+        $target_id = saveNote($title, $body);
+    } elseif (stripos($subject, '@todo') !== false) {
+        $target_type = 'todo';
+        $title = trim(str_ireplace('@todo', '', $subject));
+        $target_id = saveTodo($title);
+        if ($target_id) {
+            $conn->query("UPDATE todos SET note = '$body' WHERE id = $target_id");
+        }
+    } elseif (stripos($subject, '@draft') !== false) {
+        $target_type = 'draft';
+        $title = trim(str_ireplace('@draft', '', $subject));
+        $target_id = createScratchpad($title, 'note');
+        if ($target_id) {
+            saveScratchpadContent($body, $target_id);
+        }
+    } else {
+        // No tag found - keep it in Inbox for manual import
+        $target_type = 'unknown';
+        $target_id = null;
+    }
+
+    // Extract potential hashtags from original subject
+    $tagNames = extractHashtags($subject);
+    if (!empty($tagNames) && $target_id && ($target_type == 'note' || $target_type == 'todo')) {
+        $tagIds = getOrCreateTagsByNames($tagNames, $target_type);
+        if ($target_type == 'note') {
+            foreach ($tagIds as $tid) $conn->query("INSERT IGNORE INTO note_tags (note_id, tag_id) VALUES ($target_id, $tid)");
+        } else {
+            foreach ($tagIds as $tid) $conn->query("INSERT IGNORE INTO todo_tags (todo_id, tag_id) VALUES ($target_id, $tid)");
+        }
+    }
+
+    $is_imported = $target_id ? 1 : 0;
+    $target_id_val = $target_id ?: 'NULL';
+    $sql = "INSERT INTO inbox_items (mail_uid, from_email, subject, content, target_type, target_id, is_imported) 
+            VALUES ('$uid', '$from', '$subject', '$body', '$target_type', $target_id_val, $is_imported)";
+    return $conn->query($sql);
+}
+
+function extractHashtags($text) {
+    preg_match_all('/#(\w+)/u', $text, $matches);
+    return !empty($matches[1]) ? array_map('mb_strtolower', $matches[1]) : [];
+}
+
+function getOrCreateTagsByNames($names, $type) {
+    global $conn;
+    $tagIds = [];
+    foreach ($names as $name) {
+        $name = $conn->real_escape_string($name);
+        $type = $conn->real_escape_string($type);
+        $check = $conn->query("SELECT id FROM tags WHERE LOWER(name) = LOWER('$name') AND type = '$type' LIMIT 1");
+        if ($check && $row = $check->fetch_assoc()) {
+            $tagIds[] = $row['id'];
+        } else {
+            // Create new tag
+            if ($conn->query("INSERT INTO tags (name, type) VALUES ('$name', '$type')")) {
+                $tagIds[] = $conn->insert_id;
+            }
+        }
+    }
+    return $tagIds;
+}
+
+function importIntoItemFromInbox($id, $target_type) {
+    global $conn;
+    $id = (int)$id;
+    $checkRes = $conn->query("SELECT subject, content FROM inbox_items WHERE id = $id");
+    $item = $checkRes ? $checkRes->fetch_assoc() : null;
+    if (!$item) return false;
+
+    $subject = $conn->real_escape_string($item['subject']);
+    $body = $conn->real_escape_string($item['content']);
+    $target_id = null;
+
+    if ($target_type == 'note') {
+        $target_id = saveNote($item['subject'], $item['content']);
+    } elseif ($target_type == 'todo') {
+        $target_id = saveTodo($item['subject']);
+        if ($target_id) {
+            $conn->query("UPDATE todos SET note = '$body' WHERE id = $target_id");
+        }
+    } elseif ($target_type == 'draft') {
+        $target_id = createScratchpad($item['subject'], 'note');
+        if ($target_id) {
+            saveScratchpadContent($item['content'], $target_id);
+        }
+    }
+
+    if ($target_id) {
+        $target_id_val = (int)$target_id;
+        
+        // Handle tags (extract from subject again if manual import)
+        $tagNames = extractHashtags($item['subject']);
+        if (!empty($tagNames) && ($target_type == 'note' || $target_type == 'todo')) {
+            $tagIds = getOrCreateTagsByNames($tagNames, $target_type);
+            if ($target_type == 'note') {
+                foreach ($tagIds as $tid) $conn->query("INSERT IGNORE INTO note_tags (note_id, tag_id) VALUES ($target_id_val, $tid)");
+            } else {
+                foreach ($tagIds as $tid) $conn->query("INSERT IGNORE INTO todo_tags (todo_id, tag_id) VALUES ($target_id_val, $tid)");
+            }
+        }
+
+        $conn->query("UPDATE inbox_items SET target_type = '$target_type', target_id = $target_id_val, is_imported = 1 WHERE id = $id");
+        return true;
+    }
+    return false;
 }
 ?>
