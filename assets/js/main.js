@@ -713,20 +713,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const CHECK_INTERVAL = 300000; // 5 minut
-    const WATCH_INTERVAL = 30000; // 30 sekund (jak často kontrolovat uplynulý čas)
+    const WATCH_INTERVAL = 10000; // 10 sekund (častější kontrola stavu v localStorage)
 
     // Check for new items every 5 minutes, sync with other tabs via localStorage
     const performCheck = async () => {
+      // Okamžitě nastavíme aktuální čas, aby jiný tab nezačal stejnou kontrolu
       localStorage.setItem("inbox_last_check", Date.now());
 
       try {
         const response = await fetch("api/api_inbox_sync.php");
         const data = await response.json();
 
-        if (data.status === "success") {
-          if (window.updateGlobalStats) {
-            updateGlobalStats(data);
-          }
+        if (data.status === "success" && window.updateGlobalStats) {
+          updateGlobalStats(data);
         }
       } catch (error) {
         console.error("Inbox Auto-Check Error:", error);
@@ -734,18 +733,20 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const checkAndRun = () => {
-      const lastCheck = parseInt(localStorage.getItem("inbox_last_check") || 0);
+      const lastCheckStr = localStorage.getItem("inbox_last_check");
+      const lastCheck = lastCheckStr ? parseInt(lastCheckStr) : 0;
       const now = Date.now();
 
-      if (now - lastCheck >= CHECK_INTERVAL) {
+      // Pokud je to první běh (0) nebo už uplynul interval
+      if (lastCheck === 0 || now - lastCheck >= CHECK_INTERVAL) {
         performCheck();
       }
     };
 
-    // Provést kontrolu hned při načtení (pokud už uplynul čas od poslední kontroly)
+    // Provést kontrolu při načtení
     checkAndRun();
 
-    // Sledovat čas každých 30 sekund
+    // Sledovat stav každých 10 sekund
     setInterval(checkAndRun, WATCH_INTERVAL);
   }
 
