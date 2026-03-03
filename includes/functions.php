@@ -964,10 +964,14 @@ function clearInbox() {
 
 function processInboxMail($uid, $from, $subject, $body) {
     global $conn;
-    $uid = $conn->real_escape_string($uid);
-    $from = $conn->real_escape_string($from);
-    $subject = $conn->real_escape_string($subject);
-    $body = $conn->real_escape_string($body);
+
+    // Create content hash to prevent duplicates (same sender, subject and body)
+    $content_hash = md5(trim($from) . trim($subject) . trim($body));
+
+    $uid_escaped = $conn->real_escape_string($uid);
+    $from_escaped = $conn->real_escape_string($from);
+    $subject_escaped = $conn->real_escape_string($subject);
+    $body_escaped = $conn->real_escape_string($body);
 
     // Check for trusted emails
     $trusted = getSetting('inbox_trusted_emails', '');
@@ -978,9 +982,13 @@ function processInboxMail($uid, $from, $subject, $body) {
         }
     }
 
-    // Check if already exists
-    $check = $conn->query("SELECT id FROM inbox_items WHERE mail_uid = '$uid'");
-    if ($check && $check->num_rows > 0) return false;
+    // Check if duplicate by UID
+    $check_uid = $conn->query("SELECT id FROM inbox_items WHERE mail_uid = '$uid_escaped'");
+    if ($check_uid && $check_uid->num_rows > 0) return false;
+
+    // Check if duplicate by Content Hash
+    $check_hash = $conn->query("SELECT id FROM inbox_items WHERE content_hash = '$content_hash'");
+    if ($check_hash && $check_hash->num_rows > 0) return false;
 
     $target_type = 'unknown';
     $target_id = null;
@@ -995,7 +1003,7 @@ function processInboxMail($uid, $from, $subject, $body) {
         $title = trim(str_ireplace('@todo', '', $subject));
         $target_id = saveTodo($title);
         if ($target_id) {
-            $conn->query("UPDATE todos SET note = '$body' WHERE id = $target_id");
+            $conn->query("UPDATE todos SET note = '$body_escaped' WHERE id = $target_id");
         }
     } elseif (stripos($subject, '@draft') !== false) {
         $target_type = 'draft';
@@ -1023,8 +1031,8 @@ function processInboxMail($uid, $from, $subject, $body) {
 
     $is_imported = $target_id ? 1 : 0;
     $target_id_val = $target_id ?: 'NULL';
-    $sql = "INSERT INTO inbox_items (mail_uid, from_email, subject, content, target_type, target_id, is_imported) 
-            VALUES ('$uid', '$from', '$subject', '$body', '$target_type', $target_id_val, $is_imported)";
+    $sql = "INSERT INTO inbox_items (mail_uid, content_hash, from_email, subject, content, target_type, target_id, is_imported) 
+            VALUES ('$uid_escaped', '$content_hash', '$from_escaped', '$subject_escaped', '$body_escaped', '$target_type', $target_id_val, $is_imported)";
     return $conn->query($sql);
 }
 

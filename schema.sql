@@ -138,13 +138,15 @@ INSERT IGNORE INTO scratchpads (name, content, type) VALUES ('Poznámky', '<h1>V
 CREATE TABLE IF NOT EXISTS inbox_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     mail_uid VARCHAR(100) UNIQUE,
+    content_hash VARCHAR(32),
     subject VARCHAR(255),
     content TEXT,
     from_email VARCHAR(255),
     target_type ENUM('note', 'todo', 'draft', 'unknown') DEFAULT 'unknown',
     target_id INT DEFAULT NULL,
     is_imported TINYINT(1) DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (content_hash)
 );
 
 INSERT IGNORE INTO settings (setting_key, setting_value) VALUES 
