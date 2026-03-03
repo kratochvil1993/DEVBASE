@@ -10,6 +10,7 @@ if (getSetting('todos_enabled', '1') == '1') {
     $warningCount = count($reminders['warning']);
     $totalReminders = $criticalCount + $warningCount;
 }
+$grandTotal = $totalReminders;
 
 if ($grandTotal > 0):
     $badgeClass = ($criticalCount > 0) ? 'bg-danger' : 'bg-warning text-dark';
