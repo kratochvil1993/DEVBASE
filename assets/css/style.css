@@ -286,6 +286,25 @@ pre[class*="language-"] {
   transform: translateY(0);
 }
 
+.btn-danger-glass {
+  background: rgba(220, 53, 69, 0.15);
+  border: 1px solid rgba(220, 53, 69, 0.4);
+  color: #fff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-danger-glass:hover {
+  background: rgba(220, 53, 69, 0.3);
+  border-color: rgba(220, 53, 69, 0.6);
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.2);
+}
+
+.btn-danger-glass:active {
+  transform: translateY(0);
+}
+
 .badge-todo {
   background: rgba(0, 229, 130, 0.15);
   border: 1px solid rgba(0, 229, 130, 0.4);

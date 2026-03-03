@@ -34,12 +34,12 @@ include 'includes/header.php';
                 <p class="text-white-50 small mb-0">Přehled importovaných zpráv z e-mailu.</p>
             </div>
             <div class="d-flex gap-2">
-                <button class="btn btn-warning rounded px-4 py-2" id="syncInboxBtn" onclick="syncInbox()">
+                <button class="btn btn-add-snipet rounded px-4 py-2" id="syncInboxBtn" onclick="syncInbox()">
                     <i class="bi bi-arrow-clockwise me-2"></i> Načíst nové
                 </button>
                 <form method="POST" onsubmit="return confirm('Opravdu chcete vyčistit celý inbox?');" class="mb-0">
                     <input type="hidden" name="action" value="clear_inbox">
-                    <button type="submit" class="btn btn-outline-danger border-0 rounded px-3 py-2">
+                    <button type="submit" class="btn btn-danger-glass rounded px-3 py-2">
                         <i class="bi bi-trash me-1"></i> Vymazat historii
                     </button>
                 </form>
