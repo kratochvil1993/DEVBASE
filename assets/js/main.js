@@ -715,13 +715,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const CHECK_INTERVAL = 300000; // 5 minut
     const WATCH_INTERVAL = 30000; // 30 sekund (jak často kontrolovat uplynulý čas)
 
-    // Request notification permission if needed
-    if (Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-
+    // Check for new items every 5 minutes, sync with other tabs via localStorage
     const performCheck = async () => {
-      // Okamžitě aktualizujeme čas v localStorage, abychom zamezili vícenásobnému volání z více tabů
       localStorage.setItem("inbox_last_check", Date.now());
 
       try {
@@ -731,24 +726,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data.status === "success") {
           if (window.updateGlobalStats) {
             updateGlobalStats(data);
-          }
-
-          if (data.count > 0 && Notification.permission === "granted") {
-            const text =
-              data.count === 1
-                ? "Máte 1 novou položku v inboxu."
-                : `Máte ${data.count} nových položek v inboxu.`;
-
-            const notification = new Notification("DevBase Inbox", {
-              body: text,
-              icon: "assets/fav/favicon-96x96.png",
-              tag: "devbase-inbox",
-            });
-
-            notification.onclick = () => {
-              window.focus();
-              window.location.href = "inbox.php";
-            };
           }
         }
       } catch (error) {
