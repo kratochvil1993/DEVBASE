@@ -153,7 +153,7 @@ include 'includes/header.php';
 
 <!-- Edit Todo Modal -->
 <div class="modal fade" id="editTodoModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <h5 class="modal-title text-white">Upravit úkol</h5>
@@ -216,7 +216,7 @@ include 'includes/header.php';
 
 <!-- View Todo Modal -->
 <div class="modal fade" id="viewTodoModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <h5 class="modal-title text-white">Detail úkolu</h5>
