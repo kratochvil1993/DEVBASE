@@ -2,34 +2,30 @@
 require_once 'db.php';
 
 // Check if database and tables are created and up to date
-$checkSettings = @$conn->query("SHOW TABLES LIKE 'settings'");
-$checkSnippets = @$conn->query("SHOW TABLES LIKE 'snippets'");
-$checkScratchpads = @$conn->query("SHOW TABLES LIKE 'scratchpads'");
-$checkInbox = @$conn->query("SHOW TABLES LIKE 'inbox_items'");
+// Check if database and tables are created and up to date
+$current_db_version = '1.1';
+$needs_init = false;
 
-// Important columns for migrations
-$checkSnippetCols = @$conn->query("SHOW COLUMNS FROM snippets LIKE 'is_locked'");
-$checkSnippetPinned = @$conn->query("SHOW COLUMNS FROM snippets LIKE 'is_pinned'");
-$checkTodoCols = @$conn->query("SHOW COLUMNS FROM todos LIKE 'deadline'");
-$checkTodoPinned = @$conn->query("SHOW COLUMNS FROM todos LIKE 'is_pinned'");
-$checkTodoNote = @$conn->query("SHOW COLUMNS FROM todos LIKE 'note'");
-$checkNoteCols = @$conn->query("SHOW COLUMNS FROM notes LIKE 'language_id'");
-$checkNoteArchived = @$conn->query("SHOW COLUMNS FROM notes LIKE 'is_archived'");
-$checkTagsType = @$conn->query("SHOW COLUMNS FROM tags LIKE 'type'");
+// Fast check: Try to get the version from settings
+$version_res = @$conn->query("SELECT setting_value FROM settings WHERE setting_key = 'db_version'");
+if (!$version_res || $version_res->num_rows == 0) {
+    // If settings table is missing or db_version is missing, we might need init
+    // But let's check if the most basic table exists to be sure
+    $checkSnippets = @$conn->query("SHOW TABLES LIKE 'snippets'");
+    if (!$checkSnippets || $checkSnippets->num_rows == 0) {
+        $needs_init = true;
+    } else {
+        // Snippets exist but version doesn't - definitely need update
+        $needs_init = true;
+    }
+} else {
+    $db_version = $version_res->fetch_assoc()['setting_value'];
+    if (version_compare($db_version, $current_db_version, '<')) {
+        $needs_init = true;
+    }
+}
 
-if (!$checkSettings || $checkSettings->num_rows == 0 ||
-    !$checkSnippets || $checkSnippets->num_rows == 0 || 
-    !$checkScratchpads || $checkScratchpads->num_rows == 0 || 
-    !$checkInbox || $checkInbox->num_rows == 0 ||
-    !$checkSnippetCols || $checkSnippetCols->num_rows == 0 ||
-    !$checkSnippetPinned || $checkSnippetPinned->num_rows == 0 ||
-    !$checkTodoCols || $checkTodoCols->num_rows == 0 ||
-    !$checkTodoPinned || $checkTodoPinned->num_rows == 0 ||
-    !$checkTodoNote || $checkTodoNote->num_rows == 0 ||
-    !$checkNoteCols || $checkNoteCols->num_rows == 0 ||
-    !$checkNoteArchived || $checkNoteArchived->num_rows == 0 ||
-    !$checkTagsType || $checkTagsType->num_rows == 0) {
-    
+if ($needs_init) {
     // Determine the base URL to redirect to includes/init_db.php
     $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
     $host_url = $_SERVER['HTTP_HOST'];

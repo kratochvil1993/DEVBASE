@@ -112,6 +112,9 @@ if (file_exists($schema_file)) {
         ('Vítejte v DevBase', 'Toto je vaše první poznámka. DevBase vám umožňuje ukládat kousky kódu, poznámky a úkoly na jednom místě.'),
         ('Můj první draft', 'Zde si můžete psát své nápady, které později rozpracujete.')");
     }
+    
+    // Update DB Version
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('db_version', '1.1') ON DUPLICATE KEY UPDATE setting_value = '1.1'");
 
     echo "<div style='font-family: sans-serif; text-align: center; margin-top: 50px;'>";
     echo "<h2 style='color: #2ecc71;'>Databáze a schéma byly úspěšně inicializovány.</h2>";
