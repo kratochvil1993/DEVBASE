@@ -42,75 +42,153 @@ include 'includes/header.php';
             </div>
         </div>
     </div>
-</div>  
-    <div class="col-12">
-        <div id="syncStatus" class="alert alert-info d-none bg-info bg-opacity-10 border-info border-opacity-25 text-info mb-4">
-             <span class="spinner-border spinner-border-sm me-2"></span> Synchronizuji s e-mailem...
-        </div>
-
-        <?php if (empty($items)): ?>
-            <div class="glass-card text-center py-5">
-                <i class="bi bi-mailbox display-1 text-white-50 mb-3 d-block"></i>
-                <h4 class="text-white-50">Inbox je prázdný</h4>
-                <p class="text-white-50 small">Zkuste „Načíst nové“ nebo pošlete e-mail s tagem @note, @todo nebo @draft.</p>
+    <div class="row">
+        <div class="col-12">
+            <div id="syncStatus" class="alert alert-info d-none bg-info bg-opacity-10 border-info border-opacity-25 text-info mb-4">
+                 <span class="spinner-border spinner-border-sm me-2"></span> Synchronizuji s e-mailem...
             </div>
-        <?php else: ?>
-            <div class="row g-3">
-                <?php foreach ($items as $item): ?>
-                    <div class="col-12 col-md-6 col-lg-4 inbox-item-wrapper" id="inbox-item-<?php echo $item['id']; ?>">
-                        <div class="glass-card h-100 p-3 d-flex flex-column border-light border-opacity-10">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div class="badge <?php 
-                                    echo $item['target_type'] == 'note' ? 'bg-primary' : 
-                                        ($item['target_type'] == 'todo' ? 'bg-success' : 
-                                        ($item['target_type'] == 'draft' ? 'bg-info' : 'bg-secondary')); 
-                                    ?> mb-0">
-                                    <?php echo $item['target_type'] == 'unknown' ? 'Bez tagu' : '@' . $item['target_type']; ?>
+
+            <?php if (empty($items)): ?>
+                <div class="glass-card text-center py-5">
+                    <i class="bi bi-mailbox display-1 text-white-50 mb-3 d-block"></i>
+                    <h4 class="text-white-50">Inbox je prázdný</h4>
+                    <p class="text-white-50 small">Zkuste „Načíst nové“ nebo pošlete e-mail s tagem @note, @todo nebo @draft.</p>
+                </div>
+            <?php else: ?>
+                <div class="d-flex flex-column gap-3 mb-5">
+                    <?php foreach ($items as $item): ?>
+                        <div class="inbox-item-wrapper" id="inbox-item-<?php echo $item['id']; ?>" onclick="showInboxDetail(<?php echo htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8'); ?>)" style="cursor: pointer;">
+                            <div class="glass-card todo-item p-3 d-flex align-items-center gap-3 border-light border-opacity-10">
+                                <!-- Type Icon / Badge -->
+                                <div class="flex-shrink-0 d-none d-sm-block">
+                                    <div class="badge <?php 
+                                        echo $item['target_type'] == 'note' ? 'bg-primary' : 
+                                            ($item['target_type'] == 'todo' ? 'bg-success' : 
+                                            ($item['target_type'] == 'draft' ? 'bg-info' : 'bg-secondary')); 
+                                        ?> py-2 px-3 fw-normal" style="min-width: 80px;">
+                                        <?php echo $item['target_type'] == 'unknown' ? 'Bez tagu' : '@' . $item['target_type']; ?>
+                                    </div>
                                 </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <?php if ($item['is_imported']): ?>
-                                        <span class="text-success" title="Úspěšně vytvořeno"><i class="bi bi-check-circle-fill"></i></span>
+
+                                <!-- Content -->
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <?php if ($item['is_imported']): ?>
+                                            <i class="bi bi-check-circle-fill text-success" title="Úspěšně vytvořeno"></i>
+                                        <?php endif; ?>
+                                        <h5 class="text-white mb-0 fs-6 fw-bold text-truncate"><?php echo htmlspecialchars($item['subject']); ?></h5>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-white-50 small text-truncate" style="max-width: 150px;">
+                                            <i class="bi bi-person-circle me-1"></i><?php 
+                                                $parts = explode('@', $item['from_email']);
+                                                echo htmlspecialchars($parts[0]); 
+                                            ?>
+                                        </span>
+                                        <span class="text-white-50 small">•</span>
+                                        <span class="text-white-50 small">
+                                            <i class="bi bi-clock me-1"></i><?php echo date('j. n. H:i', strtotime($item['created_at'])); ?>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Actions -->
+                                <div class="d-flex gap-2 align-items-center flex-shrink-0">
+                                    <?php if (!$item['is_imported']): ?>
+                                    <div class="btn-group d-none d-md-flex">
+                                        <button class="btn btn-sm btn-outline-primary py-1 px-2" onclick="manualImport(<?php echo $item['id']; ?>, 'note', event)" title="Importovat jako Poznámku">
+                                            <i class="bi bi-sticky"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success py-1 px-2" onclick="manualImport(<?php echo $item['id']; ?>, 'todo', event)" title="Importovat jako Úkol">
+                                            <i class="bi bi-check2-square"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info py-1 px-2" onclick="manualImport(<?php echo $item['id']; ?>, 'draft', event)" title="Importovat jako Draft">
+                                            <i class="bi bi-file-earmark-text"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Mobile simple dropdown for actions -->
+                                    <div class="dropdown d-md-none">
+                                        <button class="btn btn-sm btn-outline-light border-opacity-25 p-1 px-2" data-bs-toggle="dropdown">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-dark shadow-lg">
+                                            <li><a class="dropdown-item small" href="#" onclick="manualImport(<?php echo $item['id']; ?>, 'note', event)"><i class="bi bi-sticky me-2"></i>Poznámka</a></li>
+                                            <li><a class="dropdown-item small" href="#" onclick="manualImport(<?php echo $item['id']; ?>, 'todo', event)"><i class="bi bi-check2-square me-2"></i>Úkol</a></li>
+                                            <li><a class="dropdown-item small" href="#" onclick="manualImport(<?php echo $item['id']; ?>, 'draft', event)"><i class="bi bi-file-earmark-text me-2"></i>Draft</a></li>
+                                        </ul>
+                                    </div>
                                     <?php endif; ?>
-                                    <button class="btn btn-sm btn-link text-white-50 p-0 text-decoration-none" onclick="deleteInboxItem(<?php echo $item['id']; ?>)">
-                                        <i class="bi bi-trash"></i>
+
+                                    <button class="btn btn-sm btn-link text-danger p-2 border-0" onclick="deleteInboxItem(<?php echo $item['id']; ?>, event)">
+                                        <i class="bi bi-trash fs-5"></i>
                                     </button>
                                 </div>
                             </div>
-                            
-                            <h5 class="text-white mb-2 fs-6 fw-bold"><?php echo htmlspecialchars($item['subject']); ?></h5>
-                            <div class="text-white-50 small mb-3 flex-grow-1" style="max-height: 120px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;">
-                                <?php echo nl2br(htmlspecialchars($item['content'])); ?>
-                            </div>
-                            
-                            <?php if (!$item['is_imported']): ?>
-                            <div class="mb-3 d-flex flex-wrap gap-1">
-                                <button class="btn btn-sm btn-outline-primary py-0" onclick="manualImport(<?php echo $item['id']; ?>, 'note')">+ Poznámka</button>
-                                <button class="btn btn-sm btn-outline-success py-0" onclick="manualImport(<?php echo $item['id']; ?>, 'todo')">+ Úkol</button>
-                                <button class="btn btn-sm btn-outline-info py-0" onclick="manualImport(<?php echo $item['id']; ?>, 'draft')">+ Draft</button>
-                            </div>
-                            <?php endif; ?>
-
-                            <div class="mt-auto pt-3 border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">
-                                <span class="text-white-50" style="font-size: 0.7rem;">
-                                    <i class="bi bi-clock me-1"></i> <?php echo date('d.m. H:i', strtotime($item['created_at'])); ?>
-                                </span>
-                                <span class="text-white-50 small text-truncate ms-2" style="max-width: 150px;" title="<?php echo htmlspecialchars($item['from_email']); ?>">
-                                    <i class="bi bi-person-circle me-1"></i> <?php 
-                                        $parts = explode('@', $item['from_email']);
-                                        echo htmlspecialchars($parts[0]); 
-                                    ?>
-                                </span>
-                            </div>
                         </div>
-                    </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Inbox Detail Modal -->
+<div class="modal fade" id="inboxDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-bottom border-light border-opacity-10">
+                <h5 class="modal-title text-white" id="modalSubject">Detail zprávy</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        <?php endif; ?>
+            <div class="modal-body text-white">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div id="modalBadge"></div>
+                    <div class="text-white-50 small">
+                        <i class="bi bi-person-circle me-1"></i> <span id="modalFrom"></span>
+                        <span class="mx-2">•</span>
+                        <i class="bi bi-clock me-1"></i> <span id="modalDate"></span>
+                    </div>
+                </div>
+                <div class="p-3 rounded bg-black bg-opacity-25" style="white-space: pre-wrap; font-family: 'Inter', sans-serif;" id="modalContent"></div>
+            </div>
+            <div class="modal-footer border-top border-light border-opacity-10" id="modalFooter">
+                <!-- Actions will be injected here if not imported -->
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-function manualImport(id, type) {
+function showInboxDetail(item) {
+    document.getElementById('modalSubject').innerText = item.subject;
+    document.getElementById('modalFrom').innerText = item.from_email;
+    document.getElementById('modalDate').innerText = item.created_at;
+    document.getElementById('modalContent').innerText = item.content;
+    
+    const badgeContainer = document.getElementById('modalBadge');
+    const type = item.target_type;
+    const badgeClass = type === 'note' ? 'bg-primary' : (type === 'todo' ? 'bg-success' : (type === 'draft' ? 'bg-info' : 'bg-secondary'));
+    badgeContainer.innerHTML = `<span class="badge ${badgeClass} py-2 px-3 fw-normal">@${type}</span>`;
+    
+    const footer = document.getElementById('modalFooter');
+    if (!item.is_imported) {
+        footer.innerHTML = `
+            <button class="btn btn-outline-primary" onclick="manualImport(${item.id}, 'note', event)">+ Poznámka</button>
+            <button class="btn btn-outline-success" onclick="manualImport(${item.id}, 'todo', event)">+ Úkol</button>
+            <button class="btn btn-outline-info" onclick="manualImport(${item.id}, 'draft', event)">+ Draft</button>
+            <button class="btn btn-outline-light ms-auto" data-bs-dismiss="modal">Zavřít</button>
+        `;
+    } else {
+        footer.innerHTML = '<button class="btn btn-outline-light ms-auto" data-bs-dismiss="modal">Zavřít</button>';
+    }
+
+    const modal = new bootstrap.Modal(document.getElementById('inboxDetailModal'));
+    modal.show();
+}
+
+function manualImport(id, type, event) {
+    if (event) event.stopPropagation();
     const formData = new FormData();
     formData.append('action', 'manual_import');
     formData.append('id', id);
@@ -165,7 +243,8 @@ function syncInbox() {
         });
 }
 
-function deleteInboxItem(id) {
+function deleteInboxItem(id, event) {
+    if (event) event.stopPropagation();
     if (!confirm('Opravdu chcete tento záznam z historie smazat?')) return;
     
     const formData = new FormData();
@@ -178,9 +257,9 @@ function deleteInboxItem(id) {
     }).then(() => {
         const el = document.getElementById('inbox-item-' + id);
         if (el) {
-            el.parentElement.style.transition = 'all 0.3s ease';
-            el.parentElement.style.opacity = '0';
-            el.parentElement.style.transform = 'scale(0.8)';
+            el.style.transition = 'all 0.3s ease';
+            el.style.opacity = '0';
+            el.style.transform = 'scale(0.8)';
             setTimeout(() => el.remove(), 300);
         }
     });
