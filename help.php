@@ -404,7 +404,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Automatická synchronizace a Notifikace:</strong>
-                    Aplikace každých **5 minut automaticky kontroluje** vaši schránku. Pokud dorazí nové zprávy, ikona zvonečku v hlavičce začne barevně pulzovat a v seznamu upozornění uvidíte náhledy nových e-mailů. Systém je vybaven ochranou proti duplicitám, takže i při opakovaném odeslání stejného mailu (např. přes Make.com) se v aplikaci vytvoří pouze jeden záznam.
+                    Aplikace každou **1 minutu automaticky kontroluje** vaši schránku. Pokud dorazí nové zprávy, u položky **Inbox** v hlavním menu se objeví modrý badge s počtem novinek. Systém si pamatuje, které zprávy jste již viděli, a badge zmizí až ve chvíli, kdy sekci Inbox navštívíte. Systém je vybaven ochranou proti duplicitám, takže i při opakovaném odeslání stejného mailu (např. přes Make.com) se v aplikaci vytvoří pouze jeden záznam.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Konfigurace (IMAP):</strong>
