@@ -93,6 +93,13 @@ $stats = getGlobalStats();
                 </a>
                 <a href="inbox.php" id="nav-inbox-item" class="nav-toggle-btn <?php echo $currentPage == 'inbox.php' ? 'active' : ''; ?> <?php echo getSetting('inbox_enabled', '0') == '0' ? 'd-none' : ''; ?>">
                     <i class="bi bi-inbox me-2"></i> <span class="d-none d-md-inline">Inbox</span>
+                    <span id="nav-inbox-badge-container">
+                        <?php 
+                        if ($stats['total_inbox_new'] > 0) {
+                            echo '<span class="badge badge-todo ms-2 bg-primary border-primary">' . $stats['total_inbox_new'] . '</span>';
+                        }
+                        ?>
+                    </span>
                 </a>
             </div>
         </div>
@@ -212,7 +219,7 @@ window.DevBase = {
 function updateGlobalStats(data) {
     if (!data) return;
     
-    // Update notifications container
+    // Update notifications container (bell icon etc)
     const notificationsContainer = document.getElementById('header-notifications-container');
     if (notificationsContainer && data.nav_notifications_html !== undefined) {
         notificationsContainer.innerHTML = data.nav_notifications_html;
@@ -225,6 +232,16 @@ function updateGlobalStats(data) {
             badgeContainer.innerHTML = '<span class="badge badge-todo ms-2">' + data.stats.total_todos + '</span>';
         } else {
             badgeContainer.innerHTML = '';
+        }
+    }
+
+    // Update Inbox badge (persistent on the nav item)
+    const inboxBadgeContainer = document.getElementById('nav-inbox-badge-container');
+    if (inboxBadgeContainer && data.stats) {
+        if (data.stats.total_inbox_new > 0) {
+            inboxBadgeContainer.innerHTML = '<span class="badge badge-todo ms-2 bg-primary border-primary">' + data.stats.total_inbox_new + '</span>';
+        } else {
+            inboxBadgeContainer.innerHTML = '';
         }
     }
     

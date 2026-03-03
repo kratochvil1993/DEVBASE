@@ -1170,3 +1170,38 @@ h6 i.bi-pin-angle-fill {
   color: #8e54e9;
   font-weight: 700;
 }
+
+/* Shake and Glow Notifications */
+@keyframes shake-bell {
+  0% {
+    transform: rotate(0);
+  }
+  15% {
+    transform: rotate(20deg);
+  }
+  30% {
+    transform: rotate(-20deg);
+  }
+  45% {
+    transform: rotate(15deg);
+  }
+  60% {
+    transform: rotate(-15deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+
+.shake-bell {
+  animation: shake-bell 0.8s ease-in-out !important;
+  display: inline-block;
+}
+
+.import-glow {
+  box-shadow: 0 0 20px rgba(0, 229, 130, 0.6) !important;
+  transition: all 0.3s ease;
+}

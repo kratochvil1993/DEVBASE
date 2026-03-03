@@ -18,6 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     exit;
 }
 
+if (getSetting('inbox_enabled', '0') == '1') {
+    $conn->query("UPDATE inbox_items SET is_seen = 1 WHERE is_seen = 0");
+}
+
 $items = getAllInboxItems();
 
 include 'includes/header.php';

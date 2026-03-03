@@ -146,6 +146,7 @@ CREATE TABLE IF NOT EXISTS inbox_items (
     target_type ENUM('note', 'todo', 'draft', 'unknown') DEFAULT 'unknown',
     target_id INT DEFAULT NULL,
     is_imported TINYINT(1) DEFAULT 0,
+    is_seen TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (content_hash)
 );

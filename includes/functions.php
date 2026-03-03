@@ -524,9 +524,9 @@ function getGlobalStats() {
         }
     }
     
-    // Total Inbox (new/not imported)
-    $res = $conn->query("SELECT COUNT(*) as count FROM inbox_items WHERE is_imported = 0");
-    if ($res) $stats['total_inbox_new'] = $res->fetch_assoc()['count'];
+    // Total Inbox (unseen)
+    $res = $conn->query("SELECT COUNT(*) as count FROM inbox_items WHERE is_seen = 0");
+    if ($res) $stats['total_inbox_new'] = (int)$res->fetch_assoc()['count'];
 
     return $stats;
 }
@@ -954,7 +954,7 @@ function getAllInboxItems() {
 function getNewInboxItems($limit = 5) {
     global $conn;
     $limit = (int)$limit;
-    $sql = "SELECT * FROM inbox_items WHERE is_imported = 0 ORDER BY created_at DESC LIMIT $limit";
+    $sql = "SELECT * FROM inbox_items WHERE is_seen = 0 ORDER BY created_at DESC LIMIT $limit";
     $result = $conn->query($sql);
     $items = [];
     if ($result) {
@@ -1045,8 +1045,8 @@ function processInboxMail($uid, $from, $subject, $body) {
 
     $is_imported = $target_id ? 1 : 0;
     $target_id_val = $target_id ?: 'NULL';
-    $sql = "INSERT INTO inbox_items (mail_uid, content_hash, from_email, subject, content, target_type, target_id, is_imported) 
-            VALUES ('$uid_escaped', '$content_hash', '$from_escaped', '$subject_escaped', '$body_escaped', '$target_type', $target_id_val, $is_imported)";
+    $sql = "INSERT INTO inbox_items (mail_uid, content_hash, from_email, subject, content, target_type, target_id, is_imported, is_seen) 
+            VALUES ('$uid_escaped', '$content_hash', '$from_escaped', '$subject_escaped', '$body_escaped', '$target_type', $target_id_val, $is_imported, 0)";
     return $conn->query($sql);
 }
 

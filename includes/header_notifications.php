@@ -11,24 +11,12 @@ if (getSetting('todos_enabled', '1') == '1') {
     $totalReminders = $criticalCount + $warningCount;
 }
 
-$newInboxItems = [];
-$inboxCount = 0;
-if (getSetting('inbox_enabled', '0') == '1') {
-    $newInboxItems = getNewInboxItems(5);
-    $inboxCount = (int)getSetting('total_inbox_new', 0); 
-    // Wait, I updated getGlobalStats but I can also just check the database here or use the count from getGlobalStats if available.
-    // Actually, getGlobalStats is called in header.php and stored in $stats.
-    $inboxCount = $stats['total_inbox_new'] ?? 0;
-}
-
-$grandTotal = $totalReminders + $inboxCount;
-
 if ($grandTotal > 0):
-    $badgeClass = ($criticalCount > 0 || $inboxCount > 0) ? 'bg-danger' : 'bg-warning text-dark';
-    $pulseClass = ($criticalCount > 0 || $inboxCount > 0) ? 'pulse-red' : '';
+    $badgeClass = ($criticalCount > 0) ? 'bg-danger' : 'bg-warning text-dark';
+    $pulseClass = ($criticalCount > 0) ? 'pulse-red' : '';
 ?>
     <div class="dropdown">
-        <button class="btn btn-link text-white p-0 position-relative <?php echo $pulseClass; ?>" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <button id="notificationBellBtn" class="btn btn-link text-white p-0 position-relative <?php echo $pulseClass; ?>" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-bell-fill fs-5"></i>
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill <?php echo $badgeClass; ?>" style="font-size: 0.6rem;">
                 <?php echo $grandTotal; ?>
@@ -41,25 +29,6 @@ if ($grandTotal > 0):
             </div>
             <div class="reminder-list" style="max-height: 350px; overflow-y: auto;">
                 
-                <!-- Inbox Items -->
-                <?php if ($inboxCount > 0): ?>
-                    <div class="px-3 py-2 bg-primary bg-opacity-10 small fw-bold text-primary-emphasis d-flex justify-content-between">
-                        <span>Nové v Inboxu</span>
-                        <span class="badge bg-primary rounded-pill"><?php echo $inboxCount; ?></span>
-                    </div>
-                    <?php foreach ($newInboxItems as $item): ?>
-                        <a class="dropdown-item px-3 py-2 border-bottom border-light border-opacity-10" href="inbox.php">
-                            <div class="text-truncate fw-medium"><?php echo htmlspecialchars($item['subject']); ?></div>
-                            <small class="text-white-50"><i class="bi bi-envelope me-1"></i> <?php echo htmlspecialchars($item['from_email']); ?></small>
-                        </a>
-                    <?php endforeach; ?>
-                    <?php if ($inboxCount > 5): ?>
-                        <div class="px-3 py-1 text-center small text-white-50 border-bottom border-light border-opacity-10">
-                            + dalšíc <?php echo $inboxCount - 5; ?> zpráv
-                        </div>
-                    <?php endif; ?>
-                <?php endif; ?>
-
                 <!-- Todo Badges -->
                 <?php if ($criticalCount > 0): ?>
                     <div class="px-3 py-2 bg-danger bg-opacity-10 small fw-bold text-danger-emphasis">Po termínu / Dnes</div>
@@ -81,9 +50,8 @@ if ($grandTotal > 0):
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
-            <div class="p-2 text-center d-flex justify-content-around">
-                <a href="todo.php" class="btn btn-sm btn-link text-white-50 text-decoration-none" style="font-size: 0.75rem;">Úkoly</a>
-                <a href="inbox.php" class="btn btn-sm btn-link text-white-50 text-decoration-none" style="font-size: 0.75rem;">Inbox</a>
+            <div class="p-2 text-center">
+                <a href="todo.php" class="btn btn-sm btn-link text-white-50 text-decoration-none" style="font-size: 0.75rem;">Zobrazit všechny úkoly</a>
             </div>
         </div>
     </div>

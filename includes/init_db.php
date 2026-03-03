@@ -78,6 +78,9 @@ if (file_exists($schema_file)) {
         'tags' => [
             'type' => "VARCHAR(20) DEFAULT 'snippet'",
             'sort_order' => 'INT DEFAULT 0'
+        ],
+        'inbox_items' => [
+            'is_seen' => 'TINYINT(1) DEFAULT 0'
         ]
     ];
 
