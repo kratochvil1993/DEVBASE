@@ -973,6 +973,7 @@ function deleteTagAjax(id, type) {
     const formData = new FormData();
     formData.append('action', 'delete_tag');
     formData.append('id', id);
+    formData.append('type', type);
 
     fetch('api/api_settings_handler.php', {
         method: 'POST',
