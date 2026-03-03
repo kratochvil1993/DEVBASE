@@ -367,8 +367,8 @@ console.log('Hello World');
                     V **Nastavení** (sekce AI Nastavení) zvolte svého preferovaného poskytovatele (**Gemini** nebo **OpenAI**) a vložte příslušný API klíč. Zde si také můžete vybrat konkrétní model (např. **GPT-4o** nebo **Gemini 2.5 Flash Lite**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a poskytovatel vybrán, v celé aplikaci se zpřístupní AI nástroje. Všechny AI funkce lze také v nastavení jedním kliknutím **globálně vypnout**, což skryje všechna fialová tlačítka v celé aplikaci pro dokonale čisté rozhraní.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Vysvětlení kódu (Snippety):</strong>
-                    V detailním náhledu každého snippetu najdete fialové tlačítko **Vysvětlit kód**. AI analyzuje váš kód a vypíše srozumitelný souhrn toho, co kód dělá, včetně vysvětlení klíčových částí.
+                    <strong class="text-white d-block">Vysvětlení kódu (Snippety) a navigace:</strong>
+                    V detailním náhledu každého snippetu najdete fialové tlačítko **Vysvětlit kód**. AI analyzuje váš kód a vypíše srozumitelný souhrn toho, co kód dělá, včetně vysvětlení klíčových částí. Do nastavení AI se můžete bleskově dostat kliknutím na ikonu robota v horní liště aplikace.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Chytré názvy (Poznámky):</strong>
@@ -400,11 +400,15 @@ console.log('Hello World');
 
         <div class="glass-card no-jump p-4 mt-4 help-section" id="inbox">
             <h4 class="text-white mb-4"><i class="bi bi-mailbox me-2"></i> E-mailový Inbox</h4>
-            <p class="text-white small mb-3">Tato funkce vám umožní vytvořit poznámku nebo úkol jednoduše tím, že pošlete e-mail do své schránky. Aplikace si ho přes IMAP stáhne a roztřídí.</p>
+            <p class="text-white small mb-3">Tato funkce vám umožní vytvořit poznámku nebo úkol jednoduše tím, že pošlete e-mail do své schránky. Aplikace si ho přes IMAP stáhne a roztřídí. Celý proces je nyní plně zautomatizován.</p>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
+                    <strong class="text-white d-block">Automatická synchronizace a Notifikace:</strong>
+                    Aplikace každých **5 minut automaticky kontroluje** vaši schránku. Pokud dorazí nové zprávy, ikona zvonečku v hlavičce začne barevně pulzovat a v seznamu upozornění uvidíte náhledy nových e-mailů. Systém je vybaven ochranou proti duplicitám, takže i při opakovaném odeslání stejného mailu (např. přes Make.com) se v aplikaci vytvoří pouze jeden záznam.
+                </li>
+                <li class="mb-3">
                     <strong class="text-white d-block">Konfigurace (IMAP):</strong>
-                    V **Nastavení** (sekce E-mailový Inbox) vyplňte údaje k vaší e-mailové schránce. Standardně se používá port **993** (pro SSL/TLS). Funkčnost můžete okamžitě ověřit tlačítkem **Testovat spojení**.
+                    V **Nastavení** (sekce E-mailový Inbox) vyplňte údaje k vaší e-mailové schránce. Standardně se používá port **993** (pro SSL/TLS). Funkčnost můžete okamžitě ověřit tlačítkem **Testovat spojení**. Zde také najdete přepínač pro zapnutí/vypnutí automatického pozadí kontroly.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Rozřazování pomocí tagů (@):</strong>
@@ -425,8 +429,8 @@ console.log('Hello World');
                     V nastavení doporučujeme vyplnit pole **Povolené e-maily odesílatelů**. Aplikace pak bude ignorovat maily, které přijdou z jiných adres, což zamezí spamu nebo nechtěným importům.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Ruční import z Inboxu:</strong>
-                    Na stránce **Inbox** vidíte historii všech stažených mailů. U těch, které se neimportovaly automaticky (např. chyběl tag), najdete tlačítka pro ruční vytvoření poznámky, úkolu nebo draftu.
+                    <strong class="text-white d-block">Detailní náhled a ruční import:</strong>
+                    Na stránce **Inbox** vidíte přehled všech stažených mailů. Kliknutím na e-mail otevřete **detailní modální okno** s celým obsahem zprávy. U těch mailů, které se neimportovaly automaticky (např. chyběl tag v předmětu), najdete přímo v tomto detailu tlačítka pro ruční zařazení do poznámek, úkolů nebo draftů.
                 </li>
             </ul>
         </div>
