@@ -726,10 +726,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const CHECK_INTERVAL = 60000; // 1 minuta (pro testování)
-    const WATCH_INTERVAL = 10000; // 10 sekund (častější kontrola stavu v localStorage)
+    const CHECK_INTERVAL = 60000; // 1 minuta
+    //const CHECK_INTERVAL = 300000; // 5 minut
+    const WATCH_INTERVAL = 15000; // 15 sekund (kontrola stavu)
 
-    // Check for new items every 5 minutes, sync with other tabs via localStorage
     const performCheck = async () => {
       console.log("DevBase: Spouštím automatickou synchronizaci inboxu...");
       localStorage.setItem("inbox_last_check", Date.now());
@@ -739,13 +739,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
 
         if (data.status === "success" && window.updateGlobalStats) {
-          console.log("DevBase: Sync úspěšný, nalezeno položek:", data.count);
+          if (data.count > 0) {
+            console.log(
+              "DevBase: Sync úspěšný, nalezeno nových položek:",
+              data.count,
+            );
+          }
           updateGlobalStats(data);
-        } else {
-          console.warn(
-            "DevBase: Sync vrátil chybu nebo nepodporovaný formát",
-            data,
-          );
         }
       } catch (error) {
         console.error("DevBase: Kritická chyba při auto-importu:", error);
@@ -758,20 +758,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const now = Date.now();
       const diff = now - lastCheck;
 
-      // Pokud je to první běh (0) nebo už uplynul interval
       if (lastCheck === 0 || diff >= CHECK_INTERVAL) {
         performCheck();
-      } else {
-        console.log(
-          `DevBase: Další kontrola za ${Math.round((CHECK_INTERVAL - diff) / 1000)}s`,
-        );
       }
     };
 
-    // Provést kontrolu při načtení
     checkAndRun();
-
-    // Sledovat stav každých 10 sekund
     setInterval(checkAndRun, WATCH_INTERVAL);
   }
 

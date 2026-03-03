@@ -208,9 +208,6 @@ window.DevBase = {
         inbox_auto_check: "<?php echo getSetting('inbox_auto_check', '0'); ?>"
     }
 };
-console.log("DEBUG: DevBase Object:", DevBase);
-console.log("DEBUG: inbox_enabled =", DevBase.settings.inbox_enabled);
-console.log("DEBUG: inbox_auto_check =", DevBase.settings.inbox_auto_check);
 
 function updateGlobalStats(data) {
     if (!data) return;
