@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/functions.php';
+file_put_contents('../tmp_sync_log.txt', date('Y-m-d H:i:s') . " - Sync API Hit (pre-security)\n", FILE_APPEND);
 checkApiSecurity();
 
 header('Content-Type: application/json');
@@ -25,13 +26,15 @@ if (!function_exists('imap_open')) {
     exit;
 }
 
-$ssl = $imap_encryption === 'ssl' ? '/ssl' : ($imap_encryption === 'tls' ? '/tls' : '/notls');
+$ssl = $imap_encryption === 'ssl' ? '/ssl/novalidate-cert' : ($imap_encryption === 'tls' ? '/tls/novalidate-cert' : '/notls');
 $mailbox = "{" . $imap_server . ":" . $imap_port . "/imap" . $ssl . "}INBOX";
 
 $mbox = @imap_open($mailbox, $imap_user, $imap_password);
 
 if (!$mbox) {
-    echo json_encode(['status' => 'error', 'message' => 'Nelze se připojit k IMAP: ' . imap_last_error()]);
+    $error = imap_last_error();
+    file_put_contents('../tmp_sync_log.txt', date('Y-m-d H:i:s') . " - IMAP Error: $error\n", FILE_APPEND);
+    echo json_encode(['status' => 'error', 'message' => 'Nelze se připojit k IMAP: ' . $error]);
     exit;
 }
 
@@ -104,3 +107,4 @@ echo json_encode([
     'stats' => $stats,
     'nav_notifications_html' => $notifications_html
 ]);
+file_put_contents('../tmp_sync_log.txt', date('Y-m-d H:i:s') . " - Sync finished. Count: $importedCount\n", FILE_APPEND);

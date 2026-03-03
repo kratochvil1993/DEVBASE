@@ -704,31 +704,51 @@ document.addEventListener("DOMContentLoaded", () => {
    * Automatic Inbox Check
    */
   function initInboxAutoCheck() {
-    if (
-      !window.DevBase ||
-      !window.DevBase.settings.inbox_enabled ||
-      !window.DevBase.settings.inbox_auto_check
-    ) {
+    console.log("DevBase: Iniciování Inbox Auto Check (v2.1)...");
+
+    if (!window.DevBase) {
+      console.log(
+        "DevBase: Objekt DevBase nebyl nalezen, zkusím to znovu za 1s...",
+      );
+      setTimeout(initInboxAutoCheck, 1000);
       return;
     }
 
-    const CHECK_INTERVAL = 300000; // 5 minut
+    const { inbox_enabled, inbox_auto_check } = window.DevBase.settings;
+    console.log(
+      `DevBase: Nastavení - Enabled: ${inbox_enabled}, AutoCheck: ${inbox_auto_check}`,
+    );
+
+    if (inbox_enabled != "1" || inbox_auto_check != "1") {
+      console.log(
+        "DevBase: Auto check je vypnut v nastavení (Enabled != 1 nebo AutoCheck != 1)",
+      );
+      return;
+    }
+
+    const CHECK_INTERVAL = 60000; // 1 minuta (pro testování)
     const WATCH_INTERVAL = 10000; // 10 sekund (častější kontrola stavu v localStorage)
 
     // Check for new items every 5 minutes, sync with other tabs via localStorage
     const performCheck = async () => {
-      // Okamžitě nastavíme aktuální čas, aby jiný tab nezačal stejnou kontrolu
+      console.log("DevBase: Spouštím automatickou synchronizaci inboxu...");
       localStorage.setItem("inbox_last_check", Date.now());
 
       try {
-        const response = await fetch("api/api_inbox_sync.php");
+        const response = await fetch("./api/api_inbox_sync.php");
         const data = await response.json();
 
         if (data.status === "success" && window.updateGlobalStats) {
+          console.log("DevBase: Sync úspěšný, nalezeno položek:", data.count);
           updateGlobalStats(data);
+        } else {
+          console.warn(
+            "DevBase: Sync vrátil chybu nebo nepodporovaný formát",
+            data,
+          );
         }
       } catch (error) {
-        console.error("Inbox Auto-Check Error:", error);
+        console.error("DevBase: Kritická chyba při auto-importu:", error);
       }
     };
 
@@ -736,10 +756,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const lastCheckStr = localStorage.getItem("inbox_last_check");
       const lastCheck = lastCheckStr ? parseInt(lastCheckStr) : 0;
       const now = Date.now();
+      const diff = now - lastCheck;
 
       // Pokud je to první běh (0) nebo už uplynul interval
-      if (lastCheck === 0 || now - lastCheck >= CHECK_INTERVAL) {
+      if (lastCheck === 0 || diff >= CHECK_INTERVAL) {
         performCheck();
+      } else {
+        console.log(
+          `DevBase: Další kontrola za ${Math.round((CHECK_INTERVAL - diff) / 1000)}s`,
+        );
       }
     };
 
