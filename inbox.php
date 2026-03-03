@@ -83,6 +83,7 @@ include 'includes/header.php';
                                         <h5 class="text-white mb-0 fs-6 fw-bold text-truncate"><?php echo htmlspecialchars($item['subject']); ?></h5>
                                     </div>
                                     <div class="d-flex align-items-center gap-2">
+                                        <?php /*
                                         <span class="text-white-50 small text-truncate" style="max-width: 150px;">
                                             <i class="bi bi-person-circle me-1"></i><?php 
                                                 $parts = explode('@', $item['from_email']);
@@ -90,6 +91,7 @@ include 'includes/header.php';
                                             ?>
                                         </span>
                                         <span class="text-white-50 small">•</span>
+                                        */ ?>
                                         <span class="text-white-50 small">
                                             <i class="bi bi-clock me-1"></i><?php echo date('j. n. H:i', strtotime($item['created_at'])); ?>
                                         </span>
@@ -149,8 +151,10 @@ include 'includes/header.php';
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div id="modalBadge"></div>
                     <div class="text-white-50 small">
+                        <?php /*
                         <i class="bi bi-person-circle me-1"></i> <span id="modalFrom"></span>
                         <span class="mx-2">•</span>
+                        */ ?>
                         <i class="bi bi-clock me-1"></i> <span id="modalDate"></span>
                     </div>
                 </div>
@@ -166,7 +170,7 @@ include 'includes/header.php';
 <script>
 function showInboxDetail(item) {
     document.getElementById('modalSubject').innerText = item.subject;
-    document.getElementById('modalFrom').innerText = item.from_email;
+    // document.getElementById('modalFrom').innerText = item.from_email;
     document.getElementById('modalDate').innerText = item.created_at;
     document.getElementById('modalContent').innerText = item.content;
     
