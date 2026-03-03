@@ -194,7 +194,7 @@ include 'includes/header.php';
                     <button class="btn btn-sm btn-outline-light copy-btn shadow-sm z-3" onclick="copyNoteContent(this)" style="position: absolute; right: 10px; top: 10px; z-index: 10;">
                         copy
                     </button>
-                    <div id="viewNoteContent" class="p-3" style="max-height: 70vh; overflow-y: auto;"></div>
+                    <div id="viewNoteContent" class="p-3" style="max-height: 70vh; overflow-y: auto; white-space: pre-wrap;"></div>
                 </div>
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">

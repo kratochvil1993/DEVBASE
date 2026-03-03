@@ -474,7 +474,7 @@ function copyNoteContent(btn) {
                     <button class="btn btn-sm btn-outline-light copy-btn shadow-sm z-3" onclick="copyNoteContent(this)" style="position: absolute; right: 10px; top: 10px; z-index: 10;">
                         copy
                     </button>
-                    <div id="viewNoteContent" class="p-3" style="max-height: 70vh; overflow-y: auto;"></div>
+                    <div id="viewNoteContent" class="p-3" style="max-height: 70vh; overflow-y: auto; white-space: pre-wrap;"></div>
                 </div>
                 
                 <?php if ($aiEnabled): ?>

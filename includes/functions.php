@@ -1011,7 +1011,8 @@ function processInboxMail($uid, $from, $subject, $body) {
     if (stripos($subject, '@note') !== false) {
         $target_type = 'note';
         $title = trim(str_ireplace('@note', '', $subject));
-        $target_id = saveNote($title, $body);
+        $content_html = (strip_tags($body) === $body) ? nl2br(htmlspecialchars($body)) : $body;
+        $target_id = saveNote($title, $content_html);
     } elseif (stripos($subject, '@todo') !== false) {
         $target_type = 'todo';
         $title = trim(str_ireplace('@todo', '', $subject));
@@ -1086,7 +1087,8 @@ function importIntoItemFromInbox($id, $target_type) {
     $target_id = null;
 
     if ($target_type == 'note') {
-        $target_id = saveNote($item['subject'], $item['content']);
+        $content_html = (strip_tags($item['content']) === $item['content']) ? nl2br(htmlspecialchars($item['content'])) : $item['content'];
+        $target_id = saveNote($item['subject'], $content_html);
     } elseif ($target_type == 'todo') {
         $target_id = saveTodo($item['subject']);
         if ($target_id) {

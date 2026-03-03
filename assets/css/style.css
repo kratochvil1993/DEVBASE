@@ -739,6 +739,7 @@ h6 i.bi-pin-angle-fill {
   -webkit-line-clamp: 10;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  white-space: pre-wrap;
 }
 
 .quill-preview p,
