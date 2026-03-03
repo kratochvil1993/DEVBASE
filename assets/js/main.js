@@ -699,4 +699,60 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
   };
+
+  /**
+   * Automatic Inbox Check
+   */
+  function initInboxAutoCheck() {
+    if (
+      !window.DevBase ||
+      !window.DevBase.settings.inbox_enabled ||
+      !window.DevBase.settings.inbox_auto_check
+    ) {
+      return;
+    }
+
+    // Request notification permission if needed
+    if (Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+
+    // Check every 5 minutes (300,000 ms)
+    setInterval(async () => {
+      try {
+        const response = await fetch("api/api_inbox_sync.php");
+        const data = await response.json();
+
+        if (data.status === "success") {
+          // Update UI components (header bell, badges)
+          if (window.updateGlobalStats) {
+            updateGlobalStats(data);
+          }
+
+          // Show system notification if there are new items
+          if (data.count > 0 && Notification.permission === "granted") {
+            const text =
+              data.count === 1
+                ? "Máte 1 novou položku v inboxu."
+                : `Máte ${data.count} nových položek v inboxu.`;
+
+            const notification = new Notification("DevBase Inbox", {
+              body: text,
+              icon: "assets/fav/favicon-96x96.png",
+              tag: "devbase-inbox",
+            });
+
+            notification.onclick = () => {
+              window.focus();
+              window.location.href = "inbox.php";
+            };
+          }
+        }
+      } catch (error) {
+        console.error("Inbox Auto-Check Error:", error);
+      }
+    }, 300000);
+  }
+
+  initInboxAutoCheck();
 });

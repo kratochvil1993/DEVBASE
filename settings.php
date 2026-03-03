@@ -603,6 +603,25 @@ include 'includes/header.php';
                 </div>
             </div>
 
+            <div class="glass-card no-jump p-3 border-light border-opacity-10 mb-4" style="background: rgba(255,255,255,0.03);">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                            <i class="bi bi-clock-history text-primary fs-5"></i>
+                        </div>
+                        <div>
+                            <label class="text-white fw-bold mb-0 d-block">Automatická kontrola (každých 5 min)</label>
+                            <small class="text-white-50">Kontroluje schránku na pozadí a posílá systémové notifikace.</small>
+                        </div>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input fs-4 ms-0" type="checkbox" name="inbox_auto_check" id="inboxAutoCheckToggle" 
+                               <?php echo getSetting('inbox_auto_check', '0') == '1' ? 'checked' : ''; ?>
+                               onchange="updateGeneralSetting('inbox_auto_check', this.checked)">
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <!-- IMAP Config -->
                 <div class="col-md-12 mb-4">

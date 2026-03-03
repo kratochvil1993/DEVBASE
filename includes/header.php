@@ -202,6 +202,13 @@ $stats = getGlobalStats();
 
 
 <script>
+const DevBase = {
+    settings: {
+        inbox_enabled: <?php echo getSetting('inbox_enabled', '0'); ?>,
+        inbox_auto_check: <?php echo getSetting('inbox_auto_check', '0'); ?>
+    }
+};
+
 function updateGlobalStats(data) {
     if (!data) return;
     

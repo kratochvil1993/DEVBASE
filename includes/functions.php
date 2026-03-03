@@ -528,6 +528,10 @@ function getGlobalStats() {
         }
     }
     
+    // Total Inbox (new/not imported)
+    $res = $conn->query("SELECT COUNT(*) as count FROM inbox_items WHERE is_imported = 0");
+    if ($res) $stats['total_inbox_new'] = $res->fetch_assoc()['count'];
+
     return $stats;
 }
 
@@ -941,6 +945,20 @@ function renameScratchpad($id, $name) {
 function getAllInboxItems() {
     global $conn;
     $sql = "SELECT * FROM inbox_items ORDER BY created_at DESC";
+    $result = $conn->query($sql);
+    $items = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $items[] = $row;
+        }
+    }
+    return $items;
+}
+
+function getNewInboxItems($limit = 5) {
+    global $conn;
+    $limit = (int)$limit;
+    $sql = "SELECT * FROM inbox_items WHERE is_imported = 0 ORDER BY created_at DESC LIMIT $limit";
     $result = $conn->query($sql);
     $items = [];
     if ($result) {

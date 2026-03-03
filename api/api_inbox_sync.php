@@ -91,8 +91,16 @@ if ($emails) {
 
 imap_close($mbox);
 
+// Prepare data for real-time UI update
+$stats = getGlobalStats();
+ob_start();
+include '../includes/header_notifications.php';
+$notifications_html = ob_get_clean();
+
 echo json_encode([
     'status' => 'success',
     'message' => "Synchronizace dokončena. Importováno $importedCount nových položek.",
-    'count' => $importedCount
+    'count' => $importedCount,
+    'stats' => $stats,
+    'nav_notifications_html' => $notifications_html
 ]);

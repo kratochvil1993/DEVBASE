@@ -161,5 +161,6 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
 ('smtp_user', ''),
 ('smtp_password', ''),
 ('smtp_encryption', 'ssl'),
-('inbox_trusted_emails', '');
+('inbox_trusted_emails', ''),
+('inbox_auto_check', '0');
 
