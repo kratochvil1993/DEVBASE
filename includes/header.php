@@ -96,7 +96,7 @@ $stats = getGlobalStats();
                     <span id="nav-inbox-badge-container">
                         <?php 
                         if ($stats['total_inbox_new'] > 0) {
-                            echo '<span class="badge badge-todo ms-2 bg-primary border-primary">' . $stats['total_inbox_new'] . '</span>';
+                            echo '<span class="badge badge-todo ms-2">' . $stats['total_inbox_new'] . '</span>';
                         }
                         ?>
                     </span>
@@ -239,7 +239,7 @@ function updateGlobalStats(data) {
     const inboxBadgeContainer = document.getElementById('nav-inbox-badge-container');
     if (inboxBadgeContainer && data.stats) {
         if (data.stats.total_inbox_new > 0) {
-            inboxBadgeContainer.innerHTML = '<span class="badge badge-todo ms-2 bg-primary border-primary">' + data.stats.total_inbox_new + '</span>';
+            inboxBadgeContainer.innerHTML = '<span class="badge badge-todo ms-2">' + data.stats.total_inbox_new + '</span>';
         } else {
             inboxBadgeContainer.innerHTML = '';
         }

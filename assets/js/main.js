@@ -726,8 +726,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const CHECK_INTERVAL = 60000; // 1 minuta
-    //const CHECK_INTERVAL = 300000; // 5 minut
+    //const CHECK_INTERVAL = 60000; // 1 minuta
+    const CHECK_INTERVAL = 300000; // 5 minut
     const WATCH_INTERVAL = 15000; // 15 sekund (kontrola stavu)
 
     const performCheck = async () => {
