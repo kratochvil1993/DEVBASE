@@ -404,11 +404,11 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Automatická synchronizace a Notifikace:</strong>
-                    Aplikace každou **1 minutu automaticky kontroluje** vaši schránku. Pokud dorazí nové zprávy, u položky **Inbox** v hlavním menu se objeví modrý badge s počtem novinek. Systém si pamatuje, které zprávy jste již viděli, a badge zmizí až ve chvíli, kdy sekci Inbox navštívíte. Systém je vybaven ochranou proti duplicitám, takže i při opakovaném odeslání stejného mailu (např. přes Make.com) se v aplikaci vytvoří pouze jeden záznam.
+                    Aplikace každých **5 minut automaticky kontroluje** vaši schránku (tento interval lze v nastavení vypnout). Pokud dorazí nové zprávy, u položky **Inbox** v hlavním menu se objeví modrý badge s počtem novinek a aplikace vás na ně upozorní systémovou notifikací (zvonečkem) v hlavičce. Systém si pamatuje, které zprávy jste již viděli, a badge zmizí až ve chvíli, kdy sekci Inbox navštívíte. Systém je vybaven ochranou proti duplicitám, takže i při opakovaném odeslání stejného mailu (např. přes Make.com) se v aplikaci vytvoří pouze jeden záznam. Celou historii stažených zpráv můžete kdykoliv promazat tlačítkem **Vymazat historii**.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Konfigurace (IMAP):</strong>
-                    V **Nastavení** (sekce E-mailový Inbox) vyplňte údaje k vaší e-mailové schránce. Standardně se používá port **993** (pro SSL/TLS). Funkčnost můžete okamžitě ověřit tlačítkem **Testovat spojení**. Zde také najdete přepínač pro zapnutí/vypnutí automatického pozadí kontroly.
+                    V **Nastavení** (sekce E-mailový Inbox) vyplňte údaje k vaší e-mailové schránce. Standardně se používá port **993** (pro SSL/TLS). Funkčnost můžete okamžitě ověřit tlačítkem **Testovat spojení**. Zde také najdete přepínač pro zapnutí/vypnutí automatické kontroly na pozadí.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Rozřazování pomocí tagů (@):</strong>
