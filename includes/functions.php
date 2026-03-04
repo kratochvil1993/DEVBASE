@@ -648,7 +648,8 @@ function exportAllData() {
         'snippets' => [],
         'notes' => [],
         'todos' => [],
-        'scratchpads' => []
+        'scratchpads' => [],
+        'inbox_items' => []
     ];
 
     // Settings
@@ -702,10 +703,10 @@ function exportAllData() {
         $data['todos'][] = $row;
     }
 
-    // Scratchpads
-    $res = $conn->query("SELECT * FROM scratchpads");
+    // Inbox Items
+    $res = $conn->query("SELECT * FROM inbox_items");
     while ($row = $res->fetch_assoc()) {
-        $data['scratchpads'][] = $row;
+        $data['inbox_items'][] = $row;
     }
 
     return $data;
@@ -724,6 +725,7 @@ function importAllData($data, $mode = 'append') {
         $conn->query("DELETE FROM tags");
         $conn->query("DELETE FROM languages");
         $conn->query("DELETE FROM scratchpads");
+        $conn->query("DELETE FROM inbox_items");
         // We don't delete all settings to avoid breaking security unless user wants that
         // But we could overwrite them.
     }
@@ -738,6 +740,10 @@ function importAllData($data, $mode = 'append') {
     // Helper to map old IDs to new IDs
     $langMap = [];
     $tagMap = [];
+    $snippetMap = [];
+    $noteMap = [];
+    $todoMap = [];
+    $scratchpadMap = [];
 
     // Import Languages
     if (!empty($data['languages'])) {
@@ -783,9 +789,11 @@ function importAllData($data, $mode = 'append') {
             $pinned = (int)($snip['is_pinned'] ?? 0);
             $locked = (int)($snip['is_locked'] ?? 0);
             $sort = (int)($snip['sort_order'] ?? 0);
+            $created = !empty($snip['created_at']) ? "'" . $conn->real_escape_string($snip['created_at']) . "'" : "CURRENT_TIMESTAMP";
             
-            $conn->query("INSERT INTO snippets (title, description, code, language_id, is_pinned, is_locked, sort_order) VALUES ('$title', '$desc', '$code', $lang_id, $pinned, $locked, $sort)");
+            $conn->query("INSERT INTO snippets (title, description, code, language_id, is_pinned, is_locked, sort_order, created_at) VALUES ('$title', '$desc', '$code', $lang_id, $pinned, $locked, $sort, $created)");
             $new_id = $conn->insert_id;
+            $snippetMap[$snip['id']] = $new_id;
 
             if (!empty($snip['tags'])) {
                 foreach ($snip['tags'] as $old_tag_id) {
@@ -808,9 +816,11 @@ function importAllData($data, $mode = 'append') {
             $pinned = (int)($note['is_pinned'] ?? 0);
             $locked = (int)($note['is_locked'] ?? 0);
             $lang_id = isset($langMap[$note['language_id']]) ? $langMap[$note['language_id']] : 'NULL';
+            $created = !empty($note['created_at']) ? "'" . $conn->real_escape_string($note['created_at']) . "'" : "CURRENT_TIMESTAMP";
 
-            $conn->query("INSERT INTO notes (title, content, sort_order, language_id, is_archived, is_pinned, is_locked) VALUES ('$title', '$content', $sort, $lang_id, $archived, $pinned, $locked)");
+            $conn->query("INSERT INTO notes (title, content, sort_order, language_id, is_archived, is_pinned, is_locked, created_at) VALUES ('$title', '$content', $sort, $lang_id, $archived, $pinned, $locked, $created)");
             $new_id = $conn->insert_id;
+            $noteMap[$note['id']] = $new_id;
 
             if (!empty($note['tags'])) {
                 foreach ($note['tags'] as $old_tag_id) {
@@ -830,10 +840,14 @@ function importAllData($data, $mode = 'append') {
             $archived = (int)($todo['is_archived'] ?? 0);
             $pinned = (int)($todo['is_pinned'] ?? 0);
             $sort = (int)($todo['sort_order'] ?? 0);
+            $locked = (int)($todo['is_locked'] ?? 0);
             $deadline = !empty($todo['deadline']) ? "'" . $conn->real_escape_string($todo['deadline']) . "'" : "NULL";
+            $note = !empty($todo['note']) ? "'" . $conn->real_escape_string($todo['note']) . "'" : "NULL";
+            $created = !empty($todo['created_at']) ? "'" . $conn->real_escape_string($todo['created_at']) . "'" : "CURRENT_TIMESTAMP";
 
-            $conn->query("INSERT INTO todos (text, is_archived, sort_order, is_pinned, deadline) VALUES ('$text', $archived, $sort, $pinned, $deadline)");
+            $conn->query("INSERT INTO todos (text, is_archived, sort_order, is_pinned, deadline, is_locked, note, created_at) VALUES ('$text', $archived, $sort, $pinned, $deadline, $locked, $note, $created)");
             $new_id = $conn->insert_id;
+            $todoMap[$todo['id']] = $new_id;
 
             if (!empty($todo['tags'])) {
                 foreach ($todo['tags'] as $old_tag_id) {
@@ -856,9 +870,39 @@ function importAllData($data, $mode = 'append') {
             $check = $conn->query("SELECT id FROM scratchpads WHERE name = '$name' AND type = '$type'");
             if ($row = $check->fetch_assoc()) {
                 $conn->query("UPDATE scratchpads SET content = '$content' WHERE id = " . $row['id']);
+                $scratchpadMap[$pad['id']] = $row['id'];
             } else {
                 $conn->query("INSERT INTO scratchpads (name, content, type) VALUES ('$name', '$content', '$type')");
+                $scratchpadMap[$pad['id']] = $conn->insert_id;
             }
+        }
+    }
+
+    // Import Inbox Items
+    if (!empty($data['inbox_items'])) {
+        foreach ($data['inbox_items'] as $item) {
+            $uid = !empty($item['mail_uid']) ? "'" . $conn->real_escape_string($item['mail_uid']) . "'" : "NULL";
+            $hash = $conn->real_escape_string($item['content_hash']);
+            $subject = $conn->real_escape_string($item['subject']);
+            $content = $conn->real_escape_string($item['content']);
+            $from = $conn->real_escape_string($item['from_email']);
+            $type = $conn->real_escape_string($item['target_type'] ?? 'unknown');
+            $seen = (int)($item['is_seen'] ?? 0);
+            $imported = (int)($item['is_imported'] ?? 0);
+            $created = !empty($item['created_at']) ? "'" . $conn->real_escape_string($item['created_at']) . "'" : "CURRENT_TIMESTAMP";
+            
+            $target_id = 'NULL';
+            if ($imported && !empty($item['target_id'])) {
+                if ($type === 'snippet' && isset($snippetMap[$item['target_id']])) $target_id = $snippetMap[$item['target_id']];
+                elseif ($type === 'note' && isset($noteMap[$item['target_id']])) $target_id = $noteMap[$item['target_id']];
+                elseif ($type === 'todo' && isset($todoMap[$item['target_id']])) $target_id = $todoMap[$item['target_id']];
+                elseif ($type === 'draft' && isset($scratchpadMap[$item['target_id']])) $target_id = $scratchpadMap[$item['target_id']];
+            }
+
+            $sql = "INSERT INTO inbox_items (mail_uid, content_hash, subject, content, from_email, target_type, target_id, is_imported, is_seen, created_at) 
+                    VALUES ($uid, '$hash', '$subject', '$content', '$from', '$type', $target_id, $imported, $seen, $created)
+                    ON DUPLICATE KEY UPDATE content_hash = '$hash'";
+            $conn->query($sql);
         }
     }
 
