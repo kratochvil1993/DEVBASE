@@ -13,6 +13,7 @@ $notes = getAllNotes($currentSort);
 $pinnedNotes = array_filter($notes, function($n) { return $n['is_pinned'] == 1; });
 $otherNotes = array_filter($notes, function($n) { return $n['is_pinned'] == 0; });
 $languages = getAllLanguages();
+$tags = getAllTags('note');
 $geminiApiKey = getSetting('gemini_api_key');
 $aiEnabled = getSetting('ai_enabled', '0') == '1' && (!empty($geminiApiKey) || !empty(getSetting('openai_api_key')));
 
