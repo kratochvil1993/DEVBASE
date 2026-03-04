@@ -41,37 +41,79 @@ if (!$mbox) {
 // Search for UNSEEN messages
 $emails = imap_search($mbox, 'UNSEEN');
 
+// Helper function to recursively find the body and handle encoding/charset
+function getIMAPBody($mbox, $mail_id, $structure, $part_number = null) {
+    // If it's a message/rfc822, we need to dive deeper into the structure
+    if ($structure->type == 2) { 
+        return getIMAPBody($mbox, $mail_id, $structure->parts[0], $part_number);
+    }
+
+    // Found a plain text part or it's a single part message
+    if ($structure->type == 0 && ($structure->subtype == 'PLAIN' || empty($structure->parts))) {
+        $data = $part_number ? imap_fetchbody($mbox, $mail_id, $part_number) : imap_body($mbox, $mail_id);
+        
+        // Decode based on encoding
+        if ($structure->encoding == 3) $data = base64_decode($data);
+        elseif ($structure->encoding == 4) $data = quoted_printable_decode($data);
+        
+        // Handle charset conversion
+        $charset = '';
+        if (isset($structure->parameters)) {
+            foreach ($structure->parameters as $param) {
+                if (strtolower($param->attribute) == 'charset') {
+                    $charset = $param->value;
+                    break;
+                }
+            }
+        }
+        
+        if ($charset && strtolower($charset) != 'utf-8' && strtolower($charset) != 'us-ascii') {
+            if (function_exists('mb_convert_encoding')) {
+                $data = @mb_convert_encoding($data, 'UTF-8', $charset);
+            } elseif (function_exists('iconv')) {
+                $data = @iconv($charset, 'UTF-8//IGNORE', $data);
+            }
+        }
+        
+        return $data;
+    }
+
+    // Multipart - iterate through parts
+    if ($structure->type == 1 && !empty($structure->parts)) {
+        // Priority 1: Look for PLAIN text
+        foreach ($structure->parts as $index => $sub_structure) {
+            $current_part_number = $part_number ? $part_number . "." . ($index + 1) : ($index + 1);
+            if ($sub_structure->type == 0 && $sub_structure->subtype == 'PLAIN') {
+                return getIMAPBody($mbox, $mail_id, $sub_structure, $current_part_number);
+            }
+        }
+        
+        // Priority 2: Recurse into first part if no plain text found at this level
+        foreach ($structure->parts as $index => $sub_structure) {
+            $current_part_number = $part_number ? $part_number . "." . ($index + 1) : ($index + 1);
+            $found = getIMAPBody($mbox, $mail_id, $sub_structure, $current_part_number);
+            if ($found !== null) return $found;
+        }
+    }
+
+    return null;
+}
+
 $importedCount = 0;
 if ($emails) {
     arsort($emails); // Newest first
     
     foreach ($emails as $mail_id) {
         $overview = imap_fetch_overview($mbox, $mail_id, 0);
+        if (empty($overview)) continue;
         $overview = $overview[0];
         
         $structure = imap_fetchstructure($mbox, $mail_id);
-        $body = "";
+        $body = getIMAPBody($mbox, $mail_id, $structure);
         
-        // Simple body fetch (trying plaintext first)
-        if (isset($structure->parts) && count($structure->parts)) {
-            // Multipart
-            foreach ($structure->parts as $part_number => $part) {
-                if ($part->subtype == 'PLAIN') {
-                    $body = imap_fetchbody($mbox, $mail_id, $part_number + 1);
-                    break;
-                }
-            }
-            if (empty($body)) {
-                $body = imap_fetchbody($mbox, $mail_id, 1);
-            }
-        } else {
-            // Single part
-            $body = imap_body($mbox, $mail_id);
+        if ($body === null) {
+            $body = "(Nelze načíst obsah e-mailu)";
         }
-        
-        // Decode body if needed
-        if ($structure->encoding == 3) $body = base64_decode($body);
-        elseif ($structure->encoding == 4) $body = quoted_printable_decode($body);
 
         $from = $overview->from;
         // Parse email from "Name <email@domain.com>"
@@ -86,8 +128,7 @@ if ($emails) {
 
         if (processInboxMail($uid, $from_email, $subject, $body)) {
             $importedCount++;
-            // Optionally mark as read or delete
-            // imap_setflag_full($mbox, $uid, "\\Seen", ST_UID);
+            file_put_contents('../tmp_sync_log.txt', date('Y-m-d H:i:s') . " - Imported: $subject ($from_email)\n", FILE_APPEND);
         }
     }
 }
