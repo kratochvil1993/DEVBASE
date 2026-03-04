@@ -494,6 +494,7 @@ include 'includes/header.php';
                         $models = [
                             'gemini-flash-latest' => 'Gemini Flash (Aktuální verze)',
                             'gemini-3.1-pro-preview' => 'Gemini 3.1 Pro (Preview)',
+                            'gemini-3.1-flash-lite-preview' => 'Gemini 3.1 Flash Lite (Preview)',
                             'gemini-3-pro-preview' => 'Gemini 3 Pro (Preview)',
                             'gemini-3-flash-preview' => 'Gemini 3 Flash (Preview)',
                             'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash Lite (Výchozí)',
