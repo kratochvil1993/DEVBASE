@@ -345,7 +345,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Termíny splnění (Deadlines):</strong>
-                    U každého úkolu můžete nastavit konkrétní datum a čas splnění. Pokud se termín blíží (dnes nebo zítra), u úkolu se objeví žlutý odznak **Blíží se**. Pokud termín již vypršel, objeví se červený odznak **Po termínu**. Termíny a časy lze zadat při přidávání úkolu nebo dodatečně přes ikonu tužky.
+                    U každého úkolu můžete nastavit konkrétní datum a čas splnění. Pokud se termín blíží (dnes nebo zítra), u úkolu se objeví žlutý odznak **Blíží se**. Pokud termín již vypršel, objeví se červený odznak **Po termínu**. Termíny a časy lze zadat při přidávání úkolu nebo dodatečně přes ikonu tužky. **Tip:** Pokud při přidávání úkolu zvolíte pouze čas, aplikace za vás automaticky vyplní dnešní datum.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Systém upozornění (Notifikace):</strong>
@@ -364,7 +364,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Nastavení a aktivace:</strong>
-                    V **Nastavení** (sekce AI Nastavení) zvolte svého preferovaného poskytovatele (**Gemini** nebo **OpenAI**) a vložte příslušný API klíč. Zde si také můžete vybrat konkrétní model (např. **GPT-4o**, **Gemini 1.5 Flash** nebo **Gemini 3.1 Flash Lite**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a poskytovatel vybrán, v celé aplikaci se zpřístupní AI nástroje. Všechny AI funkce lze také v nastavení jedním kliknutím **globálně vypnout**, což skryje všechna fialová tlačítka v celé aplikaci pro dokonale čisté rozhraní.
+                    V **Nastavení** (sekce AI Nastavení) zvolte svého preferovaného poskytovatele (**Gemini** nebo **OpenAI**) a vložte příslušný API klíč. Zde si také můžete vybrat konkrétní model (např. **GPT-4o**, **Gemini 2.5 Flash** nebo **Gemini 3.1 Flash Lite**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a poskytovatel vybrán, v celé aplikaci se zpřístupní AI nástroje. Všechny AI funkce lze také v nastavení jedním kliknutím **globálně vypnout**, což skryje všechna fialová tlačítka v celé aplikaci pro dokonale čisté rozhraní.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Vysvětlení kódu (Snippety) a navigace:</strong>
