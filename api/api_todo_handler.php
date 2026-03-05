@@ -17,6 +17,7 @@ if ($action === 'add_todo' || $action === 'edit_todo') {
     $text = $_POST['text'] ?? '';
     $tags = isset($_POST['tags']) ? (array)$_POST['tags'] : [];
     $deadline = $_POST['deadline'] ?? null;
+    $deadline_time = $_POST['deadline_time'] ?? null;
     $is_locked = isset($_POST['is_locked']) ? 1 : 0;
     $todo_id = $action === 'edit_todo' ? ($_POST['todo_id'] ?? null) : null;
     $note = $_POST['note'] ?? null;
@@ -26,7 +27,7 @@ if ($action === 'add_todo' || $action === 'edit_todo') {
         exit;
     }
 
-    $id = saveTodo($text, $tags, $todo_id, $is_locked, $deadline, $note);
+    $id = saveTodo($text, $tags, $todo_id, $is_locked, $deadline, $deadline_time, $note);
     $success = (bool)$id;
 } elseif ($action === 'toggle_pin') {
     $id = $_POST['todo_id'] ?? null;

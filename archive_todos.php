@@ -90,6 +90,9 @@ include 'includes/header.php';
                                             <small class="text-white-50 mt-1">
                                                 <i class="bi bi-calendar-event me-1"></i>
                                                 Termín: <?php echo date('j. n. Y', strtotime($todo['deadline'])); ?>
+                                                <?php if (!empty($todo['deadline_time'])): ?>
+                                                    <span class="ms-1 opacity-75"><i class="bi bi-clock me-1"></i><?php echo substr($todo['deadline_time'], 0, 5); ?></span>
+                                                <?php endif; ?>
                                             </small>
                                         <?php endif; ?>
                                     </div>

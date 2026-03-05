@@ -32,21 +32,31 @@ if ($grandTotal > 0):
                 
                 <!-- Todo Badges -->
                 <?php if ($criticalCount > 0): ?>
-                    <div class="px-3 py-2 bg-danger bg-opacity-10 small fw-bold text-danger-emphasis">Po termínu / Dnes</div>
+                    <div class="px-3 py-2 bg-danger bg-opacity-10 small fw-bold text-danger-emphasis">Po termínu / Právě teď</div>
                     <?php foreach ($reminders['critical'] as $todo): ?>
                         <a class="dropdown-item px-3 py-2 border-bottom border-light border-opacity-10" href="todo.php#todo-card-<?php echo $todo['id']; ?>">
                             <div class="text-truncate fw-medium"><?php echo htmlspecialchars($todo['text']); ?></div>
-                            <small class="text-danger"><i class="bi bi-calendar-x me-1"></i> <?php echo date('j. n. Y', strtotime($todo['deadline'])); ?></small>
+                            <small class="text-danger">
+                                <i class="bi bi-calendar-x me-1"></i> <?php echo date('j. n. Y', strtotime($todo['deadline'])); ?>
+                                <?php if (!empty($todo['deadline_time'])): ?>
+                                    <span class="ms-1 fw-bold"><i class="bi bi-clock me-1"></i><?php echo substr($todo['deadline_time'], 0, 5); ?></span>
+                                <?php endif; ?>
+                            </small>
                         </a>
                     <?php endforeach; ?>
                 <?php endif; ?>
 
                 <?php if ($warningCount > 0): ?>
-                    <div class="px-3 py-2 bg-warning bg-opacity-10 small fw-bold text-warning-emphasis">Zítra vyprší</div>
+                    <div class="px-3 py-2 bg-warning bg-opacity-10 small fw-bold text-warning-emphasis">Dnes / Zítra vyprší</div>
                     <?php foreach ($reminders['warning'] as $todo): ?>
                         <a class="dropdown-item px-3 py-2 border-bottom border-light border-opacity-10" href="todo.php#todo-card-<?php echo $todo['id']; ?>">
                             <div class="text-truncate fw-medium"><?php echo htmlspecialchars($todo['text']); ?></div>
-                            <small class="text-warning"><i class="bi bi-calendar-event me-1"></i> <?php echo date('j. n. Y', strtotime($todo['deadline'])); ?></small>
+                            <small class="text-warning">
+                                <i class="bi bi-calendar-event me-1"></i> <?php echo date('j. n. Y', strtotime($todo['deadline'])); ?>
+                                <?php if (!empty($todo['deadline_time'])): ?>
+                                    <span class="ms-1 fw-bold"><i class="bi bi-clock me-1"></i><?php echo substr($todo['deadline_time'], 0, 5); ?></span>
+                                <?php endif; ?>
+                            </small>
                         </a>
                     <?php endforeach; ?>
                 <?php endif; ?>

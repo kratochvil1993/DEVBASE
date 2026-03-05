@@ -76,7 +76,8 @@ include 'includes/header.php';
                             <option value="<?php echo $tag['id']; ?>" style="background: #2b3035;" <?php echo ($index === 0) ? 'selected' : ''; ?>><?php echo htmlspecialchars($tag['name']); ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <input type="date" name="deadline" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Termín splnění" style="max-width: 160px; cursor: pointer;">
+                    <input type="date" name="deadline" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Termín splnění" style="max-width: 130px; cursor: pointer;">
+                    <input type="time" name="deadline_time" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Čas splnění" style="max-width: 80px; cursor: pointer;">
                 </div>
 
             </form>
@@ -169,9 +170,15 @@ include 'includes/header.php';
                         <input type="text" name="text" id="editTodoText" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-white-50 small">Termín splnění (Deadline)</label>
-                        <input type="date" name="deadline" id="editTodoDeadline" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-white-50 small">Termín splnění (Deadline)</label>
+                            <input type="date" name="deadline" id="editTodoDeadline" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-white-50 small">Čas splnění</label>
+                            <input type="time" name="deadline_time" id="editTodoDeadlineTime" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none">
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -230,7 +237,10 @@ include 'includes/header.php';
 
                 <div class="mb-3">
                     <label class="form-label text-white-50 small mb-1"><i class="bi bi-calendar-event me-1"></i> Termín splnění</label>
-                    <div id="viewTodoDeadline" class="text-white fs-6"></div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div id="viewTodoDeadline" class="text-white fs-6"></div>
+                        <div id="viewTodoDeadlineTime" class="badge bg-light bg-opacity-10 text-white fw-normal fs-6"></div>
+                    </div>
                 </div>
 
                 <div class="mb-0">
@@ -385,10 +395,23 @@ function openViewTodoModal(todo) {
 
     // Zobrazeni terminu
     const deadlineContainer = document.getElementById('viewTodoDeadline');
+    const deadlineTimeContainer = document.getElementById('viewTodoDeadlineTime');
+    
     if (todo.deadline) {
         const d = new Date(todo.deadline);
         deadlineContainer.innerText = d.toLocaleDateString('cs-CZ');
     } else {
+        deadlineContainer.innerText = '';
+    }
+
+    if (todo.deadline_time) {
+        deadlineTimeContainer.innerText = todo.deadline_time.substring(0, 5);
+        deadlineTimeContainer.classList.remove('d-none');
+    } else {
+        deadlineTimeContainer.classList.add('d-none');
+    }
+
+    if (!todo.deadline && !todo.deadline_time) {
         deadlineContainer.innerHTML = '<span class="text-white-50">Neuveden</span>';
     }
 
@@ -416,6 +439,7 @@ function openEditTodoModal(todo) {
     document.getElementById('editTodoId').value = todo.id;
     document.getElementById('editTodoText').value = todo.text;
     document.getElementById('editTodoDeadline').value = todo.deadline || '';
+    document.getElementById('editTodoDeadlineTime').value = todo.deadline_time || '';
     document.getElementById('editTodoNote').value = todo.note || '';
     document.getElementById('editTodoLocked').checked = (todo.is_locked == 1 || todo.is_locked === true || todo.is_locked === "1");
 

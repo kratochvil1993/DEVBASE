@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS todos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     text VARCHAR(500) NOT NULL,
     deadline DATE DEFAULT NULL,
+    deadline_time TIME DEFAULT NULL,
     note TEXT DEFAULT NULL,
     is_archived TINYINT(1) DEFAULT 0,
     is_pinned TINYINT(1) DEFAULT 0,
@@ -98,7 +99,7 @@ INSERT IGNORE INTO settings (setting_key, setting_value) VALUES
 ('ai_provider', 'gemini'),
 ('openai_api_key', ''),
 ('openai_model', 'gpt-4o-mini'),
-('db_version', '1.1');
+('db_version', '1.2');
 
 -- Seed initial data
 INSERT IGNORE INTO languages (name, prism_class) VALUES 

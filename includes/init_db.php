@@ -73,6 +73,7 @@ if (file_exists($schema_file)) {
             'is_archived' => 'TINYINT(1) DEFAULT 0',
             'sort_order' => 'INT DEFAULT 0',
             'deadline' => 'DATE DEFAULT NULL',
+            'deadline_time' => 'TIME DEFAULT NULL',
             'note' => 'TEXT DEFAULT NULL'
         ],
         'tags' => [
@@ -117,7 +118,7 @@ if (file_exists($schema_file)) {
     }
     
     // Update DB Version
-    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('db_version', '1.1') ON DUPLICATE KEY UPDATE setting_value = '1.1'");
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('db_version', '1.2') ON DUPLICATE KEY UPDATE setting_value = '1.2'");
 
     echo "<div style='font-family: sans-serif; text-align: center; margin-top: 50px;'>";
     echo "<h2 style='color: #2ecc71;'>Databáze a schéma byly úspěšně inicializovány.</h2>";

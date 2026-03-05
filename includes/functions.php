@@ -3,7 +3,7 @@ require_once 'db.php';
 
 // Check if database and tables are created and up to date
 // Check if database and tables are created and up to date
-$current_db_version = '1.1';
+$current_db_version = '1.2';
 $needs_init = false;
 
 // Fast check: Try to get the version from settings
@@ -392,7 +392,7 @@ function getAllTodos($archive_status = 0) {
     return $todos;
 }
 
-function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = null, $note = null) {
+function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = null, $deadline_time = null, $note = null) {
     global $conn;
     $text = $conn->real_escape_string($text);
     $is_locked = (int)$is_locked;
@@ -401,21 +401,26 @@ function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = nul
         $deadline = $_POST['deadline'];
     }
     
+    if ($deadline_time === null && !empty($_POST['deadline_time'])) {
+        $deadline_time = $_POST['deadline_time'];
+    }
+    
     if ($note === null && isset($_POST['note'])) {
         $note = $_POST['note'];
     }
     
     $deadline_val = !empty($deadline) ? "'" . $conn->real_escape_string($deadline) . "'" : "NULL";
+    $deadline_time_val = !empty($deadline_time) ? "'" . $conn->real_escape_string($deadline_time) . "'" : "NULL";
     $note_val = ($note !== null && $note !== '') ? "'" . $conn->real_escape_string($note) . "'" : "NULL";
     
     if ($id) {
         $id = (int)$id;
-        $sql = "UPDATE todos SET text = '$text', deadline = $deadline_val, note = $note_val, is_locked = $is_locked WHERE id = $id";
+        $sql = "UPDATE todos SET text = '$text', deadline = $deadline_val, deadline_time = $deadline_time_val, note = $note_val, is_locked = $is_locked WHERE id = $id";
     } else {
         $result = $conn->query("SELECT MIN(sort_order) as min_sort FROM todos");
         $row = $result ? $result->fetch_assoc() : null;
         $next_sort = $row['min_sort'] !== null ? (int)$row['min_sort'] - 1 : 0;
-        $sql = "INSERT INTO todos (text, deadline, note, sort_order, is_locked) VALUES ('$text', $deadline_val, $note_val, $next_sort, $is_locked)";
+        $sql = "INSERT INTO todos (text, deadline, deadline_time, note, sort_order, is_locked) VALUES ('$text', $deadline_val, $deadline_time_val, $note_val, $next_sort, $is_locked)";
     }
     
     if ($conn->query($sql)) {
@@ -534,25 +539,37 @@ function getGlobalStats() {
 function getTodoReminders() {
     global $conn;
     $today = date('Y-m-d');
+    $now_time = date('H:i:s');
     $tomorrow = date('Y-m-d', strtotime('+1 day'));
     
     $sql = "SELECT * FROM todos 
             WHERE is_archived = 0 
             AND deadline IS NOT NULL 
             AND deadline <= '$tomorrow' 
-            ORDER BY deadline ASC";
+            ORDER BY deadline ASC, deadline_time ASC";
     
     $result = $conn->query($sql);
     $reminders = [
-        'critical' => [], // today or past (red)
-        'warning' => []   // tomorrow (orange)
+        'critical' => [], // past or today (already passed time)
+        'warning' => []   // today (future time) or tomorrow
     ];
     
     if ($result) {
         while ($row = $result->fetch_assoc()) {
-            if ($row['deadline'] <= $today) {
+            if ($row['deadline'] < $today) {
+                // Completely in the past
                 $reminders['critical'][] = $row;
-            } else if ($row['deadline'] == $tomorrow) {
+            } elseif ($row['deadline'] == $today) {
+                // Today - check time
+                if ($row['deadline_time'] !== null && $row['deadline_time'] > $now_time) {
+                    // It's today but in the future
+                    $reminders['warning'][] = $row;
+                } else {
+                    // It's today and time passed (or no time set, which implies today generally)
+                    $reminders['critical'][] = $row;
+                }
+            } elseif ($row['deadline'] == $tomorrow) {
+                // Tomorrow
                 $reminders['warning'][] = $row;
             }
         }
@@ -627,7 +644,8 @@ function getTodoSummariesForAI() {
             }
             $tags = $row['tag_names'] ? "[" . $row['tag_names'] . "]" : "";
             $pinned = $row['is_pinned'] ? "(PŘIPNUTO)" : "";
-            $output .= "- $pinned " . $row['text'] . " $tags (Deadline: " . ($row['deadline'] ?: "neuveden") . ") -> $status\n";
+            $deadline_str = ($row['deadline'] ?: "neuveden") . ($row['deadline_time'] ? " v " . substr($row['deadline_time'], 0, 5) : "");
+            $output .= "- $pinned " . $row['text'] . " $tags (Deadline: $deadline_str) -> $status\n";
         }
     } else {
         $output .= "Momentálně nemáš žádné aktivní úkoly. Skvělá práce!";
@@ -1055,19 +1073,34 @@ function processInboxMail($uid, $from, $subject, $body) {
     if (stripos($subject, '@note') !== false) {
         $target_type = 'note';
         $title = trim(str_ireplace('@note', '', $subject));
+        $extracted = extractDateTimeFromText($title);
+        $clean_title = $extracted['text'];
         $content_html = (strip_tags($body) === $body) ? nl2br(htmlspecialchars($body)) : $body;
-        $target_id = saveNote($title, $content_html);
+        $target_id = saveNote($clean_title, $content_html);
     } elseif (stripos($subject, '@todo') !== false) {
         $target_type = 'todo';
         $title = trim(str_ireplace('@todo', '', $subject));
-        $target_id = saveTodo($title);
+        
+        $extracted = extractDateTimeFromText($title);
+        $deadline = $extracted['date'];
+        $deadline_time = $extracted['time'];
+        $clean_title = $extracted['text'];
+
+        // Pokud je zadán čas, ale ne datum, předpokládáme dnešek
+        if ($deadline_time && !$deadline) {
+            $deadline = date('Y-m-d');
+        }
+
+        $target_id = saveTodo($clean_title, [], null, 0, $deadline, $deadline_time);
         if ($target_id) {
             $conn->query("UPDATE todos SET note = '$body_escaped' WHERE id = $target_id");
         }
     } elseif (stripos($subject, '@draft') !== false) {
         $target_type = 'draft';
         $title = trim(str_ireplace('@draft', '', $subject));
-        $target_id = createScratchpad($title, 'note');
+        $extracted = extractDateTimeFromText($title);
+        $clean_title = $extracted['text'];
+        $target_id = createScratchpad($clean_title, 'note');
         if ($target_id) {
             saveScratchpadContent($body, $target_id);
         }
@@ -1119,6 +1152,48 @@ function getOrCreateTagsByNames($names, $type) {
     return $tagIds;
 }
 
+/**
+ * Extrahuje datum a čas z textu a vrátí vyčištěný text.
+ * Podporuje: d.m.Y, d.m., Y-m-d a čas H:i
+ */
+function extractDateTimeFromText($text) {
+    $date = null;
+    $time = null;
+
+    // 1. Čas (HH:MM) - musí to být aspoň dvě cifry po dvojtečce
+    if (preg_match('/\b(\d{1,2}:\d{2})\b/', $text, $matches)) {
+        $time = $matches[1];
+        $text = str_replace($matches[0], '', $text);
+    }
+
+    // 2. Datum (ISO: YYYY-MM-DD)
+    if (preg_match('/\b(\d{4}-\d{2}-\d{2})\b/', $text, $matches)) {
+        $date = $matches[1];
+        $text = str_replace($matches[0], '', $text);
+    } 
+    // 3. Datum (CZ: DD.MM.YYYY)
+    elseif (preg_match('/\b(\d{1,2}\.\d{1,2}\.(\d{4}))\b/', $text, $matches)) {
+        $parts = explode('.', $matches[1]);
+        $date = sprintf('%04d-%02d-%02d', $parts[2], $parts[1], $parts[0]);
+        $text = str_replace($matches[0], '', $text);
+    }
+    // 4. Datum (CZ zkrácené: DD.MM.) - doplní aktuální rok
+    elseif (preg_match('/\b(\d{1,2}\.\d{1,2}\.)\b/', $text, $matches)) {
+        $parts = explode('.', rtrim($matches[1], '.'));
+        $date = sprintf('%04d-%02d-%02d', date('Y'), $parts[1], $parts[0]);
+        $text = str_replace($matches[0], '', $text);
+    }
+
+    // Odstranění hashtagů z textu
+    $text = preg_replace('/#\w+/u', '', $text);
+
+    return [
+        'date' => $date,
+        'time' => $time,
+        'text' => trim(preg_replace('/\s+/', ' ', $text))
+    ];
+}
+
 function importIntoItemFromInbox($id, $target_type) {
     global $conn;
     $id = (int)$id;
@@ -1131,15 +1206,25 @@ function importIntoItemFromInbox($id, $target_type) {
     $target_id = null;
 
     if ($target_type == 'note') {
+        $extracted = extractDateTimeFromText($item['subject']);
         $content_html = (strip_tags($item['content']) === $item['content']) ? nl2br(htmlspecialchars($item['content'])) : $item['content'];
-        $target_id = saveNote($item['subject'], $content_html);
+        $target_id = saveNote($extracted['text'], $content_html);
     } elseif ($target_type == 'todo') {
-        $target_id = saveTodo($item['subject']);
+        $extracted = extractDateTimeFromText($item['subject']);
+        $deadline = $extracted['date'];
+        $deadline_time = $extracted['time'];
+        
+        if ($deadline_time && !$deadline) {
+            $deadline = date('Y-m-d');
+        }
+
+        $target_id = saveTodo($extracted['text'], [], null, 0, $deadline, $deadline_time);
         if ($target_id) {
             $conn->query("UPDATE todos SET note = '$body' WHERE id = $target_id");
         }
     } elseif ($target_type == 'draft') {
-        $target_id = createScratchpad($item['subject'], 'note');
+        $extracted = extractDateTimeFromText($item['subject']);
+        $target_id = createScratchpad($extracted['text'], 'note');
         if ($target_id) {
             saveScratchpadContent($item['content'], $target_id);
         }

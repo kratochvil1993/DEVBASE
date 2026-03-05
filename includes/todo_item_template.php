@@ -10,7 +10,27 @@ if (!empty($todo['deadline'])) {
     
     if ($days < 0) {
         $deadlineStatus = 'deadline-passed';
-    } elseif ($days <= 1) {
+    } elseif ($days == 0) {
+        // Checking also Time if set
+        if (!empty($todo['deadline_time'])) {
+            $now_time = date('H:i:s');
+            if ($todo['deadline_time'] < $now_time) {
+                $deadlineStatus = 'deadline-passed';
+            } else {
+                $deadlineStatus = 'deadline-approaching';
+            }
+        } else {
+            $deadlineStatus = 'deadline-passed'; // No time means generally today, let's treat as passed/urgent
+        }
+    } elseif ($days == 1) {
+        $deadlineStatus = 'deadline-approaching';
+    }
+} elseif (!empty($todo['deadline_time'])) {
+    // Only time exists
+    $now_time = date('H:i:s');
+    if ($todo['deadline_time'] < $now_time) {
+        $deadlineStatus = 'deadline-passed';
+    } else {
         $deadlineStatus = 'deadline-approaching';
     }
 }
@@ -47,10 +67,17 @@ if (!empty($todo['deadline'])) {
                             <i class="bi bi-file-earmark-text text-white-50 ms-2" style="font-size: 0.8em;" title="Obsahuje poznámku"></i>
                         <?php endif; ?>
                     </span>
-                    <?php if ($deadlineDateFormatted): ?>
-                        <small class="text-white-50 mt-1">
-                            <i class="bi bi-calendar-event me-1"></i>
-                            Termín: <?php echo $deadlineDateFormatted; ?>
+                    <?php if ($deadlineDateFormatted || !empty($todo['deadline_time'])): ?>
+                        <small class="text-white-50 mt-1 d-flex align-items-center gap-2">
+                            <span>
+                                <?php if ($deadlineDateFormatted): ?>
+                                    <i class="bi bi-calendar-event me-1"></i>
+                                    <?php echo $deadlineDateFormatted; ?>
+                                <?php endif; ?>
+                                <?php if (!empty($todo['deadline_time'])): ?>
+                                    <span class="ms-1 text-white opacity-75"><i class="bi bi-clock me-1" style="font-size: 0.9em;"></i><?php echo substr($todo['deadline_time'], 0, 5); ?></span>
+                                <?php endif; ?>
+                            </span>
                             <?php if ($deadlineStatus == 'deadline-passed'): ?>
                                 <span class="badge bg-danger ms-1" style="font-size: 0.7em;">Po termínu</span>
                             <?php elseif ($deadlineStatus == 'deadline-approaching'): ?>
