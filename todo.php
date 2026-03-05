@@ -699,6 +699,27 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('hashchange', highlightTodoFromHash);
     // Short delay to ensure popIn animations are done and elements are positioned
     setTimeout(highlightTodoFromHash, 100);
+
+    // Auto-fill date when time is selected
+    const addDeadlineTime = document.querySelector('#addTodoForm [name="deadline_time"]');
+    const addDeadlineDate = document.querySelector('#addTodoForm [name="deadline"]');
+    if (addDeadlineTime && addDeadlineDate) {
+        addDeadlineTime.addEventListener('change', function() {
+            if (this.value && !addDeadlineDate.value) {
+                addDeadlineDate.value = new Date().toISOString().split('T')[0];
+            }
+        });
+    }
+
+    const editDeadlineTime = document.getElementById('editTodoDeadlineTime');
+    const editDeadlineDate = document.getElementById('editTodoDeadline');
+    if (editDeadlineTime && editDeadlineDate) {
+        editDeadlineTime.addEventListener('change', function() {
+            if (this.value && !editDeadlineDate.value) {
+                editDeadlineDate.value = new Date().toISOString().split('T')[0];
+            }
+        });
+    }
 });
 
 function toggleTodoPin(todoId, event) {

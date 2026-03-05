@@ -413,6 +413,11 @@ function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = nul
     if ($note === null && isset($_POST['note'])) {
         $note = $_POST['note'];
     }
+
+    // Auto-fill today's date if time is set but date is not
+    if (empty($deadline) && !empty($deadline_time)) {
+        $deadline = date('Y-m-d');
+    }
     
     $deadline_val = !empty($deadline) ? "'" . $conn->real_escape_string($deadline) . "'" : "NULL";
     $deadline_time_val = !empty($deadline_time) ? "'" . $conn->real_escape_string($deadline_time) . "'" : "NULL";
