@@ -60,98 +60,107 @@ uasort($usedTags, function($a, $b) {
 include 'includes/header.php';
 ?>
 
-<div class="row mb-3 align-items-center">
-    <div class="col-xxl-9 col-lg-10 mx-auto">
-        <div class="glass-card no-jump p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between mb-0">
-            <form method="POST" id="addTodoForm" class="flex-grow-1" style="max-width: 600px; margin: 0;">
-                <input type="hidden" name="action" value="add_todo">
-                <div class="input-group">
-                    <span class="input-group-text bg-transparent border-0 text-white">
-                        <i class="bi bi-check2-square"></i>
-                    </span>
-                    <input type="text" name="text" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Přidat" required autocomplete="off">
-                    <select name="tags[]" class="form-select bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" style="max-width: 140px; cursor: pointer;">
-                        <option value="" style="background: #2b3035;" <?php echo empty($allTags) ? 'selected' : ''; ?>>Bez štítku</option>
-                        <?php foreach ($allTags as $index => $tag): ?>
-                            <option value="<?php echo $tag['id']; ?>" style="background: #2b3035;" <?php echo ($index === 0) ? 'selected' : ''; ?>><?php echo htmlspecialchars($tag['name']); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    <input type="date" name="deadline" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Termín splnění" style="max-width: 130px; cursor: pointer;">
-                    <input type="time" name="deadline_time" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Čas splnění" style="max-width: 80px; cursor: pointer;">
-                </div>
+<div class="container">
+    <div class="row mb-3 align-items-center">
+        <div class="col-xxl-12 col-lg-12 mx-auto">
+            <div class="glass-card no-jump p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between mb-0">
+                <form method="POST" id="addTodoForm" class="flex-grow-1" style="max-width: 600px; margin: 0;">
+                    <input type="hidden" name="action" value="add_todo">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0 text-white">
+                            <i class="bi bi-check2-square"></i>
+                        </span>
+                        <input type="text" name="text" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Přidat" required autocomplete="off">
+                        <select name="tags[]" class="form-select bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" style="max-width: 140px; cursor: pointer;">
+                            <option value="" style="background: #2b3035;" <?php echo empty($allTags) ? 'selected' : ''; ?>>Bez štítku</option>
+                            <?php foreach ($allTags as $index => $tag): ?>
+                                <option value="<?php echo $tag['id']; ?>" style="background: #2b3035;" <?php echo ($index === 0) ? 'selected' : ''; ?>><?php echo htmlspecialchars($tag['name']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <input type="date" name="deadline" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Termín splnění" style="max-width: 130px; cursor: pointer;">
+                        <input type="time" name="deadline_time" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Čas splnění" style="max-width: 80px; cursor: pointer;">
+                    </div>
 
-            </form>
+                </form>
 
-            <div class="d-flex flex-wrap gap-2 ms-auto">
-                <button type="submit" form="addTodoForm" class="btn btn-add-snipet rounded px-4" id="addTodoBtn">
-                    <i class="bi bi-plus-lg"></i>
-                </button>
-                <button class="btn btn-edit-order rounded px-4" id="editOrderBtn" onclick="toggleSortingMode()">
-                    <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
-                </button>
-                <?php if (getSetting('ai_enabled', '0') == '1'): ?>
-                <button class="btn btn-ai rounded px-4" id="aiSummaryBtn">
-                    <i class="bi bi-robot me-2"></i> AI Souhrn
-                </button>
-                <?php endif; ?>
-                <button class="btn btn-success rounded px-4 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
-                    <i class="bi bi-check-lg me-2"></i> Hotovo
-                </button>
-            </div>
-        </div>
-        
-        <?php if (!empty($usedTags)): ?>
-        <div class="row mt-3 mb-5">
-            <div class="col-12 d-flex flex-wrap gap-2 justify-content-center" id="tagFilters">
-                <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all" style="--tag-color: #fff;">Vše</button>
-                <?php foreach ($usedTags as $tag): ?>
-                    <button class="btn btn-sm rounded-pill px-3 <?php echo empty($tag['color']) ? 'btn-outline-light' : ''; ?>" 
-                            data-tag="<?php echo htmlspecialchars($tag['name']); ?>"
-                            style="--tag-color: <?php echo !empty($tag['color']) ? htmlspecialchars($tag['color']) : '#fff'; ?>; <?php if (!empty($tag['color'])) echo 'background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';'; ?>">
-                        <?php echo htmlspecialchars($tag['name']); ?>
+                <div class="d-flex flex-wrap gap-2 ms-auto">
+                    <button type="submit" form="addTodoForm" class="btn btn-add-snipet rounded px-4" id="addTodoBtn">
+                        <i class="bi bi-plus-lg"></i>
                     </button>
-                <?php endforeach; ?>
-            </div>
-        </div>
-        <?php else: ?>
-            <br>
-        <?php endif; ?>
-
-        <div class="d-flex flex-column gap-3" id="todoMainContainer">
-            <?php if (empty($todos)): ?>
-                <div id="emptyState" class="text-center text-white-50 py-5 glass-card mt-3">
-                    <i class="bi bi-check2-circle display-1 mb-3 d-block"></i>
-                    <h3>Žádné aktivní úkoly!</h3>
-                    <p>Máte hotovo. Přidejte si další úkol výše.</p>
+                    <button class="btn btn-edit-order rounded px-4" id="editOrderBtn" onclick="toggleSortingMode()">
+                        <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
+                    </button>
+                    <?php if (getSetting('ai_enabled', '0') == '1'): ?>
+                    <button class="btn btn-ai rounded px-4" id="aiSummaryBtn">
+                        <i class="bi bi-robot me-2"></i> AI Souhrn
+                    </button>
+                    <?php endif; ?>
+                    <button class="btn btn-success rounded px-4 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
+                        <i class="bi bi-check-lg me-2"></i> Hotovo
+                    </button>
                 </div>
+            </div>
+            
+            <?php if (!empty($usedTags)): ?>
+            <div class="row mt-3 mb-5">
+                <div class="col-12 d-flex flex-wrap gap-2 justify-content-center" id="tagFilters">
+                    <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all" style="--tag-color: #fff;">Vše</button>
+                    <?php foreach ($usedTags as $tag): ?>
+                        <button class="btn btn-sm rounded-pill px-3 <?php echo empty($tag['color']) ? 'btn-outline-light' : ''; ?>" 
+                                data-tag="<?php echo htmlspecialchars($tag['name']); ?>"
+                                style="--tag-color: <?php echo !empty($tag['color']) ? htmlspecialchars($tag['color']) : '#fff'; ?>; <?php if (!empty($tag['color'])) echo 'background-color: ' . htmlspecialchars($tag['color']) . '; color: #fff; border-color: ' . htmlspecialchars($tag['color']) . ';'; ?>">
+                            <?php echo htmlspecialchars($tag['name']); ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php else: ?>
+                <br>
             <?php endif; ?>
 
-            <!-- Pinned Todos -->
-            <div id="pinnedTodosContainer" class="<?php echo empty($pinnedTodos) ? 'd-none' : ''; ?> mb-4">
-                <h6 class="text-white-50 mb-3 px-1"><i class="bi bi-pin-angle-fill me-2"></i> PŘIPNUTÉ</h6>
-                <div class="d-flex flex-column gap-3" id="pinnedTodosList">
-                    <?php foreach ($pinnedTodos as $todo): ?>
-                        <?php include 'includes/todo_item_template.php'; ?>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+            <div class="d-flex flex-column gap-3" id="todoMainContainer">
+                <?php if (empty($todos)): ?>
+                    <div id="emptyState" class="text-center text-white-50 py-5 glass-card mt-3">
+                        <i class="bi bi-check2-circle display-1 mb-3 d-block"></i>
+                        <h3>Žádné aktivní úkoly!</h3>
+                        <p>Máte hotovo. Přidejte si další úkol výše.</p>
+                    </div>
+                <?php endif; ?>
 
-            <!-- Other Todos -->
-            <div id="othersTodosContainer" class="<?php echo (empty($otherTodos) && !empty($pinnedTodos)) ? 'd-none' : ''; ?>">
-                <h6 class="text-white-50 mb-3 px-1 <?php echo empty($pinnedTodos) ? 'd-none' : ''; ?>" id="othersHeader">OSTATNÍ</h6>
-                <div class="d-flex flex-column gap-3" id="othersTodosList">
-                    <?php foreach ($otherTodos as $todo): ?>
-                        <?php include 'includes/todo_item_template.php'; ?>
-                    <?php endforeach; ?>
-                </div>
+                <!-- Pinned Todos -->
+                 <div class="row justify-content-center">
+                    <div class="col-lg-10">                    
+                        <div id="pinnedTodosContainer" class="<?php echo empty($pinnedTodos) ? 'd-none' : ''; ?> mb-4">
+                            <h6 class="text-white-50 mb-3 px-1"><i class="bi bi-pin-angle-fill me-2"></i> PŘIPNUTÉ</h6>
+                            <div class="d-flex flex-column gap-3" id="pinnedTodosList">
+                                <?php foreach ($pinnedTodos as $todo): ?>
+                                    <?php include 'includes/todo_item_template.php'; ?>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+
+                <!-- Other Todos -->
+                 <div class="row justify-content-center">
+                    <div class="col-lg-10">                    
+                        <div id="othersTodosContainer" class="<?php echo (empty($otherTodos) && !empty($pinnedTodos)) ? 'd-none' : ''; ?>">
+                            <h6 class="text-white-50 mb-3 px-1 <?php echo empty($pinnedTodos) ? 'd-none' : ''; ?>" id="othersHeader">OSTATNÍ</h6>
+                            <div class="d-flex flex-column gap-3" id="othersTodosList">
+                                <?php foreach ($otherTodos as $todo): ?>
+                                    <?php include 'includes/todo_item_template.php'; ?>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
             </div>
-        </div>
-        <div class="text-end mt-3">
-            <a href="archive_todos.php" class="text-white-50 text-decoration-none small"><i class="bi bi-archive me-1"></i> Zobrazit vyřízené úkoly</a>
+            <div class="text-end mt-3">
+                <a href="archive_todos.php" class="text-white-50 text-decoration-none small"><i class="bi bi-archive me-1"></i> Zobrazit vyřízené úkoly</a>
+            </div>
         </div>
     </div>
 </div>
-
 <!-- Edit Todo Modal -->
 <div class="modal fade" id="editTodoModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
