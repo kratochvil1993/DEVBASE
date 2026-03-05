@@ -155,8 +155,12 @@ include 'includes/header.php';
                     </div>
                  </div>
             </div>
-            <div class="text-end mt-3">
-                <a href="archive_todos.php" class="text-white-50 text-decoration-none small"><i class="bi bi-archive me-1"></i> Zobrazit vyřízené úkoly</a>
+            <div class="row justify-content-center">
+                <div class="col-lg-10">   
+                    <div class="text-end mt-3 me-2">
+                        <a href="archive_todos.php" class="text-white-50 text-decoration-none small"><i class="bi bi-archive me-1"></i> Zobrazit vyřízené úkoly</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
