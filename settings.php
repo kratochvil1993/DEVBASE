@@ -166,6 +166,27 @@ include 'includes/header.php';
         </div>
     </div>
 
+    <!-- Code Editor Settings -->
+    <div class="col-md-6 mb-4 settings-section" id="section-code-editor">
+        <div class="glass-card no-jump p-4 h-100">
+            <h4 class="text-white mb-3">Editor kódu (CodeMirror)</h4>
+            
+            <div class="mb-3">
+                <label class="text-white fw-bold mb-2 d-block">Téma editoru</label>
+                <select name="cm_theme" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none" onchange="updateGeneralSetting('cm_theme', this.value)">
+                    <?php $currentCmTheme = getSetting('cm_theme', 'dracula'); ?>
+                    <option value="dracula" class="bg-dark text-white" <?php echo $currentCmTheme == 'dracula' ? 'selected' : ''; ?>>Dracula (Výchozí)</option>
+                    <option value="monokai" class="bg-dark text-white" <?php echo $currentCmTheme == 'monokai' ? 'selected' : ''; ?>>Monokai</option>
+                    <option value="nord" class="bg-dark text-white" <?php echo $currentCmTheme == 'nord' ? 'selected' : ''; ?>>Nord</option>
+                    <option value="one-dark" class="bg-dark text-white" <?php echo $currentCmTheme == 'one-dark' ? 'selected' : ''; ?>>One Dark</option>
+                    <option value="material-palenight" class="bg-dark text-white" <?php echo $currentCmTheme == 'material-palenight' ? 'selected' : ''; ?>>Material Palenight</option>
+                    <option value="solarized" class="bg-dark text-white" <?php echo $currentCmTheme == 'solarized' ? 'selected' : ''; ?>>Solarized Dark</option>
+                </select>
+                <small class="text-white-50 d-block mt-2">Změna se projeví v sekci Code Drafts.</small>
+            </div>
+        </div>
+    </div>
+
     <!-- Security Settings -->
     <div class="col-md-6 mb-4 settings-section" id="section-security">
         <div class="glass-card no-jump p-4 h-100">

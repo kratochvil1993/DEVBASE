@@ -74,6 +74,7 @@ $allSnippetTags = getAllTags('snippet');
 $languages = getAllLanguages();
 $geminiApiKey = getSetting('gemini_api_key');
 $aiEnabled = getSetting('ai_enabled', '0') == '1' && (!empty($geminiApiKey) || !empty(getSetting('openai_api_key')));
+$cmTheme = getSetting('cm_theme', 'dracula');
 
 include 'includes/header.php';
 ?>
@@ -252,7 +253,7 @@ include 'includes/header.php';
 
 <!-- CodeMirror Assets -->
 <link rel="stylesheet" href="assets/vendor/codemirror/lib/codemirror.css">
-<link rel="stylesheet" href="assets/vendor/codemirror/theme/dracula.css">
+<link rel="stylesheet" href="assets/vendor/codemirror/theme/<?php echo $cmTheme; ?>.css">
 <link rel="stylesheet" href="assets/vendor/codemirror/addon/hint/show-hint.css">
 <link rel="stylesheet" href="assets/vendor/codemirror/addon/dialog/dialog.css">
 <link rel="stylesheet" href="assets/vendor/codemirror/addon/fold/foldgutter.css">
@@ -351,14 +352,12 @@ include 'includes/header.php';
 .CodeMirror {
     height: 65vh;
     font-size: 15px;
-    background: rgba(40, 42, 54, 0.6) !important;
     backdrop-filter: blur(4px);
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.05);
     padding: 10px;
 }
 .CodeMirror-gutters {
-    background: rgba(40, 42, 54, 0.3) !important;
     border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 .CodeMirror-foldgutter {
@@ -670,7 +669,7 @@ document.addEventListener('DOMContentLoaded', function() {
     editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
         lineNumbers: true,
         mode: 'php',
-        theme: 'dracula',
+        theme: '<?php echo $cmTheme; ?>',
         tabSize: 4,
         indentUnit: 4,
         lineWrapping: true,
