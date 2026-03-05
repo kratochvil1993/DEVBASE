@@ -109,13 +109,39 @@ $stats = getGlobalStats();
             <?php include 'includes/header_notifications.php'; ?>
         </div>
 
+        <div class="dropdown">
+            <button class="btn btn-link text-white-50 p-0" type="button" id="quickSettingsBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Rychlé nastavení">
+                <i class="bi bi-gear-fill fs-5"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end dropdown-menu-glass quick-settings-dropdown p-0 mt-2" aria-labelledby="quickSettingsBtn">
+                <div class="p-3 border-bottom border-light border-opacity-10">
+                    <h6 class="mb-0 fw-bold">Rychlé nastavení</h6>
+                </div>
+                <div class="p-3">
+                    <div class="mb-0">
+                        <label class="form-label text-white-50 small fw-bold mb-2">Velikost písma</label>
+                        <select class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                onchange="updateQuickSetting('ui_font_size', this.value)">
+                            <?php $currentFontSize = getSetting('ui_font_size', 'normal'); ?>
+                            <option value="normal" class="bg-dark text-white" <?php echo $currentFontSize == 'normal' ? 'selected' : ''; ?>>Standardní</option>
+                            <option value="large" class="bg-dark text-white" <?php echo $currentFontSize == 'large' ? 'selected' : ''; ?>>Větší</option>
+                            <option value="huge" class="bg-dark text-white" <?php echo $currentFontSize == 'huge' ? 'selected' : ''; ?>>Velké</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="p-2 border-top border-light border-opacity-10 text-center">
+                    <a href="settings.php" class="btn btn-sm btn-link-settings w-100 py-1">
+                        <i class="bi bi-gear me-1"></i> Přejít do nastavení
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <div class="form-check form-switch mb-0 <?php echo getSetting('theme_toggle_enabled', '1') == '1' ? '' : 'd-none'; ?>" id="headerThemeToggleContainer">
                 <input class="form-check-input" type="checkbox" id="themeToggle">
                 <label class="form-check-label text-white small" for="themeToggle">Dark</label>
         </div>
-        <a href="settings.php#section-ai" id="headerAiIcon" class="btn btn-sm btn-link text-ai p-0 <?php echo (getSetting('ai_enabled', '0') == '1' && (!empty(getSetting('gemini_api_key')) || !empty(getSetting('openai_api_key')))) ? '' : 'd-none'; ?>" title="AI Configured">
-            <i class="bi bi-robot fs-5"></i>
-        </a>
+
         <a href="?lock=1" id="headerLockIcon" class="btn btn-sm btn-link text-white-50 p-0 <?php echo getSetting('security_enabled', '0') == '1' ? '' : 'd-none'; ?>" title="Lock App">
             <i class="bi bi-lock-fill fs-5"></i>
         </a>
@@ -257,6 +283,35 @@ function updateGlobalStats(data) {
     
     const sidebarNoteCount = document.getElementById('sidebar-note-count');
     if (sidebarNoteCount && data.stats) sidebarNoteCount.textContent = data.stats.total_notes;
+}
+
+function updateQuickSetting(key, val) {
+    const formData = new FormData();
+    formData.append('action', 'toggle_setting');
+    formData.append('key', key);
+    formData.append('value', val);
+
+    fetch('api/api_settings_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            if (key === 'ui_font_size') {
+                document.body.className = document.body.className.replace(/font-size-\w+/g, 'font-size-' + val);
+                
+                // If we are on settings page, update the select there too
+                const settingsSelect = document.querySelector('select[name="ui_font_size"]');
+                if (settingsSelect) {
+                    settingsSelect.value = val;
+                }
+            }
+        } else {
+            console.error('Error updating setting:', data.message);
+        }
+    })
+    .catch(error => console.error('Error:', error));
 }
 </script>
 <main class="container-fluid py-4">

@@ -15,6 +15,7 @@
 
   /* Code snippet background for Light Mode - Darker */
   --code-bg: rgba(0, 0, 0, 0.5);
+  --dropdown-bg: rgba(248, 250, 252, 0.96);
 }
 
 [data-bs-theme="dark"] {
@@ -29,6 +30,7 @@
 
   /* Code snippet background for Dark Mode */
   --code-bg: rgba(0, 0, 0, 0.3);
+  --dropdown-bg: rgba(15, 23, 42, 0.98);
 }
 
 /* --- Font Size System --- */
@@ -1261,4 +1263,34 @@ h6 i.bi-pin-angle-fill {
 .import-glow {
   box-shadow: 0 0 20px rgba(0, 229, 130, 0.6) !important;
   transition: all 0.3s ease;
+}
+
+/* Quick Settings Dropdown */
+.dropdown-menu-glass {
+  background: var(--dropdown-bg) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important;
+}
+
+.quick-settings-dropdown {
+  width: 250px;
+}
+
+.quick-settings-dropdown .form-select {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+}
+
+.quick-settings-dropdown .btn-link-settings {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.quick-settings-dropdown .btn-link-settings:hover {
+  color: #fff;
 }

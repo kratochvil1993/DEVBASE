@@ -1104,7 +1104,7 @@ function updateGeneralSetting(key, val) {
                 'code_enabled': ['nav-code-item', 'stat-code-drafts-col'],
                 'note_drafts_enabled': ['nav-drafts-item', 'stat-note-drafts-col'],
                 'todo_badge_enabled': ['nav-todo-badge-container'],
-                'ai_enabled': ['headerAiIcon'],
+                'ai_enabled': [],
                 'inbox_enabled': ['nav-inbox-item'],
                 'security_enabled': ['headerLockIcon'],
                 'theme_toggle_enabled': ['headerThemeToggleContainer']
@@ -1126,6 +1126,12 @@ function updateGeneralSetting(key, val) {
             // Special case for dynamic font size update
             if (key === 'ui_font_size') {
                 document.body.className = document.body.className.replace(/font-size-\w+/g, 'font-size-' + val);
+                
+                // Update header quick settings select if it exists
+                const headerSelect = document.querySelector('#quickSettingsBtn + .dropdown-menu select');
+                if (headerSelect) {
+                    headerSelect.value = val;
+                }
             }
         } else {
             alert('Chyba: ' + data.message);
