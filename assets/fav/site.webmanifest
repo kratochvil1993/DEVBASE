@@ -1,21 +1,22 @@
 {
-  "name": "DevBase",
+  "name": "DevBase - The OneNote Killer",
   "short_name": "DevBase",
   "icons": [
     {
-      "src": "/./assets/fav/web-app-manifest-192x192.png",
+      "src": "web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/./assets/fav/web-app-manifest-512x512.png",
+      "src": "web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  "theme_color": "#1e1e1e",
+  "background_color": "#121212",
+  "display": "standalone",
+  "start_url": "/index.php"
 }

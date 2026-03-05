@@ -36,6 +36,19 @@ $stats = getGlobalStats();
 <link rel="apple-touch-icon" sizes="180x180" href="/./assets/fav/apple-touch-icon.png" />
 <meta name="apple-mobile-web-app-title" content="DevBase" />
 <link rel="manifest" href="/./assets/fav/site.webmanifest" />
+    <meta name="theme-color" content="#1e1e1e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('PWA: Service Worker registered'))
+                .catch(err => console.log('PWA: Service Worker failed', err));
+        });
+    }
+    </script>
     
     <!-- Bootstrap 5.3 -->
     <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
