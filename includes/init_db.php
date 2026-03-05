@@ -140,6 +140,61 @@ if (file_exists($schema_file)) {
         $conn->query("ALTER TABLE `tags` ADD UNIQUE INDEX `unique_name_type` (`name`, `type`)");
     }
 
+
+    // Seed settings ONLY if settings table is empty or missing those keys
+    $checkSettings = $conn->query("SELECT setting_key FROM settings LIMIT 1");
+    if ($checkSettings && $checkSettings->num_rows == 0) {
+        $conn->query("INSERT IGNORE INTO settings (setting_key, setting_value) VALUES 
+        ('snippets_enabled', '1'),
+        ('notes_enabled', '1'),
+        ('todos_enabled', '1'),
+        ('code_enabled', '1'),
+        ('todo_badge_enabled', '1'),
+        ('theme_toggle_enabled', '0'),
+        ('security_enabled', '0'),
+        ('note_drafts_enabled', '1'),
+        ('gemini_model', 'gemini-2.5-flash-lite'),
+        ('ai_provider', 'gemini'),
+        ('inbox_enabled', '0')");
+    }
+
+    // Seed Languages ONLY if empty
+    $checkLangs = $conn->query("SELECT id FROM languages LIMIT 1");
+    if ($checkLangs && $checkLangs->num_rows == 0) {
+        $conn->query("INSERT IGNORE INTO languages (name, prism_class) VALUES 
+        ('PHP', 'php'),
+        ('JavaScript', 'javascript'),
+        ('HTML', 'html'),
+        ('CSS', 'css'),
+        ('SQL', 'sql'),
+        ('Python', 'python'),
+        ('Bash', 'bash')");
+    }
+
+    // Seed Tags ONLY if empty
+    $checkTagsEmpty = $conn->query("SELECT id FROM tags LIMIT 1");
+    if ($checkTagsEmpty && $checkTagsEmpty->num_rows == 0) {
+        $conn->query("INSERT IGNORE INTO tags (name, type, color) VALUES 
+        ('Frontend', 'snippet', '#3498db'),
+        ('Backend', 'snippet', '#2ecc71'),
+        ('Database', 'snippet', '#f1c40f'),
+        ('Důležité', 'note', '#e74c3c'),
+        ('Důležité', 'snippet', '#e74c3c'),
+        ('Práce', 'todo', '#9b59b6'),
+        ('Osobní', 'todo', '#1abc9c'),
+        ('Studium', 'todo', '#34495e'),
+        ('Chill', 'todo', '#2980b9'),
+        ('Nápady', 'note', '#f39c12'),
+        ('Archiv', 'note', '#95a5a6')");
+    }
+
+    // Seed Scratchpads ONLY if empty
+    $checkPads = $conn->query("SELECT id FROM scratchpads LIMIT 1");
+    if ($checkPads && $checkPads->num_rows == 0) {
+        $conn->query("INSERT IGNORE INTO scratchpads (name, content, type) VALUES ('default', '// Vítejte v editoru kódu. Zde si můžete psát poznámky nebo kód.', 'code')");
+        $conn->query("INSERT IGNORE INTO scratchpads (name, content, type) VALUES ('Poznámky', '<h1>Vítejte v poznámkovém draftu</h1><p>Zde si můžete psát rychlé poznámky...</p>', 'note')");
+    }
+
     // Seed sample data ONLY if tables are empty
     $checkSnippets = $conn->query("SELECT id FROM snippets LIMIT 1");
     if ($checkSnippets && $checkSnippets->num_rows == 0) {

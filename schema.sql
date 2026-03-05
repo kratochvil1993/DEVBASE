@@ -85,45 +85,6 @@ CREATE TABLE IF NOT EXISTS settings (
     setting_value VARCHAR(255)
 );
 
--- Seed initial data
-INSERT IGNORE INTO settings (setting_key, setting_value) VALUES 
-('snippets_enabled', '1'),
-('notes_enabled', '1'),
-('todos_enabled', '1'),
-('code_enabled', '1'),
-('todo_badge_enabled', '1'),
-('theme_toggle_enabled', '0'),
-('security_enabled', '0'),
-('note_drafts_enabled', '1'),
-('gemini_model', 'gemini-2.5-flash-lite'),
-('ai_provider', 'gemini'),
-('openai_api_key', ''),
-('openai_model', 'gpt-4o-mini'),
-('db_version', '1.2.1');
-
--- Seed initial data
-INSERT IGNORE INTO languages (name, prism_class) VALUES 
-('PHP', 'php'),
-('JavaScript', 'javascript'),
-('HTML', 'html'),
-('CSS', 'css'),
-('SQL', 'sql'),
-('Python', 'python'),
-('Bash', 'bash');
-
--- Seed initial tags with types and colors
-INSERT IGNORE INTO tags (name, type, color) VALUES 
-('Frontend', 'snippet', '#3498db'),
-('Backend', 'snippet', '#2ecc71'),
-('Database', 'snippet', '#f1c40f'),
-('Důležité', 'note', '#e74c3c'),
-('Důležité', 'snippet', '#e74c3c'),
-('Práce', 'todo', '#9b59b6'),
-('Osobní', 'todo', '#1abc9c'),
-('Studium', 'todo', '#34495e'),
-('Chill', 'todo', '#2980b9'),
-('Nápady', 'note', '#f39c12'),
-('Archiv', 'note', '#95a5a6');
 
 CREATE TABLE IF NOT EXISTS scratchpads (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -133,9 +94,6 @@ CREATE TABLE IF NOT EXISTS scratchpads (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE (name, type)
 );
-
-INSERT IGNORE INTO scratchpads (name, content, type) VALUES ('default', '// Vítejte v editoru kódu. Zde si můžete psát poznámky nebo kód.', 'code');
-INSERT IGNORE INTO scratchpads (name, content, type) VALUES ('Poznámky', '<h1>Vítejte v poznámkovém draftu</h1><p>Zde si můžete psát rychlé poznámky...</p>', 'note');
 
 CREATE TABLE IF NOT EXISTS inbox_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -152,18 +110,5 @@ CREATE TABLE IF NOT EXISTS inbox_items (
     UNIQUE (content_hash)
 );
 
-INSERT IGNORE INTO settings (setting_key, setting_value) VALUES 
-('inbox_enabled', '0'),
-('imap_server', ''),
-('imap_port', '993'),
-('imap_user', ''),
-('imap_password', ''),
-('imap_encryption', 'ssl'),
-('smtp_server', ''),
-('smtp_port', '465'),
-('smtp_user', ''),
-('smtp_password', ''),
-('smtp_encryption', 'ssl'),
-('inbox_trusted_emails', ''),
-('inbox_auto_check', '0');
+-- Initial DB Version is now handled by init_db.php or migrations
 
