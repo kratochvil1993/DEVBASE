@@ -1,5 +1,5 @@
 <?php
-require_once 'db.php';
+require_once __DIR__ . '/db.php';
 
 // Check if database and tables are created and up to date
 // Check if database and tables are created and up to date
