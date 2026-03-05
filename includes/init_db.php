@@ -94,6 +94,39 @@ if (file_exists($schema_file)) {
         }
     }
 
+    // Migration: Fix UNIQUE index on tags table
+    // Old schema had UNIQUE(name) only, which prevents same tag name for different types.
+    // New schema needs UNIQUE(name, type) to allow e.g. "inbox" for both notes and todos.
+    $oldUniqueExists = false;
+    $newUniqueExists = false;
+    $indexRes = $conn->query("SHOW INDEX FROM `tags`");
+    if ($indexRes) {
+        $indexedColumns = [];
+        $keyGroups = [];
+        while ($idxRow = $indexRes->fetch_assoc()) {
+            if ($idxRow['Non_unique'] == 0) { // unique index
+                $keyGroups[$idxRow['Key_name']][] = $idxRow['Column_name'];
+            }
+        }
+        foreach ($keyGroups as $keyName => $cols) {
+            sort($cols);
+            if ($cols === ['name'] && $keyName !== 'PRIMARY') {
+                $oldUniqueExists = $keyName; // store the key name so we can drop it
+            }
+            if ($cols === ['name', 'type']) {
+                $newUniqueExists = true;
+            }
+        }
+    }
+    // Drop old name-only unique index if found
+    if ($oldUniqueExists) {
+        $conn->query("ALTER TABLE `tags` DROP INDEX `$oldUniqueExists`");
+    }
+    // Add correct (name, type) unique index if missing
+    if (!$newUniqueExists) {
+        $conn->query("ALTER TABLE `tags` ADD UNIQUE INDEX `unique_name_type` (`name`, `type`)");
+    }
+
     // Seed sample data ONLY if tables are empty
     $checkSnippets = $conn->query("SELECT id FROM snippets LIMIT 1");
     if ($checkSnippets && $checkSnippets->num_rows == 0) {

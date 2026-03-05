@@ -149,9 +149,14 @@ function saveTag($name, $color, $type = 'snippet', $id = null) {
         $id = (int)$id;
         $sql = "UPDATE tags SET name = '$name', color = $color, type = '$type' WHERE id = $id";
     } else {
-        $sql = "INSERT INTO tags (name, color, type) VALUES ('$name', $color, '$type')";
+        // Use INSERT ... ON DUPLICATE KEY UPDATE to handle unique (name, type) constraint gracefully
+        $sql = "INSERT INTO tags (name, color, type) VALUES ('$name', $color, '$type') ON DUPLICATE KEY UPDATE color = $color";
     }
-    return $conn->query($sql);
+    $result = $conn->query($sql);
+    if (!$result) {
+        return false;
+    }
+    return true;
 }
 
 function deleteTag($id) {

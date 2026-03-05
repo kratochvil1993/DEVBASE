@@ -43,7 +43,7 @@ if ($action === 'toggle_setting') {
         $res = $id ? deleteTag($id) : false;
     }
 
-    if ($res) {
+    if ($res !== false) {
         $tags = getAllTags($type);
         ob_start();
         include '../includes/tag_list_items.php';
@@ -56,7 +56,8 @@ if ($action === 'toggle_setting') {
             'message' => 'Štítek byl ' . ($action === 'save_tag' ? 'uložen.' : 'smazán.')
         ]);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Chyba při operaci se štítkem.']);
+        $dbError = $conn->error ?? 'Neznámá chyba databáze';
+        echo json_encode(['status' => 'error', 'message' => 'Chyba při operaci se štítkem: ' . $dbError]);
     }
 } elseif ($action === 'save_gemini_config' || $action === 'save_openai_config' || $action === 'save_security' || $action === 'save_ai_provider' || $action === 'save_imap_config' || $action === 'save_smtp_config') {
     $success = true;
