@@ -50,7 +50,7 @@ $stats = getGlobalStats();
     <!-- Custom CSS -->
     <link href="assets/css/style.css?v=<?php echo filemtime('assets/css/style.css'); ?>" rel="stylesheet">
 </head>
-<body>
+<body class="font-size-<?php echo getSetting('ui_font_size', 'normal'); ?>">
 
 <div id="bgcircle-pruple"></div>
 <div id="bgcircle-primary"></div>

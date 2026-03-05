@@ -31,6 +31,43 @@
   --code-bg: rgba(0, 0, 0, 0.3);
 }
 
+/* --- Font Size System --- */
+/* Normal (Default) */
+body.font-size-normal .CodeMirror {
+  font-size: 15px !important;
+}
+body.font-size-normal .ql-container.ql-snow {
+  font-size: 1rem !important;
+}
+
+/* Large */
+body.font-size-large .CodeMirror {
+  font-size: 18px !important;
+}
+body.font-size-large .ql-container.ql-snow {
+  font-size: 1.15rem !important;
+}
+body.font-size-large .modal-title {
+  font-size: 1.4rem;
+}
+body.font-size-large .modal-body {
+  font-size: 1.1rem;
+}
+
+/* Huge */
+body.font-size-huge .CodeMirror {
+  font-size: 21px !important;
+}
+body.font-size-huge .ql-container.ql-snow {
+  font-size: 1.3rem !important;
+}
+body.font-size-huge .modal-title {
+  font-size: 1.6rem;
+}
+body.font-size-huge .modal-body {
+  font-size: 1.25rem;
+}
+
 body {
   background: var(--bg-gradient);
   min-height: 100vh;
