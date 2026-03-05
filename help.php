@@ -321,7 +321,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Detailní náhled a Úpravy:</strong>
-                    Kliknutím na text úkolu nově otevřete **detailní modální okno** s celkovým přehledem o daném úkolu (včetně rozepsané poznámky, termínu a štítků), přičemž režim úloh je chráněn proti nechtěným přepisům. Pokud chcete úkol upravit, stačí kliknout na vyhrazené tlačítko pro editaci.
+                    Kliknutím na text úkolu nově otevřete **detailní modální okno** s celkovým přehledem o daném úkolu (včetně rozepsané poznámky, termínu, času a štítků), přičemž režim úloh je chráněn proti nechtěným přepisům. Pokud chcete úkol upravit, stačí kliknout na vyhrazené tlačítko pro editaci.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Štítkování úkolů:</strong>
@@ -345,7 +345,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Termíny splnění (Deadlines):</strong>
-                    U každého úkolu můžete nastavit konkrétní datum splnění. Pokud se termín blíží (dnes nebo zítra), u úkolu se objeví žlutý odznak **Blíží se**. Pokud termín již vypršel, objeví se červený odznak **Po termínu**. Termíny lze zadat při přidávání úkolu nebo dodatečně přes ikonu tužky.
+                    U každého úkolu můžete nastavit konkrétní datum a čas splnění. Pokud se termín blíží (dnes nebo zítra), u úkolu se objeví žlutý odznak **Blíží se**. Pokud termín již vypršel, objeví se červený odznak **Po termínu**. Termíny a časy lze zadat při přidávání úkolu nebo dodatečně přes ikonu tužky.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Systém upozornění (Notifikace):</strong>
@@ -364,7 +364,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Nastavení a aktivace:</strong>
-                    V **Nastavení** (sekce AI Nastavení) zvolte svého preferovaného poskytovatele (**Gemini** nebo **OpenAI**) a vložte příslušný API klíč. Zde si také můžete vybrat konkrétní model (např. **GPT-4o** nebo **Gemini 2.5 Flash Lite**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a poskytovatel vybrán, v celé aplikaci se zpřístupní AI nástroje. Všechny AI funkce lze také v nastavení jedním kliknutím **globálně vypnout**, což skryje všechna fialová tlačítka v celé aplikaci pro dokonale čisté rozhraní.
+                    V **Nastavení** (sekce AI Nastavení) zvolte svého preferovaného poskytovatele (**Gemini** nebo **OpenAI**) a vložte příslušný API klíč. Zde si také můžete vybrat konkrétní model (např. **GPT-4o**, **Gemini 1.5 Flash** nebo **Gemini 3.1 Flash Lite**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a poskytovatel vybrán, v celé aplikaci se zpřístupní AI nástroje. Všechny AI funkce lze také v nastavení jedním kliknutím **globálně vypnout**, což skryje všechna fialová tlačítka v celé aplikaci pro dokonale čisté rozhraní.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Vysvětlení kódu (Snippety) a navigace:</strong>
@@ -404,7 +404,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Automatická synchronizace a Notifikace:</strong>
-                    Aplikace každých **5 minut automaticky kontroluje** vaši schránku (tento interval lze v nastavení vypnout). Pokud dorazí nové zprávy, u položky **Inbox** v hlavním menu se objeví modrý badge s počtem novinek a aplikace vás na ně upozorní systémovou notifikací (zvonečkem) v hlavičce. Systém si pamatuje, které zprávy jste již viděli, a badge zmizí až ve chvíli, kdy sekci Inbox navštívíte. Systém je vybaven ochranou proti duplicitám, takže i při opakovaném odeslání stejného mailu (např. přes Make.com) se v aplikaci vytvoří pouze jeden záznam. Celou historii stažených zpráv můžete kdykoliv promazat tlačítkem **Vymazat historii**.
+                    Aplikace každých **5 minut automaticky kontroluje** vaši schránku (tento interval lze v nastavení vypnout). Pokud dorazí nové zprávy, u položky **Inbox** v hlavním menu se objeví modrý badge s počtem novinek a aplikace vás na ně upozorní systémovou notifikací (zvonečkem) v hlavičce. Systém si pamatuje, které zprávy jste již viděli, a badge zmizí až ve chvíli, kdy sekci Inbox navštívíte. Nové zprávy lze také bleskově načíst ručně pomocí zeleného tlačítka **Načíst nové**. Systém je vybaven ochranou proti duplicitám, takže i při opakovaném odeslání stejného mailu (např. přes Make.com) se v aplikaci vytvoří pouze jeden záznam. Celou historii stažených zpráv můžete kdykoliv promazat tlačítkem **Vymazat historii**.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Konfigurace (IMAP):</strong>
