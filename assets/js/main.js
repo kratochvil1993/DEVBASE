@@ -21,10 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Unified Filtering logic
   const searchInput = document.getElementById("snippetSearch");
   const tagButtons = document.querySelectorAll("#tagFilters .btn");
-  let currentSearch = (localStorage.getItem("snippetSearch") || "")
-    .toLowerCase()
-    .trim();
-  let currentTag = (localStorage.getItem("snippetTag") || "all").trim();
+  let currentSearch = "";
+  let currentTag = "all";
 
   // Restore initial UI state
   if (searchInput) {
@@ -107,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
       currentSearch = e.target.value.toLowerCase();
-      localStorage.setItem("snippetSearch", currentSearch);
       filterSnippets();
     });
   }
@@ -117,7 +114,6 @@ document.addEventListener("DOMContentLoaded", () => {
       tagButtons.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       currentTag = btn.getAttribute("data-tag");
-      localStorage.setItem("snippetTag", currentTag);
       filterSnippets();
     });
   });

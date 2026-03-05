@@ -910,8 +910,8 @@ function generateAiNoteTitle() {
 // Search and Tag filtering for notes
 const noteSearchInput = document.getElementById('noteSearch');
 const noteTagButtons = document.querySelectorAll('#noteTagFilters .btn');
-let currentNoteSearch = (localStorage.getItem('noteSearch') || '').toLowerCase().trim();
-let currentNoteTag = (localStorage.getItem('noteTag') || 'all').trim();
+let currentNoteSearch = '';
+let currentNoteTag = 'all';
 
 // Restore initial UI state
 if (noteSearchInput) {
@@ -980,7 +980,6 @@ if (noteSearchInput || noteTagButtons.length > 0) {
 if (noteSearchInput) {
     noteSearchInput.addEventListener('input', function(e) {
         currentNoteSearch = e.target.value.toLowerCase();
-        localStorage.setItem('noteSearch', currentNoteSearch);
         filterNotes();
     });
 }
@@ -990,7 +989,6 @@ noteTagButtons.forEach(btn => {
         noteTagButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentNoteTag = btn.getAttribute('data-tag');
-        localStorage.setItem('noteTag', currentNoteTag);
         filterNotes();
     });
 });
