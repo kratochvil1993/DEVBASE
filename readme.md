@@ -26,7 +26,7 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **E-mailový Inbox (Import přes e-mail)**: Unikátní funkce, která vám umožní posílat si poznámky a úkoly do aplikace přímo z vašeho e-mailu. Stačí si v nastavení nakonfigurovat **IMAP přístup** ke své schránce. Aplikace dokáže automaticky rozlišit typ obsahu podle tagů v předmětu (`@note`, `@todo`, `@draft`) a automaticky k nim přiřadit štítky pomocí hashtagů (např. `#prace #dulezite`). Pokud e-mail tag neobsahuje, zůstane v **Inboxu**, kde jej můžete otevřít v **detailním modálním okně** a zařadit ručně. Aplikace navíc provádí **automatickou synchronizaci každých 5 minut** (včetně kontroly duplicitních zpráv a ignorování spamových odesílatelů) a na nové přírůstky vás upozorní **modrým badge počítadlem** přímo u položky Inbox v hlavním menu i systémovými notifikacemi v hlavičce. Synchronizaci lze také spustit ručně zeleným tlačítkem **Načíst nové**. Celou historii importu lze navíc jedním kliknutím vyčistit tlačítkem **Vymazat historii**. Počet novinek zmizí až po návštěvě sekce Inbox. Systém podporuje seznam povolených odesílatelů pro maximální bezpečnost.
 - **Záloha a Přenos dat (Export/Import)**: Kompletní správa vašich dat. Celou databázi (snippety, poznámky, úkoly, tagy i nastavení) lze jedním kliknutím exportovat do JSON souboru a následně jej importovat zpět – buď formou přidání k existujícím datům, nebo kompletním přepsáním.
 - **Správa jazyků**: DevBase umožňuje definovat vlastní programovací jazyky a přiřadit jim příslušné CSS třídy pro Prism.js. Seznam jazyků lze spravovat v Nastavení, včetně přidávání nových a mazání nepotřebných.
-- **Propracované UI**: Elegantní rozhraní postavené na Bootstrap 5, oživené plovoucími barevnými prvky, blur efekty, micro-animacemi a moderní vizí glassmorphismu. V nastavení lze také přizpůsobit **velikost písma** v editorech a detailech. Významné akce jsou doprovázeny **fialovým flash efektem** pro jasnou vizuální odezvu.
+- **Propracované UI**: Elegantní rozhraní postavené na Bootstrap 5, oživené plovoucími barevnými prvky, blur efekty, micro-animacemi a moderní vizí glassmorphismu. V nastavení lze také přizpůsobit **velikost písma** v editorech a detailech. Pro bleskové přepnutí velikosti písma slouží **ikona ozubeného kolečka (Gear)** v hlavičce, která obsahuje rychlou volbu. Významné akce jsou doprovázeny **fialovým flash efektem** pro jasnou vizuální odezvu.
 - **Plně lokální běh**: Všechny knihovny, ikony a fonty jsou uloženy lokálně v projektu. Aplikace nevyžaduje přístup k internetu pro své fungování (ideální pro bezpečné interní prostředí).
 - **Klávesové zkratky**: Podpora pro rychlé vyhledávání (**Alt+F**) a přidávání záznamů (**Alt+N**). V code editoru jsou pak dostupné pokročilé zkratky pro ukládání (**Ctrl+S**), našeptávání a manipulaci s kódem.
 - **Integrace AI (Gemini & OpenAI)**: DevBase využívá sílu umělé inteligence od Google i OpenAI pro usnadnění vaší práce. Funkce jsou dostupné po zadání API klíče v Nastavení:
@@ -34,7 +34,7 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
   - **Poznámky**: Automatické generování titulku, stručného souhrnu v odrážkách, kontrola pravopisu a **inteligentní extrakce úkolů** (AI automaticky vytvoří TODO seznam z textu poznámky). V sekcích Drafts lze navíc využít **Vlastní AI prompt** pro libovolné úpravy textu i nástroje pro **inteligentní formátování kódu** (Beautify / Minify), které zformátují kusy kódu i uvnitř poznámek.
   - **TODO**: Funkce **AI Bojový plán**, která na základě vašich aktivních úkolů a jejich termínů navrhne nejlepší strategii pro daný den.
   - **Code Editor**: V sekci Code Drafts jsou dostupné pokročilé AI nástroje jako **Vysvětlit kód**, **Refaktorovat**, **Debugger** a nově i **Beautify/Minify**. Integrovaný **Color Picker** pak umožňuje vybírat a měnit barvy přímo v kódu.
-  - **Konfigurace**: V nastavení si můžete zvolit **preferovaného poskytovatele (Gemini / OpenAI)** a konkrétní model (např. GPT-4o, GPT-5.2 nebo Gemini 3.1 Flash Lite / Pro) a otestovat platnost klíčů. Celou AI integraci lze v nastavení globálně vypnout jedním přepínačem. Pro rychlou úpravu parametrů slouží ikona robota v hlavičce, která vás **okamžitě přenese do AI nastavení**. Všechny AI prvky jsou v UI barevně odlišeny (fialová s premium glow efektem).
+  - **Konfigurace**: V nastavení si můžete zvolit **preferovaného poskytovatele (Gemini / OpenAI)** a konkrétní model (např. GPT-4o, GPT-5.2 nebo Gemini 3.1 Flash Lite / Pro) a otestovat platnost klíčů. Celou AI integraci lze v nastavení globálně vypnout jedním přepínačem. Všechny AI prvky jsou v UI barevně odlišeny (fialová s premium glow efektem).
 
 ## Klávesové zkratky
 
@@ -50,7 +50,7 @@ Pro maximální efektivitu můžete používat tyto systémové zkratky:
 
 ## Instalace a Spuštění
 
-Konfigurační soubor `docker-compose.yml` nastaví celou aplikační strukturu včetně dedikované MariaDB databáze a administračního nástroje phpMyAdmin.
+Konfigurační soubor `docker-compose.yml` nastaví celou aplikační strukturu včetně dedikované MySQL databáze a administračního nástroje phpMyAdmin.
 
 1. **Klonování nebo zkopírování repozitáře:**
    Nejprve se ujistěte, že máte složku k dispozici a otevřenou ve svém terminálu.

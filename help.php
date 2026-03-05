@@ -138,7 +138,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Persistence vzhledu:</strong>
-                    Vaše volba mezi tmavým a světlým režimem je bezpečně uložena v databázi. Při příštím přihlášení nebo na jiném zařízení se vám aplikace zobrazí přesně tak, jak jste ji naposledy zanechali. V **Nastavení** si také můžete přizpůsobit **velikost písma** v editorech a detailech pro maximální pohodlí při čtení a psaní.
+                    Vaše volba mezi tmavým a světlým režimem je bezpečně uložena v databázi. Při příštím přihlášení nebo na jiném zařízení se vám aplikace zobrazí přesně tak, jak jste ji naposledy zanechali. V **Nastavení** si také můžete přizpůsobit **velikost písma** v editorech a detailech. Pro bleskovou změnu velikosti písma můžete využít **ikonu ozubeného kolečka (Gear)** v horní navigaci, která otevře menu s rychlou volbou.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Automatické sledování změn:</strong>
@@ -368,7 +368,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Vysvětlení kódu (Snippety) a navigace:</strong>
-                    V detailním náhledu každého snippetu najdete fialové tlačítko **Vysvětlit kód**. AI analyzuje váš kód a vypíše srozumitelný souhrn toho, co kód dělá, včetně vysvětlení klíčových částí. Do nastavení AI se můžete bleskově dostat kliknutím na ikonu robota v horní liště aplikace.
+                    V detailním náhledu každého snippetu najdete fialové tlačítko **Vysvětlit kód**. AI analyzuje váš kód a vypíše srozumitelný souhrn toho, co kód dělá, včetně vysvětlení klíčových částí.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Chytré názvy (Poznámky):</strong>
