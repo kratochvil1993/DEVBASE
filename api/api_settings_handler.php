@@ -59,6 +59,37 @@ if ($action === 'toggle_setting') {
         $dbError = $conn->error ?? 'Neznámá chyba databáze';
         echo json_encode(['status' => 'error', 'message' => 'Chyba při operaci se štítkem: ' . $dbError]);
     }
+} elseif ($action === 'save_language' || $action === 'delete_language') {
+    if ($action === 'save_language') {
+        $id = !empty($_POST['id']) ? $_POST['id'] : null;
+        $name = $_POST['name'] ?? '';
+        $prism_class = $_POST['prism_class'] ?? '';
+        
+        if (empty($name) || empty($prism_class)) {
+            echo json_encode(['status' => 'error', 'message' => 'Název i třída Prism jsou povinné.']);
+            exit;
+        }
+        
+        $res = saveLanguage($name, $prism_class, $id);
+    } else {
+        $id = $_POST['id'] ?? null;
+        $res = $id ? deleteLanguage($id) : false;
+    }
+
+    if ($res !== false) {
+        $languages = getAllLanguages();
+        ob_start();
+        include '../includes/language_list_items.php';
+        $html = ob_get_clean();
+        
+        echo json_encode([
+            'status' => 'success', 
+            'html' => $html, 
+            'message' => 'Jazyk byl ' . ($action === 'save_language' ? 'uložen.' : 'smazán.')
+        ]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Chyba při operaci s jazykem.']);
+    }
 } elseif ($action === 'save_gemini_config' || $action === 'save_openai_config' || $action === 'save_security' || $action === 'save_ai_provider' || $action === 'save_imap_config' || $action === 'save_smtp_config') {
     $success = true;
     foreach ($_POST as $key => $value) {

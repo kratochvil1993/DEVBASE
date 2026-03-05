@@ -5,6 +5,7 @@ require_once 'includes/functions.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $section = '';
     
+    /* 
     if ($_POST['action'] == 'save_language') {
         $id = !empty($_POST['id']) ? $_POST['id'] : null;
         saveLanguage($_POST['name'], $_POST['prism_class'], $id);
@@ -16,7 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $section = "section-languages";
         header('Location: settings.php#' . $section);
         exit;
-    } elseif ($_POST['action'] == 'export_data') {
+    } 
+    */
+    if ($_POST['action'] == 'export_data') {
         $data = exportAllData();
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         $filename = 'devbase_export_' . date('Y-m-d') . '.json';
@@ -424,37 +427,21 @@ include 'includes/header.php';
         <div class="glass-card no-jump p-4 h-100">
             <h4 class="text-white mb-4">Správa jazyků</h4>
             
-            <form method="POST" class="mb-4" id="langForm">
+            <form method="POST" class="mb-4" id="langForm" onsubmit="handleLangSubmit(event)">
                 <input type="hidden" name="action" value="save_language">
                 <input type="hidden" name="id" id="langId" value="">
                 <div class="mb-3">
                     <input type="text" name="name" id="langName" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none mb-2" placeholder="Název jazyka" required>
                     <input type="text" name="prism_class" id="langClass" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" placeholder="Třída Prism" required>
                 </div>
-                <button class="btn btn-add-snipet w-100" type="submit" id="langSubmitBtn">Přidat jazyk</button>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-add-snipet flex-grow-1" type="submit" id="langSubmitBtn">Přidat jazyk</button>
+                    <button class="btn btn-outline-secondary d-none" type="button" id="langCancelBtn" onclick="resetLangForm()"><i class="bi bi-x"></i></button>
+                </div>
             </form>
 
-            <div class="list-group list-group-flush bg-transparent">
-                <?php foreach ($languages as $lang): ?>
-                    <div class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-light border-opacity-10 px-0">
-                        <div>
-                            <span class="fw-bold"><?php echo htmlspecialchars($lang['name']); ?></span>
-                            <small class="text-white-50 ms-2">(<?php echo htmlspecialchars($lang['prism_class']); ?>)</small>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-link text-white-50 p-0 text-decoration-none" onclick='editLanguage(<?php echo json_encode($lang); ?>)'>
-                                <i class="bi bi-pencil"></i> 
-                            </button>
-                            <form method="POST" class="d-inline" onsubmit="return confirm('Jste si jisti?');">
-                                <input type="hidden" name="action" value="delete_language">
-                                <input type="hidden" name="id" value="<?php echo $lang['id']; ?>">
-                                <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none p-0">
-                                    <i class="bi bi-trash"></i> 
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+            <div class="list-group list-group-flush bg-transparent" id="languagesList">
+                <?php include 'includes/language_list_items.php'; ?>
             </div>
         </div>
     </div>
@@ -1101,6 +1088,79 @@ function editTodoTag(tag) {
     document.getElementById('todoTagCancelBtn').classList.remove('d-none');
     window.location.hash = 'section-todo-tags';
 }
+function handleLangSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = new FormData(form);
+    const submitBtn = document.getElementById('langSubmitBtn');
+    const originalText = submitBtn.innerText;
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+    fetch('api/api_settings_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const list = document.getElementById('languagesList');
+            if (list) {
+                list.innerHTML = data.html;
+            }
+            resetLangForm();
+        } else {
+            alert('Chyba: ' + data.message);
+        }
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerText = originalText;
+    });
+}
+
+function deleteLanguageAjax(id) {
+    if (!confirm('Opravdu chcete tento jazyk smazat?')) return;
+
+    const formData = new FormData();
+    formData.append('action', 'delete_language');
+    formData.append('id', id);
+
+    fetch('api/api_settings_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const list = document.getElementById('languagesList');
+            if (list) {
+                list.innerHTML = data.html;
+            }
+        } else {
+            alert('Chyba: ' + data.message);
+        }
+    });
+}
+
+function resetLangForm() {
+    document.getElementById('langId').value = '';
+    document.getElementById('langName').value = '';
+    document.getElementById('langClass').value = '';
+    document.getElementById('langSubmitBtn').innerText = 'Přidat jazyk';
+    document.getElementById('langCancelBtn').classList.add('d-none');
+}
+
+function editLanguage(lang) {
+    document.getElementById('langId').value = lang.id;
+    document.getElementById('langName').value = lang.name;
+    document.getElementById('langClass').value = lang.prism_class;
+    document.getElementById('langSubmitBtn').innerText = 'Uložit jazyk';
+    document.getElementById('langCancelBtn').classList.remove('d-none');
+    window.location.hash = 'section-languages';
+}
+
 function updateGeneralSetting(key, val) {
     const value = typeof val === 'boolean' ? (val ? '1' : '0') : val;
     const formData = new FormData();
