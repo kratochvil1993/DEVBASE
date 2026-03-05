@@ -147,22 +147,7 @@ include 'includes/header.php';
                 </div>
             </div>
 
-            <div class="mb-3 mt-5">
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                    <div class="d-flex align-items-center">
-                        <label class="text-white fw-bold mb-0 d-block">Velikost písma editorů</label>
-                    </div>
-                    <div>
-                        <select name="ui_font_size" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none" style="min-width: 140px;" onchange="updateGeneralSetting('ui_font_size', this.value)">
-                            <?php $currentFontSize = getSetting('ui_font_size', 'normal'); ?>
-                            <option value="normal" class="bg-dark text-white" <?php echo $currentFontSize == 'normal' ? 'selected' : ''; ?>>Standardní</option>
-                            <option value="large" class="bg-dark text-white" <?php echo $currentFontSize == 'large' ? 'selected' : ''; ?>>Větší</option>
-                            <option value="huge" class="bg-dark text-white" <?php echo $currentFontSize == 'huge' ? 'selected' : ''; ?>>Velké</option>
-                        </select>
-                    </div>
-                </div>
-                <small class="text-white-50 d-block mt-1">Upraví velikost textu v editorech a detailech (modalech).</small>
-            </div>
+            
         </div>
     </div>
 
@@ -183,6 +168,25 @@ include 'includes/header.php';
                     <option value="solarized" class="bg-dark text-white" <?php echo $currentCmTheme == 'solarized' ? 'selected' : ''; ?>>Solarized Dark</option>
                 </select>
                 <small class="text-white-50 d-block mt-2">Změna se projeví v sekci Code Drafts.</small>
+            </div>
+
+            <hr class="border-light border-opacity-10 my-4">
+
+            <div class="mb-3">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center">
+                        <label class="text-white fw-bold mb-0 d-block">Velikost písma editorů</label>
+                    </div>
+                    <div>
+                        <select name="ui_font_size" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none" style="min-width: 140px;" onchange="updateGeneralSetting('ui_font_size', this.value)">
+                            <?php $currentFontSize = getSetting('ui_font_size', 'normal'); ?>
+                            <option value="normal" class="bg-dark text-white" <?php echo $currentFontSize == 'normal' ? 'selected' : ''; ?>>Standardní</option>
+                            <option value="large" class="bg-dark text-white" <?php echo $currentFontSize == 'large' ? 'selected' : ''; ?>>Větší</option>
+                            <option value="huge" class="bg-dark text-white" <?php echo $currentFontSize == 'huge' ? 'selected' : ''; ?>>Velké</option>
+                        </select>
+                    </div>
+                </div>
+                <small class="text-white-50 d-block mt-1">Upraví velikost textu v editorech a detailech (modalech).</small>
             </div>
 
             <hr class="border-light border-opacity-10 my-4">

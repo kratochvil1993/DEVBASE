@@ -138,7 +138,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Persistence vzhledu:</strong>
-                    Vaše volba mezi tmavým a světlým režimem je bezpečně uložena v databázi. Při příštím přihlášení nebo na jiném zařízení se vám aplikace zobrazí přesně tak, jak jste ji naposledy zanechali. V **Nastavení** si také můžete přizpůsobit **velikost písma** v editorech a detailech. Pro bleskovou změnu velikosti písma můžete využít **ikonu ozubeného kolečka (Gear)** v horní navigaci, která otevře menu s rychlou volbou.
+                    Vaše volba mezi tmavým a světlým režimem je bezpečně uložena v databázi. Při příštím přihlášení nebo na jiném zařízení se vám aplikace zobrazí přesně tak, jak jste ji naposledy zanechali. V **Nastavení** si také můžete přizpůsobit **velikost písma** v editorech a detailech a zvolit si své oblíbené **vizuální téma editoru** (např. Dracula, Nord, Monokai). Pro bleskovou změnu velikosti písma můžete využít **ikonu ozubeného kolečka (Gear)** v horní navigaci, která otevře menu s rychlou volbou.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Automatické sledování změn:</strong>
@@ -231,7 +231,7 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Profesionální funkce a Color Picker:</strong>
-                    Editor je postaven na **CodeMirror 5** a podporuje automatické doplňování závorek, zvýraznění syntaxe a funkci **Folding** (skládání kódu). Pokud v kódu napíšete barvu v HEX nebo RGB formátu, editor u ní automaticky zobrazí **barevný náhled**, na který můžete kliknout a barvu změnit pomocí integrovaného kapátka.
+                    Editor je postaven na **CodeMirror 5** a podporuje automatické doplňování závorek, zvýraznění syntaxe a funkci **Folding** (skládání kódu). V nastavení si navíc můžete zvolit jeden z mnoha **vizuálních vzhledů** (Dracula, Nord, Monokai atd.) podle toho, na co jste zvyklí ze svého IDE. Pokud v kódu napíšete barvu v HEX nebo RGB formátu, editor u ní automaticky zobrazí **barevný náhled**, na který můžete kliknout a barvu změnit pomocí integrovaného kapátka.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">AI nástroje v editoru:</strong>
@@ -440,7 +440,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Zámek aplikace:</strong>
-                    V **Nastavení** můžete zapnout ochranu heslem. Před první aktivací je nutné heslo nastavit a potvrdit (pro vyloučení překlepů). Pokud již máte heslo nastaveno, můžete funkci zámku libovolně vypínat a zapínat.
+                    V **Nastavení** (sekce Editor a Zabezpečení) můžete zapnout ochranu heslem. Před první aktivací je nutné heslo nastavit a potvrdit (pro vyloučení překlepů). Pokud již máte heslo nastaveno, můžete funkci zámku libovolně vypínat a zapínat.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Ruční uzamčení:</strong>
