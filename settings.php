@@ -166,12 +166,12 @@ include 'includes/header.php';
         </div>
     </div>
 
-    <!-- Code Editor Settings -->
-    <div class="col-md-6 mb-4 settings-section" id="section-code-editor">
+    <!-- Code Editor & Security Settings -->
+    <div class="col-md-6 mb-4 settings-section" id="section-code-security">
         <div class="glass-card no-jump p-4 h-100">
+            <!-- Code Editor Section -->
             <h4 class="text-white mb-3">Editor kódu (CodeMirror)</h4>
-            
-            <div class="mb-3">
+            <div class="mb-4">
                 <label class="text-white fw-bold mb-2 d-block">Téma editoru</label>
                 <select name="cm_theme" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none" onchange="updateGeneralSetting('cm_theme', this.value)">
                     <?php $currentCmTheme = getSetting('cm_theme', 'dracula'); ?>
@@ -184,12 +184,10 @@ include 'includes/header.php';
                 </select>
                 <small class="text-white-50 d-block mt-2">Změna se projeví v sekci Code Drafts.</small>
             </div>
-        </div>
-    </div>
 
-    <!-- Security Settings -->
-    <div class="col-md-6 mb-4 settings-section" id="section-security">
-        <div class="glass-card no-jump p-4 h-100">
+            <hr class="border-light border-opacity-10 my-4">
+
+            <!-- Security Section -->
             <h4 class="text-white mb-3"><i class="bi bi-shield-lock me-2 text-primary"></i>Zabezpečení</h4>
             <?php $hasPassword = !empty(getSetting('app_password')); ?>
             <div class="security-settings-container">
