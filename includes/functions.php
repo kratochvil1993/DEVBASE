@@ -734,6 +734,12 @@ function exportAllData() {
         $data['todos'][] = $row;
     }
 
+    // Scratchpads
+    $res = $conn->query("SELECT * FROM scratchpads");
+    while ($row = $res->fetch_assoc()) {
+        $data['scratchpads'][] = $row;
+    }
+
     // Inbox Items
     $res = $conn->query("SELECT * FROM inbox_items");
     while ($row = $res->fetch_assoc()) {
@@ -764,6 +770,9 @@ function importAllData($data, $mode = 'append') {
     // Import Settings
     if (!empty($data['settings'])) {
         foreach ($data['settings'] as $key => $value) {
+            // Bezpečnostní pojistka: neimportovat heslo a aktivaci zámku hromadně,
+            // aby nedošlo k nechtěnému uzamčení aplikace cizími daty.
+            if ($key === 'app_password' || $key === 'security_enabled') continue;
             updateSetting($key, $value);
         }
     }
