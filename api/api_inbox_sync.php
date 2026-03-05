@@ -1,6 +1,6 @@
 <?php
 require_once '../includes/functions.php';
-file_put_contents('../tmp_sync_log.txt', date('Y-m-d H:i:s') . " - Sync API Hit (pre-security)\n", FILE_APPEND);
+
 checkApiSecurity();
 
 header('Content-Type: application/json');
@@ -33,7 +33,7 @@ $mbox = @imap_open($mailbox, $imap_user, $imap_password);
 
 if (!$mbox) {
     $error = imap_last_error();
-    file_put_contents('../tmp_sync_log.txt', date('Y-m-d H:i:s') . " - IMAP Error: $error\n", FILE_APPEND);
+
     echo json_encode(['status' => 'error', 'message' => 'Nelze se připojit k IMAP: ' . $error]);
     exit;
 }
@@ -128,7 +128,7 @@ if ($emails) {
 
         if (processInboxMail($uid, $from_email, $subject, $body)) {
             $importedCount++;
-            file_put_contents('../tmp_sync_log.txt', date('Y-m-d H:i:s') . " - Imported: $subject ($from_email)\n", FILE_APPEND);
+
         }
     }
 }
@@ -148,4 +148,4 @@ echo json_encode([
     'stats' => $stats,
     'nav_notifications_html' => $notifications_html
 ]);
-file_put_contents('../tmp_sync_log.txt', date('Y-m-d H:i:s') . " - Sync finished. Count: $importedCount\n", FILE_APPEND);
+
