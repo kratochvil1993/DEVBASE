@@ -30,8 +30,7 @@ include 'includes/header.php';
     <div class="row">
         <div class="col-12 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
-                <h2 class="text-white fw-bold mb-0">Inbox</h2>
-                <p class="text-white-50 small mb-0">Přehled importovaných zpráv z e-mailu.</p>
+                <h2 class="text-white fw-bold mb-0">Inbox</h2>                
             </div>
             <div class="d-flex gap-2">
                 <button class="btn btn-add-snipet rounded px-4 py-2" id="syncInboxBtn" onclick="syncInbox()">
