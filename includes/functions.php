@@ -3,25 +3,28 @@ require_once __DIR__ . '/db.php';
 
 // Check if database and tables are created and up to date
 // Check if database and tables are created and up to date
-$current_db_version = '1.2';
+$current_db_version = '1.2.1';
 $needs_init = false;
 
 // Fast check: Try to get the version from settings
 $version_res = @$conn->query("SELECT setting_value FROM settings WHERE setting_key = 'db_version'");
 if (!$version_res || $version_res->num_rows == 0) {
     // If settings table is missing or db_version is missing, we might need init
-    // But let's check if the most basic table exists to be sure
-    $checkSnippets = @$conn->query("SHOW TABLES LIKE 'snippets'");
-    if (!$checkSnippets || $checkSnippets->num_rows == 0) {
-        $needs_init = true;
-    } else {
-        // Snippets exist but version doesn't - definitely need update
-        $needs_init = true;
-    }
+    $needs_init = true;
 } else {
     $db_version = $version_res->fetch_assoc()['setting_value'];
     if (version_compare($db_version, $current_db_version, '<')) {
         $needs_init = true;
+    } else {
+        // Version is current, but let's do a quick check if essential tables exist (e.g. if someone deleted them)
+        $essentialTables = ['snippets', 'notes', 'todos', 'tags', 'settings', 'scratchpads', 'inbox_items'];
+        foreach ($essentialTables as $table) {
+            $check = @$conn->query("SHOW TABLES LIKE '$table'");
+            if (!$check || $check->num_rows == 0) {
+                $needs_init = true;
+                break;
+            }
+        }
     }
 }
 

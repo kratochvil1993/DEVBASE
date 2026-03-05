@@ -81,7 +81,20 @@ if (file_exists($schema_file)) {
             'sort_order' => 'INT DEFAULT 0'
         ],
         'inbox_items' => [
+            'mail_uid' => 'VARCHAR(100) UNIQUE',
+            'content_hash' => 'VARCHAR(32) UNIQUE',
+            'subject' => 'VARCHAR(255)',
+            'content' => 'TEXT',
+            'from_email' => 'VARCHAR(255)',
+            'target_type' => "ENUM('note', 'todo', 'draft', 'unknown') DEFAULT 'unknown'",
+            'target_id' => 'INT DEFAULT NULL',
+            'is_imported' => 'TINYINT(1) DEFAULT 0',
             'is_seen' => 'TINYINT(1) DEFAULT 0'
+        ],
+        'scratchpads' => [
+            'type' => "VARCHAR(20) DEFAULT 'code'",
+            'name' => "VARCHAR(50) DEFAULT 'default'",
+            'content' => 'LONGTEXT'
         ]
     ];
 
@@ -151,7 +164,7 @@ if (file_exists($schema_file)) {
     }
     
     // Update DB Version
-    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('db_version', '1.2') ON DUPLICATE KEY UPDATE setting_value = '1.2'");
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('db_version', '1.2.1') ON DUPLICATE KEY UPDATE setting_value = '1.2.1'");
 
     echo "<div style='font-family: sans-serif; text-align: center; margin-top: 50px;'>";
     echo "<h2 style='color: #2ecc71;'>Databáze a schéma byly úspěšně inicializovány.</h2>";
