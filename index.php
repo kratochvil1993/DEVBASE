@@ -585,7 +585,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Flash effect
                     const newWrapper = document.getElementById('snippet-card-' + snippetId);
                     if (newWrapper) {
-                        newWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         const innerCard = newWrapper.querySelector('.snippet-card');
                         if (innerCard) {
                             innerCard.classList.add('flash-purple');

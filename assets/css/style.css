@@ -202,7 +202,8 @@ pre.ql-syntax {
   background: var(--code-bg) !important;
   margin: 0 !important;
   border-radius: 0 !important;
-  overflow: auto !important;
+  /* overflow: auto !important; */
+  overflow: hidden !important;
   white-space: pre !important; /* Ensure content is actually code-like */
 }
 
@@ -233,9 +234,20 @@ pre.ql-syntax {
 }
 
 .snippet-card {
-  max-height: 400px;
+  max-height: 400px; /* Reduced to match original and keep it tight */
   overflow: hidden;
   cursor: pointer;
+}
+
+.snippet-card .card-body {
+  padding: 1.25rem !important; /* Match standard Bootstrap card-body or adjust to top's feel */
+}
+
+.snippet-card .snippet-code-wrapper {
+  max-height: 250px; /* Slightly tighter code preview */
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 0 !important; /* Remove bottom margin to let card padding handle it */
 }
 
 #bgcircle-pruple {
