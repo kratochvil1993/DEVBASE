@@ -168,6 +168,12 @@ $stats = getGlobalStats();
     <div id="bgcircle-pruple"></div>
     <div class="offcanvas-header border-bottom border-light border-opacity-25" style="position: relative; z-index: 1;">
         <h5 class="offcanvas-title fw-bold" id="offcanvasNavbarLabel">Menu</h5>
+        <a class="navbar-brand fw-bold d-md-none " href="index.php" >
+            <span>    
+                <img src="./assets/logoAlt.png" alt="DevBase Logo"  class="d-inline-block align-text-top logo" style="max-width: 20px;">
+            </span>
+            <span>DevBase</span>
+        </a>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body" style="position: relative; z-index: 1;">

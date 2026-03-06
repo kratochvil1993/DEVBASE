@@ -1310,3 +1310,19 @@ h6 i.bi-pin-angle-fill {
 .quick-settings-dropdown .btn-link-settings:hover {
   color: #fff;
 }
+
+@media only screen and (max-width: 1399px) {
+}
+@media only screen and (max-width: 1199px) {
+}
+@media only screen and (max-width: 991px) {
+  #noteTagFilters button,
+  #tagFilters button {
+    margin-bottom: 0.5rem;
+    font-size: 0.7rem;
+  }
+}
+@media only screen and (max-width: 767px) {
+}
+@media only screen and (max-width: 576px) {
+}

@@ -36,7 +36,7 @@ include 'includes/header.php';
 ?>
 
 <div class="row mb-3 align-items-center">
-    <div class="col-lg-8 mx-auto">
+    <div class="col-xl-8 mx-auto">
         <div class="glass-card no-jump p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between">
             <div class="flex-grow-1" >
                 <div class="input-group" style="position: relative;">
@@ -62,7 +62,7 @@ include 'includes/header.php';
                 </button>
                 <div class="dropdown" id="sortDropdownContainer">
                     <button class="btn btn-outline-light rounded Xrounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-sort-down me-1"></i> 
+                        <i class="bi bi-sort-down me-0 me-lg-2"></i> <span class="d-none d-lg-inline">
                         <?php 
                             switch($currentSort) {
                                 case 'oldest': echo 'Nejstarší'; break;
@@ -72,6 +72,7 @@ include 'includes/header.php';
                                 default: echo 'Nejnovější';
                             }
                         ?>
+                        </span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10">
                         <li><a class="dropdown-item <?php echo $currentSort == 'custom' ? 'active' : ''; ?>" href="notes.php?sort=custom">Vlastní řazení</a></li>
@@ -88,7 +89,7 @@ include 'includes/header.php';
 </div>
 
 <?php if (!empty($usedTags)): ?>
-<div class="row mb-5">
+<div class="row mb-3 mb-lg-5">
     <div class="col-lg-8 mx-auto">
         <div id="noteTagFilters" class="d-flex flex-wrap gap-2 justify-content-center">
             <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all" style="--tag-color: #fff;">Vše</button>

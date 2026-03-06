@@ -109,7 +109,7 @@ include 'includes/header.php';
                     <?php if ($hasAi): ?>
                     <div class="dropdown">
                         <button class="btn btn-ai px-3 dropdown-toggle text-white border-opacity-25 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="aiBtn">
-                            <i class="bi bi-robot me-1"></i> AI
+                            <i class="bi bi-robot me-0 me-lg-2"></i> <span class="d-none d-lg-inline">AI</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10 mt-2 shadow-lg">
                             <li>
@@ -144,14 +144,14 @@ include 'includes/header.php';
                     
                     <div class="dropdown">
                         <button class="btn btn-send-to px-3 dropdown-toggle text-white" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-send me-2"></i> Poslat do
+                            <i class="bi bi-send me-0 me-lg-2"></i>  <span class="d-none d-lg-inline">Poslat do</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark glass-dropdown border-light border-opacity-10">
                             <li><a class="dropdown-item" href="javascript:void(0)" onclick="openAddToNotesModal()"><i class="bi bi-journal-plus me-2"></i> do Notes</a></li>
                         </ul>
                     </div>
                     <button type="button" class="btn btn-add-snipet px-3" onclick="saveDraft()">
-                        <i class="bi bi-save me-2"></i> Uložit
+                        <i class="bi bi-save me-0 me-lg-2"></i> <span class="d-none d-lg-inline">Uložit</span>
                     </button>
                 </div>
             </div>

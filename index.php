@@ -33,7 +33,7 @@ include 'includes/header.php';
 ?>
 
 <div class="row mb-3 align-items-center">
-    <div class="col-md-8 mx-auto">
+    <div class="col-lx-8 mx-auto">
         <div class="glass-card no-jump p-2 d-flex gap-3">
             <div class="input-group flex-grow-1" style="position: relative;">
 
@@ -59,7 +59,7 @@ include 'includes/header.php';
 </div>
 
 <?php if (!empty($usedTags)): ?>
-<div class="row mb-5">
+<div class="row mb-3 mb-lg-5">
     <div class="col-md-8 mx-auto d-flex flex-wrap gap-2 justify-content-center" id="tagFilters">
         <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all" style="--tag-color: #fff;">Vše</button>
         <?php foreach ($usedTags as $tag): ?>

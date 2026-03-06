@@ -92,7 +92,7 @@ include 'includes/header.php';
                     </button>
                     <?php if (getSetting('ai_enabled', '0') == '1'): ?>
                     <button class="btn btn-ai rounded px-4" id="aiSummaryBtn">
-                        <i class="bi bi-robot me-2"></i> AI Souhrn
+                        <i class="bi bi-robot me-0 me-lg-2"></i> <span class="d-none d-lg-inline">AI Souhrn</span>
                     </button>
                     <?php endif; ?>
                     <button class="btn btn-success rounded px-4 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
@@ -102,7 +102,7 @@ include 'includes/header.php';
             </div>
             
             <?php if (!empty($usedTags)): ?>
-            <div class="row mt-3 mb-5">
+            <div class="row mt-3 mb-2 mb-lg-5">
                 <div class="col-12 d-flex flex-wrap gap-2 justify-content-center" id="tagFilters">
                     <button class="btn btn-sm btn-outline-light rounded-pill px-3 active" data-tag="all" style="--tag-color: #fff;">Vše</button>
                     <?php foreach ($usedTags as $tag): ?>
