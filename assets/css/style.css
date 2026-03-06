@@ -624,6 +624,29 @@ h6 i.bi-pin-angle-fill {
   color: #ffc107;
 }
 
+/* Custom layout for Add Todo form on mobile */
+@media (max-width: 991.98px) {
+  .todo-input-group-mobile {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px;
+    background: transparent !important;
+    border: none !important;
+  }
+  .todo-input-group-mobile > * {
+    width: 100% !important;
+    max-width: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 10px !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    padding: 12px !important;
+    margin: 0 !important;
+  }
+  .todo-input-group-mobile .input-group-text {
+    display: none;
+  }
+}
+
 #pinnedTodosList.sorting-mode,
 #othersTodosList.sorting-mode,
 #pinnedNotesGrid.sorting-mode,

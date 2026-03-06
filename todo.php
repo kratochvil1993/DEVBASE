@@ -63,25 +63,34 @@ include 'includes/header.php';
 <div class="container">
     <div class="row mb-3 align-items-center">
         <div class="col-xxl-12 col-lg-12 mx-auto">
-            <div class="glass-card no-jump p-2 d-flex flex-column-reverse flex-lg-row gap-3 align-items-center justify-content-between mb-0">
-                <form method="POST" id="addTodoForm" class="flex-grow-1 w-100 w-lg-auto" style="max-width: 600px; margin: 0;">
-                    <input type="hidden" name="action" value="add_todo">
-                    <div class="input-group">
-                        <span class="input-group-text bg-transparent border-0 text-white">
-                            <i class="bi bi-check2-square"></i>
-                        </span>
-                        <input type="text" name="text" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Přidat" required autocomplete="off">
-                        <select name="tags[]" class="form-select bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" style="max-width: 140px; cursor: pointer;">
-                            <option value="" style="background: #2b3035;" <?php echo empty($allTags) ? 'selected' : ''; ?>>Bez štítku</option>
-                            <?php foreach ($allTags as $index => $tag): ?>
-                                <option value="<?php echo $tag['id']; ?>" style="background: #2b3035;" <?php echo ($index === 0) ? 'selected' : ''; ?>><?php echo htmlspecialchars($tag['name']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <input type="date" name="deadline" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Termín splnění" style="max-width: 130px; cursor: pointer;">
-                        <input type="time" name="deadline_time" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Čas splnění" style="max-width: 80px; cursor: pointer;">
-                    </div>
-
-                </form>
+            <div class="glass-card no-jump p-2 d-flex flex-column flex-lg-row gap-3 align-items-center justify-content-between mb-0">
+                <div id="addTodoCollapse" class="collapse d-lg-block flex-grow-1 w-100 w-lg-auto" style="max-width: 600px;">
+                    <form method="POST" id="addTodoForm" class="m-0">
+                        <input type="hidden" name="action" value="add_todo">
+                        <div class="input-group todo-input-group-mobile">
+                            <span class="input-group-text bg-transparent border-0 text-white">
+                                <i class="bi bi-check2-square"></i>
+                            </span>
+                            <input type="text" name="text" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Přidat úkol..." required autocomplete="off">
+                            <select name="tags[]" class="form-select bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" style="max-width: 140px; cursor: pointer;">
+                                <option value="" style="background: #2b3035;" <?php echo empty($allTags) ? 'selected' : ''; ?>>Bez štítku</option>
+                                <?php foreach ($allTags as $index => $tag): ?>
+                                    <option value="<?php echo $tag['id']; ?>" style="background: #2b3035;" <?php echo ($index === 0) ? 'selected' : ''; ?>><?php echo htmlspecialchars($tag['name']); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <input type="date" name="deadline" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Termín splnění" style="max-width: 130px; cursor: pointer;">
+                            <input type="time" name="deadline_time" class="form-control bg-transparent border-0 border-start border-light border-opacity-25 text-white shadow-none" title="Čas splnění" style="max-width: 80px; cursor: pointer;">
+                        </div>
+                        
+                        <!-- Discreet hide button for mobile -->
+                        <div class="text-center d-lg-none mt-2">
+                            <button type="button" class="btn btn-link text-white-50 text-decoration-none p-0 d-inline-flex align-items-center gap-1" style="opacity: 0.6;" onclick="bootstrap.Collapse.getInstance(document.getElementById('addTodoCollapse'))?.hide()">
+                                <i class="bi bi-chevron-up"></i>
+                                <span style="font-size: 11px;">Skrýt</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
                 <div class="d-flex flex-wrap gap-2 ms-auto align-self-end align-self-lg-center">
                     <button type="submit" form="addTodoForm" class="btn btn-add-snipet rounded px-3 px-sm-4" id="addTodoBtn">
@@ -484,6 +493,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const pinnedTodosContainer = document.getElementById('pinnedTodosContainer');
 
     if (addTodoForm) {
+        // Intelligent Toggle Logic for Mobile
+        addTodoBtn.addEventListener('click', (e) => {
+            if (window.innerWidth < 992) {
+                const collapseEl = document.getElementById('addTodoCollapse');
+                const textInput = addTodoForm.querySelector('[name="text"]');
+                const isFormVisible = collapseEl.classList.contains('show');
+
+                if (!isFormVisible) {
+                    // Open and focus
+                    e.preventDefault();
+                    new bootstrap.Collapse(collapseEl).show();
+                    setTimeout(() => textInput.focus(), 350);
+                } else if (!textInput.value.trim()) {
+                    // Open but empty -> just hide
+                    e.preventDefault();
+                    bootstrap.Collapse.getInstance(collapseEl)?.hide();
+                }
+                // Else -> Proceed with normal form submission
+            }
+        });
+
         addTodoForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -537,6 +567,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     const othersHeader = document.getElementById('othersHeader');
                     if (othersHeader && pinnedVisible) {
                         othersHeader.classList.remove('d-none');
+                    }
+
+                    // On small screens, hide the form again after successful submission
+                    if (window.innerWidth < 992) {
+                        const collapseEl = document.getElementById('addTodoCollapse');
+                        bootstrap.Collapse.getInstance(collapseEl)?.hide();
                     }
 
                     newTodoItem.classList.add('flash-purple');
