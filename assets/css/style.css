@@ -1338,6 +1338,9 @@ h6 i.bi-pin-angle-fill {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
   }
+  #notificationBellBtn i {
+    font-size: 1.1rem !important;
+  }
   .badge-todo {
     width: 16px;
     height: 16px;
