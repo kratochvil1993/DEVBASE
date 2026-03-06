@@ -1013,6 +1013,12 @@ if (noteSearchClearBtn) {
 
 noteTagButtons.forEach(btn => {
     btn.addEventListener('click', () => {
+        // Clear search when switching tags for consistency
+        if (noteSearchInput) {
+            noteSearchInput.value = '';
+            currentNoteSearch = '';
+            updateNoteSearchClearBtn();
+        }
         noteTagButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentNoteTag = btn.getAttribute('data-tag');
