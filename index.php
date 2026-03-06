@@ -764,6 +764,7 @@ function filterSnippets() {
 
     let pinnedVisible = 0;
     let othersVisible = 0;
+    let delay = 0;
 
     document.querySelectorAll('.snippet-card-wrapper').forEach(card => {
         // Remove any previously set d-none class (from older code) and use style.display instead
@@ -779,11 +780,18 @@ function filterSnippets() {
         const matchesTag = activeTag === 'all' || cardTags.includes(activeTag.toLowerCase());
         const visible = matchesSearch && matchesTag;
 
-        card.style.display = visible ? '' : 'none';
-
         if (visible) {
+            card.style.display = '';
+            card.style.animation = 'none';
+            card.offsetHeight; /* trigger reflow */
+            card.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
+            delay += 30;
+
             if (pinnedGrid && pinnedGrid.contains(card)) pinnedVisible++;
             else othersVisible++;
+        } else {
+            card.style.display = 'none';
+            card.style.animation = 'none';
         }
     });
 
@@ -833,6 +841,9 @@ if (snippetSearchClearBtn) {
 
 tagFilters.forEach(btn => {
     btn.addEventListener('click', () => {
+        // Save selected tag to localStorage
+        localStorage.setItem('snippet_active_tag', btn.dataset.tag);
+
         // Clear search input when switching tags
         if (snippetSearchInput) {
             snippetSearchInput.value = '';
@@ -842,6 +853,17 @@ tagFilters.forEach(btn => {
         btn.classList.add('active');
         filterSnippets();
     });
+});
+
+// Restore saved tag filter on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const savedTag = localStorage.getItem('snippet_active_tag');
+    if (savedTag && savedTag !== 'all') {
+        const targetBtn = document.querySelector(`#tagFilters button[data-tag="${CSS.escape(savedTag)}"]`);
+        if (targetBtn) {
+            targetBtn.click();
+        }
+    }
 });
 
 function copyToClipboard(btn, elementId) {
