@@ -39,11 +39,14 @@ include 'includes/header.php';
     <div class="col-lg-8 mx-auto">
         <div class="glass-card no-jump p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between">
             <div class="flex-grow-1" >
-                <div class="input-group">
+                <div class="input-group" style="position: relative;">
                     <span class="input-group-text bg-transparent border-0 text-white">
                         <i class="bi bi-search"></i>
                     </span>
-                    <input type="text" id="noteSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat">
+                    <input type="text" id="noteSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat" style="padding-right: 2rem;">
+                    <button id="noteSearchClear" type="button" title="Vymazat vyhledávání" style="display:none; position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:#e05c5c; cursor:pointer; font-size:1rem; line-height:1; z-index:5; padding:0;">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
                 </div>
             </div>
 
@@ -977,10 +980,34 @@ if (noteSearchInput || noteTagButtons.length > 0) {
     filterNotes();
 }
 
+const noteSearchClearBtn = document.getElementById('noteSearchClear');
+
+function updateNoteSearchClearBtn() {
+    if (noteSearchClearBtn) {
+        noteSearchClearBtn.style.display = noteSearchInput.value.length > 0 ? 'block' : 'none';
+    }
+}
+
 if (noteSearchInput) {
-    noteSearchInput.addEventListener('input', function(e) {
-        currentNoteSearch = e.target.value.toLowerCase();
+    // Restore clear button visibility if input already has value (from localStorage)
+    updateNoteSearchClearBtn();
+
+    ['input', 'keyup', 'search'].forEach(eventName => {
+        noteSearchInput.addEventListener(eventName, function(e) {
+            currentNoteSearch = e.target.value.toLowerCase();
+            updateNoteSearchClearBtn();
+            filterNotes();
+        });
+    });
+}
+
+if (noteSearchClearBtn) {
+    noteSearchClearBtn.addEventListener('click', function() {
+        noteSearchInput.value = '';
+        currentNoteSearch = '';
+        updateNoteSearchClearBtn();
         filterNotes();
+        noteSearchInput.focus();
     });
 }
 

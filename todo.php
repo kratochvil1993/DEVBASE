@@ -614,12 +614,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const tagButtons = document.querySelectorAll('#tagFilters .btn');
-    let currentTag = (localStorage.getItem('todoTag') || 'all').trim();
+    let currentTag = 'all';
 
-    // Restore initial UI state
+    // Ensure initial UI state has 'all' active
     if (tagButtons.length > 0) {
         tagButtons.forEach(btn => {
-            if (btn.getAttribute('data-tag') === currentTag) {
+            if (btn.getAttribute('data-tag') === 'all') {
                 btn.classList.add('active');
             } else {
                 btn.classList.remove('active');
@@ -674,7 +674,6 @@ document.addEventListener('DOMContentLoaded', () => {
             tagButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentTag = btn.getAttribute('data-tag');
-            localStorage.setItem('todoTag', currentTag);
             filterTodos();
         });
     });
@@ -692,7 +691,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (allBtn) {
                         allBtn.classList.add('active');
                         currentTag = 'all';
-                        localStorage.setItem('todoTag', 'all');
                         tagButtons.forEach(b => { if(b !== allBtn) b.classList.remove('active'); });
                         filterTodos();
                     }

@@ -35,12 +35,15 @@ include 'includes/header.php';
 <div class="row mb-3 align-items-center">
     <div class="col-md-8 mx-auto">
         <div class="glass-card no-jump p-2 d-flex gap-3">
-            <div class="input-group flex-grow-1" >
+            <div class="input-group flex-grow-1" style="position: relative;">
 
                 <span class="input-group-text bg-transparent border-0 text-white">
                     <i class="bi bi-search"></i>
                 </span>
-                <input type="text" id="snippetSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat">
+                <input type="text" id="snippetSearch" class="form-control bg-transparent border-0 text-white shadow-none" placeholder="Hledat" style="padding-right: 2rem;">
+                <button id="snippetSearchClear" type="button" title="Vymazat vyhledávání" style="display:none; position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:#e05c5c; cursor:pointer; font-size:1rem; line-height:1; z-index:5; padding:0;">
+                    <i class="bi bi-x-circle-fill"></i>
+                </button>
             </div>
             <button class="btn btn-add-snipet rounded px-3 ms-auto" onclick="openAddModal()" id="newSnippetBtn" title="Nový snipet">
                 <i class="bi bi-plus-lg"></i>
@@ -748,48 +751,83 @@ const tagFilters = document.querySelectorAll('#tagFilters button');
 
 function filterSnippets() {
     if (!snippetSearchInput) return;
-    
+
     const searchTerm = snippetSearchInput.value.toLowerCase().trim();
     const activeTagBtn = document.querySelector('#tagFilters button.active');
     const activeTag = activeTagBtn ? activeTagBtn.dataset.tag : 'all';
-    const currentCards = document.querySelectorAll('.snippet-card-wrapper');
 
-    let pinnedCount = 0;
-    let othersCount = 0;
+    const pinnedGrid = document.getElementById('pinnedSnippetsGrid');
+    const othersGrid = document.getElementById('othersSnippetsGrid');
+    const pinnedContainer = document.getElementById('pinnedSnippetsContainer');
+    const othersContainer = document.getElementById('othersSnippetsContainer');
+    const othersHeader = document.getElementById('othersHeader');
 
-    currentCards.forEach(card => {
+    let pinnedVisible = 0;
+    let othersVisible = 0;
+
+    document.querySelectorAll('.snippet-card-wrapper').forEach(card => {
+        // Remove any previously set d-none class (from older code) and use style.display instead
+        card.classList.remove('d-none');
+
         const title = (card.querySelector('.card-title')?.innerText || '').toLowerCase();
         const desc = (card.querySelector('.card-text')?.innerText || '').toLowerCase();
-        // Try multiple ways to get tags
         const tagsRaw = card.getAttribute('data-tags') || card.querySelector('.snippet-card')?.dataset?.tags || '';
         const cardTags = tagsRaw.toLowerCase().split(',').map(t => t.trim());
 
         const matchesSearch = !searchTerm || title.includes(searchTerm) || desc.includes(searchTerm) || tagsRaw.toLowerCase().includes(searchTerm);
         const matchesTag = activeTag === 'all' || cardTags.includes(activeTag.toLowerCase());
+        const visible = matchesSearch && matchesTag;
 
-        if (matchesSearch && matchesTag) {
-            card.classList.remove('d-none');
-            if (card.closest('#pinnedSnippetsGrid')) pinnedCount++;
-            else othersCount++;
-        } else {
-            card.classList.add('d-none');
+        card.style.display = visible ? '' : 'none';
+
+        if (visible) {
+            if (pinnedGrid && pinnedGrid.contains(card)) pinnedVisible++;
+            else othersVisible++;
         }
     });
 
-    // Toggle visibility of empty containers
-    const pinnedContainer = document.getElementById('pinnedSnippetsContainer');
-    const othersContainer = document.getElementById('othersSnippetsContainer');
-    const othersHeader = document.getElementById('othersHeader');
+    // Show/hide containers
+    const totalPinned = pinnedGrid ? pinnedGrid.querySelectorAll('.snippet-card-wrapper').length : 0;
 
-    if (pinnedContainer) pinnedContainer.classList.toggle('d-none', pinnedCount === 0);
+    if (pinnedContainer) {
+        // Show pinned container only if there are pinned cards AND at least some are visible
+        pinnedContainer.classList.remove('d-none');
+        pinnedContainer.style.display = (totalPinned > 0 && pinnedVisible > 0) ? '' : 'none';
+    }
     if (othersContainer) {
-        othersContainer.classList.toggle('d-none', othersCount === 0 && pinnedCount === 0);
-        if (othersHeader) othersHeader.classList.toggle('d-none', pinnedCount === 0 || othersCount === 0);
+        othersContainer.classList.remove('d-none');
+        othersContainer.style.display = '';
+    }
+    if (othersHeader) {
+        othersHeader.classList.remove('d-none');
+        othersHeader.style.display = (pinnedVisible > 0 && othersVisible > 0) ? '' : 'none';
+    }
+}
+
+const snippetSearchClearBtn = document.getElementById('snippetSearchClear');
+
+function updateSnippetClearBtn() {
+    if (snippetSearchClearBtn) {
+        snippetSearchClearBtn.style.display = snippetSearchInput.value.length > 0 ? 'block' : 'none';
     }
 }
 
 if (snippetSearchInput) {
-    snippetSearchInput.addEventListener('input', filterSnippets);
+    ['input', 'keyup', 'search'].forEach(eventName => {
+        snippetSearchInput.addEventListener(eventName, function() {
+            updateSnippetClearBtn();
+            filterSnippets();
+        });
+    });
+}
+
+if (snippetSearchClearBtn) {
+    snippetSearchClearBtn.addEventListener('click', function() {
+        snippetSearchInput.value = '';
+        updateSnippetClearBtn();
+        filterSnippets();
+        snippetSearchInput.focus();
+    });
 }
 
 tagFilters.forEach(btn => {
