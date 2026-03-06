@@ -33,7 +33,7 @@ include 'includes/header.php';
 ?>
 
 <div class="row mb-3 align-items-center">
-    <div class="col-lx-8 mx-auto">
+    <div class="col-xl-8 col-lg-9 mx-auto">
         <div class="glass-card no-jump p-2 d-flex gap-3">
             <div class="input-group flex-grow-1" style="position: relative;">
 
