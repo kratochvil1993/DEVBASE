@@ -77,9 +77,9 @@ include 'includes/header.php';
 
 <div class="row mb-3">
     <div class="col-12">
-        <div class="glass-card no-jump p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="flex-grow-1 me-4">
+        <div class="glass-card no-jump p-3 p-lg-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-4 gap-3">
+                <div class="flex-grow-1 w-100 me-lg-4">
                     <div class="d-flex align-items-center mb-1">
                         <h4 class="text-white mb-0 me-3"><i class="bi bi-journal-text me-2"></i> </h4>
                         <input type="text" id="padName" class="form-control-plaintext text-white h4 mb-0 fw-bold p-0" 
@@ -87,7 +87,7 @@ include 'includes/header.php';
                                style="border: none; outline: none; background: transparent;">
                     </div>                   
                 </div>
-                <div class="d-flex gap-2 align-items-center">
+                <div class="d-flex gap-2 align-items-center flex-wrap w-100 justify-content-start justify-content-lg-end">
                     <div id="saveToast" class="badge bg-success d-none align-items-center px-3 py-2 me-2">
                         <i class="bi bi-check-circle me-1"></i> Uloženo!
                     </div>
@@ -157,7 +157,7 @@ include 'includes/header.php';
             </div>
 
             <!-- Tab Bar -->
-            <div class="d-flex align-items-center mb-0 overflow-auto tab-container">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center mb-0 overflow-lg-auto tab-container gap-2 gap-lg-1">
                 <?php foreach ($scratchpads as $pad): ?>
                     <div class="nav-tab-item <?php echo $pad['id'] == $active_id ? 'active' : ''; ?> me-1" data-id="<?php echo $pad['id']; ?>">
                         <a href="notes_drafts.php?id=<?php echo $pad['id']; ?>" class="nav-tab-link py-2 px-3" onclick="switchTab(event, <?php echo $pad['id']; ?>)">
@@ -207,16 +207,18 @@ include 'includes/header.php';
                 <div id="quillMainEditor" style="height: 60vh; border: none; color: white; background: #282a36;"></div>
             </div>
             
-            <div class="mt-3 d-flex justify-content-between align-items-center text-white-50 small">
-                <div>
+            <div class="mt-3 d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center text-white-50 small gap-2">
+                <div class="d-none d-lg-block">
                     <span class="me-3"><i class="bi bi-keyboard me-1"></i> Ctrl+S uložit</span>
                     <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+N nový</span>
                     <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+W zavřít</span>
                     <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+←/→ taby</span>
                 </div>
+                <div class="d-flex justify-content-between align-items-center w-100 w-lg-auto gap-3">
                 <div id="charCount">Znaků: 0</div>
                 <div id="autosaveIndicator" class="ms-3 text-white-50 small" style="transition: all 0.3s ease;">
                     <i class="bi bi-cloud-arrow-up me-1"></i> Připraveno
+                </div>
                 </div>
             </div>
         </div>
@@ -250,6 +252,33 @@ include 'includes/header.php';
     padding: 0 4px 0 0;
     transition: all 0.2s ease;
     white-space: nowrap;
+}
+@media (max-width: 991.98px) {
+    .nav-tab-item {
+        border-radius: 8px !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        justify-content: space-between;
+        padding-right: 8px;
+    }
+    .nav-tab-item.active {
+        background: rgba(142, 84, 233, 0.15) !important;
+        border-color: rgba(142, 84, 233, 0.4) !important;
+    }
+    .nav-tab-link {
+        flex-grow: 1;
+    }
+    .btn-add-tab {
+        width: 100%;
+        padding: 10px !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px dashed rgba(255, 255, 255, 0.2) !important;
+        margin-top: 4px;
+        margin-left: 0 !important;
+    }
+    .btn-tab-close {
+        font-size: 1.25rem !important;
+        padding: 4px 8px !important;
+    }
 }
 .nav-tab-item:hover {
     background: rgba(255, 255, 255, 0.08);

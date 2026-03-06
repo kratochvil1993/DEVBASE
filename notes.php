@@ -54,7 +54,7 @@ include 'includes/header.php';
                 <button class="btn btn-add-snipet rounded Xrounded-pill px-4" id="newNoteBtn" onclick="openAddNoteModal()">
                     <i class="bi bi-plus-lg"></i>
                 </button>
-                <button class="btn btn-edit-order rounded Xrounded-pill px-4 d-none d-md-block" id="editOrderBtn" onclick="toggleSortingMode()">
+                <button class="btn btn-edit-order rounded Xrounded-pill px-4 d-none d-lg-block" id="editOrderBtn" onclick="toggleSortingMode()">
                     <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
                 </button>
                 <button class="btn btn-success rounded Xrounded-pill px-4 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
