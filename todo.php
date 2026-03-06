@@ -63,8 +63,8 @@ include 'includes/header.php';
 <div class="container">
     <div class="row mb-3 align-items-center">
         <div class="col-xxl-12 col-lg-12 mx-auto">
-            <div class="glass-card no-jump p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between mb-0">
-                <form method="POST" id="addTodoForm" class="flex-grow-1" style="max-width: 600px; margin: 0;">
+            <div class="glass-card no-jump p-2 d-flex flex-column-reverse flex-lg-row gap-3 align-items-center justify-content-between mb-0">
+                <form method="POST" id="addTodoForm" class="flex-grow-1 w-100 w-lg-auto" style="max-width: 600px; margin: 0;">
                     <input type="hidden" name="action" value="add_todo">
                     <div class="input-group">
                         <span class="input-group-text bg-transparent border-0 text-white">
@@ -83,19 +83,19 @@ include 'includes/header.php';
 
                 </form>
 
-                <div class="d-flex flex-wrap gap-2 ms-auto">
-                    <button type="submit" form="addTodoForm" class="btn btn-add-snipet rounded px-4" id="addTodoBtn">
+                <div class="d-flex flex-wrap gap-2 ms-auto align-self-end align-self-lg-center">
+                    <button type="submit" form="addTodoForm" class="btn btn-add-snipet rounded px-3 px-sm-4" id="addTodoBtn">
                         <i class="bi bi-plus-lg"></i>
                     </button>
-                    <button class="btn btn-edit-order rounded px-4 d-none d-md-block" id="editOrderBtn" onclick="toggleSortingMode()">
+                    <button class="btn btn-edit-order rounded px-3 px-sm-4" id="editOrderBtn" onclick="toggleSortingMode()">
                         <i class="bi bi-arrows-move me-0 me-xl-2"></i> <span class="d-none d-xl-inline">Upravit pořadí</span>
                     </button>
                     <?php if (getSetting('ai_enabled', '0') == '1'): ?>
-                    <button class="btn btn-ai rounded px-4" id="aiSummaryBtn">
+                    <button class="btn btn-ai rounded px-3 px-sm-4" id="aiSummaryBtn">
                         <i class="bi bi-robot me-0 me-xl-2"></i> <span class="d-none d-xl-inline">AI Souhrn</span>
                     </button>
                     <?php endif; ?>
-                    <button class="btn btn-success rounded px-4 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
+                    <button class="btn btn-success rounded px-3 px-sm-4 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
                         <i class="bi bi-check-lg me-2"></i> Hotovo
                     </button>
                 </div>
