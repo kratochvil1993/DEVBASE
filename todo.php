@@ -88,11 +88,11 @@ include 'includes/header.php';
                         <i class="bi bi-plus-lg"></i>
                     </button>
                     <button class="btn btn-edit-order rounded px-4 d-none d-md-block" id="editOrderBtn" onclick="toggleSortingMode()">
-                        <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
+                        <i class="bi bi-arrows-move me-0 me-xl-2"></i> <span class="d-none d-xl-inline">Upravit pořadí</span>
                     </button>
                     <?php if (getSetting('ai_enabled', '0') == '1'): ?>
                     <button class="btn btn-ai rounded px-4" id="aiSummaryBtn">
-                        <i class="bi bi-robot me-0 me-lg-2"></i> <span class="d-none d-lg-inline">AI Souhrn</span>
+                        <i class="bi bi-robot me-0 me-xl-2"></i> <span class="d-none d-xl-inline">AI Souhrn</span>
                     </button>
                     <?php endif; ?>
                     <button class="btn btn-success rounded px-4 d-none" id="saveOrderBtn" onclick="toggleSortingMode()">
