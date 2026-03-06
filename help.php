@@ -142,7 +142,11 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Persistence vzhledu a filtrů:</strong>
-                    Vaše volba mezi tmavým a světlým režimem je bezpečně uložena v databázi. V sekci **Poznámky** si navíc aplikace pamatuje váš poslední hledaný výraz i vybraný štítek, takže i po přechodu jinam a návratu najdete své rozpracované výsledky tam, kde jste skončili (sekce TODO se pro přehlednost při načtení vždy resetuje na "Vše"). V **Nastavení** si také můžete přizpůsobit **velikost písma** v editorech a detailech a zvolit si své oblíbené **vizuální téma editoru** (např. Dracula, Nord, Monokai). Pro bleskovou změnu velikosti písma můžete využít **ikonu ozubeného kolečka (Gear)** v horní navigaci, která otevře menu s rychlou volbou.
+                    Vaše volba mezi tmavým a světlým režimem je bezpečně uložena v databázi. V sekcích **Snippety** a **Poznámky** si navíc aplikace pamatuje váš poslední hledaný výraz i vybraný štítek (uloženo lokálně), takže i po přechodu jinam a návratu najdete své rozpracované výsledky tam, kde jste skončili (sekce TODO se pro přehlednost při načtení vždy resetuje na "Vše"). V **Nastavení** si také můžete přizpůsobit **velikost písma** v editorech a detailech a zvolit si své oblíbené **vizuální téma editoru** (např. Dracula, Nord, Monokai). Pro bleskovou změnu velikosti písma můžete využít **ikonu ozubeného kolečka (Gear)** v horní navigaci, která otevře menu s rychlou volbou.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Skočit k obsahu (Mobil):</strong>
+                    Na mobilních zařízeních se aplikace snaží šetřit váš čas – při přepínání tabů v sekcích Drafts nebo při kliknutí na hlavičku aktivního editačního panelu vás automaticky **plynule posune k editoru**, abyste nemuseli zbytečně scrollovat dolů.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Automatické sledování změn:</strong>
