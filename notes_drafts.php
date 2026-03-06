@@ -411,6 +411,9 @@ include 'includes/header.php';
 .btn-copy:active {
     transform: translateY(0);
 }
+.editor-container {
+    scroll-margin-top: 100px;
+}
 @keyframes fadeOut {
     0% { opacity: 1; }
     80% { opacity: 1; }
@@ -1115,6 +1118,14 @@ function switchTab(event, id) {
                         item.classList.add('active');
                     }
                 });
+
+                // Scroll to editor on mobile
+                if (window.innerWidth < 992) {
+                    const editorContainer = document.querySelector('.editor-container');
+                    if (editorContainer) {
+                        editorContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
 
                 // Update URL 
                 const newUrl = `notes_drafts.php?id=${pad.id}`;
