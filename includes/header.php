@@ -155,7 +155,7 @@ $stats = getGlobalStats();
                 <label class="form-check-label text-white small" for="themeToggle">Dark</label>
         </div>
 
-        <a href="?lock=1" id="headerLockIcon" class="btn btn-sm btn-link text-white-50 p-0 <?php echo getSetting('security_enabled', '0') == '1' ? '' : 'd-none'; ?>" title="Lock App">
+        <a href="?lock=1" id="headerLockIcon" class="btn btn-sm btn-link text-white-50 p-0 d-none d-md-block <?php echo getSetting('security_enabled', '0') == '1' ? '' : 'd-none'; ?>" title="Lock App">
             <i class="bi bi-lock-fill fs-5"></i>
         </a>
         </div>
