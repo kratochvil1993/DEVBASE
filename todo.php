@@ -137,7 +137,7 @@ include 'includes/header.php';
                 <?php endif; ?>
 
                 <!-- Pinned Todos -->
-                 <div class="row justify-content-center">
+                 <div class="row justify-content-center mt-3 mt-lg-0">
                     <div class="col-lg-10">                    
                         <div id="pinnedTodosContainer" class="<?php echo empty($pinnedTodos) ? 'd-none' : ''; ?> mb-4">
                             <h6 class="text-white-50 mb-3 px-1"><i class="bi bi-pin-angle-fill me-2"></i> PŘIPNUTÉ</h6>

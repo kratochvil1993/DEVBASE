@@ -252,6 +252,10 @@ console.log('Hello World');
                         <li><span class="badge bg-primary me-2">Option + ← / →</span> <strong>Přepínat drafty</strong></li>
                     </ul>
                 </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Optimalizace pro mobil:</strong>
+                    Při přepínání mezi taby na mobilních zařízeních vás aplikace **automaticky posune k editoru**, abyste mohli ihned začít psát bez zbytečného scrollování.
+                </li>
             </ul>
         </div>
 
@@ -359,6 +363,10 @@ console.log('Hello World');
                     <strong class="text-white d-block">AI Bojový plán (Strategický souhrn):</strong>
                     Pokud máte aktivní AI, v sekci TODO najdete fialové tlačítko **AI Souhrn**. AI analyzuje všechny vaše aktivní úkoly, jejich priority (připnutí) a termíny splnění, a sestaví vám přehledný strategický plán, jak úkoly nejlépe odbavit.
                 </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Responzivní rozvržení:</strong>
+                    Na mobilních zařízeních a menších obrazovkách se ovládací prvky úkolů automaticky přizpůsobí – tlačítka pro editaci a připínání se přesunou do horního rohu, aby zbyl maximální prostor pro text úkolu a panel pro přidávání se odsunul pod ně pro lepší ovladatelnost.
+                </li>
             </ul>
         </div>
 
@@ -368,7 +376,7 @@ console.log('Hello World');
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Nastavení a aktivace:</strong>
-                    V **Nastavení** (sekce AI Nastavení) zvolte svého preferovaného poskytovatele (**Gemini** nebo **OpenAI**) a vložte příslušný API klíč. Zde si také můžete vybrat konkrétní model (např. **GPT-4o**, **GPT-5.2**, **Gemini 3.1 Pro** nebo **Gemini 3.1 Flash Lite**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a poskytovatel vybrán, v celé aplikaci se zpřístupní AI nástroje. Všechny AI funkce lze také v nastavení jedním kliknutím **globálně vypnout**, což skryje všechna fialová tlačítka v celé aplikaci pro dokonale čisté rozhraní.
+                    V **Nastavení** (sekce AI Nastavení) zvolte svého preferovaného poskytovatele (**Gemini** nebo **OpenAI**) a vložte příslušný API klíč. Zde si také můžete vybrat konkrétní model (např. **GPT-4o Mini**, **GPT-5.2**, **Gemini 2.5 Pro** nebo **Gemini 3.1 Flash Lite**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a poskytovatel vybrán, v celé aplikaci se zpřístupní AI nástroje. Všechny AI funkce lze také v nastavení jedním kliknutím **globálně vypnout**, což skryje všechna fialová tlačítka v celé aplikaci pro dokonale čisté rozhraní.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Vysvětlení kódu (Snippety) a navigace:</strong>
