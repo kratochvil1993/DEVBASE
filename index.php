@@ -752,7 +752,7 @@ if (document.getElementById('viewSnippetModal')) {
 const snippetSearchInput = document.getElementById('snippetSearch');
 const tagFilters = document.querySelectorAll('#tagFilters button');
 
-function filterSnippets() {
+function filterSnippets(forceAnimate = false) {
     if (!snippetSearchInput) return;
 
     const searchTerm = snippetSearchInput.value.toLowerCase().trim();
@@ -782,13 +782,16 @@ function filterSnippets() {
         const matchesSearch = !searchTerm || title.includes(searchTerm) || desc.includes(searchTerm) || code.includes(searchTerm) || tagsRaw.toLowerCase().includes(searchTerm);
         const matchesTag = activeTag === 'all' || cardTags.includes(activeTag.toLowerCase());
         const visible = matchesSearch && matchesTag;
+        const wasHidden = card.style.display === 'none';
 
         if (visible) {
             card.style.display = '';
-            card.style.animation = 'none';
-            card.offsetHeight; /* trigger reflow */
-            card.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
-            delay += 30;
+            if (forceAnimate || wasHidden) {
+                card.style.animation = 'none';
+                card.offsetHeight; /* trigger reflow */
+                card.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
+                delay += 30;
+            }
 
             if (pinnedGrid && pinnedGrid.contains(card)) pinnedVisible++;
             else othersVisible++;
@@ -828,7 +831,7 @@ if (snippetSearchInput) {
     ['input', 'keyup', 'search'].forEach(eventName => {
         snippetSearchInput.addEventListener(eventName, function() {
             updateSnippetClearBtn();
-            filterSnippets();
+            filterSnippets(true);
         });
     });
 }
@@ -837,7 +840,7 @@ if (snippetSearchClearBtn) {
     snippetSearchClearBtn.addEventListener('click', function() {
         snippetSearchInput.value = '';
         updateSnippetClearBtn();
-        filterSnippets();
+        filterSnippets(true);
         snippetSearchInput.focus();
     });
 }
@@ -854,7 +857,7 @@ tagFilters.forEach(btn => {
         }
         tagFilters.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        filterSnippets();
+        filterSnippets(true);
     });
 });
 
@@ -866,6 +869,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (targetBtn) {
             targetBtn.click();
         }
+    } else {
+        filterSnippets(true);
     }
 });
 

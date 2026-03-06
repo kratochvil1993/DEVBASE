@@ -931,7 +931,7 @@ if (noteTagButtons.length > 0) {
     });
 }
 
-const filterNotes = () => {
+const filterNotes = (forceAnimate = false) => {
     const notes = document.querySelectorAll('.note-item');
     let delay = 0;
     let pinnedVisible = 0;
@@ -950,12 +950,17 @@ const filterNotes = () => {
         
         const matchesTag = currentNoteTag === 'all' || tags.some(t => t.trim().toLowerCase() === currentNoteTag.toLowerCase());
 
-        if (matchesSearch && matchesTag) {
+        const visible = matchesSearch && matchesTag;
+        const wasHidden = note.style.display === 'none';
+
+        if (visible) {
             note.style.display = 'block';
-            note.style.animation = 'none';
-            note.offsetHeight; /* trigger reflow */
-            note.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
-            delay += 40;
+            if (forceAnimate || wasHidden) {
+                note.style.animation = 'none';
+                note.offsetHeight; /* trigger reflow */
+                note.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
+                delay += 40;
+            }
             if (note.classList.contains('pinned')) pinnedVisible++;
             else othersVisible++;
         } else {
@@ -978,7 +983,7 @@ const filterNotes = () => {
 
 // Initial filter application
 if (noteSearchInput || noteTagButtons.length > 0) {
-    filterNotes();
+    filterNotes(true);
 }
 
 const noteSearchClearBtn = document.getElementById('noteSearchClear');
@@ -997,7 +1002,7 @@ if (noteSearchInput) {
         noteSearchInput.addEventListener(eventName, function(e) {
             currentNoteSearch = e.target.value.toLowerCase();
             updateNoteSearchClearBtn();
-            filterNotes();
+            filterNotes(true);
         });
     });
 }
@@ -1007,7 +1012,7 @@ if (noteSearchClearBtn) {
         noteSearchInput.value = '';
         currentNoteSearch = '';
         updateNoteSearchClearBtn();
-        filterNotes();
+        filterNotes(true);
         noteSearchInput.focus();
     });
 }
@@ -1023,7 +1028,7 @@ noteTagButtons.forEach(btn => {
         noteTagButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentNoteTag = btn.getAttribute('data-tag');
-        filterNotes();
+        filterNotes(true);
     });
 });
 </script>
