@@ -326,8 +326,10 @@ function openViewModal(snippet) {
     const preEl = document.getElementById('viewModalPre');
     const mdEl = document.getElementById('viewModalMarkdown');
     
+    const prismClass = 'language-' + (snippet.prism_class || 'none');
+    preEl.className = 'm-0 ' + prismClass;
+    codeEl.className = prismClass;
     codeEl.textContent = snippet.code;
-    codeEl.className = 'language-' + (snippet.prism_class || 'none');
     
     if (snippet.prism_class === 'markdown' && typeof marked !== 'undefined') {
         mdEl.innerHTML = marked.parse(snippet.code);
@@ -716,7 +718,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         copy
                     </button>
                     <div id="viewModalMarkdown" class="p-3 text-white markdown-preview" style="display: none; overflow-x: auto;"></div>
-                    <pre id="viewModalPre" class="m-0"><code id="viewModalCode" class=""></code></pre>
+                    <pre id="viewModalPre" class="m-0" style="white-space: pre-wrap; overflow-wrap: break-word; overflow-x: auto;"><code id="viewModalCode" class=""></code></pre>
                 </div>
             </div>
             <div class="modal-footer border-top border-light border-opacity-10 d-flex justify-content-between align-items-center">

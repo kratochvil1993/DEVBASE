@@ -38,7 +38,7 @@
                 <button class="btn btn-sm btn-outline-light copy-btn" onclick="event.stopPropagation(); copyToClipboard(this, 'snippet-<?php echo $snippet['id']; ?>')">
                     copy
                 </button>
-                <pre><code id="snippet-<?php echo $snippet['id']; ?>" class="language-<?php echo htmlspecialchars($snippet['prism_class'] ?? 'none'); ?>"><?php echo htmlspecialchars($snippet['code']); ?></code></pre>
+                <pre class="language-<?php echo htmlspecialchars($snippet['prism_class'] ?? 'none'); ?>"><code id="snippet-<?php echo $snippet['id']; ?>" class="language-<?php echo htmlspecialchars($snippet['prism_class'] ?? 'none'); ?>"><?php echo htmlspecialchars($snippet['code']); ?></code></pre>
             </div>
         </div>
     </div>

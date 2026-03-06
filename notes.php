@@ -152,7 +152,7 @@ include 'includes/header.php';
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <div class="d-flex align-items-center gap-3">
-                    <h5 class="modal-title text-white" id="viewNoteModalTitle">
+                    <h5 class="modal-title text-white" id="viewNoteModalTitle" style="white-space: pre-wrap; overflow-wrap: break-word;">
                         Prohlížení poznámky
                     </h5>
                     <div id="viewNoteTags" class="d-flex gap-1 flex-wrap"></div>

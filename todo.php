@@ -244,7 +244,7 @@ include 'includes/header.php';
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <h5 id="viewTodoText" class="text-white mb-2"></h5>
+                    <h5 id="viewTodoText" class="text-white mb-2" style="white-space: pre-wrap; overflow-wrap: break-word;"></h5>
                     <div id="viewTodoTags" class="d-flex flex-wrap gap-1 mb-3"></div>
                 </div>
 

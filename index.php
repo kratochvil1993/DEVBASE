@@ -201,7 +201,7 @@ include 'includes/header.php';
                         copy
                     </button>
                     <div id="viewModalMarkdown" class="p-3 text-white markdown-preview" style="display: none; overflow-x: auto;"></div>
-                    <pre id="viewModalPre" class="m-0"><code id="viewModalCode" class=""></code></pre>
+                    <pre id="viewModalPre" class="m-0" style="white-space: pre-wrap; overflow-wrap: break-word; overflow-x: auto;"><code id="viewModalCode" class=""></code></pre>
                 </div>
 
             </div>
@@ -618,9 +618,13 @@ function openViewModal(snippet) {
     document.getElementById('viewModalTitle').innerText = snippet.title;
     document.getElementById('viewModalLanguage').innerText = snippet.language_name || 'Bez jazyka';
     
+    const preEl = document.getElementById('viewModalPre');
     const codeEl = document.getElementById('viewModalCode');
-    codeEl.innerText = snippet.code;
-    codeEl.className = 'language-' + (snippet.prism_class || 'none');
+    
+    const prismClass = 'language-' + (snippet.prism_class || 'none');
+    preEl.className = 'm-0 ' + prismClass;
+    codeEl.className = prismClass;
+    codeEl.textContent = snippet.code;
     
     // Tags
     const tagsWrapper = document.getElementById('viewModalTags');
