@@ -110,7 +110,11 @@ console.log('Hello World');
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Kombinované filtry:</strong>
-                    Vyber tag (např. `React`) a pak začni psát. Filtr se aplikuje na už vyfiltrované výsledky.
+                    Vyberte tag (např. `React`) a následně použijte vyhledávání pro zúžení výsledků. Pozor: pokud již máte něco vyhledáno a kliknete na tag, vyhledávací pole se pro větší přehlednost **automaticky vymaže**, aby se zobrazily všechny položky s daným štítkem.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Rychlé vymazání (X):</strong>
+                    V pravé části vyhledávacího pole najdete červenou ikonu **X**, která se objeví při psaní. Jedním kliknutím tak můžete okamžitě smazat hledaný výraz a vrátit se k plnému výpisu.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Hledání v poznámkách:</strong>
@@ -137,8 +141,8 @@ console.log('Hello World');
                     V bočním panelu najdete bleskový přehled počtu snippetů, poznámek a **aktivních** úkolů, včetně počtu rozpracovaných kódových a textových draftů.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Persistence vzhledu:</strong>
-                    Vaše volba mezi tmavým a světlým režimem je bezpečně uložena v databázi. Při příštím přihlášení nebo na jiném zařízení se vám aplikace zobrazí přesně tak, jak jste ji naposledy zanechali. V **Nastavení** si také můžete přizpůsobit **velikost písma** v editorech a detailech a zvolit si své oblíbené **vizuální téma editoru** (např. Dracula, Nord, Monokai). Pro bleskovou změnu velikosti písma můžete využít **ikonu ozubeného kolečka (Gear)** v horní navigaci, která otevře menu s rychlou volbou.
+                    <strong class="text-white d-block">Persistence vzhledu a filtrů:</strong>
+                    Vaše volba mezi tmavým a světlým režimem je bezpečně uložena v databázi. V sekci **Poznámky** si navíc aplikace pamatuje váš poslední hledaný výraz i vybraný štítek, takže i po přechodu jinam a návratu najdete své rozpracované výsledky tam, kde jste skončili (sekce TODO se pro přehlednost při načtení vždy resetuje na "Vše"). V **Nastavení** si také můžete přizpůsobit **velikost písma** v editorech a detailech a zvolit si své oblíbené **vizuální téma editoru** (např. Dracula, Nord, Monokai). Pro bleskovou změnu velikosti písma můžete využít **ikonu ozubeného kolečka (Gear)** v horní navigaci, která otevře menu s rychlou volbou.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Automatické sledování změn:</strong>
