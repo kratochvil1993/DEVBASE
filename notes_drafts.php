@@ -1085,8 +1085,16 @@ function switchTab(event, id) {
     const activeIdInput = document.getElementById('activeScratchpadId');
     const currentId = activeIdInput.value;
     
-    // Don't do anything if we're clicking the already active tab
-    if (currentId == id) return;
+    // If clicking already active tab, just scroll on mobile and return
+    if (currentId == id) {
+        if (window.innerWidth < 992) {
+            const editorContainer = document.querySelector('.editor-container');
+            if (editorContainer) {
+                editorContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        return;
+    }
 
     // Trigger autosave for the current tab first
     triggerAutosave();

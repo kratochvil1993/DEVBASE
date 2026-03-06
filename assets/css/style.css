@@ -544,7 +544,8 @@ pre.ql-syntax {
 
 .manage-note-row,
 .manage-snippet-row,
-.todo-item {
+.todo-item,
+.editor-container {
   scroll-margin-top: 120px;
 }
 
