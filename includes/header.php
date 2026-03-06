@@ -26,7 +26,7 @@ $stats = getGlobalStats();
 <html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>DevBase - The OneNote Killer</title>
 
     <!-- Favicons -->
@@ -70,9 +70,11 @@ $stats = getGlobalStats();
 
 <nav class="navbar navbar-expand-lg navbar-dark navbar-glass sticky-top">
     <div class="container-fluid">
-        <button class="btn btn-menu border-0 me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="d-flex align-items-center">
+            <button class="btn btn-menu border-0 me-1 me-md-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
         <a class="navbar-brand fw-bold d-none d-md-block " href="index.php">
             <span>    
                 <img src="./assets/logoAlt.png" alt="DevBase Logo"  class="d-inline-block align-text-top logo" >
@@ -117,47 +119,47 @@ $stats = getGlobalStats();
             </div>
         </div>
         
-        <div class="ms-auto d-flex align-items-center gap-3">
-        <div id="header-notifications-container">
-            <?php include 'includes/header_notifications.php'; ?>
-        </div>
+        <div class="ms-auto d-flex align-items-center gap-2 gap-md-3">
+            <div id="header-notifications-container">
+                <?php include 'includes/header_notifications.php'; ?>
+            </div>
 
-        <div class="dropdown">
-            <button class="btn btn-link text-white-50 p-0 d-none d-md-block" type="button" id="quickSettingsBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Rychlé nastavení">
-                <i class="bi bi-gear-fill fs-5"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end dropdown-menu-glass quick-settings-dropdown p-0 mt-2" aria-labelledby="quickSettingsBtn">
-                <div class="p-3 border-bottom border-light border-opacity-10">
-                    <h6 class="mb-0 fw-bold">Rychlé nastavení</h6>
-                </div>
-                <div class="p-3">
-                    <div class="mb-0">
-                        <label class="form-label text-white-50 small fw-bold mb-2">Velikost písma</label>
-                        <select class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none" 
-                                onchange="updateQuickSetting('ui_font_size', this.value)">
-                            <?php $currentFontSize = getSetting('ui_font_size', 'normal'); ?>
-                            <option value="normal" class="bg-dark text-white" <?php echo $currentFontSize == 'normal' ? 'selected' : ''; ?>>Standardní</option>
-                            <option value="large" class="bg-dark text-white" <?php echo $currentFontSize == 'large' ? 'selected' : ''; ?>>Větší</option>
-                            <option value="huge" class="bg-dark text-white" <?php echo $currentFontSize == 'huge' ? 'selected' : ''; ?>>Velké</option>
-                        </select>
+            <div class="dropdown">
+                <button class="btn btn-link text-white-50 p-0 d-none d-md-block" type="button" id="quickSettingsBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Rychlé nastavení">
+                    <i class="bi bi-gear-fill fs-5"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-glass quick-settings-dropdown p-0 mt-2" aria-labelledby="quickSettingsBtn">
+                    <div class="p-3 border-bottom border-light border-opacity-10">
+                        <h6 class="mb-0 fw-bold">Rychlé nastavení</h6>
+                    </div>
+                    <div class="p-3">
+                        <div class="mb-0">
+                            <label class="form-label text-white-50 small fw-bold mb-2">Velikost písma</label>
+                            <select class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                    onchange="updateQuickSetting('ui_font_size', this.value)">
+                                <?php $currentFontSize = getSetting('ui_font_size', 'normal'); ?>
+                                <option value="normal" class="bg-dark text-white" <?php echo $currentFontSize == 'normal' ? 'selected' : ''; ?>>Standardní</option>
+                                <option value="large" class="bg-dark text-white" <?php echo $currentFontSize == 'large' ? 'selected' : ''; ?>>Větší</option>
+                                <option value="huge" class="bg-dark text-white" <?php echo $currentFontSize == 'huge' ? 'selected' : ''; ?>>Velké</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="p-2 border-top border-light border-opacity-10 text-center">
+                        <a href="settings.php" class="btn btn-sm btn-link-settings w-100 py-1">
+                            <i class="bi bi-gear me-1"></i> Přejít do nastavení
+                        </a>
                     </div>
                 </div>
-                <div class="p-2 border-top border-light border-opacity-10 text-center">
-                    <a href="settings.php" class="btn btn-sm btn-link-settings w-100 py-1">
-                        <i class="bi bi-gear me-1"></i> Přejít do nastavení
-                    </a>
-                </div>
             </div>
-        </div>
 
-        <div class="form-check form-switch mb-0 <?php echo getSetting('theme_toggle_enabled', '1') == '1' ? '' : 'd-none'; ?>" id="headerThemeToggleContainer">
-                <input class="form-check-input" type="checkbox" id="themeToggle">
-                <label class="form-check-label text-white small" for="themeToggle">Dark</label>
-        </div>
+            <div class="form-check form-switch mb-0 <?php echo getSetting('theme_toggle_enabled', '1') == '1' ? '' : 'd-none'; ?>" id="headerThemeToggleContainer">
+                    <input class="form-check-input" type="checkbox" id="themeToggle">
+                    <label class="form-check-label text-white small d-none d-sm-inline-block" for="themeToggle">Dark</label>
+            </div>
 
-        <a href="?lock=1" id="headerLockIcon" class="btn btn-sm btn-link text-white-50 p-0 d-none d-md-block <?php echo getSetting('security_enabled', '0') == '1' ? '' : 'd-none'; ?>" title="Lock App">
-            <i class="bi bi-lock-fill fs-5"></i>
-        </a>
+            <a href="?lock=1" id="headerLockIcon" class="btn btn-sm btn-link text-white-50 p-0 d-none d-md-block <?php echo getSetting('security_enabled', '0') == '1' ? '' : 'd-none'; ?>" title="Lock App">
+                <i class="bi bi-lock-fill fs-5"></i>
+            </a>
         </div>
 
     </div>
