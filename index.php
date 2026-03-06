@@ -771,10 +771,11 @@ function filterSnippets() {
 
         const title = (card.querySelector('.card-title')?.innerText || '').toLowerCase();
         const desc = (card.querySelector('.card-text')?.innerText || '').toLowerCase();
+        const code = (card.querySelector('.snippet-code-wrapper pre')?.innerText || '').toLowerCase();
         const tagsRaw = card.getAttribute('data-tags') || card.querySelector('.snippet-card')?.dataset?.tags || '';
         const cardTags = tagsRaw.toLowerCase().split(',').map(t => t.trim());
 
-        const matchesSearch = !searchTerm || title.includes(searchTerm) || desc.includes(searchTerm) || tagsRaw.toLowerCase().includes(searchTerm);
+        const matchesSearch = !searchTerm || title.includes(searchTerm) || desc.includes(searchTerm) || code.includes(searchTerm) || tagsRaw.toLowerCase().includes(searchTerm);
         const matchesTag = activeTag === 'all' || cardTags.includes(activeTag.toLowerCase());
         const visible = matchesSearch && matchesTag;
 
@@ -832,6 +833,11 @@ if (snippetSearchClearBtn) {
 
 tagFilters.forEach(btn => {
     btn.addEventListener('click', () => {
+        // Clear search input when switching tags
+        if (snippetSearchInput) {
+            snippetSearchInput.value = '';
+            updateSnippetClearBtn();
+        }
         tagFilters.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         filterSnippets();
