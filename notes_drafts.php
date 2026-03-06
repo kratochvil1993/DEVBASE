@@ -157,7 +157,7 @@ include 'includes/header.php';
             </div>
 
             <!-- Tab Bar -->
-            <div class="d-flex flex-column flex-lg-row align-items-lg-center mb-0 overflow-lg-auto tab-container gap-2 gap-lg-1">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center mb-0 overflow-lg-auto tab-container gap-1 gap-lg-1">
                 <?php foreach ($scratchpads as $pad): ?>
                     <div class="nav-tab-item <?php echo $pad['id'] == $active_id ? 'active' : ''; ?> me-1" data-id="<?php echo $pad['id']; ?>">
                         <a href="notes_drafts.php?id=<?php echo $pad['id']; ?>" class="nav-tab-link py-2 px-3" onclick="switchTab(event, <?php echo $pad['id']; ?>)">

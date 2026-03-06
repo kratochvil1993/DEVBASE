@@ -37,7 +37,7 @@ include 'includes/header.php';
 
 <div class="row mb-3 align-items-center">
     <div class="col-xl-8 mx-auto">
-        <div class="glass-card no-jump p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between">
+        <div class="glass-card no-jump p-2 d-flex gap-2 gap-sm-3 align-items-center justify-content-between">
             <div class="flex-grow-1" >
                 <div class="input-group" style="position: relative;">
                     <span class="input-group-text bg-transparent border-0 text-white">
@@ -50,8 +50,8 @@ include 'includes/header.php';
                 </div>
             </div>
 
-            <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-add-snipet rounded Xrounded-pill px-4" id="newNoteBtn" onclick="openAddNoteModal()">
+            <div class="d-flex gap-1 gap-sm-2 flex-shrink-0">
+                <button class="btn btn-add-snipet rounded Xrounded-pill px-3 px-sm-4" id="newNoteBtn" onclick="openAddNoteModal()">
                     <i class="bi bi-plus-lg"></i>
                 </button>
                 <button class="btn btn-edit-order rounded Xrounded-pill px-4 d-none d-lg-block" id="editOrderBtn" onclick="toggleSortingMode()">
@@ -61,7 +61,7 @@ include 'includes/header.php';
                     <i class="bi bi-check-lg me-2"></i> Hotovo
                 </button>
                 <div class="dropdown" id="sortDropdownContainer">
-                    <button class="btn btn-outline-light rounded Xrounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-outline-light rounded Xrounded-pill px-2 px-sm-3 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-sort-down me-0 me-lg-2"></i> <span class="d-none d-lg-inline">
                         <?php 
                             switch($currentSort) {

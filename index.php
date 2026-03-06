@@ -45,7 +45,7 @@ include 'includes/header.php';
                     <i class="bi bi-x-circle-fill"></i>
                 </button>
             </div>
-            <button class="btn btn-add-snipet rounded px-3 ms-auto" onclick="openAddModal()" id="newSnippetBtn" title="Nový snipet">
+            <button class="btn btn-add-snipet rounded px-3 px-sm-4 ms-auto" onclick="openAddModal()" id="newSnippetBtn" title="Nový snipet">
                 <i class="bi bi-plus-lg"></i>
             </button>
             <button class="btn btn-edit-order rounded px-4 d-none d-md-block" id="editOrderBtn" onclick="toggleSortingMode()" style="text-wrap: nowrap;">
