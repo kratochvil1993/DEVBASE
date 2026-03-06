@@ -48,7 +48,7 @@ include 'includes/header.php';
             <button class="btn btn-add-snipet rounded px-3 ms-auto" onclick="openAddModal()" id="newSnippetBtn" title="Nový snipet">
                 <i class="bi bi-plus-lg"></i>
             </button>
-            <button class="btn btn-edit-order rounded px-4" id="editOrderBtn" onclick="toggleSortingMode()" style="text-wrap: nowrap;">
+            <button class="btn btn-edit-order rounded px-4 d-none d-md-block" id="editOrderBtn" onclick="toggleSortingMode()" style="text-wrap: nowrap;">
                 <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
             </button>
             <button class="btn btn-success rounded px-4 d-none" id="saveOrderBtn" onclick="toggleSortingMode()" style="text-wrap: nowrap;">

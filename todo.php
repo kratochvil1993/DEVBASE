@@ -87,7 +87,7 @@ include 'includes/header.php';
                     <button type="submit" form="addTodoForm" class="btn btn-add-snipet rounded px-4" id="addTodoBtn">
                         <i class="bi bi-plus-lg"></i>
                     </button>
-                    <button class="btn btn-edit-order rounded px-4" id="editOrderBtn" onclick="toggleSortingMode()">
+                    <button class="btn btn-edit-order rounded px-4 d-none d-md-block" id="editOrderBtn" onclick="toggleSortingMode()">
                         <i class="bi bi-arrows-move me-2"></i> Upravit pořadí
                     </button>
                     <?php if (getSetting('ai_enabled', '0') == '1'): ?>

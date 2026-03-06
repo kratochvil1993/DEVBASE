@@ -83,19 +83,19 @@ $stats = getGlobalStats();
         <div class=" d-flex position-absolute start-50 translate-middle-x">
             <div class="nav-toggle-group">
                 <a href="index.php" id="nav-snippets-item" class="nav-toggle-btn <?php echo ($currentPage == 'index.php') ? 'active' : ''; ?> <?php echo getSetting('snippets_enabled', '1') == '0' ? 'd-none' : ''; ?>">
-                    <i class="bi bi-code-slash me-2"></i> <span class="d-none d-md-inline">Snippets</span>
+                    <i class="bi bi-code-slash me-0 me-lg-2"></i> <span class="d-none d-lg-inline">Snippets</span>
                 </a>
-                <a href="code.php" id="nav-code-item" class="nav-toggle-btn <?php echo ($currentPage == 'code.php') ? 'active' : ''; ?> <?php echo getSetting('code_enabled', '1') == '0' ? 'd-none' : ''; ?>">
-                    <i class="bi bi-braces me-2"></i> <span class="d-none d-md-inline">Code</span>
+                <a href="code.php" id="nav-code-item" class="nav-toggle-btn d-none d-md-flex <?php echo ($currentPage == 'code.php') ? 'active' : ''; ?> <?php echo getSetting('code_enabled', '1') == '0' ? 'd-none' : ''; ?>">
+                    <i class="bi bi-braces me-0 me-lg-2"></i> <span class="d-none d-lg-inline">Code</span>
                 </a>
                 <a href="notes_drafts.php" id="nav-drafts-item" class="nav-toggle-btn <?php echo ($currentPage == 'notes_drafts.php') ? 'active' : ''; ?> <?php echo getSetting('note_drafts_enabled', '1') == '0' ? 'd-none' : ''; ?>">
-                    <i class="bi bi-journal-plus me-2"></i> <span class="d-none d-md-inline">Drafts</span>
+                    <i class="bi bi-journal-plus me-0 me-lg-2"></i> <span class="d-none d-lg-inline">Drafts</span>
                 </a>
                 <a href="notes.php" id="nav-notes-item" class="nav-toggle-btn <?php echo $currentPage == 'notes.php' ? 'active' : ''; ?> <?php echo getSetting('notes_enabled', '1') == '0' ? 'd-none' : ''; ?>">
-                    <i class="bi bi-journal-text me-2"></i> <span class="d-none d-md-inline">Notes</span>
+                    <i class="bi bi-journal-text me-0 me-lg-2"></i> <span class="d-none d-lg-inline">Notes</span>
                 </a>
                 <a href="todo.php" id="nav-todo-item" class="nav-toggle-btn <?php echo $currentPage == 'todo.php' ? 'active' : ''; ?> d-flex align-items-center <?php echo getSetting('todos_enabled', '1') == '0' ? 'd-none' : ''; ?>">
-                    <i class="bi bi-check2-square me-2"></i> <span class="d-none d-md-inline">TODO</span>
+                    <i class="bi bi-check2-square me-0 me-lg-2"></i> <span class="d-none d-lg-inline">TODO</span>
                     <span id="nav-todo-badge-container" class="<?php echo getSetting('todo_badge_enabled', '1') == '0' ? 'd-none' : ''; ?>">
                         <?php 
                         if ($stats['total_todos'] > 0) {
@@ -105,7 +105,7 @@ $stats = getGlobalStats();
                     </span>
                 </a>
                 <a href="inbox.php" id="nav-inbox-item" class="nav-toggle-btn <?php echo $currentPage == 'inbox.php' ? 'active' : ''; ?> <?php echo getSetting('inbox_enabled', '0') == '0' ? 'd-none' : ''; ?>">
-                    <i class="bi bi-inbox me-2"></i> <span class="d-none d-md-inline">Inbox</span>
+                    <i class="bi bi-inbox me-0 me-lg-2"></i> <span class="d-none d-lg-inline">Inbox</span>
                     <span id="nav-inbox-badge-container">
                         <?php 
                         if ($stats['total_inbox_new'] > 0) {
@@ -123,7 +123,7 @@ $stats = getGlobalStats();
         </div>
 
         <div class="dropdown">
-            <button class="btn btn-link text-white-50 p-0" type="button" id="quickSettingsBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Rychlé nastavení">
+            <button class="btn btn-link text-white-50 p-0 d-none d-md-block" type="button" id="quickSettingsBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Rychlé nastavení">
                 <i class="bi bi-gear-fill fs-5"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-glass quick-settings-dropdown p-0 mt-2" aria-labelledby="quickSettingsBtn">
