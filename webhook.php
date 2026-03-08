@@ -145,3 +145,4 @@ function log_event(string $level, string $message): void
     $line = '[' . date('Y-m-d H:i:s') . '] [' . strtoupper($level) . '] ' . $message . PHP_EOL;
     file_put_contents(LOG_FILE, $line, FILE_APPEND | LOCK_EX);
 }
+//test
