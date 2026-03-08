@@ -6,3 +6,5 @@ database.sqlite
 /includes/config.php
 /vendor/
 composer.lock
+config.php
+.htaccess
