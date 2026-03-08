@@ -4,3 +4,5 @@ tmp_sync_log.txt
 database.sqlite
 *.sqlite
 /includes/config.php
+/vendor/
+composer.lock
