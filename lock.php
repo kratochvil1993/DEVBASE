@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Redirect if already unlocked or security disabled
+// Redirect if already unlocked
 if (!isAppLocked()) {
     header('Location: index.php');
     exit;
@@ -13,22 +13,25 @@ if (!isAppLocked()) {
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
-    if (verifyAppPassword($_POST['password'])) {
+    $username = $_POST['username'] ?? '';
+    $password = $_POST['password'] ?? '';
+    
+    if (verifyLogin($username, $password)) {
         header('Location: index.php');
         exit;
     } else {
-        $error = 'Invalid password';
+        $error = 'Neplatné jméno nebo heslo';
     }
 }
 
 $theme = isset($_COOKIE['theme']) ? $_COOKIE['theme'] : 'dark';
 ?>
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="<?php echo $theme; ?>">
+<html lang="cs" data-bs-theme="<?php echo $theme; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevBase - Locked</title>
+    <title>DevBase - Přihlášení</title>
     <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/vendor/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="assets/css/style.css">
@@ -83,7 +86,7 @@ $theme = isset($_COOKIE['theme']) ? $_COOKIE['theme'] : 'dark';
             background: linear-gradient(45deg, #3b82f6, #9333ea);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             display: inline-block;
             animation: pulse-glow 3s infinite;
         }
@@ -102,7 +105,6 @@ $theme = isset($_COOKIE['theme']) ? $_COOKIE['theme'] : 'dark';
             border-radius: 12px;
             text-align: center;
             font-size: 1.1rem;
-            letter-spacing: 0.5rem;
             transition: all 0.3s ease;
         }
 
@@ -149,44 +151,48 @@ $theme = isset($_COOKIE['theme']) ? $_COOKIE['theme'] : 'dark';
     </style>
 </head>
 <body>
-    <div id="bgcircle-pruple"></div>
-    <div id="bgcircle-primary"></div>
     <div class="lock-container">
         <div class="glass-card text-center">
             <div class="lock-icon">
-                <i class="bi bi-shield-lock-fill"></i>
+                <i class="bi bi-person-lock"></i>
             </div>
             <h2 class="mb-2 fw-bold">DevBase</h2>
-            <p class="text-secondary mb-4 small text-uppercase ls-wide">Application Encrypted</p>
+            <p class="text-secondary mb-4 small text-uppercase ls-wide">Vítejte zpět</p>
             
             <form method="POST" action="lock.php" id="lockForm">
                 <div class="mb-3">
+                    <input type="text" name="username" class="form-control <?php echo $error ? 'error-shake' : ''; ?>" 
+                           placeholder="Uživatelské jméno" autofocus required autocomplete="username">
+                </div>
+                <div class="mb-3">
                     <input type="password" name="password" class="form-control <?php echo $error ? 'error-shake' : ''; ?>" 
-                           placeholder="••••" autofocus required>
+                           placeholder="Heslo" required autocomplete="current-password">
                     <?php if ($error): ?>
                         <div class="text-danger mt-2 small"><?php echo $error; ?></div>
                     <?php endif; ?>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 btn-unlock">
-                    UNLOCK <i class="bi bi-unlock-fill ms-2"></i>
+                    PŘIHLÁSIT SE <i class="bi bi-box-arrow-in-right ms-2"></i>
                 </button>
             </form>
         </div>
     </div>
 
     <script>
-        // Auto-focus on input
         document.addEventListener('DOMContentLoaded', () => {
-            const input = document.querySelector('input[name="password"]');
-            input.focus();
-            
-            // Re-shake on incorrect submit (visual only if empty)
+            const userInp = document.querySelector('input[name="username"]');
+            const passInp = document.querySelector('input[name="password"]');
+
             document.getElementById('lockForm').addEventListener('submit', (e) => {
-                if (!input.value) {
+                if (!userInp.value || !passInp.value) {
                     e.preventDefault();
-                    input.classList.remove('error-shake');
-                    void input.offsetWidth; // trigger reflow
-                    input.classList.add('error-shake');
+                    [userInp, passInp].forEach(inp => {
+                        if(!inp.value) {
+                            inp.classList.remove('error-shake');
+                            void inp.offsetWidth;
+                            inp.classList.add('error-shake');
+                        }
+                    });
                 }
             });
         });

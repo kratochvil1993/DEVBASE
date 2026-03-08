@@ -149,8 +149,19 @@ include 'includes/header.php';
                     </label>
                 </div>
             </div>
+            <hr class="border-light border-opacity-10 my-4">
 
-            
+            <div>
+                 <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="d-block fw-bold text-white">PHP Informace</span>
+                        <small class="text-white-50">Zobrazit detailní konfiguraci serveru.</small>
+                    </div>
+                    <a href="info.php" class="btn btn-sm btn-outline-light border-opacity-25 px-3">
+                        <i class="bi bi-info-circle me-1"></i> Zobrazit
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -195,61 +206,60 @@ include 'includes/header.php';
             <hr class="border-light border-opacity-10 my-4">
 
             <!-- Security Section -->
-            <h4 class="text-white mb-3"><i class="bi bi-shield-lock me-2 text-primary"></i>Zabezpečení</h4>
-            <?php $hasPassword = !empty(getSetting('app_password')); ?>
+            <h4 class="text-white mb-3"><i class="bi bi-shield-lock me-2 text-primary"></i>Zabezpečení přihlášení</h4>
+            <?php 
+                $appUsername = getSetting('app_username', 'admin');
+            ?>
             <div class="security-settings-container">
-                <form onsubmit="handleConfigFormSubmit(event)" class="mb-0">
+                <form id="securityForm" onsubmit="handleSecurityFormSubmit(event)" class="mb-0">
                     <input type="hidden" name="action" value="save_security">
                     
-                    <div class="form-check form-switch d-flex align-items-center gap-3 ps-0 mb-4">
-                        <input class="form-check-input fs-4 ms-0" type="checkbox" name="security_enabled" id="securityEnabledToggle" 
-                               <?php echo $securityEnabled == '1' ? 'checked' : ''; ?>
-                               <?php echo !$hasPassword ? 'disabled' : 'onchange="updateGeneralSetting(\'security_enabled\', this.checked)"'; ?>>
-                        <label class="form-check-label text-white" for="securityEnabledToggle">
-                            <span class="d-block fw-bold">Povolit zámek aplikace</span>
-                            <small class="text-white-50">Po aktivaci bude aplikace vyžadovat heslo při každém vstupu.</small>
-                        </label>
+                    <div class="mb-3">
+                        <label class="form-label text-white-50 small fw-bold">Uživatelské jméno</label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
+                                <i class="bi bi-person-fill"></i>
+                            </span>
+                            <input type="text" name="app_username" id="app_username" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                   value="<?php echo htmlspecialchars($appUsername); ?>" required>
+                        </div>
                     </div>
 
-                    <?php if (!$hasPassword): ?>
-                        <div class="mb-3">
-                            <label class="form-label text-white-50 small fw-bold">Nastavit heslo</label>
-                            <div class="input-group mb-2">
-                                <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
-                                    <i class="bi bi-key-fill"></i>
-                                </span>
-                                <input type="password" name="app_password" id="app_password" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
-                                       placeholder="Nové heslo..." required>
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
-                                    <i class="bi bi-shield-check"></i>
-                                </span>
-                                <input type="password" name="app_password_confirm" id="app_password_confirm" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
-                                       placeholder="Kontrola hesla..." required>
-                            </div>
-                            
-                            <button class="btn btn-primary w-100 mb-3" type="submit" id="saveSecurityBtn">
-                                <i class="bi bi-shield-lock-fill me-2"></i>Uložit heslo a aktivovat zámek
-                            </button>
-
-                            <div id="passwordMatchMessage" class="small mb-2 d-none"></div>
-                            
-                            <div class="small text-warning mt-3">
-                                <i class="bi bi-exclamation-triangle-fill me-1"></i> Heslo zatím není nastaveno!
-                            </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white-50 small fw-bold">Změna hesla <span class="fw-normal">(nechte prázdné, pokud nechcete měnit)</span></label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
+                                <i class="bi bi-key-fill"></i>
+                            </span>
+                            <input type="password" name="app_password" id="app_password" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                   placeholder="Nové heslo...">
                         </div>
-                    <?php endif; ?>
-                </form>
-
-                    <div class="d-flex justify-content-between align-items-center mt-3" id="securityStatusRow">
-                        <div class="small text-success">
-                            <i class="bi bi-check-circle-fill me-1"></i> Heslo je nastaveno
+                        <div class="input-group mb-3">
+                            <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
+                                <i class="bi bi-shield-check"></i>
+                            </span>
+                            <input type="password" name="app_password_confirm" id="app_password_confirm" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                   placeholder="Kontrola nového hesla...">
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-danger border-0 py-0 shadow-none" onclick="resetPasswordAjax()">
-                            <i class="bi bi-trash me-1"></i> Resetovat heslo
+                        
+                        <div id="passwordMatchError" class="alert alert-danger py-2 small d-none mb-3">
+                            <i class="bi bi-exclamation-circle-fill me-2"></i> Hesla se neshodují!
+                        </div>
+
+                        <button class="btn btn-primary w-100 mb-3" type="submit" id="saveSecurityBtn">
+                            <i class="bi bi-check-circle-fill me-2"></i>Uložit přihlašovací údaje
                         </button>
                     </div>
+                </form>
+
+                <div class="d-flex justify-content-between align-items-center mt-3 border-top border-light border-opacity-10 pt-3" id="securityStatusRow">
+                    <div class="small text-white-50">
+                        <i class="bi bi-info-circle me-1"></i> Přihlašování je aktivní
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger border-0 py-0 shadow-none" onclick="resetPasswordAjax()">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Resetovat na admin/admin
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -926,40 +936,56 @@ function saveTagsOrder(listId, rowSelector) {
 }
 
 // Password confirmation validation
-document.addEventListener('DOMContentLoaded', function() {
+function handleSecurityFormSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
     const password = document.getElementById('app_password');
     const confirm = document.getElementById('app_password_confirm');
-    const message = document.getElementById('passwordMatchMessage');
+    const errorMsg = document.getElementById('passwordMatchError');
     const submitBtn = document.getElementById('saveSecurityBtn');
+    const originalContent = submitBtn.innerHTML;
 
-    if (password && confirm) {
-        function validatePassword() {
-            if (password.value === '' && confirm.value === '') {
-                message.classList.add('d-none');
-                submitBtn.disabled = false;
-                return;
-            }
-
-            message.classList.remove('d-none');
-            if (password.value === confirm.value) {
-                message.textContent = 'Hesla se shodují';
-                message.className = 'small mb-2 text-success';
-                submitBtn.disabled = false;
-            } else {
-                message.textContent = 'Hesla se neshodují!';
-                message.className = 'small mb-2 text-danger';
-                // Only disable if we are actually trying to set a new password
-                if (password.value !== '') {
-                    submitBtn.disabled = true;
-                } else {
-                    submitBtn.disabled = false;
-                }
-            }
-        }
-
-        password.addEventListener('input', validatePassword);
-        confirm.addEventListener('input', validatePassword);
+    if (password.value !== '' && password.value !== confirm.value) {
+        errorMsg.classList.remove('d-none');
+        return;
     }
+
+    errorMsg.classList.add('d-none');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Ukládám...';
+
+    const formData = new FormData(form);
+    fetch('api/api_settings_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            submitBtn.className = 'btn btn-success w-100 mb-3';
+            submitBtn.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Uloženo';
+            setTimeout(() => {
+                submitBtn.className = 'btn btn-primary w-100 mb-3';
+                submitBtn.innerHTML = originalContent;
+                submitBtn.disabled = false;
+                password.value = '';
+                confirm.value = '';
+            }, 2000);
+        } else {
+            alert('Chyba: ' + data.message);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalContent;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Inicializace
 });
 
 function handleTagSubmit(event, type) {

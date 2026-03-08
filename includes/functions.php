@@ -592,8 +592,9 @@ function getTodoReminders() {
 }
 
 function isAppLocked() {
-    $security_enabled = getSetting('security_enabled', '0');
-    if ($security_enabled !== '1') {
+    // Pokud není nastaveno heslo, považujeme aplikaci za nezabezpečenou (první spuštění)
+    $stored_password = getSetting('app_password');
+    if (empty($stored_password)) {
         return false;
     }
     
@@ -613,19 +614,38 @@ function checkApiSecurity() {
     }
 }
 
-function verifyAppPassword($password) {
-    if (empty($password)) return false;
-    $hashed_password = getSetting('app_password');
-    if (!$hashed_password) return false;
+function verifyLogin($username, $password) {
+    if (empty($username) || empty($password)) return false;
     
-    if (password_verify($password, $hashed_password)) {
+    $stored_username = getSetting('app_username', 'admin');
+    $stored_password = getSetting('app_password');
+    
+    // Pokud heslo v DB není (čistá instalace), nastavíme admin/admin
+    if (empty($stored_password)) {
+        $default_hash = password_hash('admin', PASSWORD_DEFAULT);
+        updateSetting('app_username', 'admin');
+        updateSetting('app_password', $default_hash);
+        updateSetting('security_enabled', '1');
+        $stored_username = 'admin';
+        $stored_password = $default_hash;
+    }
+
+    // Porovnání jména (case-insensitive) a hesla
+    if (strtolower($username) === strtolower($stored_username) && password_verify($password, $stored_password)) {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         $_SESSION['app_unlocked'] = true;
+        $_SESSION['username'] = $stored_username;
         return true;
     }
     return false;
+}
+
+// Pro zpětnou kompatibilitu, pokud by to někde zůstalo
+function verifyAppPassword($password) {
+    $username = getSetting('app_username', 'admin');
+    return verifyLogin($username, $password);
 }
 
 /**

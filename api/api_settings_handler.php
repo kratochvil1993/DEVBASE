@@ -90,19 +90,26 @@ if ($action === 'toggle_setting') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Chyba při operaci s jazykem.']);
     }
-} elseif ($action === 'save_gemini_config' || $action === 'save_openai_config' || $action === 'save_security' || $action === 'save_ai_provider' || $action === 'save_imap_config' || $action === 'save_smtp_config') {
+} elseif ($action === 'save_security') {
+    $success = true;
+    
+    // Uložit uživatelské jméno
+    if (isset($_POST['app_username']) && !empty($_POST['app_username'])) {
+        updateSetting('app_username', $_POST['app_username']);
+    }
+
+    // Uložit heslo jen pokud bylo zadáno
+    if (isset($_POST['app_password']) && !empty($_POST['app_password'])) {
+        $hashed = password_hash($_POST['app_password'], PASSWORD_DEFAULT);
+        updateSetting('app_password', $hashed);
+    }
+
+    echo json_encode(['status' => 'success', 'message' => 'Přihlašovací údaje uloženy.']);
+} elseif ($action === 'save_gemini_config' || $action === 'save_openai_config' || $action === 'save_ai_provider' || $action === 'save_imap_config' || $action === 'save_smtp_config') {
     $success = true;
     foreach ($_POST as $key => $value) {
-        if ($key === 'action' || $key === 'app_password_confirm') continue;
-        
-        $val = $value;
-        if ($key === 'app_password') {
-            if (empty($value)) continue;
-            $val = password_hash($value, PASSWORD_DEFAULT);
-            updateSetting('security_enabled', '1');
-        }
-
-        if (!updateSetting($key, $val)) {
+        if ($key === 'action') continue;
+        if (!updateSetting($key, $value)) {
             $success = false;
         }
     }
@@ -113,10 +120,11 @@ if ($action === 'toggle_setting') {
         echo json_encode(['status' => 'error', 'message' => 'Chyba při ukládání konfigurace.']);
     }
 } elseif ($action === 'reset_password') {
-    if (updateSetting('app_password', '') && updateSetting('security_enabled', '0')) {
-        echo json_encode(['status' => 'success', 'message' => 'Zámek smazán.']);
+    $default_hash = password_hash('admin', PASSWORD_DEFAULT);
+    if (updateSetting('app_username', 'admin') && updateSetting('app_password', $default_hash)) {
+        echo json_encode(['status' => 'success', 'message' => 'Resetováno na admin / admin.']);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Chyba při mazání hesla.']);
+        echo json_encode(['status' => 'error', 'message' => 'Chyba při resetu.']);
     }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Neznámá akce.']);

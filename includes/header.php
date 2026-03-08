@@ -6,14 +6,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $currentPage = basename($_SERVER['PHP_SELF']); 
 
-// Manual Lock
-if (isset($_GET['lock']) && $_GET['lock'] == '1') {
-    $_SESSION['app_unlocked'] = false;
-    unset($_SESSION['app_unlocked']);
-    header('Location: lock.php');
-    exit;
-}
-
 // Security Check
 if ($currentPage !== 'lock.php' && isAppLocked()) {
     header('Location: lock.php');
@@ -157,8 +149,8 @@ $stats = getGlobalStats();
                     <label class="form-check-label text-white small d-none d-sm-inline-block" for="themeToggle">Dark</label>
             </div>
 
-            <a href="?lock=1" id="headerLockIcon" class="btn btn-sm btn-link text-white-50 p-0 d-none d-md-block <?php echo getSetting('security_enabled', '0') == '1' ? '' : 'd-none'; ?>" title="Lock App">
-                <i class="bi bi-lock-fill fs-5"></i>
+            <a href="logout.php" id="headerLockIcon" class="btn btn-sm btn-link text-white-50 p-0 d-none d-md-block <?php echo !empty(getSetting('app_password')) ? '' : 'd-none'; ?>" title="Odhlásit se">
+                <i class="bi bi-box-arrow-right fs-5"></i>
             </a>
         </div>
 
@@ -207,6 +199,10 @@ $stats = getGlobalStats();
             </a>
             <a href="help.php" class="sidebar-link <?php echo $currentPage == 'help.php' ? 'active' : ''; ?>">
                 <i class="bi bi-question-circle me-2"></i> Nápověda
+            </a>
+            <div class="border-top border-light border-opacity-10 my-2"></div>
+            <a href="logout.php" class="sidebar-link text-danger">
+                <i class="bi bi-box-arrow-right me-2"></i> Odhlásit se
             </a>
 
         </div>
