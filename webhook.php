@@ -88,10 +88,34 @@ log_event('INFO', "Commit message: " . trim($message));
 
 
 // ---- Git pull ---------------------------------------------
-$cmd    = "cd " . escapeshellarg(PROJECT_PATH) . " && git pull origin " . escapeshellarg($branch) . " 2>&1";
+
+// Zkontroluj, zda je shell_exec dostupný
+if (!function_exists('shell_exec') || in_array('shell_exec', array_map('trim', explode(',', ini_get('disable_functions'))))) {
+    log_event('ERROR', 'shell_exec() je zakázán na tomto serveru – git pull nelze spustit');
+    http_response_code(500);
+    die('shell_exec disabled');
+}
+
+// HOME musí být nastaveno, aby git našel SSH klíče (~/.ssh)
+$home = posix_getpwuid(posix_getuid())['dir'] ?? '/var/www';
+
+$cmd = "HOME=" . escapeshellarg($home)
+     . " GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=no -o BatchMode=yes'"
+     . " git -C " . escapeshellarg(PROJECT_PATH)
+     . " pull origin " . escapeshellarg($branch)
+     . " 2>&1";
+
+log_event('GIT', "Spouštím: git -C " . PROJECT_PATH . " pull origin $branch");
+
 $output = shell_exec($cmd);
 
-log_event('GIT', "Výstup git pull:\n" . trim($output));
+if ($output === null) {
+    log_event('GIT', "CHYBA: shell_exec vrátil null – příkaz selhal nebo je zakázán");
+} elseif (trim($output) === '') {
+    log_event('GIT', "git pull proběhl bez výstupu (pravděpodobně already up to date)");
+} else {
+    log_event('GIT', "Výstup:\n" . trim($output));
+}
 
 
 // ---- Volitelný post-deploy příkaz -------------------------
