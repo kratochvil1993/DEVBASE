@@ -459,8 +459,8 @@ console.log('Hello World');
                     V **Nastavení** (sekce Editor a Zabezpečení) můžete zapnout ochranu heslem. Před první aktivací je nutné heslo nastavit a potvrdit (pro vyloučení překlepů). Pokud již máte heslo nastaveno, můžete funkci zámku libovolně vypínat a zapínat.
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Ruční uzamčení:</strong>
-                    Pokud máte zámek aktivní, v horní liště vedle Dark Mode přepínače uvidíte ikonu **zámku**. Kliknutím na ni se aplikace okamžitě uzamkne a přesměruje vás na zamykací obrazovku. Ideální, když odcházíte od počítače.
+                    <strong class="text-white d-block">Ruční odhlášení (Lock):</strong>
+                    Pokud máte zámek aktivní, v horní liště uvidíte ikonu **odhlášení (šipka ven z boxu)**. Kliknutím na ni se aplikace okamžitě odhlásí a přesměruje vás na zamykací obrazovku. Tato funkce je dostupná i v mobilním menu. Ideální, když odcházíte od počítače.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Skrytí obsahu (Zámek položek):</strong>
@@ -471,8 +471,8 @@ console.log('Hello World');
                     Hesla jsou v databázi uložena jako bezpečné hashe. Pokud heslo znáte a chcete jej změnit nebo zrušit, můžete tak učinit přímo v **Nastavení** pomocí tlačítka **Resetovat heslo**. Pokud heslo zapomenete, lze jej nouzově resetovat přímo v databázi (tabulka `settings`, klíč `security_enabled` na `0`).
                 </li>
                 <li class="mb-3">
-                    <strong class="text-white d-block">Offline bezpečnost:</strong>
-                    DevBase je navržena tak, aby nepotřebovala internet. Žádná vaše data ani hesla neopouštějí váš lokální stroj/Docker kontejner.
+                    <strong class="text-white d-block">Offline bezpečnost a PHP Info:</strong>
+                    DevBase je navržena tak, aby nepotřebovala internet. Žádná vaše data ani hesla neopouštějí váš lokální stroj. V **Nastavení** (Obecné) mají administrátoři přístup k detailnímu výpisu **PHP Konfigurace** (info.php) pro potřeby debugování prostředí.
                 </li>
             </ul>
         </div>
