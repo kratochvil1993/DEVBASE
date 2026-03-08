@@ -1,0 +1,13 @@
+{
+  "name": "kratochvil1993/devbase",
+  "description": "DevBase IMAP Sync",
+  "type": "project",
+  "require": {
+    "webklex/php-imap": "^6.2"
+  },
+  "config": {
+    "allow-plugins": {
+      "webklex/php-imap": true
+    }
+  }
+}
