@@ -7,8 +7,7 @@
 
 // --- KONFIGURACE -------------------------------------------
 
-// Stejný secret, který nastavíš v GitHubu (Settings → Webhooks → Secret)
-define('WEBHOOK_SECRET', 'PlzenJeNejlepsiMesto123');
+// Secret je vypnutý – webhook akceptuje requesty bez ověření podpisu
 
 // Absolutní cesta k projektu na serveru (kde se spustí git pull)
 define('PROJECT_PATH', dirname(__FILE__));
@@ -39,22 +38,15 @@ if (empty($payload_raw)) {
     die('Empty payload');
 }
 
-// ---- Ověření podpisu (HMAC SHA-256) -----------------------
-$signature_header = $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? '';
-
-if (empty($signature_header)) {
-    log_event('ERROR', 'Chybí X-Hub-Signature-256 hlavička');
-    http_response_code(401);
-    die('Unauthorized – missing signature');
-}
-
-$expected = 'sha256=' . hash_hmac('sha256', $payload_raw, WEBHOOK_SECRET);
-
-if (!hash_equals($expected, $signature_header)) {
-    log_event('ERROR', 'Neplatný podpis – pravděpodobně špatný secret nebo cizí request');
-    http_response_code(403);
-    die('Forbidden – invalid signature');
-}
+// ---- Ověření podpisu je VYPNUTO -------------------------
+// Pro zabezpečení na produkci nastav WEBHOOK_SECRET a odkomentuj blok níže:
+//
+// $signature_header = $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? '';
+// $expected = 'sha256=' . hash_hmac('sha256', $payload_raw, 'TVUJ_SECRET');
+// if (!hash_equals($expected, $signature_header)) {
+//     http_response_code(403); die('Forbidden – invalid signature');
+// }
+log_event('INFO', 'Příchozí webhook request (bez ověření podpisu)');
 
 // ---- Parsování payloadu -----------------------------------
 $payload = json_decode($payload_raw, true);
