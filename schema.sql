@@ -1,5 +1,4 @@
-CREATE DATABASE IF NOT EXISTS devbase;
-USE devbase;
+-- Schema definitions for DevBase (agnostic of database name)
 
 CREATE TABLE IF NOT EXISTS languages (
     id INT AUTO_INCREMENT PRIMARY KEY,

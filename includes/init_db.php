@@ -6,17 +6,16 @@ require_once __DIR__ . '/db.php';
 // Re-using the same variables from db.php (they are in the global scope since they were defined at the top of db.php)
 
 // Check if database exists by trying to select it
-if (!$conn->select_db($dbname)) {
-    // Database doesn't exist, connect without database to create it
-    $conn_init = new mysqli($host, $user, $pass);
-    if ($conn_init->connect_error) {
-        die("Connection failed: " . $conn_init->connect_error);
+if (!$conn->select_db(DB_NAME)) {
+    // Database doesn't exist, create it
+    if (!$conn->query("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")) {
+        die("Chyba při vytváření databáze: " . $conn->error);
     }
-    $conn_init->query("CREATE DATABASE IF NOT EXISTS $dbname CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-    $conn_init->close();
     
     // Now select it on the main connection
-    $conn->select_db($dbname);
+    if (!$conn->select_db(DB_NAME)) {
+        die("Chyba při výběru databáze: " . $conn->error);
+    }
 }
 
 // Ensure charset is set for schema import
