@@ -1,5 +1,9 @@
 <?php
 require_once '../includes/functions.php';
+require_once '../vendor/autoload.php';
+
+use Webklex\PHPIMAP\ClientManager;
+
 checkApiSecurity();
 
 header('Content-Type: application/json');
@@ -10,37 +14,34 @@ $imap_user = getSetting('imap_user');
 $imap_password = getSetting('imap_password');
 $imap_encryption = getSetting('imap_encryption', 'ssl');
 
-// Test IMAP
 if (empty($imap_server) || empty($imap_user) || empty($imap_password)) {
     echo json_encode(['status' => 'error', 'message' => 'Chybějící IMAP konfigurace. Vyplňte prosím server, uživatele a heslo.']);
     exit;
 }
 
-if (!function_exists('imap_open')) {
-    echo json_encode(['status' => 'error', 'message' => 'PHP rozšíření IMAP není na tomto serveru nainstalováno.']);
-    exit;
+try {
+    $cm = new ClientManager();
+    $client = $cm->make([
+        'host'          => $imap_server,
+        'port'          => $imap_port,
+        'encryption'    => $imap_encryption === 'none' ? false : $imap_encryption,
+        'validate_cert' => false,
+        'username'      => $imap_user,
+        'password'      => $imap_password,
+        'protocol'      => 'imap'
+    ]);
+
+    $client->connect();
+    $folder = $client->getFolder("INBOX");
+    $count = $folder->messages()->unseen()->count();
+
+    echo json_encode([
+        'status' => 'success',
+        'message' => "Spojení s IMAP serverem bylo úspěšné! Ve schránce bylo nalezeno $count nových (nepřečtených) zpráv."
+    ]);
+
+    $client->disconnect();
+} catch (\Exception $e) {
+    echo json_encode(['status' => 'error', 'message' => "Nepodařilo se připojit k IMAP serveru. Chyba: " . $e->getMessage()]);
 }
 
-// Build mailbox string
-$ssl = $imap_encryption === 'ssl' ? '/ssl' : ($imap_encryption === 'tls' ? '/tls' : '/notls');
-$mailbox = "{" . $imap_server . ":" . $imap_port . "/imap" . $ssl . "}INBOX";
-
-// Suppress errors during connection attempt
-$mbox = @imap_open($mailbox, $imap_user, $imap_password, OP_HALFOPEN);
-
-if ($mbox) {
-    try {
-        $check = imap_check($mbox);
-        $count = $check->Nmsgs;
-        echo json_encode([
-            'status' => 'success',
-            'message' => "Spojení s IMAP serverem bylo úspěšné! Ve schránce bylo nalezeno $count zpráv."
-        ]);
-        imap_close($mbox);
-    } catch (Exception $e) {
-        echo json_encode(['status' => 'error', 'message' => "Chyba při kontrole schránky: " . $e->getMessage()]);
-    }
-} else {
-    $error = imap_last_error();
-    echo json_encode(['status' => 'error', 'message' => "Nepodařilo se připojit k IMAP serveru. Chyba: $error"]);
-}
