@@ -251,12 +251,14 @@ document.addEventListener("DOMContentLoaded", () => {
     Digit3: "notes_drafts.php",
     Digit4: "notes.php",
     Digit5: "todo.php",
+    Digit6: "inbox.php",
     // Fallback for some layouts
     Numpad1: "index.php",
     Numpad2: "code.php",
     Numpad3: "notes_drafts.php",
     Numpad4: "notes.php",
     Numpad5: "todo.php",
+    Numpad6: "inbox.php",
   };
 
   // Global Keyboard Shortcuts

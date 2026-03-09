@@ -88,20 +88,20 @@ include 'includes/header.php';
                     </div>                   
                 </div>
                 <div class="d-flex gap-2 align-items-center flex-wrap w-100 justify-content-start justify-content-lg-end">
-                    <div id="saveToast" class="badge bg-success d-none align-items-center px-3 py-2 me-2">
+                    <div id="saveToast" class="badge badge-success-glass d-none align-items-center px-3 py-2 me-2">
                         <i class="bi bi-check-circle me-1"></i> Uloženo!
                     </div>
-                    <div id="moveToast" class="badge bg-info d-none align-items-center px-3 py-2 me-2">
+                    <div id="moveToast" class="badge badge-info-glass d-none align-items-center px-3 py-2 me-2">
                         <i class="bi bi-journal-check me-1"></i> Přesunuto do poznámek!
                     </div>
                     
                     <?php if (isset($_GET['saved'])): ?>
-                        <div class="badge bg-success d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
+                        <div class="badge badge-success-glass d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
                             <i class="bi bi-check-circle me-1"></i> Uloženo!
                         </div>
                     <?php endif; ?>
                     <?php if (isset($_GET['note_moved'])): ?>
-                        <div class="badge bg-info d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
+                        <div class="badge badge-info-glass d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
                             <i class="bi bi-journal-check me-1"></i> Přesunuto do poznámek!
                         </div>
                     <?php endif; ?>
@@ -191,7 +191,7 @@ include 'includes/header.php';
             <?php endif; ?>
 
             <!-- AI Insight Box -->
-            <div id="aiInsightBox" class="p-3 rounded-0 border-start border-end d-none" style="background: rgba(10, 10, 15, 0.6); border-color: rgba(142, 84, 233, 0.3) !important; backdrop-filter: blur(5px);">
+            <div id="aiInsightBox" class="p-3 d-none ai-insight-box m-3">
                 <div class="d-flex align-items-center mb-2">
                     <i class="bi bi-robot text-ai me-2"></i>
                     <span class="small fw-bold text-white-50 text-uppercase tracking-wider">AI Assistant</span>
@@ -378,14 +378,6 @@ include 'includes/header.php';
 .text-ai {
     color: #a78bfa;
 }
-.flash-purple {
-    animation: purpleFlash 2s ease;
-}
-@keyframes purpleFlash {
-    0% { box-shadow: 0 0 0px rgba(142, 84, 233, 0); }
-    50% { box-shadow: 0 0 20px rgba(142, 84, 233, 0.5); border-color: rgba(142, 84, 233, 0.8) !important; }
-    100% { box-shadow: 0 0 0px rgba(142, 84, 233, 0); }
-}
 .btn-copy {
     position: absolute;
     top: 70px;
@@ -506,6 +498,11 @@ function aiAction(action) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
+            // Visual feedback when text appears
+            insightBox.classList.remove('flash-purple');
+            void insightBox.offsetWidth;
+            insightBox.classList.add('flash-purple');
+
             if (action === 'structure_note') {
                 // For structure, we show a button to apply it
                 typeWriter(data.answer, insightContent, () => {
@@ -540,10 +537,7 @@ function aiAction(action) {
                 typeWriter(data.answer, insightContent);
             }
             
-            // Visual feedback
-            insightBox.classList.remove('flash-purple');
-            void insightBox.offsetWidth;
-            insightBox.classList.add('flash-purple');
+            // Visual feedback - moved to start of success
         } else {
             insightContent.innerHTML = '<div class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i>' + data.message + '</div>';
         }

@@ -98,22 +98,22 @@ include 'includes/header.php';
                     <div id="moveToast" class="badge bg-info d-none align-items-center px-3 py-2 me-2">
                         <i class="bi bi-journal-check me-1"></i> Přesunuto do poznámek!
                     </div>
-                    <div id="snippetToast" class="badge bg-primary d-none align-items-center px-3 py-2 me-2">
+                    <div id="snippetToast" class="badge badge-primary-glass d-none align-items-center px-3 py-2 me-2">
                         <i class="bi bi-code-square me-1"></i> Přesunuto do snippetů!
                     </div>
                     
                     <?php if (isset($_GET['saved'])): ?>
-                        <div class="badge bg-success d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
+                        <div class="badge badge-success-glass d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
                             <i class="bi bi-check-circle me-1"></i> Uloženo!
                         </div>
                     <?php endif; ?>
                     <?php if (isset($_GET['note_moved'])): ?>
-                        <div class="badge bg-info d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
+                        <div class="badge badge-info-glass d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
                             <i class="bi bi-journal-check me-1"></i> Přesunuto do poznámek!
                         </div>
                     <?php endif; ?>
                     <?php if (isset($_GET['snippet_moved'])): ?>
-                        <div class="badge bg-primary d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
+                        <div class="badge badge-primary-glass d-flex align-items-center px-3 py-2 me-2 legacy-toast" style="animation: fadeOut 3s forwards;">
                             <i class="bi bi-code-square me-1"></i> Přesunuto do snippetů!
                         </div>
                     <?php endif; ?>
@@ -209,7 +209,7 @@ include 'includes/header.php';
             </div>
 
             <!-- AI Insight Box -->
-            <div id="aiInsightBox" class="p-3 rounded-0 border-start border-end d-none" style="background: rgba(10, 10, 15, 0.6); border-color: rgba(142, 84, 233, 0.3) !important; backdrop-filter: blur(5px);">
+            <div id="aiInsightBox" class="p-3 d-none ai-insight-box m-3">
                 <div class="d-flex align-items-center mb-2">
                     <i class="bi bi-robot text-ai me-2"></i>
                     <span class="small fw-bold text-white-50 text-uppercase tracking-wider">AI Assistant</span>
@@ -458,14 +458,6 @@ li.CodeMirror-hint-active {
     cursor: pointer;
 }
 
-.flash-purple {
-    animation: purpleFlash 2s ease;
-}
-@keyframes purpleFlash {
-    0% { box-shadow: 0 0 0px rgba(142, 84, 233, 0); }
-    50% { box-shadow: 0 0 20px rgba(142, 84, 233, 0.5); border-color: rgba(142, 84, 233, 0.8) !important; }
-    100% { box-shadow: 0 0 0px rgba(142, 84, 233, 0); }
-}
 .btn-send-to {
     background: rgba(13, 202, 240, 0.15);
     border: 1px solid rgba(13, 202, 240, 0.4);
@@ -1108,7 +1100,7 @@ function aiAction(action) {
     if (aiTypingInterval) clearInterval(aiTypingInterval);
     
     insightBox.classList.remove('d-none');
-    insightContent.innerHTML = '<div class="d-flex align-items-center gap-2 py-2"><div class="spinner-border spinner-border-sm text-ai" role="status"></div><span class="text-white-50">AI zpracovává kód...</span></div>';
+    insightContent.innerHTML = '<div class="d-flex align-items-center gap-2 py-2"><div class="spinner-border spinner-border-sm text-ai" role="status"></div><span class="text-white-50">AI přemýšlí...</span></div>';
     aiBtn.disabled = true;
 
     fetch('api/api_ai_handler.php', {
@@ -1121,6 +1113,11 @@ function aiAction(action) {
         if (data.status === 'success') {
             const isFormattingAction = action === 'minify_code' || action === 'beautify_code';
             
+            // Visual feedback when text appears
+            insightBox.classList.remove('flash-purple');
+            void insightBox.offsetWidth;
+            insightBox.classList.add('flash-purple');
+
             typeWriter(data.answer, insightContent, () => {
                 if (isFormattingAction) {
                     const btn = document.createElement('button');
@@ -1136,9 +1133,6 @@ function aiAction(action) {
                     insightContent.appendChild(btn);
                 }
             });
-            insightBox.classList.remove('flash-purple');
-            void insightBox.offsetWidth;
-            insightBox.classList.add('flash-purple');
         } else {
             insightContent.innerHTML = '<div class="text-danger p-2"><i class="bi bi-exclamation-triangle me-2"></i>' + data.message + '</div>';
         }

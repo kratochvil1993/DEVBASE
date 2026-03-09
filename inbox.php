@@ -65,9 +65,9 @@ include 'includes/header.php';
                                 <!-- Type Icon / Badge -->
                                 <div class="flex-shrink-0 d-none d-sm-block">
                                     <div class="badge <?php 
-                                        echo $item['target_type'] == 'note' ? 'bg-primary' : 
-                                            ($item['target_type'] == 'todo' ? 'bg-success' : 
-                                            ($item['target_type'] == 'draft' ? 'bg-info' : 'bg-secondary')); 
+                                        echo $item['target_type'] == 'note' ? 'badge-primary-glass' : 
+                                            ($item['target_type'] == 'todo' ? 'badge-success-glass' : 
+                                            ($item['target_type'] == 'draft' ? 'badge-info-glass' : 'badge-secondary-glass')); 
                                         ?> py-2 px-3 fw-normal" style="min-width: 80px;">
                                         <?php echo $item['target_type'] == 'unknown' ? 'Bez tagu' : '@' . $item['target_type']; ?>
                                     </div>
@@ -77,7 +77,7 @@ include 'includes/header.php';
                                 <div class="flex-grow-1 overflow-hidden">
                                     <div class="d-flex align-items-center gap-2 mb-1">
                                         <?php if ($item['is_imported']): ?>
-                                            <i class="bi bi-check-circle-fill text-success" title="Úspěšně vytvořeno"></i>
+                                            <i class="bi bi-check-circle-fill icon-success-glow" title="Úspěšně vytvořeno"></i>
                                         <?php endif; ?>
                                         <h5 class="text-white mb-0 fs-6 fw-bold text-truncate"><?php echo htmlspecialchars($item['subject']); ?></h5>
                                     </div>
@@ -100,14 +100,14 @@ include 'includes/header.php';
                                 <!-- Actions -->
                                 <div class="d-flex gap-2 align-items-center flex-shrink-0">
                                     <?php if (!$item['is_imported']): ?>
-                                    <div class="btn-group d-none d-md-flex">
-                                        <button class="btn btn-sm btn-outline-primary py-1 px-2" onclick="manualImport(<?php echo $item['id']; ?>, 'note', event)" title="Importovat jako Poznámku">
+                                    <div class="d-none d-md-flex gap-2">
+                                        <button class="btn btn-sm btn-primary-glass py-1 px-2" onclick="manualImport(<?php echo $item['id']; ?>, 'note', event)" title="Importovat jako Poznámku">
                                             <i class="bi bi-sticky"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-success py-1 px-2" onclick="manualImport(<?php echo $item['id']; ?>, 'todo', event)" title="Importovat jako Úkol">
+                                        <button class="btn btn-sm btn-success-glass py-1 px-2" onclick="manualImport(<?php echo $item['id']; ?>, 'todo', event)" title="Importovat jako Úkol">
                                             <i class="bi bi-check2-square"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-info py-1 px-2" onclick="manualImport(<?php echo $item['id']; ?>, 'draft', event)" title="Importovat jako Draft">
+                                        <button class="btn btn-sm btn-info-glass py-1 px-2" onclick="manualImport(<?php echo $item['id']; ?>, 'draft', event)" title="Importovat jako Draft">
                                             <i class="bi bi-file-earmark-text"></i>
                                         </button>
                                     </div>
@@ -175,16 +175,18 @@ function showInboxDetail(item) {
     
     const badgeContainer = document.getElementById('modalBadge');
     const type = item.target_type;
-    const badgeClass = type === 'note' ? 'bg-primary' : (type === 'todo' ? 'bg-success' : (type === 'draft' ? 'bg-info' : 'bg-secondary'));
+    const badgeClass = type === 'note' ? 'badge-primary-glass' : (type === 'todo' ? 'badge-success-glass' : (type === 'draft' ? 'badge-info-glass' : 'badge-secondary-glass'));
     badgeContainer.innerHTML = `<span class="badge ${badgeClass} py-2 px-3 fw-normal">@${type}</span>`;
     
     const footer = document.getElementById('modalFooter');
     if (!item.is_imported) {
         footer.innerHTML = `
-            <button class="btn btn-outline-primary" onclick="manualImport(${item.id}, 'note', event)">+ Poznámka</button>
-            <button class="btn btn-outline-success" onclick="manualImport(${item.id}, 'todo', event)">+ Úkol</button>
-            <button class="btn btn-outline-info" onclick="manualImport(${item.id}, 'draft', event)">+ Draft</button>
-            <button class="btn btn-outline-light ms-auto" data-bs-dismiss="modal">Zavřít</button>
+            <div class="d-flex gap-2 w-100 align-items-center">
+                <button class="btn btn-primary-glass" onclick="manualImport(${item.id}, 'note', event)">+ Poznámka</button>
+                <button class="btn btn-success-glass" onclick="manualImport(${item.id}, 'todo', event)">+ Úkol</button>
+                <button class="btn btn-info-glass" onclick="manualImport(${item.id}, 'draft', event)">+ Draft</button>
+                <button class="btn btn-outline-light ms-auto" data-bs-dismiss="modal">Zavřít</button>
+            </div>
         `;
     } else {
         footer.innerHTML = '<button class="btn btn-outline-light ms-auto" data-bs-dismiss="modal">Zavřít</button>';

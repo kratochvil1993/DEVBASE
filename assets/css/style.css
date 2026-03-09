@@ -397,6 +397,29 @@ pre.ql-syntax {
   transform: translateY(-1px);
 }
 
+.btn-edit-order:active {
+  transform: translateY(0);
+}
+
+.btn-primary-glass {
+  background: rgba(71, 118, 230, 0.15);
+  border: 1px solid rgba(71, 118, 230, 0.4);
+  color: #fff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary-glass:hover {
+  background: rgba(71, 118, 230, 0.3);
+  border-color: rgba(71, 118, 230, 0.6);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(71, 118, 230, 0.2);
+}
+
+.btn-primary-glass:active {
+  transform: translateY(0);
+}
+
 .btn-edit-order {
   background: rgba(71, 118, 230, 0.15);
   border: 1px solid rgba(71, 118, 230, 0.4);
@@ -413,6 +436,44 @@ pre.ql-syntax {
 }
 
 .btn-edit-order:active {
+  transform: translateY(0);
+}
+
+.btn-success-glass {
+  background: rgba(0, 229, 130, 0.15);
+  border: 1px solid rgba(0, 229, 130, 0.4);
+  color: #fff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-success-glass:hover {
+  background: rgba(0, 229, 130, 0.3);
+  border-color: rgba(0, 229, 130, 0.6);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 229, 130, 0.2);
+}
+
+.btn-success-glass:active {
+  transform: translateY(0);
+}
+
+.btn-info-glass {
+  background: rgba(13, 202, 240, 0.15);
+  border: 1px solid rgba(13, 202, 240, 0.4);
+  color: #fff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-info-glass:hover {
+  background: rgba(13, 202, 240, 0.3);
+  border-color: rgba(13, 202, 240, 0.6);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(13, 202, 240, 0.2);
+}
+
+.btn-info-glass:active {
   transform: translateY(0);
 }
 
@@ -445,6 +506,35 @@ pre.ql-syntax {
 
 .btn-ai:active {
   transform: none;
+}
+
+.badge-primary-glass {
+  background: rgba(71, 118, 230, 0.15);
+  border: 1px solid rgba(71, 118, 230, 0.4);
+  color: #fff;
+}
+
+.badge-success-glass {
+  background: rgba(0, 229, 130, 0.15);
+  border: 1px solid rgba(0, 229, 130, 0.4);
+  color: #fff;
+}
+
+.badge-info-glass {
+  background: rgba(13, 202, 240, 0.15);
+  border: 1px solid rgba(13, 202, 240, 0.4);
+  color: #fff;
+}
+
+.badge-secondary-glass {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.icon-success-glow {
+  color: #00e582 !important;
+  text-shadow: 0 0 8px rgba(0, 229, 130, 0.4);
 }
 
 /* Delete buttons and links jump prevention */
@@ -1239,15 +1329,17 @@ h6 i.bi-pin-angle-fill {
 /* AI Actions */
 @keyframes flash-purple-glow {
   0% {
-    box-shadow: 0 0 0 0 rgba(142, 84, 233, 0);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
   }
-  30% {
-    box-shadow: 0 0 40px 10px rgba(142, 84, 233, 0.5);
+  40% {
+    box-shadow:
+      0 0 60px 15px rgba(142, 84, 233, 0.7),
+      0 10px 40px rgba(0, 0, 0, 0.6);
     border-color: rgba(142, 84, 233, 1) !important;
-    background-color: rgba(142, 84, 233, 0.15) !important;
+    background-color: rgba(142, 84, 233, 0.2) !important;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(142, 84, 233, 0);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
   }
 }
 
@@ -1409,4 +1501,12 @@ h6 i.bi-pin-angle-fill {
     align-items: center;
     margin-left: 0.2rem;
   }
+}
+
+.ai-insight-box {
+  background: rgba(15, 15, 25, 0.8) !important;
+  border: 1px solid rgba(142, 84, 233, 0.4) !important;
+  border-radius: 15px !important;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }

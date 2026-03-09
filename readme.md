@@ -40,7 +40,7 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 
 Pro maximální efektivitu můžete používat tyto systémové zkratky:
 
-- **Option + 1, 2, 3, 4, 5**: Rychlá navigace mezi hlavními sekcemi (Snippety, Code Drafts, Note Drafts, Poznámky, TODO).
+- **Option + 1, 2, 3, 4, 5, 6**: Rychlá navigace mezi hlavními sekcemi (Snippety, Code Drafts, Note Drafts, Poznámky, TODO, Inbox).
 - **Option + F** (nebo **Alt + F**): Rychlé zaměření vyhledávacího pole v aktuální sekci (Snippety / Poznámky).
 - **Option + N** (nebo **Alt + N**): Okamžité otevření okna pro přidání nového snippetu/poznámky nebo vytvoření nového draftu (v sekcích Drafts).
 - **Option + L** (v sekci Code Drafts): Rychlé zaměření kurzoru do editoru kódu.

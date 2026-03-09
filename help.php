@@ -176,6 +176,9 @@ console.log('Hello World');
                 <li class="mb-2">
                     <span class="badge bg-primary me-2">Option + 5</span> nebo <span class="badge bg-primary me-2">Alt + 5</span> <strong class="text-white ms-2">TODO:</strong> Otevře správu úkolů.
                 </li>
+                <li class="mb-2">
+                    <span class="badge bg-primary me-2">Option + 6</span> nebo <span class="badge bg-primary me-2">Alt + 6</span> <strong class="text-white ms-2">Inbox:</strong> Přejde na e-mailový inbox.
+                </li>
             </ul>
 
             <h6 class="text-white-50 small text-uppercase fw-bold mb-3" style="font-size: 0.7rem; letter-spacing: 1px;">Akce a Vyhledávání</h6>
