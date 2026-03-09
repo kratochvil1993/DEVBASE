@@ -13,6 +13,9 @@ if ($currentPage !== 'lock.php' && isAppLocked()) {
 }
 
 $stats = getGlobalStats();
+
+// Uvolni session zámek – session data jsou načtena, zbytek stránky může běžet paralelně s dalšími requesty
+session_write_close();
 ?>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">

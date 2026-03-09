@@ -366,19 +366,35 @@ function deleteNote($id) {
 
 function getSetting($key, $default = null) {
     global $conn;
-    $key = $conn->real_escape_string($key);
-    $result = $conn->query("SELECT setting_value FROM settings WHERE setting_key = '$key'");
-    if ($row = $result->fetch_assoc()) {
-        return $row['setting_value'];
+
+    // Načti všechna nastavení najednou při prvním volání (1 SQL místo N)
+    if (!isset($GLOBALS['_settings_cache'])) {
+        $GLOBALS['_settings_cache'] = [];
+        $result = $conn->query("SELECT setting_key, setting_value FROM settings");
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $GLOBALS['_settings_cache'][$row['setting_key']] = $row['setting_value'];
+            }
+        }
     }
-    return $default;
+
+    return array_key_exists($key, $GLOBALS['_settings_cache'])
+        ? $GLOBALS['_settings_cache'][$key]
+        : $default;
 }
 
 function updateSetting($key, $value) {
     global $conn;
-    $key = $conn->real_escape_string($key);
-    $value = $conn->real_escape_string($value);
-    return $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('$key', '$value') ON DUPLICATE KEY UPDATE setting_value = '$value'");
+    $key_escaped   = $conn->real_escape_string($key);
+    $value_escaped = $conn->real_escape_string($value);
+    $result = $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('$key_escaped', '$value_escaped') ON DUPLICATE KEY UPDATE setting_value = '$value_escaped'");
+
+    // Aktualizuj cache po zápisu – žádný extra SQL dotaz
+    if ($result) {
+        $GLOBALS['_settings_cache'][$key] = $value;
+    }
+
+    return $result;
 }
 
 // Table structure is now handled by schema.sql
