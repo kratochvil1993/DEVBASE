@@ -528,16 +528,7 @@ include 'includes/header.php';
                     <select name="gemini_model" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
                         <?php 
                         $currentModel = getSetting('gemini_model', 'gemini-2.5-flash-lite');
-                        $models = [
-                            'gemini-flash-latest' => 'Gemini Flash (Aktuální verze)',
-                            'gemini-3.1-pro-preview' => 'Gemini 3.1 Pro (Preview)',
-                            'gemini-3.1-flash-lite-preview' => 'Gemini 3.1 Flash Lite (Preview)',
-                            'gemini-3-pro-preview' => 'Gemini 3 Pro (Preview)',
-                            'gemini-3-flash-preview' => 'Gemini 3 Flash (Preview)',
-                            'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash Lite (Výchozí)',
-                            'gemini-2.5-flash' => 'Gemini 2.5 Flash',
-                            'gemini-2.5-pro' => 'Gemini 2.5 Pro',
-                        ];
+                        $models = getAvailableAiModels('gemini');
                         foreach ($models as $val => $label): ?>
                             <option value="<?php echo $val; ?>" class="bg-dark text-white" <?php echo $currentModel == $val ? 'selected' : ''; ?>>
                                 <?php echo $label; ?>
@@ -591,13 +582,7 @@ include 'includes/header.php';
                     <select name="openai_model" class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none">
                         <?php 
                         $currentGptModel = getSetting('openai_model', 'gpt-4o-mini');
-                        $gptModels = [
-                            'gpt-5.2' => 'GPT-5.2 Standard',
-                            'gpt-4o-mini' => 'GPT-4o Mini (Doporučeno)',
-                            'gpt-4o' => 'GPT-4o',
-                            'o1-mini' => 'o1 Mini',
-                            'gpt-4-turbo' => 'GPT-4 Turbo',
-                        ];
+                        $gptModels = getAvailableAiModels('openai');
                         foreach ($gptModels as $val => $label): ?>
                             <option value="<?php echo $val; ?>" class="bg-dark text-white" <?php echo $currentGptModel == $val ? 'selected' : ''; ?>>
                                 <?php echo $label; ?>

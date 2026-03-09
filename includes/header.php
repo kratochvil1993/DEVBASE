@@ -139,6 +139,27 @@ session_write_close();
                             </select>
                         </div>
                     </div>
+                    <?php if (getSetting('ai_enabled', '0') == '1'): ?>
+                    <div class="p-3 pt-0">
+                        <div class="mb-0">
+                            <?php 
+                            $provider = getSetting('ai_provider', 'gemini');
+                            $modelKey = ($provider === 'openai') ? 'openai_model' : 'gemini_model';
+                            $currentModel = getSetting($modelKey);
+                            $models = getAvailableAiModels($provider);
+                            ?>
+                            <label class="form-label text-white-50 small fw-bold mb-2">AI Model (<?php echo ($provider === 'openai' ? 'OpenAI' : 'Gemini'); ?>)</label>
+                            <select class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                    onchange="updateQuickSetting('<?php echo $modelKey; ?>', this.value)">
+                                <?php foreach ($models as $val => $label): ?>
+                                    <option value="<?php echo $val; ?>" class="bg-dark text-white" <?php echo $currentModel == $val ? 'selected' : ''; ?>>
+                                        <?php echo $label; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                     <div class="p-2 border-top border-light border-opacity-10 text-center">
                         <a href="settings.php" class="btn btn-sm btn-link-settings w-100 py-1">
                             <i class="bi bi-gear me-1"></i> Přejít do nastavení
@@ -323,6 +344,12 @@ function updateQuickSetting(key, val) {
                 
                 // If we are on settings page, update the select there too
                 const settingsSelect = document.querySelector('select[name="ui_font_size"]');
+                if (settingsSelect) {
+                    settingsSelect.value = val;
+                }
+            }
+            if (key === 'openai_model' || key === 'gemini_model') {
+                const settingsSelect = document.querySelector('select[name="' + key + '"]');
                 if (settingsSelect) {
                     settingsSelect.value = val;
                 }

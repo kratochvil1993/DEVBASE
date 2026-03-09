@@ -253,7 +253,7 @@ console.log('Hello World');
                         <li><span class="badge bg-primary me-2">Ctrl + Space</span> <strong>Našeptávání</strong></li>
                         <li><span class="badge bg-primary me-2">Option + N</span> <strong>Nový draft</strong></li>
                         <li><span class="badge bg-primary me-2">Option + W</span> <strong>Zavřit draft</strong></li>
-                        <li><span class="badge bg-primary me-2">Option + ← / →</span> <strong>Přepínat drafty</strong></li>
+                        <li><span class="badge bg-primary me-2">Option + ↑ / ↓</span> <strong>Přepínat drafty</strong></li>
                     </ul>
                 </li>
                 <li class="mb-3">

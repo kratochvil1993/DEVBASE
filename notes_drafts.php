@@ -950,15 +950,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Option + Right/Left arrow for tab switching
-        if (e.altKey && (e.code === 'ArrowRight' || e.code === 'ArrowLeft')) {
+        // Option + Up/Down arrow for tab switching
+        if (e.altKey && (e.code === 'ArrowDown' || e.code === 'ArrowUp')) {
             const tabItems = Array.from(document.querySelectorAll('.nav-tab-item'));
             const activeIndex = tabItems.findIndex(item => item.classList.contains('active'));
             
             if (activeIndex !== -1 && tabItems.length > 1) {
                 e.preventDefault();
                 let nextIndex;
-                if (e.code === 'ArrowRight') {
+                if (e.code === 'ArrowDown') {
                     nextIndex = (activeIndex + 1) % tabItems.length;
                 } else {
                     nextIndex = (activeIndex - 1 + tabItems.length) % tabItems.length;

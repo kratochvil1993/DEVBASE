@@ -45,7 +45,7 @@ Pro maximální efektivitu můžete používat tyto systémové zkratky:
 - **Option + N** (nebo **Alt + N**): Okamžité otevření okna pro přidání nového snippetu/poznámky nebo vytvoření nového draftu (v sekcích Drafts).
 - **Option + L** (v sekci Code Drafts): Rychlé zaměření kurzoru do editoru kódu.
 - **Option + W** (v sekcích Drafts): Zavřít aktuální draft.
-- **Option + ← / →** (v sekcích Drafts): Přepínání mezi taby draftů.
+- **Option + ↑ / ↓** (v sekcích Drafts): Přepínání mezi taby draftů.
 - **Ctrl + S** (v editorech a modálech): Rychlé uložení rozpracovaného obsahu nebo odeslání formuláře.
 
 ## Instalace a Spuštění

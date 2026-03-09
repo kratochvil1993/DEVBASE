@@ -1307,4 +1307,30 @@ function importIntoItemFromInbox($id, $target_type) {
     }
     return false;
 }
+
+/**
+ * Vrátí seznam dostupných modelů pro daného poskytovatele.
+ */
+function getAvailableAiModels($provider) {
+    if ($provider === 'openai') {
+        return [
+            'gpt-4o-mini' => 'GPT-4o Mini (Doporučeno)',
+            'gpt-4o' => 'GPT-4o',
+            'o1-mini' => 'o1 Mini',
+            'gpt-4-turbo' => 'GPT-4 Turbo',
+            'gpt-5.2' => 'GPT-5.2 Standard',
+        ];
+    } else {
+        return [
+            'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash Lite (Výchozí)',
+            'gemini-2.5-flash' => 'Gemini 2.5 Flash',
+            'gemini-2.5-pro' => 'Gemini 2.5 Pro',
+            'gemini-flash-latest' => 'Gemini Flash (Aktuální verze)',
+            'gemini-3.1-pro-preview' => 'Gemini 3.1 Pro (Preview)',
+            'gemini-3.1-flash-lite-preview' => 'Gemini 3.1 Flash Lite (Preview)',
+            'gemini-3-pro-preview' => 'Gemini 3 Pro (Preview)',
+            'gemini-3-flash-preview' => 'Gemini 3 Flash (Preview)',
+        ];
+    }
+}
 ?>
