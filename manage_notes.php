@@ -453,7 +453,7 @@ function copyNoteContent(btn) {
                     <button class="btn btn-sm btn-ai rounded px-3 dropdown-toggle shadow-none border-opacity-25" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="aiNoteBtn">
                         <i class="bi bi-robot me-1"></i> AI
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10 mt-2 shadow-lg">
+                    <ul class="dropdown-menu dropdown-menu-dark glass-dropdown-ai border-light border-opacity-10 mt-2 shadow-lg">
                         <li>
                             <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiNoteAction('summarize_note')">
                                 <i class="bi bi-list-task me-2 text-ai"></i> Shrnutí (body)

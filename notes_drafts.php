@@ -111,7 +111,7 @@ include 'includes/header.php';
                         <button class="btn btn-ai px-3 dropdown-toggle text-white border-opacity-25 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="aiBtn">
                             <i class="bi bi-robot me-0 me-lg-2"></i> <span class="d-none d-lg-inline">AI</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-dark glass-card border-light border-opacity-10 mt-2 shadow-lg">
+                        <ul class="dropdown-menu dropdown-menu-dark glass-dropdown-ai border-light border-opacity-10 mt-2 shadow-lg">
                             <li>
                                 <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('structure_note')">
                                     <i class="bi bi-layout-text-sidebar-reverse me-2 text-ai"></i> Strukturovat poznámku
