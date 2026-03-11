@@ -207,6 +207,18 @@ pre.ql-syntax {
   white-space: pre !important; /* Ensure content is actually code-like */
 }
 
+/* Inline code tags (e.g. from AI) inside editor and AI box */
+.ql-editor code,
+.ai-insight-box code {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #00e582 !important; /* DevBase Green/Cyan accent */
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  font-family: inherit !important;
+  font-size: 0.9em !important;
+}
+
 /* Modal specific pre/code formatting */
 .modal pre {
   white-space: pre-wrap !important;
