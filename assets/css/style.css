@@ -1509,4 +1509,5 @@ h6 i.bi-pin-angle-fill {
   border-radius: 15px !important;
   backdrop-filter: blur(15px);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  position: relative;
 }

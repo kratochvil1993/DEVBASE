@@ -195,6 +195,9 @@ include 'includes/header.php';
                 <div class="d-flex align-items-center mb-2">
                     <i class="bi bi-robot text-ai me-2"></i>
                     <span class="small fw-bold text-white-50 text-uppercase tracking-wider">AI Assistant</span>
+                    <button class="btn btn-sm btn-outline-light copy-btn" onclick="copyToClipboard(this, 'aiInsightContent')" style="top: 10px; right: 45px;">
+                        copy
+                    </button>
                     <button type="button" class="btn-close btn-close-white ms-auto small" style="font-size: 0.5rem;" onclick="document.getElementById('aiInsightBox').classList.add('d-none')"></button>
                 </div>
                 <div id="aiInsightContent" class="text-white small lh-base" style="max-height: 400px; overflow-y: auto; white-space: pre-wrap;"></div>

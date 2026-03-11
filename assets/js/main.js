@@ -311,9 +311,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Auto-copy selection in preview modals
   document.addEventListener("mouseup", (e) => {
-    // Only trigger if inside a preview modal
-    const previewModal = e.target.closest("#viewSnippetModal, #viewNoteModal");
-    if (!previewModal) return;
+    // Only trigger if inside a preview modal or AI insight box
+    const container = e.target.closest("#viewSnippetModal, #viewNoteModal, .ai-insight-box");
+    if (!container) return;
 
     // Ignore if clicking on interactive elements or inside an editor
     if (e.target.closest("button, input, textarea, .ql-editor")) return;
@@ -325,8 +325,8 @@ document.addEventListener("DOMContentLoaded", () => {
       navigator.clipboard
         .writeText(selectedText)
         .then(() => {
-          // Find if there is a copy button in the current modal to show feedback
-          const copyBtn = previewModal.querySelector(".copy-btn");
+          // Find if there is a copy button in the current container to show feedback
+          const copyBtn = container.querySelector(".copy-btn");
           if (copyBtn) {
             const originalHTML = copyBtn.innerHTML;
             const originalClass = copyBtn.className;
