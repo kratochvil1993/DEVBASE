@@ -218,7 +218,7 @@ include 'includes/header.php';
                     </button>
                     <button type="button" class="btn-close btn-close-white ms-auto small" style="font-size: 0.5rem;" onclick="document.getElementById('aiInsightBox').classList.add('d-none')"></button>
                 </div>
-                <div id="aiInsightContent" class="text-white small lh-base" style="max-height: 400px; overflow-y: auto; white-space: pre-wrap;"></div>
+                <div id="aiInsightContent" class="text-white small lh-base" style="max-height: 400px; overflow-y: auto;"></div>
             </div>
             <?php endif; ?>
 
@@ -1153,6 +1153,7 @@ function typeWriter(text, container, callback) {
     
     // Pre-processing markdown to HTML
     let processedHtml = text
+        .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
         .replace(/^\* /gm, '• ')
@@ -1160,22 +1161,26 @@ function typeWriter(text, container, callback) {
 
     let i = 0;
     const speed = 2; // Faster typing
+    let currentHtml = '';
     
     function type() {
         if (i < processedHtml.length) {
             if (processedHtml.charAt(i) === '<') {
                 let tagEnd = processedHtml.indexOf('>', i);
                 if (tagEnd !== -1) {
-                    container.innerHTML += processedHtml.substring(i, tagEnd + 1);
+                    currentHtml += processedHtml.substring(i, tagEnd + 1);
                     i = tagEnd + 1;
                 } else {
-                    container.innerHTML += processedHtml.charAt(i);
+                    currentHtml += processedHtml.charAt(i);
                     i++;
                 }
             } else {
-                container.innerHTML += processedHtml.charAt(i);
+                currentHtml += processedHtml.charAt(i);
                 i++;
             }
+            // Update container with complete building HTML
+            container.innerHTML = currentHtml;
+            
             aiTypingInterval = setTimeout(type, speed);
             container.scrollTop = container.scrollHeight;
         } else if (callback) {

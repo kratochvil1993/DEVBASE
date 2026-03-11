@@ -132,6 +132,11 @@ include 'includes/header.php';
                                     <i class="bi bi-lightning-charge me-2 text-ai"></i> Vytvořit TL;DR
                                 </a>
                             </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiAction('grammar_check')">
+                                    <i class="bi bi-spellcheck me-2 text-ai"></i> Kontrola pravopisu
+                                </a>
+                            </li>
                             <li class="border-top border-light border-opacity-10 my-1"></li>
                             <li>
                                 <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="toggleAiPromptBar(true)">
@@ -200,7 +205,7 @@ include 'includes/header.php';
                     </button>
                     <button type="button" class="btn-close btn-close-white ms-auto small" style="font-size: 0.5rem;" onclick="document.getElementById('aiInsightBox').classList.add('d-none')"></button>
                 </div>
-                <div id="aiInsightContent" class="text-white small lh-base" style="max-height: 400px; overflow-y: auto; white-space: pre-wrap;"></div>
+                <div id="aiInsightContent" class="text-white small lh-base" style="max-height: 400px; overflow-y: auto;"></div>
             </div>
 
             <div class="editor-container border border-light border-opacity-10 rounded-bottom overflow-hidden shadow-lg" style="border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; background: #282a36; position: relative;">
@@ -340,6 +345,13 @@ include 'includes/header.php';
 .ql-editor {
     padding: 20px;
     background: #282a36;
+}
+.ql-editor p, .ql-editor ol, .ql-editor ul, .ql-editor blockquote {
+    margin-bottom: 1.1rem !important;
+}
+.ql-editor h2, .ql-editor h3, .ql-editor h4 {
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
 }
 .ql-editor.ql-blank::before {
     color: rgba(255, 255, 255, 0.3) !important;
@@ -514,24 +526,25 @@ function aiAction(action) {
                    btn.innerHTML = '<i class="bi bi-check2-all me-1"></i> Použít tento formát';
                    btn.onclick = () => {
                        const html = simpleMarkdownToHtml(data.answer);
-                       quill.root.innerHTML = html; 
-                       insightBox.classList.add('d-none');
+                       quill.root.innerHTML = ""; quill.clipboard.dangerouslyPasteHTML(0, html);
+                       insightBox.classList.add("d-none"); if (typeof triggerAutosave !== "undefined") triggerAutosave();
                    };
                    insightContent.appendChild(btn);
                 });
-            } else if (action === 'format_note') {
-                // For format, we also show a button to apply it
+            } else if (action === 'format_note' || action === 'grammar_check') {
+                // For format and grammar, we show a button to apply it
                 typeWriter(data.answer, insightContent, () => {
-                   const btn = document.createElement('button');
-                   btn.className = 'btn btn-sm btn-ai mt-3 d-block';
-                   btn.innerHTML = '<i class="bi bi-check2-all me-1"></i> Použít toto formátování';
-                   btn.onclick = () => {
-                       const html = simpleMarkdownToHtml(data.answer);
-                       quill.root.innerHTML = html; 
-                       insightBox.classList.add('d-none');
-                       triggerAutosave();
-                   };
-                   insightContent.appendChild(btn);
+                   if (data.answer.trim() !== 'Text je gramaticky správně.') {
+                       const btn = document.createElement('button');
+                       btn.className = 'btn btn-sm btn-ai mt-3 d-block';
+                       btn.innerHTML = action === 'format_note' ? '<i class="bi bi-check2-all me-1"></i> Použít toto formátování' : '<i class="bi bi-check2-all me-1"></i> Použít opravy';
+                       btn.onclick = () => {
+                           const html = simpleMarkdownToHtml(data.answer);
+                           quill.root.innerHTML = ""; quill.clipboard.dangerouslyPasteHTML(0, html);
+                           insightBox.classList.add("d-none"); if (typeof triggerAutosave !== "undefined") triggerAutosave();
+                       };
+                       insightContent.appendChild(btn);
+                   }
                 });
             } else if (action === 'extract_todos') {
                 // Custom handling for todos
@@ -571,55 +584,74 @@ function copyNote(btn) {
 
 function simpleMarkdownToHtml(text) {
     if (!text) return '';
+    text = text.trim();
+    
+    // Omezení vícenásobných prázdných řádků
+    text = text.replace(/\n{3,}/g, '\n\n');
     
     const lines = text.split('\n');
-    let inList = false;
+    let currentListType = null; // null, 'ul', 'ol'
     let result = '';
     
     lines.forEach(line => {
         let trimmed = line.trim();
         
-        // Empty lines
+        // Prázdný řádek
         if (trimmed === '') {
-            if (inList) { result += '</ul>'; inList = false; }
-            result += '<p><br></p>';
+            if (currentListType) { result += `</${currentListType}>`; currentListType = null; }
             return;
         }
         
         let content = trimmed;
         let tag = 'p';
-        
-        // Identify structure
-        if (trimmed.startsWith('# ')) {
-            tag = 'h1';
-            content = trimmed.substring(2);
-        } else if (trimmed.startsWith('## ')) {
-            tag = 'h2';
-            content = trimmed.substring(3);
-        } else if (trimmed.startsWith('### ')) {
-            tag = 'h3';
-            content = trimmed.substring(4);
-        } else if (/^[\*\-\+]\s+/.test(trimmed)) {
+        let isListItem = false;
+        let newListType = null;
+
+        // Identifikace odrážek (* nebo -)
+        if (/^[\*\-\+]\s+/.test(trimmed)) {
             tag = 'li';
+            isListItem = true;
+            newListType = 'ul';
             content = trimmed.replace(/^[\*\-\+]\s+/, '');
+        } 
+        // Identifikace číslování (1. nebo 1))
+        else if (/^\d+[\.\)]\s+/.test(trimmed)) {
+            tag = 'li';
+            isListItem = true;
+            newListType = 'ol';
+            content = trimmed.replace(/^\d+[\.\)]\s+/.test(trimmed) ? /^\d+[\.\)]\s+/ : /^\d+\s+/, '');
         }
+        // Identifikace nadpisů
+        else if (trimmed.startsWith('# ')) { tag = 'h2'; content = trimmed.substring(2); }
+        else if (trimmed.startsWith('## ')) { tag = 'h3'; content = trimmed.substring(3); }
+        else if (trimmed.startsWith('### ')) { tag = 'h4'; content = trimmed.substring(4); }
         
-        // Format the content (bold, italic) separately from structure markers
+        // Formátování obsahu (bold, italic, code)
         content = content
             .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>');
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>');
             
-        if (tag === 'li') {
-            if (!inList) { result += '<ul style="margin-bottom: 1rem;">'; inList = true; }
+        if (isListItem) {
+            // Pokud se mění typ seznamu (ul -> ol) nebo začínáme nový
+            if (currentListType !== newListType) {
+                if (currentListType) result += `</${currentListType}>`;
+                result += `<${newListType}>`;
+                currentListType = newListType;
+            }
             result += '<li>' + content + '</li>';
         } else {
-            if (inList) { result += '</ul>'; inList = false; }
+            // Ukončení seznamu pokud začíná jiný tag
+            if (currentListType) {
+                result += `</${currentListType}>`;
+                currentListType = null;
+            }
             result += `<${tag}>${content}</${tag}>`;
         }
     });
     
-    if (inList) result += '</ul>';
+    if (currentListType) result += `</${currentListType}>`;
     return result;
 }
 
@@ -627,25 +659,28 @@ function typeWriter(text, container, callback) {
     container.innerHTML = '';
     let i = 0;
     const speed = 2;
-    
-    // Use the same robust conversion for preview
     let processedHtml = simpleMarkdownToHtml(text);
+    let currentHtml = ''; 
 
     function type() {
         if (i < processedHtml.length) {
             if (processedHtml.charAt(i) === '<') {
                 let tagEnd = processedHtml.indexOf('>', i);
                 if (tagEnd !== -1) {
-                    container.innerHTML += processedHtml.substring(i, tagEnd + 1);
+                    currentHtml += processedHtml.substring(i, tagEnd + 1);
                     i = tagEnd + 1;
                 } else {
-                    container.innerHTML += processedHtml.charAt(i);
+                    currentHtml += processedHtml.charAt(i);
                     i++;
                 }
             } else {
-                container.innerHTML += processedHtml.charAt(i);
+                currentHtml += processedHtml.charAt(i);
                 i++;
             }
+            
+            // Nastavením celého složeného řetězce zamezíme automatickému uzavírání neukončených tagů prohlížečem
+            container.innerHTML = currentHtml;
+            
             aiTypingInterval = setTimeout(type, speed);
             container.scrollTop = container.scrollHeight;
         } else if (callback) {
