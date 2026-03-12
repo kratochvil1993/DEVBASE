@@ -349,6 +349,9 @@ include 'includes/header.php';
 .ql-editor p, .ql-editor ol, .ql-editor ul, .ql-editor blockquote {
     margin-bottom: 1.1rem !important;
 }
+.ql-editor strong, .ql-editor b {
+    color: #00e582;
+}
 .ql-editor h2, .ql-editor h3, .ql-editor h4 {
     margin-top: 1.5rem !important;
     margin-bottom: 0.75rem !important;

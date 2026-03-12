@@ -35,6 +35,87 @@ uasort($usedTags, function($a, $b) {
 include 'includes/header.php';
 ?>
 
+<style>
+/* Styling for viewing note content and Quill editor to match aesthetics */
+#viewNoteContent, .ql-editor {
+    line-height: 1.6;
+}
+#viewNoteContent p, #viewNoteContent ol, #viewNoteContent ul, #viewNoteContent blockquote,
+.ql-editor p, .ql-editor ol, .ql-editor ul, .ql-editor blockquote,
+.quill-preview p, .quill-preview ol, .quill-preview ul, .quill-preview blockquote {
+    margin-bottom: 0.8rem !important;
+}
+#viewNoteContent strong, #viewNoteContent b,
+.ql-editor strong, .ql-editor b,
+.quill-preview strong, .quill-preview b {
+    color: #00e582 !important;
+}
+#viewNoteContent h2, #viewNoteContent h3, #viewNoteContent h4,
+.ql-editor h2, .ql-editor h3, .ql-editor h4 {
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
+}
+
+/* Note Preview (Thumbnail) Styling */
+.note-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+.note-card:hover {
+    border-color: rgba(142, 84, 233, 0.4) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+.quill-preview {
+    max-height: 250px;
+    overflow: hidden;
+    position: relative;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+    color: rgba(255, 255, 255, 0.7);
+}
+.quill-preview h2, .quill-preview h3, .quill-preview h4 {
+    font-size: 1.05rem !important;
+    font-weight: 600 !important;
+    margin-top: 0.8rem !important;
+    margin-bottom: 0.4rem !important;
+    color: #fff !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 2px;
+}
+.quill-preview ul, .quill-preview ol {
+    padding-left: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+.quill-preview li {
+    margin-bottom: 0.2rem;
+}
+
+#viewNoteContent ol, #viewNoteContent ul,
+.ql-editor ol, .ql-editor ul,
+.quill-preview ol, .quill-preview ul {
+    padding-left: 1.5rem;
+}
+#viewNoteContent li, .ql-editor li, .quill-preview li {
+    margin-bottom: 0 !important;
+}
+
+/* Fix for Quill's bullet lists that use <ol> tags */
+#viewNoteContent ol li[data-list="bullet"],
+.ql-editor ol li[data-list="bullet"],
+.quill-preview ol li[data-list="bullet"] {
+    list-style-type: disc !important;
+}
+#viewNoteContent ol[data-list="bullet"],
+.ql-editor ol[data-list="bullet"],
+.quill-preview ol[data-list="bullet"] {
+    list-style-type: none;
+}
+</style>
+
 <div class="row mb-3 align-items-center">
     <div class="col-xl-8 mx-auto">
         <div class="glass-card no-jump p-2 d-flex gap-2 gap-sm-3 align-items-center justify-content-between">
