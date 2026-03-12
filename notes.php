@@ -65,14 +65,15 @@ include 'includes/header.php';
 /* Note Preview (Thumbnail) Styling */
 .note-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(0, 0, 0, 0.25) !important;
+    backdrop-filter: blur(12px) !important;
 }
 .note-card:hover {
-    border-color: rgba(142, 84, 233, 0.4) !important;
-    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(142, 84, 233, 0.5) !important;
+    background: rgba(0, 0, 0, 0.35) !important;
     transform: translateY(-3px) !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
 }
 .quill-preview {
     max-height: 250px;
@@ -81,7 +82,7 @@ include 'includes/header.php';
     font-size: 0.9rem;
     line-height: 1.6;
     letter-spacing: 0.01em;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.85);
 }
 .quill-preview h2, .quill-preview h3, .quill-preview h4 {
     font-size: 1.05rem !important;
