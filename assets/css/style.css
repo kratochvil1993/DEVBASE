@@ -1519,7 +1519,8 @@ h6 i.bi-pin-angle-fill {
   .navbar-glass.sticky-top {
     position: fixed;
     top: auto;
-    bottom: 0;
+    bottom: 0px;
+    padding: 1rem 0;
     left: 0;
     right: 0;
     z-index: 1030;
