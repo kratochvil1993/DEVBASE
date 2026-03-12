@@ -1515,6 +1515,42 @@ h6 i.bi-pin-angle-fill {
   }
 }
 
+@media only screen and (max-width: 767.98px) {
+  .navbar-glass.sticky-top {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    border-bottom: none;
+    border-top: 1px solid var(--glass-border);
+  }
+
+  /* Dropdown behavior when navbar is at bottom */
+  .navbar-glass.sticky-top .dropdown-menu {
+    top: auto !important;
+    bottom: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 0.5rem !important;
+    transform: none !important;
+  }
+
+  /* Body padding to accommodate the bottom navbar - only if navbar exists */
+  body:has(.navbar-glass.sticky-top) {
+    padding-bottom: 70px;
+  }
+
+  /* Offset for anchor jumps so they don't land behind the navbar */
+  .manage-note-row,
+  .manage-snippet-row,
+  .todo-item,
+  .editor-container {
+    scroll-margin-top: 20px;
+    scroll-margin-bottom: 120px;
+  }
+}
+
 .ai-insight-box {
   background: rgba(15, 15, 25, 0.8) !important;
   border: 1px solid rgba(142, 84, 233, 0.4) !important;

@@ -71,6 +71,12 @@
     line-height: 1;
 }
 
+@media only screen and (max-width: 767.98px) {
+    .btn-back-to-top {
+        bottom: 82px;
+    }
+}
+
 @media (min-width: 992px) {
     .btn-back-to-top {
         display: none !important;
