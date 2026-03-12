@@ -31,9 +31,7 @@
                     </button>
                 </div>
             </div>
-            <div class="card-text text-white-50 small mb-0 quill-preview">
-                <?php echo $note['content']; ?>
-            </div>
+            <div class="card-text text-white-50 small mb-0 quill-preview"><?php echo $note['content']; ?></div>
         </div>
         <div class="card-footer bg-transparent border-0 pt-0">
             <small class="text-white-25" style="font-size: 0.65rem;">

@@ -83,7 +83,6 @@ include 'includes/header.php';
     margin-top: 0.8rem !important;
     margin-bottom: 0.4rem !important;
     color: #fff !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     padding-bottom: 2px;
 }
 .quill-preview ul, .quill-preview ol {
@@ -252,6 +251,16 @@ include 'includes/header.php';
                             </a>
                         </li>
                         <li>
+                            <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiNoteAction('format_note')">
+                                <i class="bi bi-magic me-2 text-ai"></i> Zformátovat poznámku
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiNoteAction('structure_note')">
+                                <i class="bi bi-diagram-3 me-2 text-ai"></i> Strukturovat (brain dump)
+                            </a>
+                        </li>
+                        <li>
                             <a class="dropdown-item d-flex align-items-center py-2" href="javascript:void(0)" onclick="aiNoteAction('grammar_check')">
                                 <i class="bi bi-spellcheck me-2 text-ai"></i> Kontrola pravopisu
                             </a>
@@ -371,6 +380,7 @@ include 'includes/header.php';
 let sortablePinned = null;
 let sortableOthers = null;
 let isSortingMode = false;
+let currentViewedNote = null;
 
 let quill;
 
@@ -746,6 +756,7 @@ function deleteNote(noteId, event) {
 }
 
 function openViewNoteModal(note) {
+    currentViewedNote = note;
     const titleEl = document.getElementById('viewNoteModalTitle');
     const contentEl = document.getElementById('viewNoteContent');
     const dateEl = document.getElementById('viewNoteDate');
@@ -829,7 +840,16 @@ function aiNoteAction(action) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            typeWriterNote(data.answer, insightContent);
+            typeWriterNote(data.answer, insightContent, () => {
+                const actionsNeedingApply = ['grammar_check', 'summarize_note', 'format_note', 'structure_note'];
+                if (actionsNeedingApply.includes(action)) {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn btn-sm btn-ai mt-3 d-flex align-items-center gap-2';
+                    btn.innerHTML = '<i class="bi bi-check2-all"></i> Použít tento text v poznámce';
+                    btn.onclick = (e) => applyAiResultToNote(data.answer, e);
+                    insightContent.appendChild(btn);
+                }
+            });
             insightBox.classList.remove('flash-purple');
             void insightBox.offsetWidth;
             insightBox.classList.add('flash-purple');
@@ -845,39 +865,181 @@ function aiNoteAction(action) {
     });
 }
 
-function typeWriterNote(text, container) {
-    container.innerHTML = '';
+function simpleMarkdownToHtml(text) {
+    if (!text) return '';
+    text = text.trim();
     
-    // Pre-processing markdown to HTML
-    let processedHtml = text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/^\* /gm, '• ')
-        .replace(/\n/g, '<br>');
+    // Limit multiple empty lines
+    text = text.replace(/\n{3,}/g, '\n\n');
+    
+    const lines = text.split('\n');
+    let currentListType = null; // null, 'ul', 'ol'
+    let result = '';
+    
+    lines.forEach(line => {
+        let trimmed = line.trim();
+        
+        // Empty line
+        if (trimmed === '') {
+            if (currentListType) { result += `</${currentListType}>`; currentListType = null; }
+            return;
+        }
+        
+        let content = trimmed;
+        let tag = 'p';
+        let isListItem = false;
+        let newListType = null;
 
-    let i = 0;
-    const speed = 5;
+        // Identification of bullets (* or -)
+        if (/^[\*\-\+]\s+/.test(trimmed)) {
+            tag = 'li';
+            isListItem = true;
+            newListType = 'ul';
+            content = trimmed.replace(/^[\*\-\+]\s+/, '');
+        } 
+        // Identification of numbering (1. or 1))
+        else if (/^\d+[\.\)]\s+/.test(trimmed)) {
+            tag = 'li';
+            isListItem = true;
+            newListType = 'ol';
+            content = trimmed.replace(/^\d+[\.\)]\s+/, '');
+        }
+        // Identification of headers
+        else if (trimmed.startsWith('# ')) { tag = 'h3'; content = trimmed.substring(2); }
+        else if (trimmed.startsWith('## ')) { tag = 'h4'; content = trimmed.substring(3); }
+        else if (trimmed.startsWith('### ')) { tag = 'h5'; content = trimmed.substring(4); }
+        
+        // Formatting content (bold, italic, code)
+        content = content
+            .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>');
+            
+        if (isListItem) {
+            if (currentListType !== newListType) {
+                if (currentListType) result += `</${currentListType}>`;
+                result += `<${newListType} class="ps-3 mb-2">`;
+                currentListType = newListType;
+            }
+            result += '<li>' + content + '</li>';
+        } else {
+            if (currentListType) {
+                result += `</${currentListType}>`;
+                currentListType = null;
+            }
+            const className = tag.startsWith('h') ? 'mt-3 mb-2' : '';
+            result += `<${tag} ${className ? 'class="'+className+'"' : ''}>${content}</${tag}>`;
+        }
+    });
     
+    if (currentListType) result += `</${currentListType}>`;
+    return result;
+}
+
+function typeWriterNote(text, container, callback) {
+    container.innerHTML = '';
+    let i = 0;
+    const speed = 2;
+    let processedHtml = simpleMarkdownToHtml(text);
+    let currentHtml = ''; 
+
     function type() {
         if (i < processedHtml.length) {
             if (processedHtml.charAt(i) === '<') {
                 let tagEnd = processedHtml.indexOf('>', i);
                 if (tagEnd !== -1) {
-                    container.innerHTML += processedHtml.substring(i, tagEnd + 1);
+                    currentHtml += processedHtml.substring(i, tagEnd + 1);
                     i = tagEnd + 1;
                 } else {
-                    container.innerHTML += processedHtml.charAt(i);
+                    currentHtml += processedHtml.charAt(i);
                     i++;
                 }
             } else {
-                container.innerHTML += processedHtml.charAt(i);
+                currentHtml += processedHtml.charAt(i);
                 i++;
             }
+            
+            container.innerHTML = currentHtml;
+            
             aiNoteTypingInterval = setTimeout(type, speed);
             container.scrollTop = container.scrollHeight;
+        } else if (callback) {
+            callback();
         }
     }
     type();
+}
+
+function applyAiResultToNote(markdownText, event) {
+    if (!currentViewedNote) return;
+
+    if (!confirm('Opravdu chcete nahradit obsah poznámky tímto vygenerovaným textem?')) return;
+
+    const newContentHtml = simpleMarkdownToHtml(markdownText);
+    const btn = event.currentTarget;
+    const originalHtml = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Aplikuji...';
+
+    const formData = new FormData();
+    formData.append('action', 'add_note');
+    formData.append('note_id', currentViewedNote.id);
+    formData.append('title', currentViewedNote.title);
+    formData.append('content', newContentHtml);
+    
+    // Robust is_locked check
+    const isLocked = currentViewedNote.is_locked == 1 || currentViewedNote.is_locked === true || currentViewedNote.is_locked === "1";
+    if (isLocked) formData.append('is_locked', '1');
+    
+    if (currentViewedNote.tags && currentViewedNote.tags.length > 0) {
+        currentViewedNote.tags.forEach(tag => {
+            formData.append('tags[]', tag.id);
+        });
+    }
+
+    fetch('api/api_note_handler.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Update the view modal
+            document.getElementById('viewNoteContent').innerHTML = newContentHtml;
+            // Update the stored note object
+            currentViewedNote.content = newContentHtml;
+            
+            // Hide AI box
+            document.getElementById('aiNoteInsightBox').classList.add('d-none');
+            
+            // Update the card on the grid
+            const existingCard = document.getElementById('note-card-' + currentViewedNote.id);
+            if (existingCard) {
+                const temp = document.createElement('div');
+                temp.innerHTML = data.html;
+                const newCard = temp.firstElementChild;
+                existingCard.replaceWith(newCard);
+                
+                const innerCard = newCard.querySelector('.note-card');
+                if (innerCard) {
+                    innerCard.classList.add('flash-purple');
+                    setTimeout(() => innerCard.classList.remove('flash-purple'), 2000);
+                }
+            }
+        } else {
+            alert('Chyba: ' + data.message);
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Chyba při komunikaci se serverem.');
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+    });
 }
 
 // Ensure AI box is cleared when modal closes
