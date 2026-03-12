@@ -274,11 +274,18 @@ include 'includes/header.php';
             <div class="modal-body p-0">
                 <?php if ($aiEnabled): ?>
                 <!-- AI Insight Box for Notes -->
-                <div id="aiNoteInsightBox" class="m-3 p-3 rounded-3 d-none" style="background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(142, 84, 233, 0.5); backdrop-filter: blur(5px);">
+                <div id="aiNoteInsightBox" class="m-3 p-3 rounded-3 d-none ai-insight-box" style="background: rgba(10, 10, 15, 0.9); border: 1px solid rgba(142, 84, 233, 0.5); backdrop-filter: blur(5px);">
                     <div class="d-flex align-items-center mb-2">
-                        <i class="bi bi-robot text-primary me-2"></i>
-                        <span class="small fw-bold text-white-50 text-uppercase tracking-wider">AI Insight</span>
-                        <button type="button" class="btn-close btn-close-white ms-auto small" style="font-size: 0.5rem;" onclick="document.getElementById('aiNoteInsightBox').classList.add('d-none')"></button>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-robot text-primary me-2"></i>
+                            <span class="small fw-bold text-white-50 text-uppercase tracking-wider">AI Insight</span>
+                        </div>
+                        <div class="ms-auto d-flex align-items-center gap-2">
+                            <button class="btn btn-sm btn-outline-light copy-btn px-2 py-0" onclick="copyToClipboard(this, 'aiNoteInsightContent')" style="font-size: 0.65rem; position: relative; top: 0; right: 0;">
+                                copy
+                            </button>
+                            <button type="button" class="btn-close btn-close-white small" style="font-size: 0.5rem;" onclick="document.getElementById('aiNoteInsightBox').classList.add('d-none')"></button>
+                        </div>
                     </div>
                     <div id="aiNoteInsightContent" class="text-white small lh-base" style="max-height: 400px; overflow-y: auto; white-space: pre-wrap;"></div>
                 </div>
@@ -841,6 +848,9 @@ function aiNoteAction(action) {
     .then(data => {
         if (data.status === 'success') {
             typeWriterNote(data.answer, insightContent, () => {
+                // Autokopie do schránky po dokončení generování
+                navigator.clipboard.writeText(data.answer).catch(err => console.error("Auto-copy failed", err));
+                
                 const actionsNeedingApply = ['grammar_check', 'summarize_note', 'format_note', 'structure_note'];
                 if (actionsNeedingApply.includes(action)) {
                     const btn = document.createElement('button');
