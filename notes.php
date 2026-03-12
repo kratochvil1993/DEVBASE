@@ -54,7 +54,13 @@ include 'includes/header.php';
 .ql-editor h2, .ql-editor h3, .ql-editor h4 {
     margin-top: 1.5rem !important;
     margin-bottom: 0.75rem !important;
+    color: #fff !important;
 }
+
+.ql-editor {
+    color: #fff !important;
+}
+
 
 /* Note Preview (Thumbnail) Styling */
 .note-card {
@@ -1106,8 +1112,15 @@ function openEditNoteModal(note) {
     document.getElementById('noteId').value = note.id;
     document.getElementById('noteTitleInput').value = note.title;
     document.getElementById('noteContentInput').value = note.content;
-    quill.root.innerHTML = note.content;
+    
+    // Use clipboard for better HTML handling
+    if (quill) {
+        quill.root.innerHTML = '';
+        quill.clipboard.dangerouslyPasteHTML(0, note.content || '');
+    }
+
     document.getElementById('noteSubmitBtn').innerText = 'Uložit změny';
+
 
     // Set tags
     const tagCheckboxes = document.querySelectorAll('#noteForm input[name="tags[]"]');
@@ -1123,7 +1136,10 @@ function openEditNoteModal(note) {
 }
 
 function generateAiNoteTitle() {
+    // Current target from event if available
+    const btn = window.event ? window.event.currentTarget : null;
     const content = quill ? quill.root.innerText.trim() : "";
+
     const target = document.getElementById('noteTitleInput');
     
     if (!content || content === "") {
@@ -1131,10 +1147,12 @@ function generateAiNoteTitle() {
         return;
     }
 
-    const btn = event.currentTarget;
-    const originalHtml = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> AI';
+    let originalHtml = "";
+    if (btn) {
+        originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> AI';
+    }
 
     fetch('api/api_ai_handler.php', {
         method: 'POST',
@@ -1159,10 +1177,13 @@ function generateAiNoteTitle() {
         alert('Chyba při komunikaci s AI.');
     })
     .finally(() => {
-        btn.disabled = false;
-        btn.innerHTML = originalHtml;
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }
     });
 }
+
 
 // Search and Tag filtering for notes
 const noteSearchInput = document.getElementById('noteSearch');
