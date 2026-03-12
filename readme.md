@@ -62,7 +62,14 @@ Konfigurační soubor `docker-compose.yml` nastaví celou aplikační strukturu 
    docker-compose up --build
    ```
 
-3. **První otevření aplikace:**
+3. **Konfigurace aplikace:**
+   Soubor `includes/config.php` je ignorován Gitem. Musíte jej vytvořit ze šablony:
+   ```bash
+   cp includes/config.example.php includes/config.php
+   ```
+   *Poznámka: Pokud používáte výchozí Docker prostředí, hodnoty v šabloně by měly odpovídat (případně změňte `DB_HOST` na `mysql_db`).*
+
+4. **První otevření aplikace:**
    Jakmile se proces úspěšně dokončí, automatický migrační script sestaví a zainicializuje tabulky. Aplikace a databázové nástroje budou nyní naservírovány na portech z vašeho lokálního stroje. Otevřete Váš prohlížeč na těchto adresách:
    - 🌍 **Webové rozhraní aplikace:** [http://localhost:9060](http://localhost:9060)
    - 🛠️ **PhpMyAdmin (Správa databáze):** [http://localhost:9061](http://localhost:9061)

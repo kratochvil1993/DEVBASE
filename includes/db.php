@@ -1,6 +1,13 @@
 <?php
 // Načti konfiguraci z config.php (není v Gitu – na každém serveru jiná)
-require_once __DIR__ . '/config.php';
+$configPath = __DIR__ . '/config.php';
+if (!file_exists($configPath)) {
+    die("<h3>Chyba: Konfigurační soubor nenalezen!</h3>
+        <p>Soubor <code>includes/config.php</code> neexistuje.</p>
+        <p>Pro zprovoznění aplikace zkopírujte <code>includes/config.example.php</code> do <code>includes/config.php</code> a nastavte přihlašovací údaje k databázi.</p>
+        <pre>cp includes/config.example.php includes/config.php</pre>");
+}
+require_once $configPath;
 
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS);
 
