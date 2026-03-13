@@ -633,15 +633,17 @@ let editor;
 let quill;
 let lastSavedContent;
 let lastSavedName;
+let isSaving = false;
 
 function triggerAutosave() {
-    if (!editor) return;
+    if (!editor || isSaving) return;
     const currentContent = editor.getValue();
     const currentName = document.getElementById('padName').value;
     const padId = document.getElementById('activeScratchpadId')?.value;
 
     if (!padId || (currentContent === lastSavedContent && currentName === lastSavedName)) return;
 
+    isSaving = true;
     const autosaveIndicator = document.getElementById('autosaveIndicator');
     if (autosaveIndicator) {
         autosaveIndicator.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Ukládám...';
@@ -652,6 +654,7 @@ function triggerAutosave() {
         content: currentContent,
         name: currentName
     }, autosaveIndicator).then(res => {
+        isSaving = false;
         if (res && res.status === 'success') {
             lastSavedContent = currentContent;
             lastSavedName = currentName;
@@ -660,6 +663,8 @@ function triggerAutosave() {
             const activeTab = document.querySelector('.nav-tab-item.active .tab-name');
             if (activeTab) activeTab.textContent = currentName;
         }
+    }).catch(() => {
+        isSaving = false;
     });
 }
 

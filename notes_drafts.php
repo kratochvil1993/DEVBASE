@@ -152,7 +152,8 @@ include 'includes/header.php';
                             <i class="bi bi-send me-0 me-lg-2"></i>  <span class="d-none d-lg-inline">Poslat do</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark glass-dropdown border-light border-opacity-10">
-                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="openAddToNotesModal()"><i class="bi bi-journal-plus me-2"></i> do Notes</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="openAddToNotesModal()"><i class="bi bi-journal-plus me-2"></i> do úplně nové</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="openAppendToNoteModal()"><i class="bi bi-journal-arrow-down me-2"></i> k existující poznámce</a></li>
                         </ul>
                     </div>
                     <button type="button" class="btn btn-add-snipet px-3" onclick="saveDraft()">
@@ -432,6 +433,61 @@ include 'includes/header.php';
     80% { opacity: 1; }
     100% { opacity: 0; }
 }
+
+/* Append Modal Styles */
+#appendNoteSearch {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+}
+#appendNoteSearch:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(142, 84, 233, 0.5);
+    box-shadow: 0 0 10px rgba(142, 84, 233, 0.2);
+}
+.note-append-item {
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03) !important;
+    position: relative;
+    overflow: hidden;
+}
+.note-append-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: #8e54e9;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.note-append-item:hover {
+    background: rgba(142, 84, 233, 0.1) !important;
+    border-color: rgba(142, 84, 233, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+.note-append-item:hover::before {
+    opacity: 1;
+}
+.note-append-item .note-title {
+    font-size: 0.95rem;
+    letter-spacing: 0.2px;
+}
+.append-notes-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+.append-notes-list::-webkit-scrollbar {
+    width: 4px;
+}
+.append-notes-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
 </style>
 
 <!-- Add to Notes Modal -->
@@ -486,11 +542,40 @@ include 'includes/header.php';
     </div>
 </div>
 
+<!-- Append to Existing Note Modal -->
+<div class="modal fade" id="appendNoteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content glass-card border-0">
+            <div class="modal-header border-bottom border-light border-opacity-10">
+                <h5 class="modal-title text-white">Vyberte poznámku pro připsání</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-light border-opacity-10 text-white-50">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" id="appendNoteSearch" class="form-control" placeholder="Hledat poznámku..." onkeyup="filterAppendNotes()">
+                    </div>
+                </div>
+                <div id="appendNotesList" class="append-notes-list d-flex flex-column gap-2">
+                    <!-- Notes will be loaded here -->
+                    <div class="text-center py-4">
+                        <div class="spinner-border spinner-border-sm text-ai" role="status"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 let quill;
 let modalQuill;
 let lastSavedContent;
 let lastSavedName;
+let isSaving = false;
 let aiTypingInterval = null;
 
 function aiAction(action) {
@@ -799,13 +884,14 @@ function addExtractedTodo(btn, text, deadline) {
 
 
 function triggerAutosave() {
-    if (!quill) return;
+    if (!quill || isSaving) return;
     const currentContent = quill.root.innerHTML;
     const currentName = document.getElementById('padName').value;
     const padId = document.getElementById('activeScratchpadId')?.value;
 
     if (!padId || (currentContent === lastSavedContent && currentName === lastSavedName)) return;
 
+    isSaving = true;
     const autosaveIndicator = document.getElementById('autosaveIndicator');
     if (autosaveIndicator) {
         autosaveIndicator.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Ukládám...';
@@ -816,6 +902,7 @@ function triggerAutosave() {
         content: currentContent,
         name: currentName
     }, autosaveIndicator).then(res => {
+        isSaving = false;
         if (res && res.status === 'success') {
             lastSavedContent = currentContent;
             lastSavedName = currentName;
@@ -824,6 +911,8 @@ function triggerAutosave() {
             const activeTab = document.querySelector('.nav-tab-item.active .tab-name');
             if (activeTab) activeTab.textContent = currentName;
         }
+    }).catch(() => {
+        isSaving = false;
     });
 }
 
@@ -1064,6 +1153,134 @@ function openAddToNotesModal() {
     const modalEl = document.getElementById('addToNotesModal');
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.show();
+}
+
+function openAppendToNoteModal() {
+    const modalEl = document.getElementById('appendNoteModal');
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modal.show();
+    
+    // Clear search and load notes
+    document.getElementById('appendNoteSearch').value = '';
+    loadNotesForAppending();
+}
+
+let allNotesForAppend = [];
+
+function loadNotesForAppending() {
+    const listContainer = document.getElementById('appendNotesList');
+    listContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border spinner-border-sm text-ai" role="status"></div></div>';
+
+    fetch('api/api_note_handler.php', {
+        method: 'POST',
+        headers: { 'Content-type': 'application/x-www-form-urlencoded' },
+        body: 'action=list_notes'
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            allNotesForAppend = data.data;
+            renderAppendNotesList(allNotesForAppend);
+        } else {
+            listContainer.innerHTML = '<div class="text-danger p-3 text-center">Chyba při načítání poznámek.</div>';
+        }
+    })
+    .catch(err => {
+        listContainer.innerHTML = '<div class="text-danger p-3 text-center">Chyba spojení se serverem.</div>';
+    });
+}
+
+function renderAppendNotesList(notes) {
+    const listContainer = document.getElementById('appendNotesList');
+    
+    if (notes.length === 0) {
+        listContainer.innerHTML = '<div class="text-white-50 p-3 text-center">Žádné poznámky nebyly nalezeny.</div>';
+        return;
+    }
+
+    listContainer.innerHTML = '';
+    notes.forEach(note => {
+        const item = document.createElement('div');
+        item.className = 'note-append-item p-3 rounded-3 d-flex align-items-center justify-content-between mb-1';
+        item.innerHTML = `
+            <div class="note-title text-white fw-medium">${note.title}</div>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-dark bg-opacity-25 text-white-50 p-1 px-2 border border-light border-opacity-10 small me-3" style="font-size: 0.65rem;">PŘIPSAT</span>
+                <i class="bi bi-arrow-right-short text-ai fs-5"></i>
+            </div>
+        `;
+        item.onclick = () => appendToNote(note.id);
+        listContainer.appendChild(item);
+    });
+}
+
+function filterAppendNotes() {
+    const query = document.getElementById('appendNoteSearch').value.toLowerCase();
+    const filtered = allNotesForAppend.filter(n => n.title.toLowerCase().includes(query));
+    renderAppendNotesList(filtered);
+}
+
+function appendToNote(noteId) {
+    const scratchpad_id = document.getElementById('activeScratchpadId').value;
+    const content = quill.root.innerHTML;
+    const modal = bootstrap.Modal.getInstance(document.getElementById('appendNoteModal'));
+    const moveToast = document.getElementById('moveToast');
+
+    // Show loading on the clicked item or modal
+    const listContainer = document.getElementById('appendNotesList');
+    listContainer.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-ai" role="status"></div><div class="mt-2 text-white-50">Připisuji...</div></div>';
+
+    const formData = new URLSearchParams();
+    formData.append('action', 'append_to_note');
+    formData.append('note_id', noteId);
+    formData.append('scratchpad_id', scratchpad_id);
+    formData.append('content', content);
+
+    fetch('api/api_note_handler.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'success') {
+            modal.hide();
+            
+            if (moveToast) {
+                moveToast.innerHTML = '<i class="bi bi-journal-arrow-down me-1"></i> Připsáno k poznámce!';
+                moveToast.classList.replace('d-none', 'd-flex');
+                moveToast.style.animation = 'none';
+                void moveToast.offsetWidth;
+                moveToast.style.animation = 'fadeOut 3s forwards';
+                setTimeout(() => moveToast.classList.replace('d-flex', 'd-none'), 3000);
+            }
+
+            // Remove current tab and switch
+            const tabItem = document.querySelector(`.nav-tab-item[data-id="${scratchpad_id}"]`);
+            if (tabItem) {
+                let nextTab = tabItem.nextElementSibling;
+                if (!nextTab || !nextTab.classList.contains('nav-tab-item')) {
+                    nextTab = tabItem.previousElementSibling;
+                }
+                
+                tabItem.remove();
+                updateTabControls();
+                
+                if (nextTab && nextTab.classList.contains('nav-tab-item')) {
+                    switchTab(null, nextTab.getAttribute('data-id'));
+                } else {
+                    window.location.href = 'notes_drafts.php';
+                }
+            }
+        } else {
+            alert(data.message);
+            loadNotesForAppending(); // Reload to recover UI
+        }
+    })
+    .catch(err => {
+        alert('Chyba při komunikaci se serverem.');
+        loadNotesForAppending();
+    });
 }
 
 function addNewTab(event) {

@@ -459,6 +459,11 @@ document.addEventListener("DOMContentLoaded", () => {
    * @param {HTMLElement} indicator - Element to show save status
    */
   window.fetchAutosave = (data, indicator = null) => {
+    // Pokud indikátor už obsahuje "Ukládám", budeme se chtít vrátit k "Připraveno"
+    const originalText = indicator && !indicator.innerHTML.includes("Ukládám") 
+      ? indicator.innerHTML 
+      : '<i class="bi bi-cloud-arrow-up me-1"></i> Připraveno';
+
     return fetch("api/api_autosave.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -468,7 +473,6 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((res) => res.json())
       .then((res) => {
         if (indicator && res.status === "success") {
-          const originalText = indicator.innerHTML;
           indicator.innerHTML = `<i class="bi bi-cloud-check me-1"></i> Uloženo v ${res.time}`;
           indicator.classList.add("text-success");
           setTimeout(() => {
@@ -483,6 +487,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (indicator) {
           indicator.innerHTML = `<i class="bi bi-cloud-slash me-1"></i> Chyba ukládání`;
           indicator.classList.add("text-danger");
+          // Reset after error too, so it doesn't stay red forever unless it's a hard fail
+          setTimeout(() => {
+            indicator.innerHTML = originalText;
+            indicator.classList.remove("text-danger");
+          }, 5000);
         }
       });
   };

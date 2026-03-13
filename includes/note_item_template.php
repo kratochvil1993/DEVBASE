@@ -2,7 +2,7 @@
     <div class="card glass-card h-100 note-card" onclick="handleNoteClick(event, <?php echo htmlspecialchars(json_encode($note), ENT_QUOTES, 'UTF-8'); ?>)">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start mb-2">
-                <h5 class="card-title text-white mb-0 text-truncate">
+                <h4 class="card-title text-white mb-0 text-truncate">
                     <?php if ($note['is_locked']): ?>
                         <i class="bi bi-lock-fill me-1 small opacity-50"></i>
                     <?php endif; ?>
@@ -31,7 +31,7 @@
                     </button>
                 </div>
             </div>
-            <div class="card-text text-white-50 small mb-0 quill-preview"><?php echo $note['content']; ?></div>
+            <div class="card-text Xtext-white-50 small mb-0 quill-preview"><?php echo $note['content']; ?></div>
         </div>
         <div class="card-footer bg-transparent border-0 pt-0">
             <small class="text-white-25" style="font-size: 0.65rem;">

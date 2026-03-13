@@ -119,6 +119,37 @@ if ($action === 'add_note') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Chybějící data.']);
     }
+} elseif ($action === 'list_notes') {
+    $notes = getAllNotes('custom', 0); // active notes
+    $result = [];
+    foreach ($notes as $note) {
+        $result[] = [
+            'id' => $note['id'],
+            'title' => $note['title']
+        ];
+    }
+    echo json_encode(['status' => 'success', 'data' => $result]);
+} elseif ($action === 'append_to_note') {
+    $note_id = $_POST['note_id'] ?? null;
+    $scratchpad_id = $_POST['scratchpad_id'] ?? null;
+    $content = $_POST['content'] ?? '';
+
+    if ($note_id && $scratchpad_id && $content) {
+        $note = getNote($note_id);
+        if ($note) {
+            $new_content = $note['content'] . "<br><hr><br>" . $content;
+            if (saveNote($note['title'], $new_content, $note['language_id'], array_column($note['tags'], 'id'), $note_id)) {
+                deleteScratchpad($scratchpad_id);
+                echo json_encode(['status' => 'success', 'message' => 'Draft byl připsán k poznámce a smazán.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Nepodařilo se uložit poznámku.']);
+            }
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Původní poznámka nebyla nalezena.']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Chybějící data.']);
+    }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Neznámá akce.']);
 }

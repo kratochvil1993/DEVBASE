@@ -162,11 +162,11 @@ $theme = isset($_COOKIE['theme']) ? $_COOKIE['theme'] : 'dark';
             <form method="POST" action="lock.php" id="lockForm">
                 <div class="mb-3">
                     <input type="text" name="username" class="form-control <?php echo $error ? 'error-shake' : ''; ?>" 
-                           placeholder="Uživatelské jméno" autofocus required autocomplete="username">
+                           placeholder="login" autofocus required autocomplete="username">
                 </div>
                 <div class="mb-3">
                     <input type="password" name="password" class="form-control <?php echo $error ? 'error-shake' : ''; ?>" 
-                           placeholder="Heslo" required autocomplete="current-password">
+                           placeholder="password" required autocomplete="current-password">
                     <?php if ($error): ?>
                         <div class="text-danger mt-2 small"><?php echo $error; ?></div>
                     <?php endif; ?>
