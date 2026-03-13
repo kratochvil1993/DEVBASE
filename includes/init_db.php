@@ -138,6 +138,16 @@ if (file_exists($schema_file)) {
     if (!$newUniqueExists) {
         $conn->query("ALTER TABLE `tags` ADD UNIQUE INDEX `unique_name_type` (`name`, `type`)");
     }
+    
+    // Migration: Ensure new settings keys exist (Version 1.2.2)
+    $newSettingsRequired = [
+        'custom_ai_endpoint' => '',
+        'custom_ai_model' => 'local-model',
+        'custom_ai_api_key' => ''
+    ];
+    foreach ($newSettingsRequired as $key => $val) {
+        $conn->query("INSERT IGNORE INTO settings (setting_key, setting_value) VALUES ('$key', '$val')");
+    }
 
 
     // Seed settings ONLY if settings table is empty or missing those keys
@@ -154,6 +164,9 @@ if (file_exists($schema_file)) {
         ('note_drafts_enabled', '1'),
         ('gemini_model', 'gemini-2.5-flash-lite'),
         ('ai_provider', 'gemini'),
+        ('custom_ai_endpoint', ''),
+        ('custom_ai_model', 'local-model'),
+        ('custom_ai_api_key', ''),
         ('inbox_enabled', '0')");
     }
 
@@ -218,7 +231,7 @@ if (file_exists($schema_file)) {
     }
     
     // Update DB Version
-    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('db_version', '1.2.1') ON DUPLICATE KEY UPDATE setting_value = '1.2.1'");
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('db_version', '1.2.2') ON DUPLICATE KEY UPDATE setting_value = '1.2.2'");
 
     echo "<div style='font-family: sans-serif; text-align: center; margin-top: 50px;'>";
     echo "<h2 style='color: #2ecc71;'>Databáze a schéma byly úspěšně inicializovány.</h2>";

@@ -3,48 +3,24 @@ require_once __DIR__ . '/db.php';
 
 // Check if database and tables are created and up to date
 // Check if database and tables are created and up to date
-$current_db_version = '1.2.1';
+// 1. Změňte verzi na 1.2.2 nebo vyšší přímo v kódu
+$current_db_version = '1.2.2';
 $needs_init = false;
 
-// Fast check: Try to get the version from settings
+// Tichá kontrola verze bez automatického přesměrování
 $version_res = @$conn->query("SELECT setting_value FROM settings WHERE setting_key = 'db_version'");
-if (!$version_res || $version_res->num_rows == 0) {
-    // If settings table is missing or db_version is missing, we might need init
-    $needs_init = true;
-} else {
+if ($version_res && $version_res->num_rows > 0) {
     $db_version = $version_res->fetch_assoc()['setting_value'];
-    if (version_compare($db_version, $current_db_version, '<')) {
-        $needs_init = true;
-    } else {
-        // Version is current, but let's do a quick check if essential tables exist (e.g. if someone deleted them)
-        $essentialTables = ['snippets', 'notes', 'todos', 'tags', 'settings', 'scratchpads', 'inbox_items'];
-        foreach ($essentialTables as $table) {
-            $check = @$conn->query("SHOW TABLES LIKE '$table'");
-            if (!$check || $check->num_rows == 0) {
-                $needs_init = true;
-                break;
-            }
-        }
+    // Pokud je verze starší, nebudeme přesměrovávat, ale můžeme si to uložit pro budoucí tiché updaty
+} else {
+    // Pokud tabulka chybí, teprve pak je problém, ale na Wedosu raději ticho
+    $check_table = @$conn->query("SHOW TABLES LIKE 'settings'");
+    if (!$check_table || $check_table->num_rows == 0) {
+        // Tady by to teoreticky potřebovalo init, ale uživatel ho udělal ručně
     }
 }
 
-if ($needs_init) {
-    // Determine the base URL to redirect to includes/init_db.php
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
-    $host_url = $_SERVER['HTTP_HOST'];
-    $script_name = $_SERVER['SCRIPT_NAME'];
-    $base_dir = dirname($script_name);
-    
-    // Normalize base_dir to always point to the root if we are in API or includes
-    if (basename($base_dir) == 'api' || basename($base_dir) == 'includes') {
-        $base_dir = dirname($base_dir);
-    }
-    
-    $redirect_url = $protocol . "://" . $host_url . rtrim($base_dir, '/') . "/includes/init_db.php";
-    
-    header("Location: $redirect_url");
-    exit;
-}
+// Funkce aplikace...
 
 function getAllSnippets($search = '') {
     global $conn;
@@ -1320,7 +1296,7 @@ function getAvailableAiModels($provider) {
             'gpt-4-turbo' => 'GPT-4 Turbo',
             'gpt-5.2' => 'GPT-5.2 Standard',
         ];
-    } else {
+    } elseif ($provider === 'gemini') {
         return [
             'gemini-2.5-flash-lite' => 'Gemini 2.5 Flash Lite (Výchozí)',
             'gemini-2.5-flash' => 'Gemini 2.5 Flash',
@@ -1332,5 +1308,6 @@ function getAvailableAiModels($provider) {
             'gemini-3-flash-preview' => 'Gemini 3 Flash (Preview)',
         ];
     }
+    return [];
 }
 ?>

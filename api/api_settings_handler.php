@@ -105,7 +105,7 @@ if ($action === 'toggle_setting') {
     }
 
     echo json_encode(['status' => 'success', 'message' => 'Přihlašovací údaje uloženy.']);
-} elseif ($action === 'save_gemini_config' || $action === 'save_openai_config' || $action === 'save_ai_provider' || $action === 'save_imap_config' || $action === 'save_smtp_config') {
+} elseif ($action === 'save_gemini_config' || $action === 'save_openai_config' || $action === 'save_custom_ai_config' || $action === 'save_ai_provider' || $action === 'save_imap_config' || $action === 'save_smtp_config') {
     $success = true;
     foreach ($_POST as $key => $value) {
         if ($key === 'action') continue;

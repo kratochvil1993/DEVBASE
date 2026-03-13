@@ -140,14 +140,15 @@ session_write_close();
                         </div>
                     </div>
                     <?php if (getSetting('ai_enabled', '0') == '1'): ?>
-                    <div class="p-3 pt-0">
-                        <div class="mb-0">
-                            <?php 
-                            $provider = getSetting('ai_provider', 'gemini');
+                    <?php 
+                        $provider = getSetting('ai_provider', 'gemini');
+                        if ($provider !== 'custom'):
                             $modelKey = ($provider === 'openai') ? 'openai_model' : 'gemini_model';
                             $currentModel = getSetting($modelKey);
                             $models = getAvailableAiModels($provider);
-                            ?>
+                    ?>
+                    <div class="p-3 pt-0">
+                        <div class="mb-0">
                             <label class="form-label text-white-50 small fw-bold mb-2">AI Model (<?php echo ($provider === 'openai' ? 'OpenAI' : 'Gemini'); ?>)</label>
                             <select class="form-select bg-transparent text-white border-light border-opacity-25 shadow-none" 
                                     onchange="updateQuickSetting('<?php echo $modelKey; ?>', this.value)">
@@ -159,6 +160,7 @@ session_write_close();
                             </select>
                         </div>
                     </div>
+                    <?php endif; ?>
                     <?php endif; ?>
                     <div class="p-2 border-top border-light border-opacity-10 text-center">
                         <a href="settings.php" class="btn btn-sm btn-link-settings w-100 py-1">

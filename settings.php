@@ -493,6 +493,7 @@ include 'includes/header.php';
                         <?php $currentProvider = getSetting('ai_provider', 'gemini'); ?>
                         <option value="gemini" class="bg-dark text-white" <?php echo $currentProvider == 'gemini' ? 'selected' : ''; ?>>Google Gemini (Výchozí)</option>
                         <option value="openai" class="bg-dark text-white" <?php echo $currentProvider == 'openai' ? 'selected' : ''; ?>>OpenAI ChatGPT</option>
+                        <option value="custom" class="bg-dark text-white" <?php echo $currentProvider == 'custom' ? 'selected' : ''; ?>>Vlastní (Local / Ollama)</option>
                     </select>
                 </div>
             </form>
@@ -606,6 +607,72 @@ include 'includes/header.php';
         </div>
     </div>
    
+    <!-- Custom AI Config -->
+    <div class="col-md-12 mb-4 settings-section">
+        <div class="glass-card no-jump p-4 h-100 border-warning border-opacity-10">
+            <h5 class="text-white mb-4 d-flex align-items-center">
+                <i class="bi bi-hdd-network me-2 text-warning"></i>
+                Vlastní (Local) AI / Ollama
+            </h5>
+            
+            <form onsubmit="handleConfigFormSubmit(event)">
+                <input type="hidden" name="action" value="save_custom_ai_config">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-white-50 small fw-bold">Endpoint URL (OpenAI kompatibilní)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
+                                <i class="bi bi-link-45deg"></i>
+                            </span>
+                            <input type="text" name="custom_ai_endpoint" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                   placeholder="http://localhost:11434/v1/chat/completions" 
+                                   value="<?php echo htmlspecialchars(getSetting('custom_ai_endpoint', '')); ?>">
+                        </div>
+                        <small class="text-white-50">Pro Ollama je to obvykle: <code>http://localhost:11434/v1/chat/completions</code></small>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-white-50 small fw-bold">Název modelu</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
+                                <i class="bi bi-cpu"></i>
+                            </span>
+                            <input type="text" name="custom_ai_model" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                   placeholder="llama3, mistral, gemma..." 
+                                   value="<?php echo htmlspecialchars(getSetting('custom_ai_model', '')); ?>">
+                        </div>
+                        <small class="text-white-50">Název modelu tak, jak je nastaven ve vašem lokálním serveru.</small>
+                    </div>
+
+                    <div class="col-md-12 mb-4">
+                        <label class="form-label text-white-50 small fw-bold">API Klíč (volitelný)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-light border-opacity-25 text-white-50">
+                                <i class="bi bi-shield-lock"></i>
+                            </span>
+                            <input type="password" name="custom_ai_api_key" class="form-control bg-transparent text-white border-light border-opacity-25 shadow-none" 
+                                   placeholder="Nechte prázdné, pokud lokální AI nevyžaduje klíč..." 
+                                   value="<?php echo htmlspecialchars(getSetting('custom_ai_api_key', '')); ?>">
+                            <button class="btn btn-outline-secondary px-3 border-light border-opacity-25" type="button" onclick="const input = this.previousElementSibling; input.type = input.type === 'password' ? 'text' : 'password';">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary flex-grow-1" type="submit">
+                        <i class="bi bi-check-circle me-1"></i> Uložit nastavení vlastní AI
+                    </button>
+                    <button class="btn btn-outline-light border-opacity-25 px-3" type="button" id="testCustomAiBtn" onclick="testCustomAiConnection()">
+                        <i class="bi bi-broadcast"></i>
+                    </button>
+                </div>
+                <div id="customAiTestResult" class="mt-3 d-none p-2 rounded small"></div>
+            </form>
+        </div>
+    </div>
+
 
     <div class="col-12 mb-4 settings-section" id="section-inbox">
         <div class="glass-card no-jump p-4 border-warning border-opacity-10">
@@ -1293,6 +1360,39 @@ function testOpenAiConnection() {
             resultDiv.classList.remove('d-none');
             resultDiv.classList.add('bg-danger', 'bg-opacity-10', 'text-danger', 'border', 'border-danger', 'border-opacity-25');
             resultDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>Chyba spojení.';
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-broadcast"></i>';
+        });
+}
+
+function testCustomAiConnection() {
+    const btn = document.getElementById('testCustomAiBtn');
+    const resultDiv = document.getElementById('customAiTestResult');
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Testování...';
+    
+    resultDiv.classList.add('d-none');
+    resultDiv.className = 'mt-3 p-2 rounded small';
+
+    fetch('api/api_test_custom_ai.php')
+        .then(response => response.json())
+        .then(data => {
+            resultDiv.classList.remove('d-none');
+            if (data.status === 'success') {
+                resultDiv.classList.add('bg-success', 'bg-opacity-10', 'text-success', 'border', 'border-success', 'border-opacity-25');
+                resultDiv.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>' + data.message;
+            } else {
+                resultDiv.classList.add('bg-danger', 'bg-opacity-10', 'text-danger', 'border', 'border-danger', 'border-opacity-25');
+                resultDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>' + data.message;
+            }
+        })
+        .catch(error => {
+            resultDiv.classList.remove('d-none');
+            resultDiv.classList.add('bg-danger', 'bg-opacity-10', 'text-danger', 'border', 'border-danger', 'border-opacity-25');
+            resultDiv.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>Chyba spojení s lokální AI.';
         })
         .finally(() => {
             btn.disabled = false;
