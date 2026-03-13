@@ -114,7 +114,7 @@ include 'includes/header.php';
                                     
                                     <!-- Mobile simple dropdown for actions -->
                                     <div class="dropdown d-md-none">
-                                        <button class="btn btn-sm btn-outline-light border-opacity-25 p-1 px-2" data-bs-toggle="dropdown">
+                                        <button class="btn btn-sm btn-add-snipet p-1 px-2" data-bs-toggle="dropdown" onclick="event.stopPropagation();">
                                             <i class="bi bi-plus-lg"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-dark shadow-lg">
