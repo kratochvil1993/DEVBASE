@@ -383,11 +383,11 @@ console.log('Hello World');
 
         <div class="glass-card no-jump p-4 mt-4 help-section" id="ai">
             <h4 class="text-white mb-4"><i class="bi bi-robot me-2"></i> Integrace Umělé Inteligence (AI)</h4>
-            <p class="text-white small mb-3">DevBase využívá pokročilé modely Google Gemini a OpenAI k analýze kódu, generování souhrnů a kontrole textů. Všechny AI funkce jsou v rozhraní zvýrazněny fialovou barvou s prémiovým efektem záře. Pro lepší přehlednost jsou klíčové pojmy v AI odpovědích automaticky zvýrazněny zelenou barvou.</p>
+            <p class="text-white small mb-3">DevBase využívá pokročilé modely Google Gemini, OpenAI nebo vaše vlastní lokálně běžící modely (např. přes Ollama) k analýze kódu, generování souhrnů a kontrole textů. Všechny AI funkce jsou v rozhraní zvýrazněny fialovou barvou s prémiovým efektem záře. Pro lepší přehlednost jsou klíčové pojmy v AI odpovědích automaticky zvýrazněny zelenou barvou.</p>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Nastavení a aktivace:</strong>
-                    V **Nastavení** (sekce AI Nastavení) zvolte svého preferovaného poskytovatele (**Gemini** nebo **OpenAI**) a vložte příslušný API klíč. Zde si také můžete vybrat konkrétní model (např. **GPT-4o Mini**, **GPT-5.2**, **Gemini 2.5 Pro** nebo **Gemini 3.1 Flash Lite**) a ověřit platnost klíče tlačítkem **Otestovat API**. Pokud je klíč platný a poskytovatel vybrán, v celé aplikaci se zpřístupní AI nástroje. Všechny AI funkce lze také v nastavení jedním kliknutím **globálně vypnout**, což skryje všechna fialová tlačítka v celé aplikaci pro dokonale čisté rozhraní.
+                    V **Nastavení** (sekce AI Nastavení) zvolte svého preferovaného poskytovatele (**Gemini**, **OpenAI** nebo **Vlastní / Local**). Pokud zvolíte Gemini nebo OpenAI, vložte příslušný API klíč a vyberte konkrétní model (např. **GPT-4o Mini** nebo **Gemini 2.0 Flash Lite**). Platnost klíče si můžete ověřit tlačítkem **Otestovat API**. Pokud zvolíte **Vlastní**, zadejte endpoint URL (např. pro Ollama) a název modelu. Pokud je spojení platné, v celé aplikaci se zpřístupní AI nástroje. Všechny AI funkce lze také v nastavení jedním kliknutím **globálně vypnout**, což skryje všechna fialová tlačítka v celé aplikaci pro dokonale čisté rozhraní.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Vysvětlení kódu (Snippety) a navigace:</strong>
@@ -414,6 +414,10 @@ console.log('Hello World');
                 <li class="mb-3">
                     <strong class="text-white d-block">Strategický souhrn úkolů:</strong>
                     V sekci TODO vám AI pomůže se stanovením priorit díky funkci **AI Souhrn**, která vygeneruje "Bojový plán" pro vaše resty a blížící se termíny.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Vlastní lokální AI (Ollama):</strong>
+                    Pro maximální soukromí můžete využít lokálně běžící AI server kompatibilní s OpenAI API (ideálně **Ollama**). V nastavení stačí zadat adresu k API (obvykle <code>http://localhost:11434/v1/chat/completions</code>) a název modelu, který máte stažený. U vlastního poskytovatele se pro větší přehlednost v rychlém nastavení (ozubené kolečko v hlavičce) nezobrazuje výběr modelů, protože ty jsou pevně dány vaší konfigurací.
                 </li>
                 <li class="mb-3">
                     <strong class="text-white d-block">Soukromí:</strong>
