@@ -149,6 +149,10 @@ console.log('Hello World');
                     Na mobilních zařízeních se aplikace snaží šetřit váš čas – při přepínání tabů v sekcích Drafts nebo při kliknutí na hlavičku aktivního editačního panelu vás automaticky **plynule posune k editoru**, abyste nemuseli zbytečně scrollovat dolů.
                 </li>
                 <li class="mb-3">
+                    <strong class="text-white d-block">Spodní navigace (Mobil):</strong>
+                    Pro lepší dosažitelnost na mobilních zařízeních se hlavní menu automaticky přesouvá k **dolnímu okraji obrazovky**, což usnadňuje ovládání aplikace jednou rukou.
+                </li>
+                <li class="mb-3">
                     <strong class="text-white d-block">Automatické sledování změn:</strong>
                     Po každém uložení, úpravě nebo vytvoření nového záznamu vás aplikace automaticky přesune na danou položku a zvýrazní ji jemným animovaným efektem. Nemusíte tak položku znovu hledat v seznamu.
                 </li>
@@ -379,7 +383,7 @@ console.log('Hello World');
 
         <div class="glass-card no-jump p-4 mt-4 help-section" id="ai">
             <h4 class="text-white mb-4"><i class="bi bi-robot me-2"></i> Integrace Umělé Inteligence (AI)</h4>
-            <p class="text-white small mb-3">DevBase využívá pokročilé modely Google Gemini a OpenAI k analýze kódu, generování souhrnů a kontrole textů. Všechny AI funkce jsou v rozhraní zvýrazněny fialovou barvou s prémiovým efektem záře.</p>
+            <p class="text-white small mb-3">DevBase využívá pokročilé modely Google Gemini a OpenAI k analýze kódu, generování souhrnů a kontrole textů. Všechny AI funkce jsou v rozhraní zvýrazněny fialovou barvou s prémiovým efektem záře. Pro lepší přehlednost jsou klíčové pojmy v AI odpovědích automaticky zvýrazněny zelenou barvou.</p>
             <ul class="text-white-50 small list-unstyled">
                 <li class="mb-3">
                     <strong class="text-white d-block">Nastavení a aktivace:</strong>
@@ -399,6 +403,7 @@ console.log('Hello World');
                     <ul class="mt-2">
                         <li><strong>Vytvořit souhrn:</strong> AI přečte celou poznámku a vytvoří z ní stručný seznam v odrážkách.</li>
                         <li><strong>Kontrola pravopisu:</strong> Provede revizi českého textu a upozorní na chyby nebo navrhne lepší stylistiku.</li>
+                        <li><strong>Použít text:</strong> U funkcí jako je kontrola pravopisu můžete navržený text jedním kliknutím přímo vložit do poznámky.</li>
                         <li><strong>Extrahovat úkoly:</strong> AI projde text a automaticky z něj vytvoří seznam TODO úkolů, které si můžete uložit.</li>
                     </ul>
                 </li>
