@@ -1537,9 +1537,34 @@ h6 i.bi-pin-angle-fill {
     transform: none !important;
   }
 
-  /* Body padding to accommodate the bottom navbar - only if navbar exists */
+  /* Body padding to accommodate the bottom navbar and safe areas */
   body:has(.navbar-glass.sticky-top) {
-    padding-bottom: 70px;
+    padding-top: 0; 
+    padding-bottom: calc(48px + env(safe-area-inset-bottom));
+  }
+
+  /* Compact top spacing - just enough to clear the status bar icons */
+  body:has(.navbar-glass.sticky-top) main.container-fluid {
+    padding-top: calc(5px + env(safe-area-inset-top)) !important;
+    padding-bottom: 1.5rem;
+  }
+
+  /* Push bottom menu lower: Smaller base height + icons shifted down */
+  .navbar-glass.sticky-top {
+    height: calc(48px + env(safe-area-inset-bottom)) !important;
+    padding-top: 0 !important;
+    padding-bottom: calc(env(safe-area-inset-bottom) * 0.2) !important;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Align icons area to be as low as possible while keeping usability */
+  .navbar-glass.sticky-top .container-fluid {
+    height: 48px;
+    display: flex;
+    align-items: center; 
+    position: relative;
+    padding-top: 5px; /* Subtle nudge even lower */
   }
 
   /* Offset for anchor jumps so they don't land behind the navbar */

@@ -21,7 +21,7 @@ session_write_close();
 <html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
     <title>DevBase - The OneNote Killer</title>
 
     <!-- Favicons -->
@@ -363,4 +363,4 @@ function updateQuickSetting(key, val) {
     .catch(error => console.error('Error:', error));
 }
 </script>
-<main class="container-fluid py-4">
+<main class="container-fluid">
