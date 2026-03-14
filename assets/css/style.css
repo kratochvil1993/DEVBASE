@@ -1539,7 +1539,7 @@ h6 i.bi-pin-angle-fill {
 
   /* Body padding to accommodate the bottom navbar and safe areas */
   body:has(.navbar-glass.sticky-top) {
-    padding-top: 0; 
+    padding-top: 0;
     padding-bottom: calc(48px + env(safe-area-inset-bottom));
   }
 
@@ -1562,7 +1562,7 @@ h6 i.bi-pin-angle-fill {
   .navbar-glass.sticky-top .container-fluid {
     height: 48px;
     display: flex;
-    align-items: center; 
+    align-items: center;
     position: relative;
     padding-top: 5px; /* Subtle nudge even lower */
   }

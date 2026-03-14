@@ -1,12 +1,13 @@
 <?php
 require_once 'includes/functions.php';
 
-if (getSetting('inbox_enabled', '0') == '0') {
+$inboxEnabled = getSetting('inbox_enabled', '0');
+if ($inboxEnabled == '0') {
     header('Location: index.php');
     exit;
 }
 
-// Přesměrujeme API POST volání bokem pro asynchronní bez-reload operace z tlačítek the UI
+// Přesměrujeme API POST volání bokem pro asynchronní bez-reload operace z tlačítek UI
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'delete_inbox_item') {
         $result = deleteInboxItem($_POST['id']);
@@ -21,9 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     exit;
 }
 
-if (getSetting('inbox_enabled', '0') == '1') {
-    $conn->query("UPDATE inbox_items SET is_seen = 1 WHERE is_seen = 0");
-}
+// Označit zprávy za viděné
+$conn->query("UPDATE inbox_items SET is_seen = 1 WHERE is_seen = 0");
 
 $items = getAllInboxItems();
 
@@ -84,16 +84,7 @@ include 'includes/header.php';
                                         <?php endif; ?>
                                         <h5 class="text-white mb-0 fs-6 fw-bold text-truncate"><?php echo htmlspecialchars($item['subject']); ?></h5>
                                     </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <?php /*
-                                        <span class="text-white-50 small text-truncate" style="max-width: 150px;">
-                                            <i class="bi bi-person-circle me-1"></i><?php 
-                                                $parts = explode('@', $item['from_email']);
-                                                echo htmlspecialchars($parts[0]); 
-                                            ?>
-                                        </span>
-                                        <span class="text-white-50 small">•</span>
-                                        */ ?>
+                                    <div class="d-flex align-items-center gap-2">                                        
                                         <span class="text-white-50 small">
                                             <i class="bi bi-clock me-1"></i><?php echo date('j. n. H:i', strtotime($item['created_at'])); ?>
                                         </span>
@@ -120,10 +111,10 @@ include 'includes/header.php';
                                         <button class="btn btn-sm btn-add-snipet p-1 px-2" data-bs-toggle="dropdown" onclick="event.stopPropagation();">
                                             <i class="bi bi-plus-lg"></i>
                                         </button>
-                                        <ul class="dropdown-menu dropdown-menu-dark shadow-lg">
-                                            <li><a class="dropdown-item small" href="#" onclick="manualImport(<?php echo $item['id']; ?>, 'note', event)"><i class="bi bi-sticky me-2"></i>Poznámka</a></li>
-                                            <li><a class="dropdown-item small" href="#" onclick="manualImport(<?php echo $item['id']; ?>, 'todo', event)"><i class="bi bi-check2-square me-2"></i>Úkol</a></li>
-                                            <li><a class="dropdown-item small" href="#" onclick="manualImport(<?php echo $item['id']; ?>, 'draft', event)"><i class="bi bi-file-earmark-text me-2"></i>Draft</a></li>
+                                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border border-light border-opacity-10">
+                                            <li><a class="dropdown-item small py-2" href="#" onclick="manualImport(<?php echo $item['id']; ?>, 'note', event)"><i class="bi bi-sticky me-2"></i>Poznámka</a></li>
+                                            <li><a class="dropdown-item small py-2" href="#" onclick="manualImport(<?php echo $item['id']; ?>, 'todo', event)"><i class="bi bi-check2-square me-2"></i>Úkol</a></li>
+                                            <li><a class="dropdown-item small py-2" href="#" onclick="manualImport(<?php echo $item['id']; ?>, 'draft', event)"><i class="bi bi-file-earmark-text me-2"></i>Draft</a></li>
                                         </ul>
                                     </div>
                                     <?php endif; ?>
@@ -201,7 +192,9 @@ function showInboxDetail(id) {
         footer.innerHTML = '<button class="btn btn-outline-light ms-auto" data-bs-dismiss="modal">Zavřít</button>';
     }
 
-    const modal = new bootstrap.Modal(document.getElementById('inboxDetailModal'));
+    const modalEl = document.getElementById('inboxDetailModal');
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (!modal) modal = new bootstrap.Modal(modalEl);
     modal.show();
 }
 
@@ -324,6 +317,22 @@ function deleteInboxItem(id, event) {
     })
     .catch(() => alert('Přerušeno síťové spojení'));
 }
+
+// Zajištění aby se menu nepřekrývalo pod ostatní řádky v inboxu (oprava z-indexu při otevření)
+document.addEventListener('show.bs.dropdown', function (event) {
+    const parent = event.target.closest('.inbox-item-wrapper');
+    if (parent) {
+        parent.style.position = 'relative';
+        parent.style.zIndex = '1060';
+    }
+});
+
+document.addEventListener('hide.bs.dropdown', function (event) {
+    const parent = event.target.closest('.inbox-item-wrapper');
+    if (parent) {
+        parent.style.zIndex = '';
+    }
+});
 </script>
 
 <?php include 'includes/footer.php'; ?>
