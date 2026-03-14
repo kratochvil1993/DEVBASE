@@ -67,7 +67,7 @@ include 'includes/header.php';
 ?>
 
 <div class="container">
-    <div class="row mb-3 align-items-center">
+    <div class="row mb-3 align-items-center mt-2">
         <div class="col-xxl-12 col-lg-12 mx-auto">
             <div class="glass-card no-jump p-2 d-flex flex-column flex-lg-row gap-3 align-items-center justify-content-between mb-0">
                 <div id="addTodoCollapse" class="collapse d-lg-block flex-grow-1 w-100 w-lg-auto" style="max-width: 600px;">

@@ -122,7 +122,7 @@ include 'includes/header.php';
 }
 </style>
 
-<div class="row mb-3 align-items-center">
+<div class="row mb-3 align-items-center mt-2">
     <div class="col-xl-8 mx-auto">
         <div class="glass-card no-jump p-2 d-flex gap-2 gap-sm-3 align-items-center justify-content-between">
             <div class="flex-grow-1" >

@@ -30,7 +30,7 @@ $items = getAllInboxItems();
 include 'includes/header.php';
 ?>
 <div class="container">
-    <div class="row">
+    <div class="row mt-2">
         <div class="col-12 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h2 class="text-white fw-bold mb-0">Inbox</h2>                
