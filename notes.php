@@ -533,6 +533,24 @@ function toggleSortingMode() {
     const deleteBtnWrappers = document.querySelectorAll('.delete-btn-wrapper');
 
     if (isSortingMode) {
+        // BEZPEČNOSTNÍ RESET FILTRŮ (Oprava poškození pořadí skrytých prvků v DB)
+        if (typeof noteSearchInput !== 'undefined' && noteSearchInput) {
+            noteSearchInput.value = '';
+            currentNoteSearch = '';
+            updateNoteSearchClearBtn();
+        }
+        if (typeof noteTagButtons !== 'undefined' && noteTagButtons.length > 0) {
+            noteTagButtons.forEach(b => b.classList.remove('active'));
+            const allBtn = document.querySelector('#noteTagFilters .btn[data-tag="all"]');
+            if (allBtn) {
+                allBtn.classList.add('active');
+                currentNoteTag = 'all';
+            }
+        }
+        if (typeof filterNotes === 'function') {
+            filterNotes(false); // Okamžité zobrazení všech poznámek před fyzickým přetažením
+        }
+
         if (pinnedGrid) pinnedGrid.classList.add('sorting-mode');
         if (othersGrid) othersGrid.classList.add('sorting-mode');
         editBtn.classList.add('d-none');
@@ -1213,10 +1231,18 @@ const filterNotes = (forceAnimate = false) => {
     let othersVisible = 0;
     
     notes.forEach(note => {
-        const title = note.querySelector('.card-title').textContent.toLowerCase();
-        const content = note.querySelector('.card-text').textContent.toLowerCase();
-        const tagsAttr = note.getAttribute('data-tags');
-        const tags = tagsAttr ? tagsAttr.toLowerCase().split(',') : [];
+        // Data Caching system: vytažení textu z HTML uzlu je drahé, uložíme si to na element do virtuální paměti pro bleskové the psaní
+        if (!note._searchCache) {
+            const titleNode = note.querySelector('.card-title');
+            const contentNode = note.querySelector('.card-text');
+            const title = titleNode ? titleNode.textContent.toLowerCase() : "";
+            const content = contentNode ? contentNode.textContent.toLowerCase() : "";
+            const tagsAttr = note.getAttribute('data-tags');
+            const tags = tagsAttr ? tagsAttr.toLowerCase().split(',') : [];
+            note._searchCache = { title, content, tags };
+        }
+        
+        const { title, content, tags } = note._searchCache;
         
         const matchesSearch = currentNoteSearch === "" || 
                              title.includes(currentNoteSearch) || 
@@ -1232,9 +1258,9 @@ const filterNotes = (forceAnimate = false) => {
             note.style.display = 'block';
             if (forceAnimate || wasHidden) {
                 note.style.animation = 'none';
-                note.offsetHeight; /* trigger reflow */
+                // note.offsetHeight; // ODSTRANĚNO: Brutální ztráta frameratu kvůli vynucenému Reflow the DOMu
                 note.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
-                delay += 40;
+                delay += 30; // Zrychlení kaskády the animace
             }
             if (note.classList.contains('pinned')) pinnedVisible++;
             else othersVisible++;
@@ -1253,6 +1279,23 @@ const filterNotes = (forceAnimate = false) => {
     }
     if (othersHeader) {
         othersHeader.classList.toggle('d-none', pinnedVisible === 0 || othersVisible === 0);
+    }
+
+    // Bezpečnostní vyrenderování state the hlášení o nenalezení
+    const othersGrid = document.getElementById('othersNotesGrid');
+    if (othersGrid) {
+        if (pinnedVisible === 0 && othersVisible === 0) {
+            if (!document.getElementById('emptySearchState') && !document.getElementById('emptyNotesState')) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.id = 'emptySearchState';
+                emptyDiv.className = 'col-12 text-center text-white-50 py-5 glass-card';
+                emptyDiv.innerHTML = '<i class="bi bi-search display-1 mb-3 d-block"></i><h3>Nic nebylo nalezeno.</h3><p>Zkuste změnit filtry nebo the hledaný výraz.</p>';
+                othersGrid.appendChild(emptyDiv);
+            }
+        } else {
+            const emptySearch = document.getElementById('emptySearchState');
+            if (emptySearch) emptySearch.remove();
+        }
     }
 };
 
@@ -1273,11 +1316,17 @@ if (noteSearchInput) {
     // Restore clear button visibility if input already has value (from localStorage)
     updateNoteSearchClearBtn();
 
-    ['input', 'keyup', 'search'].forEach(eventName => {
+    let searchDebounceTimeout;
+    ['input', 'search'].forEach(eventName => {
         noteSearchInput.addEventListener(eventName, function(e) {
             currentNoteSearch = e.target.value.toLowerCase();
             updateNoteSearchClearBtn();
-            filterNotes(true);
+            
+            // Debounce the filtrování the pro the hladký uživatelský UX
+            clearTimeout(searchDebounceTimeout);
+            searchDebounceTimeout = setTimeout(() => {
+                filterNotes(false);
+            }, 250); // 250ms interval zamezí zasekávání UI during psaní dlouhých dotazů
         });
     });
 }

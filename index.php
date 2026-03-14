@@ -5,17 +5,23 @@ require_once 'includes/functions.php';
 
 
 $snippets = getAllSnippets();
-$pinnedSnippets = array_filter($snippets, function($s) { return ($s['is_pinned'] ?? 0) == 1; });
-$otherSnippets = array_filter($snippets, function($s) { return ($s['is_pinned'] ?? 0) == 0; });
+$pinnedSnippets = [];
+$otherSnippets = [];
 $allTags = getAllTags(); // For the modal
 $languages = getAllLanguages();
 $geminiApiKey = getSetting('gemini_api_key');
 $aiEnabled = getSetting('ai_enabled', '0') == '1' && (!empty($geminiApiKey) || !empty(getSetting('openai_api_key')));
 
 
-// Identify used tags for filtering
+// Identify used tags for filtering and separate pinned/other
 $usedTags = [];
 foreach ($snippets as $snippet) {
+    if (($snippet['is_pinned'] ?? 0) == 1) {
+        $pinnedSnippets[] = $snippet;
+    } else {
+        $otherSnippets[] = $snippet;
+    }
+
     if (!empty($snippet['tags'])) {
         foreach ($snippet['tags'] as $tag) {
             $usedTags[$tag['name']] = $tag; // Use name as key for uniqueness and sort
@@ -264,8 +270,24 @@ function toggleSortingMode() {
     const saveBtn = document.getElementById('saveOrderBtn');
     const newSnippetBtn = document.getElementById('newSnippetBtn');
     const actionBtns = document.querySelectorAll('.action-btns-wrapper');
+    const searchInput = document.getElementById('snippetSearch');
+    const searchClear = document.getElementById('snippetSearchClear');
+    const tagFilters = document.getElementById('tagFilters');
 
     if (isSortingMode) {
+        // Zrušení filtrů a vyhledávání pro bezpečný úklid pořadí a vyřešení bugů s řazením neviditelných položek
+        if (searchInput && searchInput.value !== '') {
+            searchInput.value = '';
+            if (searchClear) searchClear.style.display = 'none';
+            filterSnippets(true);
+        }
+        const allTagBtn = document.querySelector('#tagFilters .btn[data-tag="all"]');
+        if (allTagBtn && !allTagBtn.classList.contains('active')) {
+            allTagBtn.click();
+        }
+        if (tagFilters) tagFilters.classList.add('d-none');
+        if (searchInput) searchInput.disabled = true;
+
         if (pinnedGrid) pinnedGrid.classList.add('sorting-mode');
         if (othersGrid) othersGrid.classList.add('sorting-mode');
         editBtn.classList.add('d-none');
@@ -285,6 +307,9 @@ function toggleSortingMode() {
         if (othersGrid) sortableOthers = new Sortable(othersGrid, sortableConfig);
         
     } else {
+        if (tagFilters) tagFilters.classList.remove('d-none');
+        if (searchInput) searchInput.disabled = false;
+        
         if (pinnedGrid) pinnedGrid.classList.remove('sorting-mode');
         if (othersGrid) othersGrid.classList.remove('sorting-mode');
         editBtn.classList.remove('d-none');
@@ -508,21 +533,36 @@ function updateEmptyStates() {
     const pinnedContainer = document.getElementById('pinnedSnippetsContainer');
     const othersHeader = document.getElementById('othersHeader');
     
-    const pinnedCount = pinnedGrid.querySelectorAll('.snippet-card-wrapper').length;
-    const othersCount = othersGrid.querySelectorAll('.snippet-card-wrapper').length;
-    const totalCount = pinnedCount + othersCount;
+    // Počítáme jen s úkoly, co jdou aktuálně vidět na monitoru
+    const getVisibleCount = (container) => {
+        if (!container) return 0;
+        return Array.from(container.querySelectorAll('.snippet-card-wrapper')).filter(
+            item => item.style.display !== 'none'
+        ).length;
+    };
 
-    if (pinnedContainer) pinnedContainer.classList.toggle('d-none', pinnedCount === 0);
-    if (othersHeader) othersHeader.classList.toggle('d-none', pinnedCount === 0 || othersCount === 0);
+    const pinnedCount = getVisibleCount(pinnedGrid);
+    const othersCount = getVisibleCount(othersGrid);
+    const totalDOMCount = (pinnedGrid ? pinnedGrid.querySelectorAll('.snippet-card-wrapper').length : 0) + 
+                          (othersGrid ? othersGrid.querySelectorAll('.snippet-card-wrapper').length : 0);
+
+    if (pinnedContainer) {
+        pinnedContainer.classList.toggle('d-none', pinnedCount === 0);
+        pinnedContainer.style.display = (totalDOMCount > 0 && pinnedCount > 0) ? '' : 'none';
+    }
+    if (othersHeader) {
+        othersHeader.classList.toggle('d-none', pinnedCount === 0 || othersCount === 0);
+        othersHeader.style.display = (pinnedCount > 0 && othersCount > 0) ? '' : 'none';
+    }
     
     // Remove empty message if it exists and we have items
-    const emptyMsg = othersGrid.querySelector('.text-center.text-white-50.py-5');
-    if (totalCount > 0 && emptyMsg) {
+    const emptyMsg = othersGrid ? othersGrid.querySelector('.text-center.text-white-50.py-5') : null;
+    if (totalDOMCount > 0 && emptyMsg) {
         emptyMsg.remove();
     }
 
     // If no snippets at all, show the empty message
-    if (totalCount === 0) {
+    if (totalDOMCount === 0 && othersGrid) {
         othersGrid.innerHTML = `
             <div class="col-12 text-center text-white-50 py-5">
                 <i class="bi bi-code-slash display-1 mb-3 d-block"></i>

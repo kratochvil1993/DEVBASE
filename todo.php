@@ -37,13 +37,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 }
 
 $todos = getAllTodos(0); // 0 = active
-$pinnedTodos = array_filter($todos, function($t) { return $t['is_pinned'] == 1; });
-$otherTodos = array_filter($todos, function($t) { return $t['is_pinned'] == 0; });
+$pinnedTodos = [];
+$otherTodos = [];
 $allTags = getAllTags('todo');
 
-// Identify used tags for filtering
+// Identify used tags for filtering and separate pinned/other
 $usedTags = [];
 foreach ($todos as $todo) {
+    if ($todo['is_pinned'] == 1) {
+        $pinnedTodos[] = $todo;
+    } else {
+        $otherTodos[] = $todo;
+    }
+
     if (!empty($todo['tags'])) {
         foreach ($todo['tags'] as $tag) {
             $usedTags[$tag['name']] = $tag;
@@ -316,16 +322,31 @@ function toggleSortingMode() {
     const checkboxes = document.querySelectorAll('.form-check-input');
     const addForm = document.getElementById('addTodoForm');
     const addBtn = document.getElementById('addTodoBtn');
+    const tagFilters = document.getElementById('tagFilters');
 
     if (isSortingMode) {
-        const pinnedList = document.getElementById('pinnedTodosList');
-        const othersList = document.getElementById('othersTodosList');
+        // BEZPEČNOSTNÍ RESET FILTRŮ bez the .click() the animací a the ztráty frames
+        if (typeof window.filterTodos === 'function') {
+            const filterBtns = document.querySelectorAll('#tagFilters .btn');
+            if (filterBtns.length > 0) {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                const allBtn = document.querySelector('#tagFilters .btn[data-tag="all"]');
+                if (allBtn) {
+                    allBtn.classList.add('active');
+                    window.currentTodoTag = 'all';
+                }
+            }
+            window.filterTodos(false); // Okamžitý the render the UI
+        }
+        
+        if (tagFilters) tagFilters.classList.add('d-none');
+
         if (pinnedList) pinnedList.classList.add('sorting-mode');
         if (othersList) othersList.classList.add('sorting-mode');
         editBtn.classList.add('d-none');
         saveBtn.classList.remove('d-none');
-        addForm.classList.add('d-none');
-        addBtn.classList.add('d-none');
+        if (addForm) addForm.classList.add('d-none');
+        if (addBtn) addBtn.classList.add('d-none');
         actionBtns.forEach(btn => btn.classList.add('d-none'));
         checkboxes.forEach(cb => cb.disabled = true);
 
@@ -341,8 +362,7 @@ function toggleSortingMode() {
         if (othersList) sortableOthers = new Sortable(othersList, sortableConfig);
         
     } else {
-        const pinnedList = document.getElementById('pinnedTodosList');
-        const othersList = document.getElementById('othersTodosList');
+        if (tagFilters) tagFilters.classList.remove('d-none');
         if (pinnedList) pinnedList.classList.remove('sorting-mode');
         if (othersList) othersList.classList.remove('sorting-mode');
         editBtn.classList.remove('d-none');
@@ -554,10 +574,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             newTodoItem.style.transform = 'translateY(0)';
                             
                             // Cleanup inline styles after animation to allow CSS animations (like jiggle) to work
-                            setTimeout(() => {
+                            newTodoItem.addEventListener('transitionend', () => {
                                 newTodoItem.style.transform = '';
                                 newTodoItem.style.transition = '';
-                            }, 450);
+                            }, { once: true });
                         });
                     }
                     
@@ -650,7 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const tagButtons = document.querySelectorAll('#tagFilters .btn');
-    let currentTag = 'all';
+    window.currentTodoTag = 'all'; // Globálně pro the sorting eventy a hash
 
     // Ensure initial UI state has 'all' active
     if (tagButtons.length > 0) {
@@ -663,23 +683,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const filterTodos = () => {
+    window.filterTodos = (forceAnimate = false) => {
         const items = document.querySelectorAll('.todo-item');
         let delay = 0;
         let pinnedVisible = 0;
         let othersVisible = 0;
         
         items.forEach(item => {
-            const tagsAttr = item.getAttribute('data-tags');
-            const tags = tagsAttr ? tagsAttr.toLowerCase().split(',') : [];
-            const matchesTag = currentTag === 'all' || tags.some(t => t.trim().toLowerCase() === currentTag.toLowerCase());
+            // Memory Data Caching mechanismus jako u notes
+            if (!item._tagCache) {
+                const tagsAttr = item.getAttribute('data-tags');
+                item._tagCache = tagsAttr ? tagsAttr.toLowerCase().split(',') : [];
+            }
+            const tags = item._tagCache;
+            const matchesTag = window.currentTodoTag === 'all' || tags.some(t => t.trim().toLowerCase() === window.currentTodoTag.toLowerCase());
+
+            const wasHidden = item.style.display === 'none';
 
             if (matchesTag) {
                 item.style.display = 'block';
-                item.style.animation = 'none';
-                item.offsetHeight; /* trigger reflow */
-                item.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
-                delay += 40;
+                if (forceAnimate || wasHidden) {
+                    item.style.animation = 'none';
+                    // item.offsetHeight; // ODSTRANĚNO: Brutální ztráta plynulosti the Layout Recalculation!
+                    item.style.animation = `popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${delay}ms both`;
+                    delay += 30; // 30ms the delay between list items
+                }
                 if (item.classList.contains('pinned')) pinnedVisible++;
                 else othersVisible++;
             } else {
@@ -702,15 +730,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial filter application
     if (tagButtons.length > 0) {
-        filterTodos();
+        window.filterTodos(true);
     }
 
     tagButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             tagButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            currentTag = btn.getAttribute('data-tag');
-            filterTodos();
+            window.currentTodoTag = btn.getAttribute('data-tag');
+            window.filterTodos(true);
         });
     });
 
@@ -724,11 +752,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Ensure the todo is visible (clear filters if necessary)
                 if (element.style.display === 'none') {
                     const allBtn = document.querySelector('#tagFilters .btn[data-tag="all"]');
-                    if (allBtn) {
+                    if (allBtn && typeof window.filterTodos === 'function') {
                         allBtn.classList.add('active');
-                        currentTag = 'all';
-                        tagButtons.forEach(b => { if(b !== allBtn) b.classList.remove('active'); });
-                        filterTodos();
+                        window.currentTodoTag = 'all';
+                        document.querySelectorAll('#tagFilters .btn').forEach(b => { if(b !== allBtn) b.classList.remove('active'); });
+                        window.filterTodos(false); // Okamžitě the UI bez the frame drop the re-renderování listu bloků
                     }
                 }
                 
@@ -891,8 +919,16 @@ function updateTodoUIState() {
 
     if (!pinnedGrid || !othersGrid) return;
 
-    const pinnedCount = pinnedGrid.querySelectorAll('.todo-item').length;
-    const othersCount = othersGrid.querySelectorAll('.todo-item').length;
+    // Počítáme jen úkoly, které aktuálně nejsou filtrem schované
+    const getVisibleCount = (container) => {
+        return Array.from(container.querySelectorAll('.todo-item')).filter(
+            item => item.style.display !== 'none'
+        ).length;
+    };
+
+    const pinnedCount = getVisibleCount(pinnedGrid);
+    const othersCount = getVisibleCount(othersGrid);
+    const totalCount = pinnedGrid.querySelectorAll('.todo-item').length + othersGrid.querySelectorAll('.todo-item').length;
 
     // Show/Hide pinned container
     if (pinnedCount > 0) {
@@ -911,7 +947,7 @@ function updateTodoUIState() {
     }
 
     // Handle empty state
-    if (pinnedCount === 0 && othersCount === 0) {
+    if (totalCount === 0) {
         if (!emptyState) {
             const emptyDiv = document.createElement('div');
             emptyDiv.id = 'emptyState';

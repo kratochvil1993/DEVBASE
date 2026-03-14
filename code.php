@@ -636,12 +636,12 @@ let lastSavedName;
 let isSaving = false;
 
 function triggerAutosave() {
-    if (!editor || isSaving) return;
+    if (!editor || isSaving) return Promise.resolve(null);
     const currentContent = editor.getValue();
     const currentName = document.getElementById('padName').value;
     const padId = document.getElementById('activeScratchpadId')?.value;
 
-    if (!padId || (currentContent === lastSavedContent && currentName === lastSavedName)) return;
+    if (!padId || (currentContent === lastSavedContent && currentName === lastSavedName)) return Promise.resolve(null);
 
     isSaving = true;
     const autosaveIndicator = document.getElementById('autosaveIndicator');
@@ -649,7 +649,7 @@ function triggerAutosave() {
         autosaveIndicator.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Ukládám...';
     }
 
-    window.fetchAutosave({
+    return window.fetchAutosave({
         id: padId,
         content: currentContent,
         name: currentName
@@ -663,8 +663,10 @@ function triggerAutosave() {
             const activeTab = document.querySelector('.nav-tab-item.active .tab-name');
             if (activeTab) activeTab.textContent = currentName;
         }
+        return res;
     }).catch(() => {
         isSaving = false;
+        return null;
     });
 }
 
@@ -689,7 +691,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     updateCharCount();
-    editor.on('change', updateCharCount);
+    
+    // Auto-save debounce timeout
+    let editorChangeTimeout;
+    editor.on('change', () => {
+        updateCharCount();
+        clearTimeout(editorChangeTimeout);
+        editorChangeTimeout = setTimeout(() => {
+            triggerAutosave();
+        }, 1500); // Trigger auto-save 1.5s after user stops typing
+    });
     
     // Autosave on name change/blur
     const padNameInput = document.getElementById('padName');
@@ -834,15 +845,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Autosave logic
+    // Autosave logic (Variables setup)
     lastSavedContent = editor.getValue();
     lastSavedName = document.getElementById('padName').value;
     const autosaveIndicator = document.getElementById('autosaveIndicator');
-
-
-
-    // Interval save (every 30s)
-    setInterval(triggerAutosave, 30000);
 
     // Visibility change save (when user switches browser tab)
     document.addEventListener('visibilitychange', () => {
@@ -1245,6 +1251,9 @@ function initColorPicker() {
     
     function updateColors() {
         const content = editor.getValue();
+        // Omezit vykon na dlouhych souborech (Pokud je soubor delsi nez 50k znaku, přeskočíme)
+        if (content.length > 50000) return;
+
         const colorRegex = /#[0-9a-fA-F]{3,6}|rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(?:,\s*[\d\.]+\s*)?\)/g;
         
         // Clear old widgets
@@ -1253,7 +1262,10 @@ function initColorPicker() {
         });
 
         let match;
-        while ((match = colorRegex.exec(content)) !== null) {
+        let count = 0;
+        // Zpracuj MAX 500 barev (ochrana paměti prohlížeče proti vytečení v obřím zminifikovaném CSS)
+        while ((match = colorRegex.exec(content)) !== null && count < 500) {
+            count++;
             const start = editor.posFromIndex(match.index);
             const end = editor.posFromIndex(match.index + match[0].length);
             
@@ -1323,12 +1335,16 @@ function addNewTab(event) {
                 const newTab = document.createElement('div');
                 newTab.className = 'nav-tab-item me-1';
                 newTab.setAttribute('data-id', pad.id);
+                // Ošetříme XSS únik skrze název padu z JSON dat
+                const safePadName = pad.name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                const safePadNameQuoted = safePadName.replace(/'/g, "\\'"); // escape for inline onclick js string
+
                 newTab.innerHTML = `
                     <a href="code.php?id=${pad.id}" class="nav-tab-link py-2 px-3" onclick="switchTab(event, ${pad.id})">
                         <i class="bi bi-file-earmark-code me-1"></i>
-                        <span class="tab-name">${pad.name}</span>
+                        <span class="tab-name">${safePadName}</span>
                     </a>
-                    <button type="button" class="btn-tab-close ms-0" onclick="confirmDelete(${pad.id}, '${pad.name}')">
+                    <button type="button" class="btn-tab-close ms-0" onclick="confirmDelete(${pad.id}, '${safePadNameQuoted}')">
                         <i class="bi bi-x"></i>
                     </button>
                 `;
@@ -1364,17 +1380,17 @@ function switchTab(event, id) {
     // Don't do anything if we're clicking the already active tab
     if (currentId == id) return;
 
-    // Trigger autosave for the current tab first
-    triggerAutosave();
-
     const autosaveIndicator = document.getElementById('autosaveIndicator');
     if (autosaveIndicator) {
         autosaveIndicator.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Načítám...';
     }
 
-    // Fetch the new tab's content
-    fetch(`api/api_get_scratchpad.php?id=${id}`)
-        .then(response => response.json())
+    // Spolehlivě počkáme na dojetí promise, aby nedošlo k RaceCondition chybě a ztrátě dat
+    Promise.resolve(triggerAutosave()).then(() => {
+        // Fetch the new tab's content
+        return fetch(`api/api_get_scratchpad.php?id=${id}`);
+    })
+    .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
                 const pad = data.data;

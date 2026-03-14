@@ -6,15 +6,18 @@ if (getSetting('inbox_enabled', '0') == '0') {
     exit;
 }
 
+// Přesměrujeme API POST volání bokem pro asynchronní bez-reload operace z tlačítek the UI
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] == 'delete_inbox_item') {
-        deleteInboxItem($_POST['id']);
+        $result = deleteInboxItem($_POST['id']);
+        echo json_encode(['status' => $result ? 'success' : 'error']);
     } elseif ($_POST['action'] == 'clear_inbox') {
         clearInbox();
+        header('Location: inbox.php');
     } elseif ($_POST['action'] == 'manual_import') {
-        importIntoItemFromInbox($_POST['id'], $_POST['target_type']);
+        $resultId = importIntoItemFromInbox($_POST['id'], $_POST['target_type']);
+        echo json_encode(['status' => $resultId ? 'success' : 'error']);
     }
-    header('Location: inbox.php');
     exit;
 }
 
@@ -60,7 +63,7 @@ include 'includes/header.php';
             <?php else: ?>
                 <div class="d-flex flex-column gap-3 mb-5">
                     <?php foreach ($items as $item): ?>
-                        <div class="inbox-item-wrapper" id="inbox-item-<?php echo $item['id']; ?>" onclick="showInboxDetail(<?php echo htmlspecialchars(json_encode($item), ENT_QUOTES, 'UTF-8'); ?>)" style="cursor: pointer;">
+                        <div class="inbox-item-wrapper" id="inbox-item-<?php echo $item['id']; ?>" onclick="showInboxDetail(<?php echo $item['id']; ?>)" style="cursor: pointer;">
                             <div class="glass-card todo-item p-3 d-flex align-items-center gap-3 border-light border-opacity-10">
                                 <!-- Type Icon / Badge -->
                                 <div class="flex-shrink-0 d-none d-sm-block">
@@ -167,7 +170,13 @@ include 'includes/header.php';
 </div>
 
 <script>
-function showInboxDetail(item) {
+// Bezpečné The vložení databáze itemů pro javascript, the neduplikuje kód the v the onClick the elementech
+const theGlobalInboxItems = <?php echo json_encode(array_column($items, null, 'id')); ?>;
+
+function showInboxDetail(id) {
+    const item = theGlobalInboxItems[id];
+    if (!item) return;
+
     document.getElementById('modalSubject').innerText = item.subject;
     // document.getElementById('modalFrom').innerText = item.from_email;
     document.getElementById('modalDate').innerText = item.created_at;
@@ -198,6 +207,16 @@ function showInboxDetail(item) {
 
 function manualImport(id, type, event) {
     if (event) event.stopPropagation();
+    
+    let btn = null;
+    let oldContent = "";
+    if (event && event.currentTarget) {
+        btn = event.currentTarget;
+        oldContent = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        btn.disabled = true;
+    }
+
     const formData = new FormData();
     formData.append('action', 'manual_import');
     formData.append('id', id);
@@ -206,8 +225,33 @@ function manualImport(id, type, event) {
     fetch('inbox.php', {
         method: 'POST',
         body: formData
-    }).then(() => {
-        window.location.reload();
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Skryjeme open modal pokud jsme the importovali of vnitřku zprávy!
+            const modalEl = document.getElementById('inboxDetailModal');
+            if (modalEl) {
+                const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (modalInstance) modalInstance.hide();
+            }
+
+            // Místo the reloadu (window.location.reload()) aplikujeme animativní zahození zpracovaného emailu!
+            const el = document.getElementById('inbox-item-' + id);
+            if (el) {
+                el.style.transition = 'all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                el.style.transform = 'translateX(100px)';
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 400);
+            }
+        }
+    })
+    .catch(() => {
+        alert("Při importu nastala chyba sítě the API");
+        if (btn) {
+            btn.innerHTML = oldContent;
+            btn.disabled = false;
+        }
     });
 }
 function syncInbox() {
@@ -263,15 +307,22 @@ function deleteInboxItem(id, event) {
     fetch('inbox.php', {
         method: 'POST',
         body: formData
-    }).then(() => {
-        const el = document.getElementById('inbox-item-' + id);
-        if (el) {
-            el.style.transition = 'all 0.3s ease';
-            el.style.opacity = '0';
-            el.style.transform = 'scale(0.8)';
-            setTimeout(() => el.remove(), 300);
+    })
+    .then(r => r.json())
+    .then((data) => {
+        if (data.status === 'success') {
+            const el = document.getElementById('inbox-item-' + id);
+            if (el) {
+                el.style.transition = 'all 0.3s ease';
+                el.style.opacity = '0';
+                el.style.transform = 'scale(0.8)';
+                setTimeout(() => el.remove(), 300);
+            }
+        } else {
+            alert('Nastala chyba serveru a položka the nebyla ze záznamu ostraněna.');
         }
-    });
+    })
+    .catch(() => alert('Přerušeno síťové spojení'));
 }
 </script>
 

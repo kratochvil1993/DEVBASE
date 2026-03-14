@@ -608,6 +608,7 @@ function aiAction(action) {
             insightBox.classList.remove('flash-purple');
             void insightBox.offsetWidth;
             insightBox.classList.add('flash-purple');
+            setTimeout(() => insightBox.classList.remove('flash-purple'), 2000); // Clear animation to prevent memory leak
 
             if (action === 'structure_note') {
                 // For structure, we show a button to apply it
@@ -884,12 +885,15 @@ function addExtractedTodo(btn, text, deadline) {
 
 
 function triggerAutosave() {
-    if (!quill || isSaving) return;
-    const currentContent = quill.root.innerHTML;
+    if (!quill || isSaving) return Promise.resolve(null);
+    let currentContent = quill.root.innerHTML;
+    // Ochrana před ukládáním vizuálně prázdného řádku (defaultní chování Quill.js na startu)
+    if (currentContent === '<p><br></p>') currentContent = '';
+    
     const currentName = document.getElementById('padName').value;
     const padId = document.getElementById('activeScratchpadId')?.value;
 
-    if (!padId || (currentContent === lastSavedContent && currentName === lastSavedName)) return;
+    if (!padId || (currentContent === lastSavedContent && currentName === lastSavedName)) return Promise.resolve(null);
 
     isSaving = true;
     const autosaveIndicator = document.getElementById('autosaveIndicator');
@@ -897,7 +901,7 @@ function triggerAutosave() {
         autosaveIndicator.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Ukládám...';
     }
 
-    window.fetchAutosave({
+    return window.fetchAutosave({
         id: padId,
         content: currentContent,
         name: currentName
@@ -911,8 +915,10 @@ function triggerAutosave() {
             const activeTab = document.querySelector('.nav-tab-item.active .tab-name');
             if (activeTab) activeTab.textContent = currentName;
         }
+        return res;
     }).catch(() => {
         isSaving = false;
+        return null;
     });
 }
 
@@ -935,7 +941,16 @@ document.addEventListener('DOMContentLoaded', function() {
     quill.root.innerHTML = <?php echo json_encode($content); ?>;
     
     updateCharCount();
-    quill.on('text-change', updateCharCount);
+    
+    // Auto-save & char count debounce
+    let quillChangeTimeout;
+    quill.on('text-change', () => {
+        clearTimeout(quillChangeTimeout);
+        quillChangeTimeout = setTimeout(() => {
+            updateCharCount();
+            triggerAutosave();
+        }, 1500); // 1.5s delay after stopping typing
+    });
     
     // Autosave on name change/blur
     const padNameInput = document.getElementById('padName');
@@ -1028,13 +1043,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Autosave logic
-    lastSavedContent = quill.root.innerHTML;
+    // Autosave logic (Variables setup)
+    let initialContent = quill.root.innerHTML;
+    if (initialContent === '<p><br></p>') initialContent = '';
+    
+    lastSavedContent = initialContent;
     lastSavedName = document.getElementById('padName').value;
     const autosaveIndicator = document.getElementById('autosaveIndicator');
-
-    // Interval save (every 30s)
-    setInterval(triggerAutosave, 30000);
 
     // Visibility change save (when user switches browser tab)
     document.addEventListener('visibilitychange', () => {
@@ -1302,12 +1317,17 @@ function addNewTab(event) {
                 const newTab = document.createElement('div');
                 newTab.className = 'nav-tab-item me-1';
                 newTab.setAttribute('data-id', pad.id);
+
+                // Ošetříme XSS únik skrze název padu z JSON dat
+                const safePadName = pad.name.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                const safePadNameQuoted = safePadName.replace(/'/g, "\\'"); // escape for inline onclick js string
+
                 newTab.innerHTML = `
                     <a href="notes_drafts.php?id=${pad.id}" class="nav-tab-link py-2 px-3" onclick="switchTab(event, ${pad.id})">
                         <i class="bi bi-file-earmark-text me-1"></i>
-                        <span class="tab-name">${pad.name}</span>
+                        <span class="tab-name">${safePadName}</span>
                     </a>
-                    <button type="button" class="btn-tab-close ms-0" onclick="confirmDelete(${pad.id}, '${pad.name}')">
+                    <button type="button" class="btn-tab-close ms-0" onclick="confirmDelete(${pad.id}, '${safePadNameQuoted}')">
                         <i class="bi bi-x"></i>
                     </button>
                 `;
@@ -1351,17 +1371,17 @@ function switchTab(event, id) {
         return;
     }
 
-    // Trigger autosave for the current tab first
-    triggerAutosave();
-
     const autosaveIndicator = document.getElementById('autosaveIndicator');
     if (autosaveIndicator) {
         autosaveIndicator.innerHTML = '<i class="bi bi-cloud-arrow-up me-1"></i> Načítám...';
     }
 
-    // Fetch the new tab's content
-    fetch(`api/api_get_scratchpad.php?id=${id}`)
-        .then(response => response.json())
+    // Spolehlivě počkáme na dojetí promise, aby nedošlo k RaceCondition chybě a ztrátě dat
+    Promise.resolve(triggerAutosave()).then(() => {
+        // Fetch the new tab's content
+        return fetch(`api/api_get_scratchpad.php?id=${id}`);
+    })
+    .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
                 const pad = data.data;
@@ -1537,6 +1557,7 @@ function submitAiPrompt() {
             insightBox.classList.remove('flash-purple');
             void insightBox.offsetWidth;
             insightBox.classList.add('flash-purple');
+            setTimeout(() => insightBox.classList.remove('flash-purple'), 2000); // Clear animation to prevent memory leak
             promptInput.value = ''; 
         } else {
             insightContent.innerHTML = '<div class="text-danger"><i class="bi bi-exclamation-triangle me-2"></i> ' + data.message + '</div>';
