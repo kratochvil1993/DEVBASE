@@ -1,3 +1,9 @@
+/*
+@view-transition {
+  navigation: auto;
+}
+*/
+
 :root {
   scroll-behavior: smooth;
   /* Slightly more refined Glass for the darker background */

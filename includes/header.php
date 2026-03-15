@@ -183,7 +183,7 @@ session_write_close();
     </div>
 </nav>
 
-<div class="offcanvas offcanvas-start offcanvas-glass text-white" tabindex="-1" id="offcanvasNavbar" style="overflow: hidden;">
+<div class="offcanvas offcanvas-start offcanvas-glass text-white pt-5" tabindex="-1" id="offcanvasNavbar" style="overflow: hidden;">
     <div id="bgcircle-primary"></div>
     <div id="bgcircle-pruple"></div>
     <div class="offcanvas-header border-bottom border-light border-opacity-25" style="position: relative; z-index: 1;">
