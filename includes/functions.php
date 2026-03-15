@@ -221,7 +221,6 @@ function updateSnippetOrder($id, $order) {
 
 function getAllNotes($sort = 'custom', $archive_status = 0) {
     global $conn;
-    // Columns is_archived and is_pinned are now in schema.sql
 
     $orderBy = "n.is_pinned DESC, n.sort_order ASC, n.created_at DESC";
     
@@ -255,12 +254,36 @@ function getAllNotes($sort = 'custom', $archive_status = 0) {
             $whereClause
             ORDER BY $orderBy";
     $result = $conn->query($sql);
+    
     $notes = [];
-    while ($row = $result->fetch_assoc()) {
-        $row['tags'] = getNoteTags($row['id']);
-        $notes[] = $row;
+    $noteIds = [];
+    
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $row['tags'] = []; // Initialize
+            $notes[$row['id']] = $row;
+            $noteIds[] = $row['id'];
+        }
     }
-    return $notes;
+
+    if (!empty($noteIds)) {
+        $idsStr = implode(',', $noteIds);
+        $tagsSql = "SELECT nt.note_id, t.id, t.name, t.color, t.sort_order 
+                    FROM note_tags nt 
+                    JOIN tags t ON nt.tag_id = t.id 
+                    WHERE nt.note_id IN ($idsStr)
+                    ORDER BY t.sort_order ASC, t.name ASC";
+        $tagsRes = $conn->query($tagsSql);
+        if ($tagsRes) {
+            while ($tagRow = $tagsRes->fetch_assoc()) {
+                $noteId = $tagRow['note_id'];
+                unset($tagRow['note_id']);
+                $notes[$noteId]['tags'][] = $tagRow;
+            }
+        }
+    }
+    
+    return array_values($notes);
 }
 
 function getNote($id) {
@@ -383,13 +406,34 @@ function getAllTodos($archive_status = 0) {
     $sql = "SELECT * FROM todos WHERE is_archived = $archive_status ORDER BY is_pinned DESC, sort_order ASC, created_at DESC";
     $result = $conn->query($sql);
     $todos = [];
-    if($result) {
+    $todoIds = [];
+    
+    if ($result) {
         while ($row = $result->fetch_assoc()) {
-            $row['tags'] = getTodoTags($row['id']);
-            $todos[] = $row;
+            $row['tags'] = []; // Initialize
+            $todos[$row['id']] = $row;
+            $todoIds[] = $row['id'];
         }
     }
-    return $todos;
+
+    if (!empty($todoIds)) {
+        $idsStr = implode(',', $todoIds);
+        $tagsSql = "SELECT tt.todo_id, t.id, t.name, t.color, t.sort_order 
+                    FROM todo_tags tt 
+                    JOIN tags t ON tt.tag_id = t.id 
+                    WHERE tt.todo_id IN ($idsStr)
+                    ORDER BY t.sort_order ASC, t.name ASC";
+        $tagsRes = $conn->query($tagsSql);
+        if ($tagsRes) {
+            while ($tagRow = $tagsRes->fetch_assoc()) {
+                $todoId = $tagRow['todo_id'];
+                unset($tagRow['todo_id']); // Remove temp field
+                $todos[$todoId]['tags'][] = $tagRow;
+            }
+        }
+    }
+    
+    return array_values($todos);
 }
 
 function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = null, $deadline_time = null, $note = null) {

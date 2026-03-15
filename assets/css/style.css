@@ -210,6 +210,7 @@ pre.ql-syntax {
   border-radius: 0 !important;
   /* overflow: auto !important; */
   overflow: auto;
+  overflow-x: hidden !important;
   white-space: pre; /* Ensure content is actually code-like */
 }
 

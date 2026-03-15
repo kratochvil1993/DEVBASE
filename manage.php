@@ -67,7 +67,7 @@ include 'includes/header.php';
     </div>
 </div>
 
-<div class="row" style="margin-bottom: 30vh;">
+<div class="row">
     <div class="col-12">
         <div class="glass-card p-0 no-jump overflow-hidden">
             <div class="table-responsive">

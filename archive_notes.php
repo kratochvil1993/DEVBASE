@@ -16,21 +16,19 @@ $allNoteTags = getAllTags('note');
 $geminiApiKey = getSetting('gemini_api_key');
 $aiEnabled = getSetting('ai_enabled', '0') == '1' && (!empty($geminiApiKey) || !empty(getSetting('openai_api_key')) || !empty(getSetting('custom_ai_endpoint')));
 
-// Identify used tags for filtering
+// Identify used tags for filtering directly from DB
 $usedTags = [];
-foreach ($notes as $note) {
-    if (!empty($note['tags'])) {
-        foreach ($note['tags'] as $tag) {
-            $usedTags[$tag['id']] = $tag;
-        }
+$tagsQuery = "SELECT DISTINCT t.* FROM tags t 
+              JOIN note_tags nt ON t.id = nt.tag_id 
+              JOIN notes n ON nt.note_id = n.id 
+              WHERE n.is_archived = 1 
+              ORDER BY t.sort_order ASC, t.name ASC";
+$tagsResult = $conn->query($tagsQuery);
+if ($tagsResult) {
+    while ($tag = $tagsResult->fetch_assoc()) {
+        $usedTags[] = $tag;
     }
 }
-uasort($usedTags, function($a, $b) {
-    if ($a['sort_order'] == $b['sort_order']) {
-        return strcmp($a['name'], $b['name']);
-    }
-    return $a['sort_order'] <=> $b['sort_order'];
-});
 
 include 'includes/header.php';
 ?>
@@ -122,7 +120,7 @@ include 'includes/header.php';
 }
 </style>
 
-<div class="row mb-5 align-items-center">
+<div class="row mb-5 align-items-center mt-2">
     <div class="col-lg-8 mx-auto">
         <h2 class="text-white mb-3">Archiv poznámek</h2>
         <div class="glass-card no-jump p-2 d-flex flex-wrap gap-3 align-items-center justify-content-between">

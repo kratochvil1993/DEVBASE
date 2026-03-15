@@ -12,10 +12,10 @@ $todos = getAllTodos(1); // 1 = archived
 include 'includes/header.php';
 ?>
 
-<div class="row mb-4 align-items-center">
+<div class="row mb-4 align-items-center mt-2">
     <div class="col-lg-8 mx-auto">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="text-white fw-bold mb-0">Archiv úkolů (TODO)</h2>
+            <h2 class="text-white fw-bold mb-0">Archiv TODO</h2>
             <div id="archiveActions" class="<?php echo empty($todos) ? 'd-none' : ''; ?>">
                 <button type="button" class="btn btn-danger rounded px-4" onclick="emptyTodoArchive()">
                     <i class="bi bi-trash-fill me-2"></i> Vysypat archiv
@@ -24,21 +24,18 @@ include 'includes/header.php';
         </div>
 
         <?php
-        $allTags = getAllTags('todo');
         $usedTags = [];
-        foreach ($todos as $todo) {
-            if (!empty($todo['tags'])) {
-                foreach ($todo['tags'] as $tag) {
-                    $usedTags[$tag['name']] = $tag;
-                }
+        $tagsQuery = "SELECT DISTINCT t.* FROM tags t 
+                      JOIN todo_tags tt ON t.id = tt.tag_id 
+                      JOIN todos td ON tt.todo_id = td.id 
+                      WHERE td.is_archived = 1 
+                      ORDER BY t.sort_order ASC, t.name ASC";
+        $tagsResult = $conn->query($tagsQuery);
+        if ($tagsResult) {
+            while ($tag = $tagsResult->fetch_assoc()) {
+                $usedTags[] = $tag;
             }
         }
-        uasort($usedTags, function($a, $b) {
-            if ($a['sort_order'] == $b['sort_order']) {
-                return strcmp($a['name'], $b['name']);
-            }
-            return $a['sort_order'] <=> $b['sort_order'];
-        });
         ?>
 
         <?php if (!empty($usedTags)): ?>
@@ -110,9 +107,7 @@ include 'includes/header.php';
             <?php endif; ?>
         </div>
         
-        <!-- <div class="text-start mt-3">
-            <a href="todo.php" class="text-white btn btn-sm btn-outline-light"><i class="bi bi-arrow-left me-1"></i> Zpět na aktivní úkoly</a>
-        </div> -->
+
     </div>
 </div>
 
