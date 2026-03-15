@@ -151,7 +151,7 @@ include 'includes/header.php';
                         <i class="bi bi-clock me-1"></i> <span id="modalDate"></span>
                     </div>
                 </div>
-                <div class="p-3 rounded bg-black bg-opacity-25" style="white-space: pre-wrap; font-family: 'Inter', sans-serif;" id="modalContent"></div>
+                <div class="p-3 rounded bg-black bg-opacity-25" style="white-space: pre-wrap; font-family: 'Inter', sans-serif; max-height: 70vh; overflow-y: auto;" id="modalContent"></div>
             </div>
             <div class="modal-footer border-top border-light border-opacity-10" id="modalFooter">
                 <!-- Actions will be injected here if not imported -->

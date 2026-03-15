@@ -202,12 +202,14 @@ include 'includes/header.php';
                 </div>
                 <?php endif; ?>
 
-                <div class="snippet-code-wrapper position-relative m-3">
+                <div class="position-relative m-3">
                     <button class="btn btn-sm btn-outline-light copy-btn shadow-sm z-3" onclick="copyToClipboard(this, 'viewModalCode')" style="position: absolute; right: 10px; top: 10px; z-index: 10;">
                         copy
                     </button>
-                    <div id="viewModalMarkdown" class="p-3 text-white markdown-preview" style="display: none; overflow-x: auto;"></div>
-                    <pre id="viewModalPre" class="m-0" style="white-space: pre-wrap; overflow-wrap: break-word; overflow-x: auto;"><code id="viewModalCode" class=""></code></pre>
+                    <div class="snippet-code-wrapper" style="max-height: 70vh; overflow-y: auto;">
+                        <div id="viewModalMarkdown" class="p-3 text-white markdown-preview" style="display: none;"></div>
+                        <pre id="viewModalPre" class="m-0" style="white-space: pre-wrap; overflow-wrap: break-word;"><code id="viewModalCode" class=""></code></pre>
+                    </div>
                 </div>
 
             </div>

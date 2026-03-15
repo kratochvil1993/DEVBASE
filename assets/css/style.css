@@ -209,8 +209,8 @@ pre.ql-syntax {
   margin: 0 !important;
   border-radius: 0 !important;
   /* overflow: auto !important; */
-  overflow: hidden !important;
-  white-space: pre !important; /* Ensure content is actually code-like */
+  overflow: auto;
+  white-space: pre; /* Ensure content is actually code-like */
 }
 
 /* Inline code tags (e.g. from AI) inside editor and AI box */
@@ -1474,6 +1474,10 @@ h6 i.bi-pin-angle-fill {
   color: #fff;
 }
 
+#noteTagFilters button,
+#tagFilters button {
+  margin-bottom: 0.5rem;
+}
 @media only screen and (max-width: 1399px) {
 }
 @media only screen and (max-width: 1199px) {
