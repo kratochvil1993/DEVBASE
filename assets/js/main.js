@@ -564,4 +564,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   initInboxAutoCheck();
+
+  // Performance: Pause background animations when window is blurred/hidden
+  const handleVisibilityChange = () => {
+    if (document.hidden || !document.hasFocus()) {
+      document.body.classList.add("animations-paused");
+    } else {
+      document.body.classList.remove("animations-paused");
+    }
+  };
+
+  window.addEventListener("blur", handleVisibilityChange);
+  window.addEventListener("focus", handleVisibilityChange);
+  document.addEventListener("visibilitychange", handleVisibilityChange);
 });

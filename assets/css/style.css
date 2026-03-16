@@ -24,6 +24,29 @@
   --dropdown-bg: rgba(248, 250, 252, 0.96);
 }
 
+/* PERFORMANCE: HIGH-AGGRESSION OPTIMIZATION FOR INACTIVE WINDOW */
+.animations-paused {
+    /* Stop all CPU-intensive background movement */
+    --circle-purple: rgba(50, 50, 50, 0.1);
+    --circle-primary: rgba(40, 40, 40, 0.1);
+}
+
+.animations-paused #bgcircle-pruple,
+.animations-paused #bgcircle-primary {
+    animation-play-state: paused !important;
+    display: none !important; /* Completely remove from layout when inactive */
+}
+
+.animations-paused .glass-card,
+.animations-paused .navbar-glass,
+.animations-paused .offcanvas-glass,
+.animations-paused .help-submenu-inner {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(15, 23, 42, 0.95) !important; /* Solid dark background instead of blur */
+    transform: none !important; /* Stop GPU transforms */
+}
+
 [data-bs-theme="dark"] {
   --glass-bg: rgba(0, 0, 0, 0.4);
   --glass-border: rgba(255, 255, 255, 0.1);
