@@ -1128,22 +1128,6 @@ h6 i.bi-pin-angle-fill {
   color: #fff !important;
 }
 
-.pulse-red {
-  animation: pulse-red-animation 2s infinite;
-  border-radius: 50%;
-}
-
-@keyframes pulse-red-animation {
-  0% {
-    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
-  }
-}
 
 .reminder-list::-webkit-scrollbar {
   width: 4px;
