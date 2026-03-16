@@ -45,6 +45,7 @@
     -webkit-backdrop-filter: none !important;
     background: rgba(15, 23, 42, 0.95) !important; /* Solid dark background instead of blur */
     transform: none !important; /* Stop GPU transforms */
+    transition: none !important; /* Stop keeping transition buffers in memory */
 }
 
 /* Visibility Optimization for Intersection Observer */
