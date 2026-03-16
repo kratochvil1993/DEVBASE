@@ -577,4 +577,35 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("blur", handleVisibilityChange);
   window.addEventListener("focus", handleVisibilityChange);
   document.addEventListener("visibilitychange", handleVisibilityChange);
+
+  // Performance: Intersection Observer (Game Changer)
+  // Disable expensive filters (blur) for elements that are not currently visible
+  const initVisibilityObserver = () => {
+    const observerOptions = {
+      root: null, // use viewport
+      rootMargin: "100px", // pre-load blur 100px before appearing
+      threshold: 0,
+    };
+
+    const visibilityObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove("off-screen");
+        } else {
+          entry.target.classList.add("off-screen");
+        }
+      });
+    }, observerOptions);
+
+    // Target all heavy glass elements
+    const heavyElements = document.querySelectorAll(
+      ".glass-card, .snippet-card-wrapper, .note-item, .todo-item, .navbar-glass",
+    );
+    heavyElements.forEach((el) => visibilityObserver.observe(el));
+  };
+
+  // Run observer after a short delay to let initial layout settle
+  if ("IntersectionObserver" in window) {
+    setTimeout(initVisibilityObserver, 1000);
+  }
 });

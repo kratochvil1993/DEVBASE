@@ -47,6 +47,12 @@
     transform: none !important; /* Stop GPU transforms */
 }
 
+/* Visibility Optimization for Intersection Observer */
+.off-screen {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
 [data-bs-theme="dark"] {
   --glass-bg: rgba(0, 0, 0, 0.4);
   --glass-border: rgba(255, 255, 255, 0.1);
@@ -129,6 +135,10 @@ nav .logo {
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
+  /* Layer Promotion: Tell browser to be ready for transforms/filters */
+  will-change: transform, backdrop-filter;
+  /* CSS Containment: Isolate rendering to avoid page-wide recalculations */
+  contain: layout paint;
 }
 
 .glass-card:hover {
