@@ -549,6 +549,11 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const checkAndRun = () => {
+      // PERFORMANCE: Skip check completely if window is not active or is hidden
+      if (document.hidden || !document.hasFocus()) {
+        return;
+      }
+
       const lastCheckStr = localStorage.getItem("inbox_last_check");
       const lastCheck = lastCheckStr ? parseInt(lastCheckStr) : 0;
       const now = Date.now();
