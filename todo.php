@@ -796,7 +796,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Ensure dropdowns aren't covered by other cards (z-index fix)
+    // Zajištění, aby dropdowny nebyly překryty jinými kartami (z-index fix)
     document.addEventListener('show.bs.dropdown', function (event) {
         const parent = event.target.closest('.todo-item');
         if (parent) {
@@ -810,10 +810,19 @@ document.addEventListener('DOMContentLoaded', () => {
             parent.style.zIndex = '';
         }
     });
+
+    // Zajištění, že se zavřou všechny otevřené dropdowny, když se otevírá modální okno
+    // Tím se také resetuje z-index (přes hide.bs.dropdown listener) a menu nezůstane nad modálem
+    document.addEventListener('show.bs.modal', function () {
+        const openDropdowns = document.querySelectorAll('.dropdown-toggle.show');
+        openDropdowns.forEach(dd => {
+            const instance = bootstrap.Dropdown.getInstance(dd);
+            if (instance) instance.hide();
+        });
+    });
 });
 
 function toggleTodoPin(todoId, event) {
-    if (event) event.stopPropagation();
     
     const formData = new FormData();
     formData.append('action', 'toggle_pin');
@@ -856,7 +865,6 @@ function toggleTodoPin(todoId, event) {
 }
 
 function archiveTodoItem(todoId, event) {
-    if (event) event.stopPropagation();
     
     const formData = new FormData();
     formData.append('action', 'archive_todo');
@@ -889,7 +897,6 @@ function archiveTodoItem(todoId, event) {
 }
 
 function deleteTodoItem(todoId, event) {
-    if (event) event.stopPropagation();
     
     if (!confirm('Opravdu chcete tento úkol nenávratně smazat?')) return;
 

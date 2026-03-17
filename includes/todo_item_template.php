@@ -118,7 +118,7 @@ if (!empty($todo['deadline'])) {
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item small py-2" href="javascript:void(0)" onclick="openEditTodoModal(<?php echo htmlspecialchars(json_encode($todo), ENT_QUOTES, 'UTF-8'); ?>); event.stopPropagation();">
+                            <a class="dropdown-item small py-2" href="javascript:void(0)" onclick="openEditTodoModal(<?php echo htmlspecialchars(json_encode($todo), ENT_QUOTES, 'UTF-8'); ?>)">
                                 <i class="bi bi-pencil me-2"></i> Upravit
                             </a>
                         </li>
