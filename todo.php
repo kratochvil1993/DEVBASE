@@ -795,6 +795,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Ensure dropdowns aren't covered by other cards (z-index fix)
+    document.addEventListener('show.bs.dropdown', function (event) {
+        const parent = event.target.closest('.todo-item');
+        if (parent) {
+            parent.style.zIndex = '1060';
+        }
+    });
+
+    document.addEventListener('hide.bs.dropdown', function (event) {
+        const parent = event.target.closest('.todo-item');
+        if (parent) {
+            parent.style.zIndex = '';
+        }
+    });
 });
 
 function toggleTodoPin(todoId, event) {

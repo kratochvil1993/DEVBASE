@@ -139,7 +139,7 @@ nav .logo {
   /* Layer Promotion: Tell browser to be ready for transforms/filters */
   will-change: transform, backdrop-filter;
   /* CSS Containment: Isolate rendering to avoid page-wide recalculations */
-  contain: layout paint;
+  contain: layout;
 }
 
 .glass-card:hover {
@@ -699,6 +699,7 @@ pre.ql-syntax {
 .todo-item,
 .editor-container {
   scroll-margin-top: 120px;
+  overflow: visible !important;
 }
 
 .manage-notes-table tbody tr {

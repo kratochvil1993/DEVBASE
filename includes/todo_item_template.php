@@ -87,20 +87,49 @@ if (!empty($todo['deadline'])) {
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="d-flex gap-2 action-btns flex-shrink-0 ms-3">
-                <button type="button" class="btn btn-sm btn-link <?php echo $todo['is_pinned'] ? 'text-warning' : 'text-white-50'; ?> p-0" 
-                        onclick="toggleTodoPin(<?php echo $todo['id']; ?>, event)"
-                        title="<?php echo $todo['is_pinned'] ? 'Odepnout' : 'Připnout'; ?>">
-                    <i class="bi <?php echo $todo['is_pinned'] ? 'bi-pin-angle-fill' : 'bi-pin-angle'; ?> fs-5"></i>
-                </button>
+            <div class="action-btns flex-shrink-0 ms-3">
+                <!-- Desktop style (md+) -->
+                <div class="d-none d-md-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-link <?php echo $todo['is_pinned'] ? 'text-warning' : 'text-white-50'; ?> p-0" 
+                            onclick="toggleTodoPin(<?php echo $todo['id']; ?>, event)"
+                            title="<?php echo $todo['is_pinned'] ? 'Odepnout' : 'Připnout'; ?>">
+                        <i class="bi <?php echo $todo['is_pinned'] ? 'bi-pin-angle-fill' : 'bi-pin-angle'; ?> fs-5"></i>
+                    </button>
 
-                <button type="button" class="btn btn-sm btn-link text-white-50 p-0" onclick="openEditTodoModal(<?php echo htmlspecialchars(json_encode($todo), ENT_QUOTES, 'UTF-8'); ?>)">
-                    <i class="bi bi-pencil fs-5"></i>
-                </button>
-                
-                <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="deleteTodoItem(<?php echo $todo['id']; ?>, event)" title="Smazat navždy">
-                    <i class="bi bi-trash fs-5"></i>
-                </button>
+                    <button type="button" class="btn btn-sm btn-link text-white-50 p-0" onclick="openEditTodoModal(<?php echo htmlspecialchars(json_encode($todo), ENT_QUOTES, 'UTF-8'); ?>)">
+                        <i class="bi bi-pencil fs-5"></i>
+                    </button>
+                    
+                    <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="deleteTodoItem(<?php echo $todo['id']; ?>, event)" title="Smazat navždy">
+                        <i class="bi bi-trash fs-5"></i>
+                    </button>
+                </div>
+
+                <!-- Mobile style (<md) -->
+                <div class="dropdown d-md-none">
+                    <button class="btn btn-sm btn-link text-white-50 p-0" data-bs-toggle="dropdown" aria-expanded="false" onclick="event.stopPropagation();">
+                        <i class="bi bi-three-dots-vertical fs-5"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow-lg border border-light border-opacity-10">
+                        <li>
+                            <a class="dropdown-item small py-2 <?php echo $todo['is_pinned'] ? 'text-warning' : ''; ?>" href="javascript:void(0)" onclick="toggleTodoPin(<?php echo $todo['id']; ?>, event)">
+                                <i class="bi <?php echo $todo['is_pinned'] ? 'bi-pin-angle-fill' : 'bi-pin-angle'; ?> me-2"></i>
+                                <?php echo $todo['is_pinned'] ? 'Odepnout' : 'Připnout'; ?>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item small py-2" href="javascript:void(0)" onclick="openEditTodoModal(<?php echo htmlspecialchars(json_encode($todo), ENT_QUOTES, 'UTF-8'); ?>); event.stopPropagation();">
+                                <i class="bi bi-pencil me-2"></i> Upravit
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider border-light border-opacity-10"></li>
+                        <li>
+                            <a class="dropdown-item small py-2 text-danger" href="javascript:void(0)" onclick="deleteTodoItem(<?php echo $todo['id']; ?>, event)">
+                                <i class="bi bi-trash me-2"></i> Smazat
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
