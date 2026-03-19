@@ -2,7 +2,7 @@
 
 <footer class="container py-4 Xmt-auto border-top border-light border-opacity-10 text-center text-white-50 mt-5">
     <p class="small mb-1">&copy; <?php echo date('Y'); ?> DevBase - The OneNote Killer</p>
-    <p class="small mb-1">v 1.1.7</p>
+    <p class="small mb-1">v 1.1.8</p>
     <p class="small"><a href="https://www.jirikratochvil.eu/" target="_blank" class="link-light link-opacity-50 link-opacity-100-hover text-decoration-none">jirikratochvil.eu</a></p>
 </footer>
 

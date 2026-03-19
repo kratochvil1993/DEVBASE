@@ -1605,6 +1605,23 @@ h6 i.bi-pin-angle-fill {
     scroll-margin-top: 20px;
     scroll-margin-bottom: 120px;
   }
+
+  /* Modal positioning fix for mobile status bar overlap */
+  .modal-dialog {
+    margin-top: calc(1.5rem + env(safe-area-inset-top)) !important;
+    margin-bottom: 2rem !important;
+    margin-left: 0.5rem !important;
+    margin-right: 0.5rem !important;
+  }
+  
+  .modal-dialog-centered {
+    align-items: flex-start !important; /* Start from top to clear status bar predictably */
+    min-height: calc(100% - (3rem + env(safe-area-inset-top))) !important;
+  }
+
+  .modal-content {
+    border-radius: 15px !important;
+  }
 }
 
 .ai-insight-box {
