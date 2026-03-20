@@ -1001,10 +1001,11 @@ function importAllData($data, $mode = 'append') {
             $sort = (int)($todo['sort_order'] ?? 0);
             $locked = (int)($todo['is_locked'] ?? 0);
             $deadline = !empty($todo['deadline']) ? "'" . $conn->real_escape_string($todo['deadline']) . "'" : "NULL";
+            $deadline_time = !empty($todo['deadline_time']) ? "'" . $conn->real_escape_string($todo['deadline_time']) . "'" : "NULL";
             $note = !empty($todo['note']) ? "'" . $conn->real_escape_string($todo['note']) . "'" : "NULL";
             $created = !empty($todo['created_at']) ? "'" . $conn->real_escape_string($todo['created_at']) . "'" : "CURRENT_TIMESTAMP";
 
-            $conn->query("INSERT INTO todos (text, is_archived, sort_order, is_pinned, deadline, is_locked, note, created_at) VALUES ('$text', $archived, $sort, $pinned, $deadline, $locked, $note, $created)");
+            $conn->query("INSERT INTO todos (text, is_archived, sort_order, is_pinned, deadline, deadline_time, is_locked, note, created_at) VALUES ('$text', $archived, $sort, $pinned, $deadline, $deadline_time, $locked, $note, $created)");
             $new_id = $conn->insert_id;
             $todoMap[$todo['id']] = $new_id;
 
@@ -1014,6 +1015,17 @@ function importAllData($data, $mode = 'append') {
                         $new_tag_id = $tagMap[$old_tag_id];
                         $conn->query("INSERT INTO todo_tags (todo_id, tag_id) VALUES ($new_id, $new_tag_id)");
                     }
+                }
+            }
+        }
+
+        // Second pass for Todos: update parent_id
+        if (!empty($data['todos'])) {
+            foreach ($data['todos'] as $todo) {
+                if (!empty($todo['parent_id']) && isset($todoMap[$todo['parent_id']]) && isset($todoMap[$todo['id']])) {
+                    $new_id = $todoMap[$todo['id']];
+                    $new_parent_id = $todoMap[$todo['parent_id']];
+                    $conn->query("UPDATE todos SET parent_id = $new_parent_id WHERE id = $new_id");
                 }
             }
         }
