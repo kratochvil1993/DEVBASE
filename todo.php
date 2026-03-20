@@ -224,7 +224,7 @@ include 'includes/header.php';
                     </div>
 
 
-                    <div class="mb-3">
+                    <div class="mb-3" id="editTodoTagsContainer">
                         <label class="form-label text-white-50 small">Štítky</label>
                         <div class="d-flex flex-wrap gap-2 pt-1">
                             <?php foreach ($allTags as $tag): ?>
@@ -310,6 +310,7 @@ include 'includes/header.php';
 <script>
 let sortablePinned = null;
 let sortableOthers = null;
+let sortableSubtasks = [];
 let isSortingMode = false;
 
 function toggleSortingMode() {
@@ -343,6 +344,8 @@ function toggleSortingMode() {
 
         if (pinnedList) pinnedList.classList.add('sorting-mode');
         if (othersList) othersList.classList.add('sorting-mode');
+        document.querySelectorAll('.subtasks-container').forEach(c => c.classList.add('sorting-mode'));
+
         editBtn.classList.add('d-none');
         saveBtn.classList.remove('d-none');
         if (addForm) addForm.classList.add('d-none');
@@ -361,10 +364,17 @@ function toggleSortingMode() {
         if (pinnedList) sortablePinned = new Sortable(pinnedList, sortableConfig);
         if (othersList) sortableOthers = new Sortable(othersList, sortableConfig);
         
+        // Inicializace pro všechny kontejnery s podúkoly
+        document.querySelectorAll('.subtasks-container').forEach(container => {
+            sortableSubtasks.push(new Sortable(container, sortableConfig));
+        });
+        
     } else {
         if (tagFilters) tagFilters.classList.remove('d-none');
         if (pinnedList) pinnedList.classList.remove('sorting-mode');
         if (othersList) othersList.classList.remove('sorting-mode');
+        document.querySelectorAll('.subtasks-container').forEach(c => c.classList.remove('sorting-mode'));
+
         editBtn.classList.remove('d-none');
         saveBtn.classList.add('d-none');
         addForm.classList.remove('d-none');
@@ -380,28 +390,21 @@ function toggleSortingMode() {
             sortableOthers.destroy();
             sortableOthers = null;
         }
+        sortableSubtasks.forEach(s => s.destroy());
+        sortableSubtasks = [];
     }
 }
 
 function saveTodosOrder() {
     const orderItems = [];
-    let currentIndex = 0;
-
-    // Process pinned first
-    const pinnedItems = document.querySelectorAll('#pinnedTodosList .todo-item');
-    pinnedItems.forEach((item) => {
+    
+    // Vybere všechny úkoly na stránce v aktuálním DOM pořadí (pinned první, pak ostatní)
+    // Funguje to i pro podúkoly, protože sort_order se uplatní v rámci každého úrovně stromu
+    const allItems = document.querySelectorAll('.todo-item');
+    allItems.forEach((item, index) => {
         orderItems.push({
             id: item.dataset.id,
-            order: currentIndex++
-        });
-    });
-
-    // Then others
-    const otherItems = document.querySelectorAll('#othersTodosList .todo-item');
-    otherItems.forEach((item) => {
-        orderItems.push({
-            id: item.dataset.id,
-            order: currentIndex++
+            order: index
         });
     });
     
@@ -477,6 +480,52 @@ function openViewTodoModal(todo) {
     modal.show();
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('show.bs.modal', function () {
+        const openDropdowns = document.querySelectorAll('.dropdown-toggle.show');
+        openDropdowns.forEach(dd => {
+            const instance = bootstrap.Dropdown.getInstance(dd);
+            if (instance) instance.hide();
+        });
+    });
+});
+
+function addSubtask(parentId, event) {
+    if (event) event.stopPropagation();
+    
+    // Clear and prepare form
+    const form = document.getElementById('editTodoForm');
+    form.reset();
+    document.getElementById('editTodoId').value = '';
+    document.getElementById('editTodoText').value = '';
+    document.getElementById('editTodoDeadline').value = '';
+    document.getElementById('editTodoDeadlineTime').value = '';
+    document.getElementById('editTodoNote').value = '';
+    document.getElementById('editTodoLocked').checked = false;
+    
+    // Parent ID visibility
+    let parentInput = document.getElementById('editTodoParentId');
+    if (!parentInput) {
+        parentInput = document.createElement('input');
+        parentInput.type = 'hidden';
+        parentInput.name = 'parent_id';
+        parentInput.id = 'editTodoParentId';
+        form.appendChild(parentInput);
+    }
+    parentInput.value = parentId;
+    
+    // Reset checkboxes
+    const checkboxes = document.querySelectorAll('.todo-tag-checkbox');
+    checkboxes.forEach(cb => cb.checked = false);
+
+    document.querySelector('#editTodoModal .modal-title').innerText = 'Přidat podúkol';
+    const tagsContainer = document.getElementById('editTodoTagsContainer');
+    if (tagsContainer) tagsContainer.classList.add('d-none');
+    
+    const modal = new bootstrap.Modal(document.getElementById('editTodoModal'));
+    modal.show();
+}
+
 function openEditTodoModal(todo) {
     document.getElementById('editTodoId').value = todo.id;
     document.getElementById('editTodoText').value = todo.text;
@@ -485,11 +534,19 @@ function openEditTodoModal(todo) {
     document.getElementById('editTodoNote').value = todo.note || '';
     document.getElementById('editTodoLocked').checked = (todo.is_locked == 1 || todo.is_locked === true || todo.is_locked === "1");
 
-
+    // Parent ID field
+    let parentInput = document.getElementById('editTodoParentId');
+    if (parentInput) parentInput.value = todo.parent_id || '';
     
-    // Check checkboxes
-    const checkboxes = document.querySelectorAll('.todo-tag-checkbox');
-    checkboxes.forEach(cb => cb.checked = false);
+    // Show/Hide tags based on subtask
+    const tagsContainer = document.getElementById('editTodoTagsContainer');
+    if (tagsContainer) {
+        if (todo.parent_id) {
+            tagsContainer.classList.add('d-none');
+        } else {
+            tagsContainer.classList.remove('d-none');
+        }
+    }
     
     if (todo.tags) {
         todo.tags.forEach(tag => {
@@ -497,6 +554,8 @@ function openEditTodoModal(todo) {
             if (cb) cb.checked = true;
         });
     }
+
+    document.querySelector('#editTodoModal .modal-title').innerText = 'Upravit úkol';
     
     const modal = new bootstrap.Modal(document.getElementById('editTodoModal'));
     modal.show();
@@ -577,6 +636,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             newTodoItem.addEventListener('transitionend', () => {
                                 newTodoItem.style.transform = '';
                                 newTodoItem.style.transition = '';
+                                updateTodoUIState();
                             }, { once: true });
                         });
                     }
@@ -624,6 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalBtnHtml = submitBtn.innerHTML;
             const todoId = document.getElementById('editTodoId').value;
+            const parentId = formData.get('parent_id');
             
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
@@ -639,21 +700,81 @@ document.addEventListener('DOMContentLoaded', () => {
                     const modal = bootstrap.Modal.getInstance(modalEl);
                     if (modal) modal.hide();
 
-                    const existingCard = document.getElementById('todo-card-' + todoId);
+                    const existingCard = document.getElementById('todo-card-' + data.id);
                     if (existingCard) {
+                        // UPDATE existing
                         const temp = document.createElement('div');
                         temp.innerHTML = data.html;
-                        const newCard = temp.firstElementChild;
+                        const newWrapper = temp.firstElementChild; // It's a todo-wrapper now
+                        const newCard = newWrapper.querySelector('.todo-item');
                         
-                        existingCard.replaceWith(newCard);
-                        newCard.classList.add('flash-purple');
-                        setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                        // If it's a wrapper, we should replace the whole wrapper or just the card
+                        const oldWrapper = document.getElementById('todo-wrapper-' + data.id);
+                        if (oldWrapper) {
+                            oldWrapper.replaceWith(newWrapper);
+                        } else {
+                            existingCard.replaceWith(newCard);
+                        }
+                        
+                        const actualNewCard = document.getElementById('todo-card-' + data.id);
+                        if (actualNewCard) {
+                             actualNewCard.classList.add('flash-purple');
+                             setTimeout(() => actualNewCard.classList.remove('flash-purple'), 2000);
+                        }
+                    } else if (parentId) {
+                        // NEW SUBTASK
+                        const parentWrapper = document.getElementById('todo-wrapper-' + parentId);
+                        if (parentWrapper) {
+                            // Update parent's subtask count badge
+                            const badge = parentWrapper.querySelector('.todo-item .subtask-count-badge');
+                            if (badge) {
+                                const countSpan = badge.querySelector('.count');
+                                if (countSpan) {
+                                    let currentCount = parseInt(countSpan.innerText) || 0;
+                                    countSpan.innerText = currentCount + 1;
+                                    badge.classList.remove('d-none');
+                                }
+                            }
+
+                            let subContainer = parentWrapper.querySelector('.subtasks-container');
+                            if (!subContainer) {
+                                subContainer = document.createElement('div');
+                                subContainer.className = 'subtasks-container ms-4 ms-md-5 mt-2 d-flex flex-column gap-2 border-start border-light border-opacity-10 ps-3';
+                                parentWrapper.appendChild(subContainer);
+                            }
+                            const temp = document.createElement('div');
+                            temp.innerHTML = data.html;
+                            const newElem = temp.firstElementChild;
+                            subContainer.prepend(newElem);
+                            
+                            const newCard = newElem.querySelector('.todo-item');
+                            if (newCard) {
+                                newCard.classList.add('flash-purple');
+                                setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                            }
+                        } else {
+                            window.location.reload();
+                        }
                     } else {
-                        window.location.reload();
+                        // NEW ROOT - append to others
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data.html;
+                        const newElem = temp.firstElementChild;
+                        if (othersTodosList) {
+                            othersTodosList.prepend(newElem);
+                            const newCard = newElem.querySelector('.todo-item');
+                            if (newCard) {
+                                newCard.classList.add('flash-purple');
+                                setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                            }
+                        } else {
+                            window.location.reload();
+                        }
                     }
                     
                     // Update header/sidebar stats
                     if (typeof updateGlobalStats === 'function') updateGlobalStats(data);
+                    updateTodoUIState();
                 } else {
                     alert('Chyba: ' + data.message);
                 }
@@ -839,16 +960,25 @@ function toggleTodoPin(todoId, event) {
             if (existingCard) {
                 const temp = document.createElement('div');
                 temp.innerHTML = data.html;
-                const newCard = temp.firstElementChild;
+                const newElem = temp.firstElementChild; 
                 
                 const targetGridId = data.is_pinned ? 'pinnedTodosList' : 'othersTodosList';
                 const targetGrid = document.getElementById(targetGridId);
                 
-                existingCard.remove();
+                const oldWrapper = document.getElementById('todo-wrapper-' + todoId);
+                if (oldWrapper) {
+                    oldWrapper.remove();
+                } else {
+                    existingCard.remove();
+                }
+
                 if (targetGrid) {
-                    targetGrid.prepend(newCard);
-                    newCard.classList.add('flash-purple');
-                    setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                    targetGrid.prepend(newElem);
+                    const newCard = newElem.querySelector('.todo-item');
+                    if (newCard) {
+                        newCard.classList.add('flash-purple');
+                        setTimeout(() => newCard.classList.remove('flash-purple'), 2000);
+                    }
                 }
                 
                 updateTodoUIState();
@@ -878,12 +1008,31 @@ function archiveTodoItem(todoId, event) {
     .then(data => {
         if (data.status === 'success') {
             const card = document.getElementById('todo-card-' + todoId);
-            if (card) {
-                card.style.transition = 'all 0.3s ease';
-                card.style.opacity = '0';
-                card.style.transform = 'scale(0.8)';
+            const wrapper = document.getElementById('todo-wrapper-' + todoId);
+            
+            // Decrement parent count
+            if (wrapper && wrapper.parentNode && wrapper.parentNode.classList.contains('subtasks-container')) {
+                const parentWrapper = wrapper.parentNode.closest('.todo-wrapper');
+                if (parentWrapper) {
+                    const badge = parentWrapper.querySelector('.todo-item .subtask-count-badge');
+                    if (badge) {
+                        const countSpan = badge.querySelector('.count');
+                        if (countSpan) {
+                            let curr = (parseInt(countSpan.innerText) || 0) - 1;
+                            countSpan.innerText = Math.max(0, curr);
+                            if (curr <= 0) badge.classList.add('d-none');
+                        }
+                    }
+                }
+            }
+
+            const target = wrapper || card;
+            if (target) {
+                target.style.transition = 'all 0.3s ease';
+                target.style.opacity = '0';
+                target.style.transform = 'scale(0.8)';
                 setTimeout(() => {
-                    card.remove();
+                    target.remove();
                     updateTodoUIState();
                 }, 300);
             }
@@ -912,12 +1061,31 @@ function deleteTodoItem(todoId, event) {
     .then(data => {
         if (data.status === 'success') {
             const card = document.getElementById('todo-card-' + todoId);
-            if (card) {
-                card.style.transition = 'all 0.3s ease';
-                card.style.opacity = '0';
-                card.style.transform = 'scale(0.8)';
+            const wrapper = document.getElementById('todo-wrapper-' + todoId);
+            
+            // Fix: Decrement parent badge
+            if (wrapper && wrapper.parentNode && wrapper.parentNode.classList.contains('subtasks-container')) {
+                const pWrap = wrapper.parentNode.closest('.todo-wrapper');
+                if (pWrap) {
+                    const badge = pWrap.querySelector('.todo-item .subtask-count-badge');
+                    if (badge) {
+                        const countSpan = badge.querySelector('.count');
+                        if (countSpan) {
+                            let curr = (parseInt(countSpan.innerText) || 0) - 1;
+                            countSpan.innerText = Math.max(0, curr);
+                            if (curr <= 0) badge.classList.add('d-none');
+                        }
+                    }
+                }
+            }
+
+            const target = wrapper || card;
+            if (target) {
+                target.style.transition = 'all 0.3s ease';
+                target.style.opacity = '0';
+                target.style.transform = 'scale(0.8)';
                 setTimeout(() => {
-                    card.remove();
+                    target.remove();
                     updateTodoUIState();
                 }, 300);
             }

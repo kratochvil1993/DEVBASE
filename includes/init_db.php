@@ -73,7 +73,8 @@ if (file_exists($schema_file)) {
             'sort_order' => 'INT DEFAULT 0',
             'deadline' => 'DATE DEFAULT NULL',
             'deadline_time' => 'TIME DEFAULT NULL',
-            'note' => 'TEXT DEFAULT NULL'
+            'note' => 'TEXT DEFAULT NULL',
+            'parent_id' => 'INT DEFAULT NULL'
         ],
         'tags' => [
             'type' => "VARCHAR(20) DEFAULT 'snippet'",
@@ -93,7 +94,8 @@ if (file_exists($schema_file)) {
         'scratchpads' => [
             'type' => "VARCHAR(20) DEFAULT 'code'",
             'name' => "VARCHAR(50) DEFAULT 'default'",
-            'content' => 'LONGTEXT'
+            'content' => 'LONGTEXT',
+            'updated_at' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
         ]
     ];
 
@@ -137,6 +139,14 @@ if (file_exists($schema_file)) {
     // Add correct (name, type) unique index if missing
     if (!$newUniqueExists) {
         $conn->query("ALTER TABLE `tags` ADD UNIQUE INDEX `unique_name_type` (`name`, `type`)");
+    }
+
+    // Migration: Ensure parent_id foreign key exists in todos
+    $checkFk = $conn->query("SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE 
+                            WHERE TABLE_NAME = 'todos' AND COLUMN_NAME = 'parent_id' 
+                            AND REFERENCED_TABLE_NAME = 'todos' AND TABLE_SCHEMA = '" . DB_NAME . "'");
+    if ($checkFk && $checkFk->num_rows == 0) {
+        $conn->query("ALTER TABLE `todos` ADD CONSTRAINT `fk_todos_parent` FOREIGN KEY (`parent_id`) REFERENCES `todos` (`id`) ON DELETE CASCADE");
     }
     
     // Migration: Ensure new settings keys exist (Version 1.2.2)

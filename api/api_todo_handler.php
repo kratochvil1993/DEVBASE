@@ -21,13 +21,14 @@ if ($action === 'add_todo' || $action === 'edit_todo') {
     $is_locked = isset($_POST['is_locked']) ? 1 : 0;
     $todo_id = $action === 'edit_todo' ? ($_POST['todo_id'] ?? null) : null;
     $note = $_POST['note'] ?? null;
+    $parent_id = $_POST['parent_id'] ?? null;
 
     if (empty($text)) {
         echo json_encode(['status' => 'error', 'message' => 'Chybí text úkolu.']);
         exit;
     }
 
-    $id = saveTodo($text, $tags, $todo_id, $is_locked, $deadline, $deadline_time, $note);
+    $id = saveTodo($text, $tags, $todo_id, $is_locked, $deadline, $deadline_time, $note, $parent_id);
     $success = (bool)$id;
 } elseif ($action === 'toggle_pin') {
     $id = $_POST['todo_id'] ?? null;
@@ -65,14 +66,7 @@ if ($success) {
 
     // Specific data based on action
     if ($action === 'add_todo' || $action === 'edit_todo' || $action === 'toggle_pin') {
-        $todos = getAllTodos(0);
-        $todo = null;
-        foreach ($todos as $t) {
-            if ($t['id'] == $id) {
-                $todo = $t;
-                break;
-            }
-        }
+        $todo = getTodo($id);
         if ($todo) {
             ob_start();
             include '../includes/todo_item_template.php';

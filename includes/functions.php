@@ -2,23 +2,32 @@
 require_once __DIR__ . '/db.php';
 
 // Check if database and tables are created and up to date
-// Check if database and tables are created and up to date
-// 1. Změňte verzi na 1.2.2 nebo vyšší přímo v kódu
 $current_db_version = '1.2.2';
+
+// Proaktivní kontrola existence tabulek a verze
+$check_table = @$conn->query("SHOW TABLES LIKE 'settings'");
 $needs_init = false;
 
-// Tichá kontrola verze bez automatického přesměrování
-$version_res = @$conn->query("SELECT setting_value FROM settings WHERE setting_key = 'db_version'");
-if ($version_res && $version_res->num_rows > 0) {
-    $db_version = $version_res->fetch_assoc()['setting_value'];
-    // Pokud je verze starší, nebudeme přesměrovávat, ale můžeme si to uložit pro budoucí tiché updaty
+if (!$check_table || $check_table->num_rows == 0) {
+    $needs_init = true;
 } else {
-    // Pokud tabulka chybí, teprve pak je problém, ale na Wedosu raději ticho
-    $check_table = @$conn->query("SHOW TABLES LIKE 'settings'");
-    if (!$check_table || $check_table->num_rows == 0) {
-        // Tady by to teoreticky potřebovalo init, ale uživatel ho udělal ručně
+    // Pokud settings existuje, zkontrolujeme verzi
+    $db_ver = getSetting('db_version', '0');
+    if (version_compare($db_ver, $current_db_version, '<')) {
+        $needs_init = true;
     }
 }
+
+if ($needs_init) {
+    // Pokud je potřeba init, ale pouze pokud nejde o AJAX a jsme v browseru
+    $is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    if (!$is_ajax && PHP_SAPI !== 'cli' && basename($_SERVER['PHP_SELF']) !== 'init_db.php') {
+        $redirect_path = file_exists('includes/init_db.php') ? 'includes/init_db.php' : '../includes/init_db.php';
+        header('Location: ' . $redirect_path);
+        exit;
+    }
+}
+
 
 // Funkce aplikace...
 
@@ -399,19 +408,20 @@ function updateSetting($key, $value) {
 // Table structure is now handled by schema.sql
 
 
-function getAllTodos($archive_status = 0) {
+function getAllTodos($archive_status = 0, $asTree = true, $asIndexedFlat = false) {
     global $conn;
     $archive_status = (int)$archive_status;
 
     $sql = "SELECT * FROM todos WHERE is_archived = $archive_status ORDER BY is_pinned DESC, sort_order ASC, created_at DESC";
     $result = $conn->query($sql);
-    $todos = [];
+    $allTodos = [];
     $todoIds = [];
     
     if ($result) {
         while ($row = $result->fetch_assoc()) {
-            $row['tags'] = []; // Initialize
-            $todos[$row['id']] = $row;
+            $row['tags'] = [];
+            $row['subtasks'] = [];
+            $allTodos[$row['id']] = $row;
             $todoIds[] = $row['id'];
         }
     }
@@ -427,16 +437,54 @@ function getAllTodos($archive_status = 0) {
         if ($tagsRes) {
             while ($tagRow = $tagsRes->fetch_assoc()) {
                 $todoId = $tagRow['todo_id'];
-                unset($tagRow['todo_id']); // Remove temp field
-                $todos[$todoId]['tags'][] = $tagRow;
+                unset($tagRow['todo_id']);
+                if (isset($allTodos[$todoId])) {
+                    $allTodos[$todoId]['tags'][] = $tagRow;
+                }
             }
         }
     }
     
-    return array_values($todos);
+    // First pass: link children to parents
+    foreach ($allTodos as $id => &$todo) {
+        if (!empty($todo['parent_id']) && isset($allTodos[$todo['parent_id']])) {
+            $allTodos[$todo['parent_id']]['subtasks'][] = &$todo;
+        }
+    }
+    unset($todo);
+
+    if ($asIndexedFlat) {
+        return $allTodos;
+    }
+
+    if (!$asTree) {
+        return array_values($allTodos);
+    }
+    
+    $tree = [];
+    // Second pass: extract roots
+    foreach ($allTodos as $id => &$todo) {
+        if (empty($todo['parent_id']) || !isset($allTodos[$todo['parent_id']])) {
+            $tree[] = $todo;
+        }
+    }
+    unset($todo);
+    
+    return $tree;
 }
 
-function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = null, $deadline_time = null, $note = null) {
+function getTodo($id) {
+    // Get all active and archived
+    $all = getAllTodos(0, true, true);
+    if (isset($all[$id])) return $all[$id];
+    
+    $archived = getAllTodos(1, true, true);
+    if (isset($archived[$id])) return $archived[$id];
+    
+    return null;
+}
+
+function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = null, $deadline_time = null, $note = null, $parent_id = null) {
     global $conn;
     $text = $conn->real_escape_string($text);
     $is_locked = (int)$is_locked;
@@ -453,6 +501,10 @@ function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = nul
         $note = $_POST['note'];
     }
 
+    if ($parent_id === null && !empty($_POST['parent_id'])) {
+        $parent_id = (int)$_POST['parent_id'];
+    }
+
     // Auto-fill today's date if time is set but date is not
     if (empty($deadline) && !empty($deadline_time)) {
         $deadline = date('Y-m-d');
@@ -461,15 +513,16 @@ function saveTodo($text, $tags = [], $id = null, $is_locked = 0, $deadline = nul
     $deadline_val = !empty($deadline) ? "'" . $conn->real_escape_string($deadline) . "'" : "NULL";
     $deadline_time_val = !empty($deadline_time) ? "'" . $conn->real_escape_string($deadline_time) . "'" : "NULL";
     $note_val = ($note !== null && $note !== '') ? "'" . $conn->real_escape_string($note) . "'" : "NULL";
+    $parent_id_val = $parent_id ? (int)$parent_id : "NULL";
     
     if ($id) {
         $id = (int)$id;
-        $sql = "UPDATE todos SET text = '$text', deadline = $deadline_val, deadline_time = $deadline_time_val, note = $note_val, is_locked = $is_locked WHERE id = $id";
+        $sql = "UPDATE todos SET text = '$text', deadline = $deadline_val, deadline_time = $deadline_time_val, note = $note_val, is_locked = $is_locked, parent_id = $parent_id_val WHERE id = $id";
     } else {
         $result = $conn->query("SELECT MIN(sort_order) as min_sort FROM todos");
         $row = $result ? $result->fetch_assoc() : null;
         $next_sort = $row['min_sort'] !== null ? (int)$row['min_sort'] - 1 : 0;
-        $sql = "INSERT INTO todos (text, deadline, deadline_time, note, sort_order, is_locked) VALUES ('$text', $deadline_val, $deadline_time_val, $note_val, $next_sort, $is_locked)";
+        $sql = "INSERT INTO todos (text, deadline, deadline_time, note, sort_order, is_locked, parent_id) VALUES ('$text', $deadline_val, $deadline_time_val, $note_val, $next_sort, $is_locked, $parent_id_val)";
     }
     
     if ($conn->query($sql)) {
@@ -491,6 +544,12 @@ function archiveTodo($id, $status = 1) {
     global $conn;
     $id = (int)$id;
     $status = (int)$status;
+    
+    // Archive subtasks too
+    if ($status == 1) {
+        $conn->query("UPDATE todos SET is_archived = 1 WHERE parent_id = $id");
+    }
+    
     $sql = "UPDATE todos SET is_archived = $status WHERE id = $id";
     return $conn->query($sql);
 }
@@ -513,6 +572,10 @@ function updateTodoOrder($id, $order) {
 function deleteTodo($id) {
     global $conn;
     $id = (int)$id;
+    
+    // Delete subtasks too
+    $conn->query("DELETE FROM todos WHERE parent_id = $id");
+    
     $sql = "DELETE FROM todos WHERE id = $id";
     return $conn->query($sql);
 }

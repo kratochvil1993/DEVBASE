@@ -33,6 +33,7 @@ include 'includes/header.php';
                     <a href="#inbox" class="submenu-link" data-section="inbox">Inbox</a>
                     <a href="#security" class="submenu-link" data-section="security">Bezpečnost</a>
                     <a href="#backup" class="submenu-link" data-section="backup">Záloha</a>
+                    <a href="#pwa" class="submenu-link" data-section="pwa">PWA</a>
                 </div>
             </div>
         </div>
@@ -96,6 +97,13 @@ console.log('Hello World');
 | `name` | string | Název položky |</code></pre>
                 </div>
             </div>
+
+            <hr class="border-light opacity-10 my-4">
+
+            <div class="help-section mb-4">
+                <h6 class="text-white-50 mb-2">Markdown jako náhled (Preview)</h6>
+                <p class="text-white small mb-3">Pokud u snippetu zvolíte jazyk **Markdown**, DevBase ho v hlavním přehledu (gridu) automaticky vyrenderuje jako živý náhled. Místo surového kódu tak uvidíte formátovaný text, tabulky a seznamy přímo v kartě snippetu.</p>
+            </div>
         </div>
     </div>
 
@@ -155,6 +163,14 @@ console.log('Hello World');
                 <li class="mb-3">
                     <strong class="text-white d-block">Automatické sledování změn:</strong>
                     Po každém uložení, úpravě nebo vytvoření nového záznamu vás aplikace automaticky přesune na danou položku a zvýrazní ji jemným animovaným efektem. Nemusíte tak položku znovu hledat v seznamu.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Optimalizace výkonu a Animací:</strong>
+                    Aplikace je navržena pro maximální plynulost. Pokud s oknem aplikace nepracujete (přepnete jinam), **automaticky se pozastaví pozadí a náročné vizuální efekty** (backdrop-filter), aby se ušetřil výkon CPU a GPU vašeho zařízení.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Inteligentní vykreslování:</strong>
+                    DevBase používá technologii `Intersection Observer`, která zajišťuje, že se náročné efekty renderingu aplikují pouze na prvky, které jsou aktuálně viditelné na vaší obrazovce. To zajišťuje bleskovou odezvu i při stovkách uložených záznamů.
                 </li>
             </ul>
         </div>
@@ -378,6 +394,18 @@ console.log('Hello World');
                     <strong class="text-white d-block">Responzivní rozvržení:</strong>
                     Na mobilních zařízeních a menších obrazovkách se ovládací prvky úkolů automaticky přizpůsobí – tlačítka pro editaci a připínání se přesunou do horního rohu, aby zbyl maximální prostor pro text úkolu a panel pro přidávání se odsunul pod ně pro lepší ovladatelnost.
                 </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Podúkoly a Hierarchie:</strong>
+                    U každého hlavního úkolu najdete ikonu <i class="bi bi-plus-circle"></i>, která umožní přidat **podúkol**. Podúkoly jsou automaticky odsazené a vizuálně propojené se svým rodičem. Hlavní úkol pak v barevném odznaku zobrazuje celkový počet svých podúkolů (tento počet se **okamžitě aktualizuje** při přidání nebo smazání podúkolu). Podúkoly jsou záměrně zjednodušené (nemají vlastní štítky ani možnost dalšího vnoření) pro maximální přehlednost.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Kaskádová archivace a Archiv:</strong>
+                    Pokud odškrtnete hlavní úkol jako splněný, automaticky se s ním archivují i všechny jeho podúkoly. I v **Archivu TODO** je zachována tato stromová struktura, takže své splněné plány uvidíte vždy v celkovém kontextu. Pokud otevíráte detailní náhled splněného úkolu z Archivu, uvidíte v něm i seznam všech jeho splněných podúkolů.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Rychlé přidávání na mobilu:</strong>
+                    Na mobilních zařízeních můžete formulář pro přidání úkolu skýt a zobrazit kliknutím na ikonu **+** v horním panelu. Po kliknutí se formulář rozbalí a kurzor se automaticky zaměří na textové pole, abyste mohli okamžitě psát.
+                </li>
             </ul>
         </div>
 
@@ -509,6 +537,20 @@ console.log('Hello World');
                 </li>
             </ul>
         </div>
+        <div class="glass-card no-jump p-4 mt-4 help-section" id="pwa">
+            <h4 class="text-white mb-4"><i class="bi bi-phone me-2"></i> PWA a Instalace</h4>
+            <ul class="text-white-50 small list-unstyled">
+                <li class="mb-3">
+                    <strong class="text-white d-block">Instalace jako aplikace (PWA):</strong>
+                    DevBase je plnohodnotná **Progressive Web App**. To znamená, že si ji můžete do mobilu nebo počítače nainstalovat přímo z prohlížeče (volba "Přidat na plochu" v Safari / Chrome nebo ikona instalace v adresním řádku). Získáte tak vlastní ikonu, spouštění bez URL řádku a bleskový přístup k datům.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Offline režim a Service Worker:</strong>
+                    Díky technologii Service Worker si aplikace ukládá klíčové soubory do mezipaměti. I když nejste online, rozhraní se načte okamžitě a vaše rozpracovaná data jsou v bezpečí.
+                </li>
+            </ul>
+        </div>
+    </div>
     </div>
 </div>
 </div>

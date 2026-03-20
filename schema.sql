@@ -66,8 +66,10 @@ CREATE TABLE IF NOT EXISTS todos (
     is_archived TINYINT(1) DEFAULT 0,
     is_pinned TINYINT(1) DEFAULT 0,
     is_locked TINYINT(1) DEFAULT 0,
+    parent_id INT DEFAULT NULL,
     sort_order INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (parent_id) REFERENCES todos(id) ON DELETE CASCADE
 );
 
 

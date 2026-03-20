@@ -75,7 +75,7 @@ $hasAi = $aiEnabledSetting && (!empty($geminiApiKey) || !empty($openaiApiKey));
 include 'includes/header.php';
 ?>
 
-<div class="row mb-3">
+<div class="row mb-3 mt-1 mt-md-2">
     <div class="col-12">
         <div class="glass-card no-jump p-3 p-lg-4">
             <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-4 gap-3">
@@ -219,18 +219,17 @@ include 'includes/header.php';
                 <div id="quillMainEditor" style="height: 60vh; border: none; color: white; background: #282a36;"></div>
             </div>
             
-            <div class="mt-3 d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center text-white-50 small gap-2">
+            <div class="mt-3 d-flex justify-content-between align-items-center text-white-50 small">
                 <div class="d-none d-lg-block">
-                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Ctrl+S uložit</span>
-                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+N nový</span>
-                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+W zavřít</span>
-                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+←/→ taby</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Cmd+S uložit</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Opt+L focus</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Opt+N nový</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Opt+W zavřít</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Opt+↑/↓ taby</span>
                 </div>
-                <div class="d-flex justify-content-between align-items-center w-100 w-lg-auto gap-3">
                 <div id="charCount">Znaků: 0</div>
                 <div id="autosaveIndicator" class="ms-3 text-white-50 small" style="transition: all 0.3s ease;">
                     <i class="bi bi-cloud-arrow-up me-1"></i> Připraveno
-                </div>
                 </div>
             </div>
         </div>
@@ -1073,6 +1072,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('addToNotesForm').requestSubmit();
             } else {
                 saveDraft();
+            }
+        }
+        
+        // Option + L focus editor
+        if (e.altKey && e.code === 'KeyL') {
+            e.preventDefault();
+            if (quill) {
+                quill.focus();
             }
         }
         

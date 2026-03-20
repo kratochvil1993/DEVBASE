@@ -7,7 +7,7 @@ if (getSetting('todos_enabled', '1') == '0') {
     exit;
 }
 
-$todos = getAllTodos(1); // 1 = archived
+$todos = getAllTodos(1, true); // 1 = archived, true = as tree
 
 include 'includes/header.php';
 ?>
@@ -61,49 +61,66 @@ include 'includes/header.php';
                     <p>Zatím jste žádné úkoly nevyřídili.</p>
                 </div>
             <?php else: ?>
-                <?php foreach ($todos as $todo): ?>
-                    <div class="card glass-card todo-item" 
-                         id="todo-card-<?php echo $todo['id']; ?>"
-                         data-id="<?php echo $todo['id']; ?>"
-                         data-tags="<?php echo htmlspecialchars(implode(',', array_column($todo['tags'], 'name'))); ?>">
-                        <div class="card-body p-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center overflow-hidden flex-grow-1 text-white-50 text-decoration-line-through">
-                                    <div class="me-3 mb-0 d-flex align-items-center" title="Obnovit jako aktivní">
-                                        <input class="form-check-input m-0 fs-5 flex-shrink-0" type="checkbox" onclick="unarchiveTodoItem(<?php echo $todo['id']; ?>, event)" style="cursor: pointer;" checked>
+                <?php 
+                function renderArchiveTodo($todo) {
+                    ?>
+                    <div class="todo-wrapper" id="todo-wrapper-<?php echo $todo['id']; ?>">
+                        <div class="card glass-card todo-item <?php echo !empty($todo['parent_id']) ? 'subtask-item' : ''; ?>" 
+                             id="todo-card-<?php echo $todo['id']; ?>"
+                             data-id="<?php echo $todo['id']; ?>"
+                             data-tags="<?php echo htmlspecialchars(implode(',', array_column($todo['tags'] ?? [], 'name'))); ?>">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center overflow-hidden flex-grow-1 text-white-50 text-decoration-line-through">
+                                        <div class="me-3 mb-0 d-flex align-items-center" title="Obnovit jako aktivní">
+                                            <input class="form-check-input m-0 fs-5 flex-shrink-0" type="checkbox" onclick="unarchiveTodoItem(<?php echo $todo['id']; ?>, event)" style="cursor: pointer;" checked>
+                                        </div>
+                                        <div class="d-flex flex-column overflow-hidden flex-grow-1">
+                                            <?php if (!empty($todo['tags'])): ?>
+                                                <div class="d-flex flex-wrap gap-1 mb-1">
+                                                    <?php foreach ($todo['tags'] as $tag): ?>
+                                                        <span class="badge opacity-75" style="background-color: <?php echo htmlspecialchars($tag['color'] ?? '#6c757d'); ?>; color: #fff; font-size: 0.7em;">
+                                                            <?php echo htmlspecialchars($tag['name']); ?>
+                                                        </span>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            <?php endif; ?>
+                                            <span class="fs-5 text-truncate"><?php echo htmlspecialchars($todo['text']); ?></span>
+                                            <?php if (!empty($todo['deadline'])): ?>
+                                                <small class="text-white-50 mt-1">
+                                                    <i class="bi bi-calendar-event me-1"></i>
+                                                    Termín: <?php echo date('j. n. Y', strtotime($todo['deadline'])); ?>
+                                                    <?php if (!empty($todo['deadline_time'])): ?>
+                                                        <span class="ms-1 opacity-75"><i class="bi bi-clock me-1"></i><?php echo substr($todo['deadline_time'], 0, 5); ?></span>
+                                                    <?php endif; ?>
+                                                </small>
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
-                                    <div class="d-flex flex-column overflow-hidden flex-grow-1">
-                                        <?php if (!empty($todo['tags'])): ?>
-                                            <div class="d-flex flex-wrap gap-1 mb-1">
-                                                <?php foreach ($todo['tags'] as $tag): ?>
-                                                    <span class="badge opacity-75" style="background-color: <?php echo htmlspecialchars($tag['color'] ?? '#6c757d'); ?>; color: #fff; font-size: 0.7em;">
-                                                        <?php echo htmlspecialchars($tag['name']); ?>
-                                                    </span>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        <?php endif; ?>
-                                        <span class="fs-5 text-truncate"><?php echo htmlspecialchars($todo['text']); ?></span>
-                                        <?php if (!empty($todo['deadline'])): ?>
-                                            <small class="text-white-50 mt-1">
-                                                <i class="bi bi-calendar-event me-1"></i>
-                                                Termín: <?php echo date('j. n. Y', strtotime($todo['deadline'])); ?>
-                                                <?php if (!empty($todo['deadline_time'])): ?>
-                                                    <span class="ms-1 opacity-75"><i class="bi bi-clock me-1"></i><?php echo substr($todo['deadline_time'], 0, 5); ?></span>
-                                                <?php endif; ?>
-                                            </small>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
 
-                                <div class="d-flex gap-2 action-btns flex-shrink-0 ms-3">
-                                        <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="deleteArchiveTodoItem(<?php echo $todo['id']; ?>, event)" title="Smazat navždy">
-                                            <i class="bi bi-trash fs-5"></i>
-                                        </button>
+                                    <div class="d-flex gap-2 action-btns flex-shrink-0 ms-3">
+                                            <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="deleteArchiveTodoItem(<?php echo $todo['id']; ?>, event)" title="Smazat navždy">
+                                                <i class="bi bi-trash fs-5"></i>
+                                            </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <?php if (!empty($todo['subtasks'])): ?>
+                            <div class="subtasks-container ms-4 ms-md-5 mt-2 d-flex flex-column gap-2 border-start border-light border-opacity-10 ps-3">
+                                <?php foreach ($todo['subtasks'] as $subtask): ?>
+                                    <?php renderArchiveTodo($subtask); ?>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                <?php endforeach; ?>
+                    <?php
+                }
+
+                foreach ($todos as $todo): 
+                    renderArchiveTodo($todo);
+                endforeach; 
+                ?>
             <?php endif; ?>
         </div>
         

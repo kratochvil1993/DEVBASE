@@ -79,7 +79,7 @@ $cmTheme = getSetting('cm_theme', 'dracula');
 include 'includes/header.php';
 ?>
 
-<div class="row mb-3">
+<div class="row mb-3 mt-1 mt-md-2">
     <div class="col-12">
         <div class="glass-card no-jump p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -233,13 +233,12 @@ include 'includes/header.php';
             </div>
             
             <div class="mt-3 d-flex justify-content-between align-items-center text-white-50 small">
-                <div>
-                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Ctrl+S uložit</span>
-
-                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+L focus</span>
-                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+N nový</span>
-                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+W zavřít</span>
-                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Alt+←/→ taby</span>
+                <div class="d-none d-lg-block">
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Cmd+S uložit</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Opt+L focus</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Opt+N nový</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Opt+W zavřít</span>
+                    <span class="me-3"><i class="bi bi-keyboard me-1"></i> Opt+↑/↓ taby</span>
                 </div>
                 <div id="charCount">Znaků: 0</div>
                 <div id="autosaveIndicator" class="ms-3 text-white-50 small" style="transition: all 0.3s ease;">
