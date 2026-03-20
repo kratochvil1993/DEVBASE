@@ -484,14 +484,25 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('show.bs.modal', function () {
         const openDropdowns = document.querySelectorAll('.dropdown-toggle.show');
         openDropdowns.forEach(dd => {
-            const instance = bootstrap.Dropdown.getInstance(dd);
+            const instance = bootstrap.Dropdown.getOrCreateInstance(dd);
             if (instance) instance.hide();
+        });
+        // Reset z-index
+        document.querySelectorAll('.todo-item').forEach(item => {
+            item.style.zIndex = '';
         });
     });
 });
 
 function addSubtask(parentId, event) {
     if (event) event.stopPropagation();
+    
+    // Zavřít dropdown explicitně dříve než se otevře modál
+    const openDropdowns = document.querySelectorAll('.dropdown-toggle.show');
+    openDropdowns.forEach(dd => {
+        const instance = bootstrap.Dropdown.getOrCreateInstance(dd);
+        if (instance) instance.hide();
+    });
     
     // Clear and prepare form
     const form = document.getElementById('editTodoForm');
@@ -527,6 +538,13 @@ function addSubtask(parentId, event) {
 }
 
 function openEditTodoModal(todo) {
+    // Zavřít dropdown explicitně dříve než se otevře modál
+    const openDropdowns = document.querySelectorAll('.dropdown-toggle.show');
+    openDropdowns.forEach(dd => {
+        const instance = bootstrap.Dropdown.getOrCreateInstance(dd);
+        if (instance) instance.hide();
+    });
+
     document.getElementById('editTodoId').value = todo.id;
     document.getElementById('editTodoText').value = todo.text;
     document.getElementById('editTodoDeadline').value = todo.deadline || '';
@@ -921,7 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('show.bs.dropdown', function (event) {
         const parent = event.target.closest('.todo-item');
         if (parent) {
-            parent.style.zIndex = '1060';
+            parent.style.zIndex = '1040';
         }
     });
 
@@ -937,8 +955,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('show.bs.modal', function () {
         const openDropdowns = document.querySelectorAll('.dropdown-toggle.show');
         openDropdowns.forEach(dd => {
-            const instance = bootstrap.Dropdown.getInstance(dd);
+            const instance = bootstrap.Dropdown.getOrCreateInstance(dd);
             if (instance) instance.hide();
+        });
+        // Extra pojistka pro mobilní zařízení - reset z-indexu
+        document.querySelectorAll('.todo-item').forEach(item => {
+            item.style.zIndex = '';
         });
     });
 });
