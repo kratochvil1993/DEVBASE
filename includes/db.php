@@ -9,14 +9,22 @@ if (!file_exists($configPath)) {
 }
 require_once $configPath;
 
-$conn = new mysqli(DB_HOST, DB_USER, DB_PASS);
+try {
+    if (defined('DB_TYPE') && DB_TYPE === 'sqlite') {
+        // Připojení k SQLite
+        $conn = new PDO("sqlite:" . DB_SQLITE_PATH);
+    } else {
+        // Připojení k MySQL
+        $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+        $conn = new PDO($dsn, DB_USER, DB_PASS);
+    }
+    
+    // Nastavení PDO: vyhazování výjimek při chybách a asociativní pole jako výchozí formát
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+} catch (PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
 }
 
-// Try to select database, but don't die if it fails (allows init_db process)
-$conn->select_db(DB_NAME);
-
-$conn->set_charset("utf8mb4");
 ?>

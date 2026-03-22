@@ -11,7 +11,7 @@ if (isset($data['order']) && is_array($data['order'])) {
     foreach ($data['order'] as $item) {
         $id = (int)$item['id'];
         $order = (int)$item['order'];
-        $conn->query("UPDATE tags SET sort_order = $order WHERE id = $id");
+        $conn->prepare("UPDATE tags SET sort_order = :order WHERE id = :id")->execute(['order' => (int)$item['order'], 'id' => (int)$item['id']]);
     }
     echo json_encode(['status' => 'success']);
 } else {

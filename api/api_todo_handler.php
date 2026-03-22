@@ -44,7 +44,7 @@ if ($action === 'add_todo' || $action === 'edit_todo') {
     $success = $id && deleteTodo($id);
 } elseif ($action === 'empty_archive') {
     global $conn;
-    $success = $conn->query("DELETE FROM todos WHERE is_archived = 1");
+    $success = $conn->exec("DELETE FROM todos WHERE is_archived = 1");
 }
 
 if ($success) {

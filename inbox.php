@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action'])) {
 }
 
 // Označit zprávy za viděné
-$conn->query("UPDATE inbox_items SET is_seen = 1 WHERE is_seen = 0");
+$conn->exec("UPDATE inbox_items SET is_seen = 1 WHERE is_seen = 0");
 
 $items = getAllInboxItems();
 

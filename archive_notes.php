@@ -25,7 +25,7 @@ $tagsQuery = "SELECT DISTINCT t.* FROM tags t
               ORDER BY t.sort_order ASC, t.name ASC";
 $tagsResult = $conn->query($tagsQuery);
 if ($tagsResult) {
-    while ($tag = $tagsResult->fetch_assoc()) {
+    while ($tag = $tagsResult->fetch()) {
         $usedTags[] = $tag;
     }
 }

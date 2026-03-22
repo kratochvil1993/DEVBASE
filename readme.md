@@ -24,7 +24,8 @@ DevBase je jednoduchá, ale vizuálně líbivá webová aplikace pro ukládání
 - **Rychlé statistiky**: Přehledný panel v bočním menu (offcanvas), který okamžitě zobrazuje aktuální počty vašich snippetů, poznámek, aktivních úkolů a také počty rozpracovaných draftů (Code/Note) v elegantních minikartách.
 - **Zabezpečení (App Lock & Item Lock)**: Možnost uzamknout celou aplikaci pod heslo. Funkci lze aktivovat a konfigurovat v sekci **Nastavení editoru a zabezpečení**. Následně lze aplikaci kdykoliv odhlásit pomocí ikony **odhlášení (boxy s šipkou)** v hlavičce, což ji okamžitě uzamkne. Kromě toho lze **uzamknout i jednotlivé snipety a poznámky** (přepínač "Skrýt obsah" v editaci). Takto označené položky budou mít v přehledu skrytý obsah a k jeho zobrazení je nutné aplikaci odemknout globálním heslem. Heslo lze kdykoliv resetovat v nastavení. Systém využívá bezpečné hashování hesla.
 - **E-mailový Inbox (Import přes e-mail)**: Unikátní funkce, která vám umožní posílat si poznámky a úkoly do aplikace přímo z vašeho e-mailu. Stačí si v nastavení nakonfigurovat **IMAP přístup** ke své schránce. Aplikace dokáže automaticky rozlišit typ obsahu podle tagů v předmětu (`@note`, `@todo`, `@draft`) a automaticky k nim přiřadit štítky pomocí hashtagů (např. `#prace #dulezite`). Pokud e-mail tag neobsahuje, zůstane v **Inboxu**, kde jej můžete otevřít v **detailním modálním okně** a zařadit ručně. Aplikace navíc provádí **automatickou synchronizaci každých 5 minut** (včetně kontroly duplicitních zpráv a ignorování spamových odesílatelů) a na nové přírůstky vás upozorní **modrým badge počítadlem** přímo u položky Inbox v hlavním menu i systémovými notifikacemi v hlavičce. Synchronizaci lze také spustit ručně zeleným tlačítkem **Načíst nové**. Celou historii importu lze navíc jedním kliknutím vyčistit tlačítkem **Vymazat historii**. Počet novinek zmizí až po návštěvě sekce Inbox. Systém podporuje seznam povolených odesílatelů pro maximální bezpečnost.
-- **Záloha a Přenos dat (Export/Import)**: Kompletní správa vašich dat. Celou databázi (snippety, poznámky, úkoly, tagy i nastavení) lze jedním kliknutím exportovat do JSON souboru a následně jej importovat zpět – buď formou přidání k existujícím datům, nebo kompletním přepsáním.
+- **Záloha a Přenos dat (Export/Import)**: Kompletní správa vašich dat. Celou databázi (snippety, poznámky, úkoly, tagy i nastavení) lze jedním kliknutím exportovat do JSON souboru a následně jej importovat zpět – buď formou přidání k existujícím datům, nebo kompletním přepsáním. Díky univerzálnímu formátu můžete takto snadno migrovat data i mezi MySQL a SQLite.
+- **Univerzální databázová podpora (PDO)**: Aplikace již není vázána pouze na MySQL. Díky přechodu na rozhraní PDO nyní plně podporuje **SQLite** (ukládání do lokálního souboru) i **MySQL**. Mezi těmito databázemi lze snadno přepínat v konfiguraci.
 - **Správa jazyků**: DevBase umožňuje definovat vlastní programovací jazyky a přiřadit jim příslušné CSS třídy pro Prism.js. Seznam jazyků lze spravovat v Nastavení, včetně přidávání nových a mazání nepotřebných.
 - **Propracované UI**: Elegantní rozhraní postavené na Bootstrap 5, oživené plovoucími barevnými prvky, blur efekty, micro-animacemi a moderní vizí glassmorphismu. Rozhraní je **plně responzivní** a optimalizované pro mobilní zařízení. V nastavení lze přizpůsobit **velikost písma** v editorech a detailech a také zvolit **vizuální téma editoru**. Pro bleskové přepnutí písma slouží **ikona Gear** v hlavičce. Pro maximální plynulost aplikace využívá **optimalizaci výkonu**: pokud s oknem nepracujete, automaticky se pozastaví náročné animace. Díky `Intersection Observer` se vizuální efekty aplikují pouze na prvky, které právě vidíte na obrazovce. Administrátoři mají k dispozici také stránku **PHP Info** pro rychlou kontrolu konfigurace serveru. Významné akce jsou doprovázeny **fialovým flash efektem** pro jasnou vizuální odezvu.
 - **Plně lokální běh**: Všechny knihovny, ikony a fonty jsou uloženy lokálně v projektu. Aplikace nevyžaduje přístup k internetu pro své fungování (ideální pro bezpečné interní prostředí).
@@ -51,7 +52,7 @@ Pro maximální efektivitu můžete používat tyto systémové zkratky:
 
 ## Instalace a Spuštění
 
-Konfigurační soubor `docker-compose.yml` nastaví celou aplikační strukturu včetně dedikované MySQL databáze a administračního nástroje phpMyAdmin.
+Konfigurační soubor `docker-compose.yml` nastaví celou aplikační strukturu. Standardně je připraveno prostředí s MySQL databází, ale pro maximální jednoduchost můžete využít i **SQLite**, která nevyžaduje běžící databázový server.
 
 1. **Klonování nebo zkopírování repozitáře:**
    Nejprve se ujistěte, že máte složku k dispozici a otevřenou ve svém terminálu.
@@ -68,7 +69,7 @@ Konfigurační soubor `docker-compose.yml` nastaví celou aplikační strukturu 
    ```bash
    cp includes/config.example.php includes/config.php
    ```
-   *Poznámka: Pokud používáte výchozí Docker prostředí, hodnoty v šabloně by měly odpovídat (případně změňte `DB_HOST` na `mysql_db`).*
+   *Poznámka: Zde si můžete v parametru `DB_TYPE` zvolit mezi `mysql` (vyžaduje Docker kontejner nebo externí server) a `sqlite` (vytvoří lokální soubor `database.sqlite`).*
 
 4. **První otevření aplikace:**
    Jakmile se proces úspěšně dokončí, automatický migrační script sestaví a zainicializuje tabulky. Aplikace a databázové nástroje budou nyní naservírovány na portech z vašeho lokálního stroje. Otevřete Váš prohlížeč na těchto adresách:
@@ -90,6 +91,6 @@ Pokud se chcete k databázi přes Docker připojit přes nástroje jakým je nap
 - **Zpracování úkolů:** Interaktivní odškrtávání a řazení bez nutnosti obnovování stránky (SortableJS)
 - **Formátování & Editor:** WYSIWYG editor Quill.js (pro poznámky a Note Drafts) a profesionální kódový editor **CodeMirror 5** (pro Code Drafts)
 - **Zvýraznění kódu:** Prism.js (autoloader s podporou témat) a integrované zvýraznění v reálném čase v editoru
-- **Databáze**: Relační databáze spravovaná pomocí MySQL
+- **Databáze**: Univerzální přístup přes **PDO** s podporou pro **MySQL** i **SQLite 3**
 - **AI Integrace**: Google Gemini AI & OpenAI (volitelně pro pokročilé funkce)
 - **Nasazení:** Kontejnerizace přes Docker, orchestrace pomocí Docker-Compose

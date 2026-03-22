@@ -33,6 +33,7 @@ include 'includes/header.php';
                     <a href="#inbox" class="submenu-link" data-section="inbox">Inbox</a>
                     <a href="#security" class="submenu-link" data-section="security">Bezpečnost</a>
                     <a href="#backup" class="submenu-link" data-section="backup">Záloha</a>
+                    <a href="#database" class="submenu-link" data-section="database">Databáze</a>
                     <a href="#pwa" class="submenu-link" data-section="pwa">PWA</a>
                 </div>
             </div>
@@ -534,6 +535,28 @@ console.log('Hello World');
                 <li class="mb-3">
                     <strong class="text-white d-block">Bezpečnost při importu:</strong>
                     Při režimu "Přepsat vše" dojde i k přepsání vašeho bezpečnostního hesla tím, které bylo v záloze. Ujistěte se, že toto heslo znáte.
+                </li>
+            </ul>
+        </div>
+        <div class="glass-card no-jump p-4 mt-4 help-section" id="database">
+            <h4 class="text-white mb-4"><i class="bi bi-database me-2"></i> Správa Databáze (MySQL & SQLite)</h4>
+            <p class="text-white small mb-3">DevBase podporuje dva typy databází díky univerzálnímu rozhraní PDO. Mezi nimi můžete kdykoliv přepínat v souboru <code>includes/config.php</code>.</p>
+            <ul class="text-white-50 small list-unstyled">
+                <li class="mb-3">
+                    <strong class="text-white d-block">SQLite (Doporučeno pro jednoduchost):</strong>
+                    Data se ukládají do jediného souboru <code>database.sqlite</code> v kořenovém adresáři. Nevyžaduje žádný běžící server, je bleskově rychlá a ideální pro osobní použití nebo v prostředí Dockeru bez nutnosti spravovat MySQL kontejner.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">MySQL (Tradiční řešení):</strong>
+                    Vhodné, pokud již máte běžící MySQL server nebo využíváte standardní Docker Compose setup. Vyžaduje nastavení přístupových údajů (Host, User, Password) v konfiguraci.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Jak přepnout databázi:</strong>
+                    V souboru <code>includes/config.php</code> změňte hodnotu <code>DB_TYPE</code> na <code>'sqlite'</code> nebo <code>'mysql'</code>. Pokud přepnete na SQLite, aplikace si při prvním spuštění automaticky vytvoří databázový soubor a zainicializuje tabulky.
+                </li>
+                <li class="mb-3">
+                    <strong class="text-white d-block">Migrace dat:</strong>
+                    Pokud chcete přejít z MySQL na SQLite (nebo naopak), využijte funkci <strong>Export/Import</strong> v Nastavení. Vyexportujte JSON zálohu z původní databáze, přepněte v konfiguraci na novou a JSON soubor naimportujte v režimu "Přepsat vše".
                 </li>
             </ul>
         </div>
